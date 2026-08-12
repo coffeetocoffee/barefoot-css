@@ -2,6 +2,11 @@
 
 > No boots, no baggage. A bare-bones, themeable, JS-free CSS framework built on modern CSS.
 
+[![npm version](https://img.shields.io/npm/v/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
+[![npm downloads](https://img.shields.io/npm/dm/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
+[![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
+[![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
+
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
 - **~10KB or bust.** `index.css` is 1.3KB gzipped. The *entire* framework (all 14 components) is 3.8KB gzipped. Per-component entry points mean you only pay for what you import.
@@ -75,6 +80,8 @@ build/                 Lightning CSS bundler + size budget + preview server
 
 ## Docs
 
+- Live: [docs site](https://coffeetocoffee.github.io/barefoot-css/) and
+  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages)
 - [Theming](docs/theming.md) — tokens, `light-dark()`, `data-theme`, starter themes
 - [Components](docs/components.md) — markup, behavior, JS status for each component
 - [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
@@ -120,11 +127,13 @@ npm run test:visual               # compare against baselines
 npm run test:visual:update        # regenerate baselines (deliberately!)
 ```
 
-CI (`.github/workflows/ci.yml`, GitHub Actions) runs five jobs:
+CI (`.github/workflows/ci.yml`, GitHub Actions) runs six jobs:
 `build + size budget`, `behavior + a11y` (axe-core, JS, CSS) on
 Linux/Chromium, behavior on **Firefox** (Linux) and **WebKit** (macOS),
-and `visual regression` on Windows (baselines are OS-specific). It
-activates on the first push to GitHub.
+and `visual regression` on Windows (bundled webfonts keep the baselines
+machine-independent). The docs + demo also deploy to
+[GitHub Pages](https://coffeetocoffee.github.io/barefoot-css/) on every
+push to `main`.
 
 ## License
 
