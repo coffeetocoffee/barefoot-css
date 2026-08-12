@@ -29,6 +29,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build
+        # dist/ is gitignored, so the demo page is unstyled until it's
+        # built — the test jobs must build before running Playwright.
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --project=chromium tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
 
@@ -42,6 +45,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npx playwright install --with-deps firefox
       - run: npm run test:ff
 
@@ -55,6 +59,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npx playwright install webkit
       - run: npm run test:webkit
         # WebKit = Safari's engine; run on macOS to match CI/OS real usage.
@@ -69,6 +74,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npx playwright install chromium
       - run: npm run test:visual
         # Baselines are font/OS-sensitive and committed as

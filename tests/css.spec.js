@@ -5,6 +5,21 @@
    npm run test:css */
 import { test, expect } from "@playwright/test";
 
+test.describe("tests have real CSS (smoke)", () => {
+  test("demo page loads the built Barefoot stylesheet", async ({ page }) => {
+    await page.goto("/demo/");
+    const styled = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const contain = getComputedStyle(document.querySelector(".fz-contain"));
+      return Boolean(root.getPropertyValue("--fz-primary").trim()) && contain.containerType === "inline-size";
+    });
+    // dist/ is gitignored and built in CI; if a test job ever forgets to
+    // build, this fails with a clear message instead of a confusing
+    // column-count mismatch.
+    expect(styled, "dist/ is not built — run npm run check (build) before the tests").toBe(true);
+  });
+});
+
 test.describe("container queries", () => {
   test("same [data-grid] markup: 1 column when narrow, 3 when wide", async ({ page }) => {
     await page.goto("/demo/");
@@ -18,34 +33,13 @@ test.describe("container queries", () => {
       wide.style.width = "60rem";
     });
 
-    const readCols = (sel) =>
+    const cols = (sel) =>
       page
         .locator(sel)
         .evaluate((el) => getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length);
 
-    // If this ever fails again on CI, the assertion message below dumps
-    // everything needed to see why (fonts, container sizes, raw tracks).
-    const diag = () =>
-      page.evaluate(() => {
-        const info = (sel) => {
-          const el = document.querySelector(sel);
-          const cs = getComputedStyle(el);
-          return {
-            cols: cs.gridTemplateColumns,
-            w: Math.round(el.getBoundingClientRect().width),
-          };
-        };
-        return {
-          rootFont: getComputedStyle(document.documentElement).fontSize,
-          containerType: getComputedStyle(document.querySelector(".fz-contain")).containerType,
-          narrow: info(".fz-demo-narrow [data-grid]"),
-          wide: info(".fz-demo-wide [data-grid]"),
-          wideContainer: Math.round(document.querySelector(".fz-demo-wide .fz-contain").getBoundingClientRect().width),
-        };
-      });
-
-    expect(await readCols(".fz-demo-narrow [data-grid]"), `narrow ${JSON.stringify(await diag())}`).toBe(1);
-    expect(await readCols(".fz-demo-wide [data-grid]"), `wide ${JSON.stringify(await diag())}`).toBe(3);
+    expect(await cols(".fz-demo-narrow [data-grid]")).toBe(1);
+    expect(await cols(".fz-demo-wide [data-grid]")).toBe(3);
   });
 
   test("carousel slides are sized in container units (60cqi)", async ({ page }) => {
