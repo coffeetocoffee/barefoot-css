@@ -2,14 +2,25 @@
    Full-page screenshots in light and dark. Baselines live in
    tests/visual.spec.js-snapshots/.
 
-   NOTE: screenshots are font- and OS-sensitive. Generate baselines on
-   the same OS as CI (Linux). Regenerate deliberately with:
-   npx playwright test --update-snapshots
+   The demo bundles its own webfonts (demo/fonts/) so glyph metrics are
+   identical on every machine — never fall back to system font stacks in
+   the demo, or baselines drift per-OS. Regenerate deliberately with:
+   npx playwright test --project=chromium tests/visual.spec.js --update-snapshots
 
    npm run test:visual */
 import { test, expect } from "@playwright/test";
 
 test.describe("visual regression", () => {
+  test("bundled webfonts load (keeps baselines deterministic)", async ({ page }) => {
+    await page.goto("/demo/");
+    const loaded = await page.evaluate(() => ({
+      inter: document.fonts.check('16px "Inter"'),
+      mono: document.fonts.check('16px "JetBrains Mono"'),
+    }));
+    expect(loaded.inter, "Inter woff2 failed to load").toBe(true);
+    expect(loaded.mono, "JetBrains Mono woff2 failed to load").toBe(true);
+  });
+
   test("light theme", async ({ page }) => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Light" }).click();

@@ -10,7 +10,28 @@
   <link rel="stylesheet" href="../dist/themes/playful.css">
   <link rel="stylesheet" href="../dist/components/view-transition.css">
   <style>
-    /* Page chrome only — the demo styling is all Barefoot. */
+    /* Page chrome only — the demo styling is all Barefoot.
+       Bundled webfonts (OFL) keep the demo pixel-identical on every
+       machine — system font stacks render differently per OS, which
+       broke the Playwright visual baselines between CI and local. */
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root {
+      --fz-font: "Inter", system-ui, sans-serif;
+      --fz-font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
     .hero { padding-block: var(--fz-space-8); }
     .hero p { max-width: 60ch; }
     section { margin-block-start: var(--fz-space-8); }
