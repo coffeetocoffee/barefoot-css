@@ -9,23 +9,43 @@ test.describe("container queries", () => {
   test("same [data-grid] markup: 1 column when narrow, 3 when wide", async ({ page }) => {
     await page.goto("/demo/");
 
-    // Pin the container widths explicitly. The demo's flex row puts the
-    // wide box within a few px of the 48rem breakpoint, and OS font
-    // metrics / scrollbar widths can tip it across the line on CI. The
-    // test is about the *markup*, not the demo's incidental sizing.
+    // Pin the container widths explicitly so the test asserts the *markup*
+    // behavior, not the demo's incidental flex sizing (which OS font
+    // metrics can tip across the breakpoint).
     await page.evaluate(() => {
       const [narrow, wide] = document.querySelectorAll(".fz-contain");
       narrow.style.width = "14rem";
       wide.style.width = "60rem";
     });
 
-    const cols = (sel) =>
+    const readCols = (sel) =>
       page
         .locator(sel)
         .evaluate((el) => getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length);
 
-    expect(await cols(".fz-demo-narrow [data-grid]")).toBe(1);
-    expect(await cols(".fz-demo-wide [data-grid]")).toBe(3);
+    // If this ever fails again on CI, the assertion message below dumps
+    // everything needed to see why (fonts, container sizes, raw tracks).
+    const diag = () =>
+      page.evaluate(() => {
+        const info = (sel) => {
+          const el = document.querySelector(sel);
+          const cs = getComputedStyle(el);
+          return {
+            cols: cs.gridTemplateColumns,
+            w: Math.round(el.getBoundingClientRect().width),
+          };
+        };
+        return {
+          rootFont: getComputedStyle(document.documentElement).fontSize,
+          containerType: getComputedStyle(document.querySelector(".fz-contain")).containerType,
+          narrow: info(".fz-demo-narrow [data-grid]"),
+          wide: info(".fz-demo-wide [data-grid]"),
+          wideContainer: Math.round(document.querySelector(".fz-demo-wide .fz-contain").getBoundingClientRect().width),
+        };
+      });
+
+    expect(await readCols(".fz-demo-narrow [data-grid]"), `narrow ${JSON.stringify(await diag())}`).toBe(1);
+    expect(await readCols(".fz-demo-wide [data-grid]"), `wide ${JSON.stringify(await diag())}`).toBe(3);
   });
 
   test("carousel slides are sized in container units (60cqi)", async ({ page }) => {
