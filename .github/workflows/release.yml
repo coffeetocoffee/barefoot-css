@@ -31,8 +31,10 @@ jobs:
       - name: Playwright browser
         run: npx playwright install chromium --with-deps
 
+      # Chromium only: this job installs just chromium. Running without
+      # --project would also try firefox/webkit (not installed) and fail.
       - name: Tests (a11y + JS + CSS behavior)
-        run: npx playwright test tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
+        run: npx playwright test --project=chromium tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
 
       # Prepublish runs npm run check again; skip audit since npm publishes already-built dist.
       - name: Publish to npm
