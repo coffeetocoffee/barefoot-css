@@ -126,13 +126,13 @@ by import.
 - [x] Cross-browser behavior CI: `playwright.config.js` projects for Chromium (full suite), Firefox + WebKit (JS + CSS behavior, `npm run test:ff` / `test:webkit`); WebKit run pinned to macOS in CI
 - [x] Dialog entrance fallback: `@supports not (transition-behavior: allow-discrete)` keyframe entrance for engines without discrete transitions
 - [x] Tabs no-JS-first: `tabs.js` marks the group `data-fz-tabs-js` and hides inactive panels at init; without the module every panel stays visible (tests cover both)
+- [x] **Published `barefoot-css@1.0.0` to npm** (2026-08-12) via the release workflow (`git tag v1.0.0` → build + budget + tests → `npm publish`). The name `barefoot` was taken on npm by an unrelated project, so the package ships as **`barefoot-css`** (repo-matched, free, unscoped).
 
 ## Known gaps / next
 
-- [ ] **After first push:** set the `NPM_TOKEN` secret on the repo for the release workflow; then `git tag v1.0.0 && git push origin v1.0.0` to publish (repo URLs in `package.json` now point at the real `coffeetocoffee/barefoot-css` repo)
-- [ ] **First push:** repo has no commits yet — `git init` done, need initial commit + GitHub remote to activate the workflow
 - [ ] **Firefox anchor positioning (real finding):** `position-area` clamps to the viewport edge when the popover's trigger is *off-screen* at open time (works fine when the trigger is in view — the normal click-to-open case; verified in Firefox 153). Watch for a fix; nothing to do in Barefoot's CSS.
 - [ ] **Safari `<details>` tab order (real finding):** WebKit skips the contents of an open `<details>` in the sequential tab order (verified in WebKit 26.5). Items stay clickable/focusable; a tiny opt-in JS shim could add `tabindex` there if demand justifies it.
+- [ ] **Release notes for future versions:** the publish account requires a **granular access token with "bypass 2FA" enabled** (npm rejects automated publishes otherwise — `E403`). Keep the `NPM_TOKEN` secret updated with a fresh token before each tag.
 
 ## Verification commands
 
