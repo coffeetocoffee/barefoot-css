@@ -1,0 +1,32 @@
+/* Barefoot — grid.
+   A container-driven grid: column count responds to the *container's*
+   width, not the viewport's. Wrap any [data-grid] in .fz-contain
+   (utilities.css) to make it the query container.
+
+   <div class="fz-contain">
+     <div data-grid>
+       <article class="card">…</article>
+     </div>
+   </div>
+
+   Put that same markup in a 14rem sidebar → 1 column.
+   Full-width page → 3 columns. Same CSS, zero media queries. */
+@layer components {
+  [data-grid] {
+    display: grid;
+    gap: var(--fz-space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @container (min-width: 30rem) {
+    [data-grid] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 48rem) {
+    [data-grid] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}

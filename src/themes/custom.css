@@ -1,0 +1,25 @@
+/* Barefoot — custom theme template.
+   Copy this file, rename the theme, change the variables, and set
+   <html data-theme="your-theme-name">. Every visual in Barefoot is a
+   variable — you never fight us, you only override.
+
+   Delete the variables you don't want to touch; they inherit from
+   the base tokens. */
+@layer tokens {
+  [data-theme="my-theme"] {
+    color-scheme: light dark;
+
+    --fz-primary: light-dark(#000000, #ffffff);
+    --fz-primary-fg: light-dark(#ffffff, #000000);
+    --fz-surface: light-dark(#ffffff, #1a1a1a);
+    --fz-surface-alt: light-dark(#f4f4f4, #202020);
+    --fz-text: light-dark(#1a1a1a, #e8e8e8);
+    --fz-muted: light-dark(#5a5a5a, #a0a0a0);
+    --fz-border: light-dark(#d8d8d8, #3a3a3a);
+    --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8);
+
+    --fz-font: system-ui, sans-serif;
+    --fz-radius: 0.375rem;
+    --fz-control-height: 2.5rem;
+  }
+}

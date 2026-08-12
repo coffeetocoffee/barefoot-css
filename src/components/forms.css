@@ -1,0 +1,129 @@
+/* Barefoot — forms.
+   Text inputs, selects, textareas, and native controls that follow
+   the theme via accent-color. Validation states with :user-invalid —
+   no JS required. */
+@layer components {
+  label {
+    display: block;
+    margin-block-end: var(--fz-space-1);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--fz-text);
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  select,
+  textarea {
+    width: 100%;
+    min-height: var(--fz-control-height);
+    padding: var(--fz-space-2) var(--fz-space-3);
+
+    font-size: 0.9375rem;
+    color: var(--fz-text);
+    background: var(--fz-surface);
+
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+
+    transition:
+      border-color var(--fz-transition),
+      box-shadow var(--fz-transition);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--fz-muted);
+    opacity: 1;
+  }
+
+  input:hover:not(:disabled),
+  select:hover:not(:disabled),
+  textarea:hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%);
+  }
+
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--fz-focus-ring);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-focus-ring), transparent 75%);
+  }
+
+  textarea {
+    min-height: calc(var(--fz-control-height) * 2);
+    resize: vertical;
+  }
+
+  /* Checkboxes & radios — native look, themed color. Keeps focus
+     behavior free and keyboard-friendly for free. */
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--fz-primary);
+    width: 1.1em;
+    height: 1.1em;
+    margin-inline-end: var(--fz-space-2);
+    vertical-align: middle;
+  }
+
+  input[type="checkbox"]:disabled,
+  input[type="radio"]:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Range / progress / meter — theme-aware accents. */
+  input[type="range"],
+  progress,
+  meter {
+    accent-color: var(--fz-primary);
+    width: 100%;
+  }
+
+  progress,
+  meter {
+    height: 0.75rem;
+    border: 1px solid var(--fz-border);
+    border-radius: 999px;
+    background: var(--fz-surface-alt);
+  }
+
+  /* Validation without JS. */
+  input:user-invalid,
+  select:user-invalid,
+  textarea:user-invalid,
+  [aria-invalid="true"] {
+    border-color: var(--fz-danger);
+  }
+
+  input:user-invalid:focus-visible,
+  select:user-invalid:focus-visible,
+  textarea:user-invalid:focus-visible,
+  [aria-invalid="true"]:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-danger), transparent 75%);
+  }
+
+  /* Help / error text. */
+  small,
+  .fz-field-hint {
+    color: var(--fz-muted);
+    font-size: 0.8125rem;
+  }
+
+  .fz-field-error {
+    color: var(--fz-danger);
+  }
+
+  fieldset {
+    display: grid;
+    gap: var(--fz-space-3);
+  }
+
+  legend {
+    font-weight: 600;
+    margin-block-end: var(--fz-space-2);
+  }
+}

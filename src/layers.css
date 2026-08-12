@@ -1,0 +1,6 @@
+/* Barefoot — cascade layer order.
+   Declared once, here, so that no matter which entry points a user
+   imports, later layers always win over earlier ones.
+   Users can extend this list (e.g. add "@layer user;" at the end)
+   to guarantee their own styles beat ours without specificity wars. */
+@layer reset, tokens, base, components, utilities;

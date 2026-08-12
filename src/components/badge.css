@@ -1,0 +1,32 @@
+/* Barefoot — badge. Small pill label. Neutral by default. */
+@layer components {
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fz-space-1);
+
+    padding: 0.1em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    color: var(--fz-muted);
+    background: var(--fz-surface-alt);
+    border: 1px solid var(--fz-border);
+    border-radius: 999px;
+  }
+
+  .badge[data-variant="primary"] {
+    color: var(--fz-primary-fg);
+    background: var(--fz-primary);
+    border-color: var(--fz-primary);
+  }
+
+  .badge[data-variant="danger"] {
+    color: var(--fz-danger-fg);
+    background: var(--fz-danger);
+    border-color: var(--fz-danger);
+  }
+}

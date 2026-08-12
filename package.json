@@ -1,0 +1,73 @@
+{
+  "name": "barefoot",
+  "version": "1.0.0",
+  "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
+  "type": "module",
+  "license": "MIT",
+  "main": "dist/index.css",
+  "style": "dist/index.css",
+  "exports": {
+    ".": "./dist/index.css",
+    "./full.css": "./dist/full.css",
+    "./utilities.css": "./dist/utilities.css",
+    "./components/*": "./dist/components/*",
+    "./themes/*": "./dist/themes/*",
+    "./js/*": "./dist/js/*",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.js"
+  ],
+  "scripts": {
+    "build": "node build/build.mjs",
+    "size": "node build/size.mjs",
+    "preview": "node build/serve.mjs",
+    "check": "npm run build && npm run size",
+    "test": "playwright test --project=chromium",
+    "test:a11y": "playwright test --project=chromium tests/a11y.spec.js",
+    "test:js": "playwright test --project=chromium tests/js.spec.js",
+    "test:css": "playwright test --project=chromium tests/css.spec.js",
+    "test:visual": "playwright test --project=chromium tests/visual.spec.js",
+    "test:visual:update": "playwright test --project=chromium tests/visual.spec.js --update-snapshots",
+    "test:ff": "playwright test --project=firefox tests/css.spec.js tests/js.spec.js",
+    "test:webkit": "playwright test --project=webkit tests/css.spec.js tests/js.spec.js",
+    "prepack": "npm run check",
+    "prepublishOnly": "npm run check"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/barefoot.git"
+  },
+  "homepage": "https://github.com/your-org/barefoot",
+  "bugs": {
+    "url": "https://github.com/your-org/barefoot/issues"
+  },
+  "keywords": [
+    "css",
+    "framework",
+    "design-system",
+    "themeable",
+    "accessibility",
+    "js-free",
+    "cascade-layers",
+    "container-queries",
+    "view-transitions"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
+    "lightningcss": "^1.29.0"
+  }
+}

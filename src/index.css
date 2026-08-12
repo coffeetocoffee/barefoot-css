@@ -1,0 +1,12 @@
+/* Barefoot — core entry point.
+   reset + tokens + base only. This is the mandatory foundation
+   (~<10KB gzipped). Add components as separate imports so you only
+   pay for what you use.
+
+   import 'barefoot'                → this file
+   import 'barefoot/components/dialog.css'
+   import 'barefoot/themes/dashboard.css' */
+@import "./layers.css";
+@import "./reset.css";
+@import "./tokens.css";
+@import "./base.css";

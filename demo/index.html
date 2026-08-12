@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — conformance demo</title>
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/themes/editorial.css">
+  <link rel="stylesheet" href="../dist/themes/dashboard.css">
+  <link rel="stylesheet" href="../dist/themes/playful.css">
+  <link rel="stylesheet" href="../dist/components/view-transition.css">
+  <style>
+    /* Page chrome only — the demo styling is all Barefoot. */
+    .hero { padding-block: var(--fz-space-8); }
+    .hero p { max-width: 60ch; }
+    section { margin-block-start: var(--fz-space-8); }
+    .conformance-table { margin-block-start: var(--fz-space-4); }
+    .wcag { white-space: nowrap; }
+    .try { margin-block-start: var(--fz-space-3); }
+    .fz-demo-narrow { flex: 0 0 14rem; }
+    .fz-demo-wide { flex: 1 1 0; min-width: 0; }
+  </style>
+</head>
+<body>
+  <header class="fz-container hero">
+    <p class="fz-overline">Barefoot CSS</p>
+    <h1>Conformance demo</h1>
+    <p>Every component below is <strong>native HTML</strong>, works <strong>without JavaScript</strong>, and is keyboard-only walkable. Run each walkthrough with nothing but <kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Space</kbd>, <kbd>Esc</kbd>.</p>
+
+    <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
+      <span class="fz-muted">Theme:</span>
+      <button type="button" data-theme-btn="auto">Auto</button>
+      <button type="button" data-theme-btn="light">Light</button>
+      <button type="button" data-theme-btn="dark">Dark</button>
+      <button type="button" data-theme-btn="contrast">Contrast</button>
+      <button type="button" data-theme-btn="editorial">Editorial</button>
+      <button type="button" data-theme-btn="dashboard">Dashboard</button>
+      <button type="button" data-theme-btn="playful">Playful</button>
+    </div>
+  </header>
+
+    <main class="fz-container" id="main">
+
+    <!-- Conformance matrix -->
+    <section id="conformance" aria-labelledby="conformance-title">
+      <h2 id="conformance-title">Conformance matrix</h2>
+      <p>Guarantees are inherited from native elements plus our focus handling. Proven by the walkthroughs below.</p>
+      <table class="conformance-table" data-striped>
+        <caption>Component → WCAG level → keyboard walkthrough</caption>
+        <thead>
+          <tr><th>Component</th><th>WCAG</th><th>Keyboard walkthrough</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Button</td><td class="wcag">AA</td><td><kbd>Tab</kbd> to focus → <kbd>Enter</kbd>/<kbd>Space</kbd> to activate. Focus ring always visible.</td></tr>
+          <tr><td>Form controls</td><td class="wcag">AA</td><td><kbd>Tab</kbd> between controls → type → <kbd>Tab</kbd> past. Invalid state announced by browser.</td></tr>
+          <tr><td>Dialog</td><td class="wcag">AA</td><td>Focus moves in; <kbd>Esc</kbd> closes; focus returns to trigger. Focus is trapped.</td></tr>
+          <tr><td>Popover</td><td class="wcag">A</td><td><kbd>Tab</kbd> to trigger → <kbd>Enter</kbd> opens → <kbd>Esc</kbd> or click-away closes.</td></tr>
+          <tr><td>Dropdown (<code>details</code>)</td><td class="wcag">AA</td><td><kbd>Enter</kbd> toggles → <kbd>Tab</kbd> through items. (Esc-close is browser-dependent — use the popover menu for guaranteed Esc.)</td></tr>
+          <tr><td>Accordion</td><td class="wcag">AA</td><td><kbd>Tab</kbd> between summaries → <kbd>Enter</kbd> toggles. One open at a time via <code>name</code>.</td></tr>
+          <tr><td>Tabs (opt-in JS)</td><td class="wcag">AA</td><td>Tab into tablist → <kbd>←</kbd>/<kbd>→</kbd> switch, <kbd>Home</kbd>/<kbd>End</kbd> jump, <kbd>Tab</kbd> into the panel. Via <code>js/tabs.js</code>.</td></tr>
+          <tr><td>Carousel</td><td class="wcag">A</td><td><kbd>Tab</kbd> to scroller → arrow keys scroll → snaps.</td></tr>
+          <tr><td>Table</td><td class="wcag">AA</td><td>Screen reader: headers announced via <code>&lt;th&gt;</code>. Hover affordance only.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Typography -->
+    <section id="typography" aria-labelledby="typography-title">
+      <h2 id="typography-title">Typography</h2>
+      <h1>Heading one</h1>
+      <h2>Heading two</h2>
+      <h3>Heading three</h3>
+      <h4>Heading four</h4>
+      <p>A paragraph. The measure is capped at <code>--fz-content-width</code> (64ch by default) so long text stays readable. Links like <a href="#">this one</a> get a visible underline and offset.</p>
+      <blockquote>“Barefoot: no boots, no baggage.”</blockquote>
+      <ul><li>Unordered list item</li><li>Another item</li></ul>
+      <ol><li>Ordered item</li><li>Another item</li></ol>
+      <p><kbd>Ctrl</kbd> + <kbd>K</kbd> for the kbd style, <code>inline code</code> next to it.</p>
+      <pre><code>/* pre + code */
+@layer tokens {
+  --fz-primary: #1a1a1a;
+}</code></pre>
+    </section>
+
+    <!-- Buttons -->
+    <section id="buttons" aria-labelledby="buttons-title">
+      <h2 id="buttons-title">Buttons</h2>
+      <div class="fz-row fz-gap-2">
+        <button type="button">Neutral</button>
+        <button type="button" data-variant="primary">Primary</button>
+        <button type="button" data-variant="ghost">Ghost</button>
+        <button type="button" data-variant="danger">Danger</button>
+        <button type="submit">Submit</button>
+        <button type="button" data-size="sm">Small</button>
+        <button type="button" data-size="lg">Large</button>
+        <button type="button" disabled>Disabled</button>
+      </div>
+      <div class="try">
+        <strong>Walkthrough:</strong> <kbd>Tab</kbd> to a button → <kbd>Enter</kbd> or <kbd>Space</kbd> presses it. Note the visible focus ring on every stop.
+      </div>
+    </section>
+
+    <!-- Forms -->
+    <section id="forms" aria-labelledby="forms-title">
+      <h2 id="forms-title">Forms</h2>
+      <form onsubmit="return false">
+        <div class="fz-stack">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Ada Lovelace" autocomplete="name">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="ada@example.com" autocomplete="email">
+
+          <label for="country">Country</label>
+          <select id="country" name="country">
+            <option>Pick one…</option>
+            <option>Everywhere</option>
+            <option>Nowhere</option>
+          </select>
+
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="3" placeholder="Short and barefoot."></textarea>
+
+          <fieldset>
+            <legend>Preferences</legend>
+            <label><input type="checkbox" name="pref" checked> Dark mode by default</label>
+            <label><input type="checkbox" name="pref"> Email me</label>
+            <label><input type="radio" name="size" checked> Small</label>
+            <label><input type="radio" name="size"> Large</label>
+          </fieldset>
+
+          <label for="amount">Amount</label>
+          <input id="amount" name="amount" type="range" min="0" max="100" value="40">
+
+          <label for="prog">Progress</label>
+          <progress id="prog" max="100" value="60">60%</progress>
+
+          <div class="fz-row">
+            <button type="submit">Submit (primary)</button>
+            <button type="reset">Reset</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Dialog -->
+    <section id="dialog" aria-labelledby="dialog-title">
+      <h2 id="dialog-title">Dialog</h2>
+      <p>Native <code>&lt;dialog&gt;</code>. Focus trap + <kbd>Esc</kbd>-to-close are built in. Opening a <em>modal</em> dialog is the one place Barefoot needs a single line of JS (<code>showModal()</code>) — the Popover below is the fully JS-free alternative.</p>
+      <button type="button" id="open-dialog">Open dialog</button>
+
+      <dialog id="demo-dialog" aria-labelledby="dialog-title">
+        <header>Confirm deletion</header>
+        <p>This is a native dialog. Try <kbd>Tab</kbd>: focus is trapped inside. Press <kbd>Esc</kbd> to close.</p>
+        <footer>
+          <button type="button" id="cancel-dialog">Cancel</button>
+          <button type="button" data-variant="danger" id="confirm-dialog">Delete</button>
+        </footer>
+      </dialog>
+    </section>
+
+    <!-- Popover -->
+    <section id="popover" aria-labelledby="popover-title">
+      <h2 id="popover-title">Popover (zero JS)</h2>
+      <p>The Popover API: a button + <code>popovertarget</code> + a <code>[popover]</code> element. No JavaScript anywhere. Each popover pins to its own trigger via anchor positioning (<code>position-area</code>): the trigger declares an <code>anchor-name</code> and the popover points <code>position-anchor</code> at it — one inline style on each element.</p>
+      <div class="fz-row fz-gap-3">
+        <button id="help-trigger" type="button" style="anchor-name: --help-pop" popovertarget="help-pop">Popover menu</button>
+        <div popover id="help-pop" data-kind="menu" style="position-anchor: --help-pop">
+          <a href="#">Rename</a>
+          <a href="#">Duplicate</a>
+          <a href="#">Archive</a>
+        </div>
+
+        <button id="tip-trigger" type="button" style="anchor-name: --tip-pop" popovertarget="tip-pop" popovertargetaction="show">Tooltip</button>
+        <div popover id="tip-pop" data-kind="tooltip" style="position-anchor: --tip-pop">This is a tooltip.</div>
+      </div>
+    </section>
+
+    <!-- Dropdown -->
+    <section id="dropdown" aria-labelledby="dropdown-title">
+      <h2 id="dropdown-title">Dropdown (details/summary)</h2>
+      <p>A native <code>&lt;details data-menu&gt;</code>. Open with <kbd>Enter</kbd>, move with <kbd>Tab</kbd>, close with <kbd>Esc</kbd>.</p>
+      <details data-menu>
+        <summary>Actions</summary>
+        <div>
+          <a href="#">Edit</a>
+          <a href="#">Share</a>
+          <a href="#">Export…</a>
+        </div>
+      </details>
+    </section>
+
+    <!-- Accordion -->
+    <section id="accordion" aria-labelledby="accordion-title">
+      <h2 id="accordion-title">Accordion (one-at-a-time)</h2>
+      <p>All <code>details</code> share a <code>name</code>, so the browser allows only one open. For true tabs with arrow-key navigation, see the opt-in <a href="#tabs">tabs below</a>.</p>
+      <div>
+        <details data-accordion name="faq" open>
+          <summary>Why barefoot?</summary>
+          <p>No boots, no baggage. Tiny, themeable, accessible by default.</p>
+        </details>
+        <details data-accordion name="faq">
+          <summary>Is there any JavaScript?</summary>
+          <p>Zero in the framework. Native elements do the work.</p>
+        </details>
+        <details data-accordion name="faq">
+          <summary>How do I make it mine?</summary>
+          <p>Override a few <code>--fz-*</code> variables. That's it.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <section id="tabs" aria-labelledby="tabs-title">
+      <h2 id="tabs-title">Tabs (opt-in JS)</h2>
+      <p>WAI-ARIA tabs with roving tabindex and arrow-key navigation, driven by the opt-in <code>js/tabs.js</code> module (~2.7KB, zero dependencies). Try <kbd>←</kbd>/<kbd>→</kbd>, <kbd>Home</kbd>, <kbd>End</kbd>.</p>
+      <div data-fz-tabs>
+        <div role="tablist" aria-label="Barefoot tabs demo">
+          <button id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true">Overview</button>
+          <button id="tab-details" role="tab" aria-controls="panel-details" aria-selected="false">Details</button>
+          <button id="tab-pricing" role="tab" aria-controls="panel-pricing" aria-selected="false">Pricing</button>
+        </div>
+        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+          <p>Overview panel. <kbd>Tab</kbd> from the tablist lands here; arrow keys switch tabs.</p>
+        </div>
+        <div id="panel-details" role="tabpanel" aria-labelledby="tab-details" tabindex="0">
+          <p>Details panel — switch back and forth with the arrow keys.</p>
+        </div>
+        <div id="panel-pricing" role="tabpanel" aria-labelledby="tab-pricing" tabindex="0">
+          <p>Pricing panel. <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends of the tablist.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Carousel -->
+    <section id="carousel" aria-labelledby="carousel-title">
+      <h2 id="carousel-title">Carousel (scroll-snap)</h2>
+      <p>Tab to the scroller, then scroll with the arrow keys. Pure CSS. Slides are sized in container units (<code>60cqi</code> = 60% of the carousel's own width) — they adapt to their container, not the viewport.</p>
+      <div data-carousel tabindex="0" aria-label="Demo slides">
+        <div class="card">Slide 1 — press <kbd>→</kbd></div>
+        <div class="card">Slide 2 — still snapping</div>
+        <div class="card">Slide 3 — no JS anywhere</div>
+      </div>
+    </section>
+
+    <!-- Container queries -->
+    <section id="container" aria-labelledby="container-title">
+      <h2 id="container-title">Container queries</h2>
+      <p>The same <code>[data-grid]</code> markup adapts to its <em>container</em>, not the viewport — wrap it in <code>.fz-contain</code> to make the container. Narrow box below (14rem) → 1 column; full-width → 3 columns. Zero media queries.</p>
+      <div class="fz-row fz-gap-4">
+        <div class="fz-demo-narrow">
+          <div class="fz-contain">
+            <div data-grid>
+              <article class="card"><header>Card A</header><p>In a 14rem container this grid stays a single column.</p></article>
+              <article class="card"><header>Card B</header><p>Same markup as the wide one.</p></article>
+              <article class="card"><header>Card C</header><p>Only the container width differs.</p></article>
+            </div>
+          </div>
+        </div>
+        <div class="fz-demo-wide">
+          <div class="fz-contain">
+            <div data-grid>
+              <article class="card"><header>Card A</header><p>Wide container → three columns.</p></article>
+              <article class="card"><header>Card B</header><p>Container queries, not media queries.</p></article>
+              <article class="card"><header>Card C</header><p>Resize the container, the grid follows.</p></article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards + badges -->
+    <section id="cards" aria-labelledby="cards-title">
+      <h2 id="cards-title">Cards &amp; badges</h2>
+      <div class="fz-row">
+        <article class="card">
+          <header>Neutral card</header>
+          <p>A flat card with a thin border and no shadow by default.</p>
+          <div class="fz-row fz-gap-2"><span class="badge">New</span><span class="badge" data-variant="primary">Primary</span><span class="badge" data-variant="danger">Danger</span></div>
+        </article>
+        <article class="card" data-lifted>
+          <header>Lifted card</header>
+          <p>Add <code>data-lifted</code> to opt into a soft shadow.</p>
+        </article>
+      </div>
+    </section>
+
+    </main>
+
+    <footer class="fz-container fz-mt-8">
+      <p class="fz-muted">Barefoot — every visual is a variable. Make it yours.</p>
+    </footer>
+
+  <script>
+    // Theme switcher — tiny demo script, not part of the framework.
+    // Wrapped in startViewTransition (see view-transition.css) so theme
+    // changes crossfade instead of flashing.
+    const root = document.documentElement;
+    const applyTheme = (t) => {
+      const set = () => { root.dataset.theme = t; };
+      if (document.startViewTransition) {
+        document.startViewTransition(set);
+      } else {
+        set();
+      }
+    };
+    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    }
+
+    // Dialog — the ONE place the framework needs JS, and it's the
+    // element's native method, not a library. Everything else above
+    // is declarative HTML.
+    const dlg = document.getElementById("demo-dialog");
+    document.getElementById("open-dialog").addEventListener("click", () => dlg.showModal());
+    document.getElementById("cancel-dialog").addEventListener("click", () => dlg.close());
+    document.getElementById("confirm-dialog").addEventListener("click", () => dlg.close());
+  </script>
+
+  <script type="module">
+    // Barefoot opt-in JS extras: tabs + Esc-close for details + popover
+    // menu keyboard support. None of this ships in the CSS.
+    import "../dist/js/barefoot.js";
+  </script>
+</body>
+</html>

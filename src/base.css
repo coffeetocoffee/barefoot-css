@@ -1,0 +1,97 @@
+/* Barefoot — base layer.
+   Global element styling that makes plain HTML readable and keyboard
+   navigable out of the box. */
+@layer base {
+  /* Visible focus everywhere. Non-negotiable. */
+  :focus-visible {
+    outline: 2px solid var(--fz-focus-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--fz-primary);
+    color: var(--fz-primary-fg);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--fz-surface);
+    color: var(--fz-text);
+    font-family: var(--fz-font);
+    line-height: var(--fz-line-height);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Typography ---- */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.375rem; }
+  h4 { font-size: 1.125rem; }
+
+  p,
+  li,
+  dd,
+  dt,
+  blockquote {
+    max-width: var(--fz-content-width);
+  }
+
+  p { text-wrap: pretty; }
+
+  a {
+    color: var(--fz-primary);
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 0.06em;
+  }
+
+  a:hover {
+    text-decoration-thickness: 0.12em;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--fz-border);
+    margin-block: var(--fz-space-6);
+  }
+
+  ul, ol {
+    padding-inline-start: var(--fz-space-5);
+  }
+
+  li + li {
+    margin-top: var(--fz-space-1);
+  }
+
+  blockquote {
+    border-inline-start: 3px solid var(--fz-border);
+    padding-inline-start: var(--fz-space-4);
+    color: var(--fz-muted);
+    font-style: italic;
+  }
+
+  /* ---- Motion safety ---- */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — no boots, no baggage</title>
+  <meta name="description" content="A bare-bones, themeable, JS-free CSS framework built on modern CSS. ~10KB, zero JavaScript, accessible by default.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/themes/editorial.css">
+  <link rel="stylesheet" href="../dist/themes/dashboard.css">
+  <link rel="stylesheet" href="../dist/themes/playful.css">
+  <link rel="stylesheet" href="../dist/components/view-transition.css">
+  <style>
+    /* Site chrome only — everything visible is Barefoot. */
+    .doc-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--fz-space-4);
+      padding-block: var(--fz-space-4);
+      border-block-end: 1px solid var(--fz-border);
+    }
+    .doc-nav nav { display: flex; gap: var(--fz-space-3); margin-inline-start: auto; flex-wrap: wrap; }
+    .doc-nav nav a { text-decoration: none; font-weight: 500; font-size: 0.9375rem; }
+    .doc-hero { padding-block: var(--fz-space-8) var(--fz-space-6); }
+    .doc-hero h1 { font-size: clamp(2.25rem, 5vw, 4rem); }
+    .doc-hero p { max-width: 56ch; }
+    .doc-stats { margin-block-end: var(--fz-space-6); }
+    .doc-stats strong { font-size: 1.75rem; display: block; }
+    .doc-stats .card { text-align: center; }
+    .doc-section { margin-block-start: var(--fz-space-8); }
+    .doc-muted { color: var(--fz-muted); }
+    .doc-table code { font-size: 0.8125rem; }
+  </style>
+</head>
+<body>
+  <header class="doc-nav fz-container">
+    <a href="#top" class="fz-overline" style="text-decoration:none">Barefoot</a>
+    <nav aria-label="Site">
+      <a href="#features">Features</a>
+      <a href="#quick-start">Quick start</a>
+      <a href="#theming">Theming</a>
+      <a href="#js">JS</a>
+      <a href="#a11y">Accessibility</a>
+      <a href="/demo/" role="button" data-variant="primary">Demo</a>
+    </nav>
+  </header>
+
+  <main class="fz-container" id="top">
+    <section class="doc-hero">
+      <p class="fz-overline">A modern CSS framework</p>
+      <h1>No boots, no baggage.</h1>
+      <p>Barefoot styles <strong>native HTML</strong>, needs <strong>zero JavaScript</strong>, and re-skins from a handful of variables. It ships a 1.3KB core — not 200KB. The design is yours; we just supply the muscle.</p>
+      <div class="fz-row fz-gap-3 fz-mt-4">
+        <a href="/demo/" role="button" data-variant="primary">View the demo</a>
+        <a href="https://www.npmjs.com/package/barefoot" role="button" data-variant="ghost">npm install</a>
+      </div>
+      <pre class="fz-mt-4"><code>npm install barefoot</code></pre>
+    </section>
+
+    <section class="doc-stats fz-row" aria-label="Size and dependency stats">
+      <div class="card" style="flex:1 1 0"><strong>1.28KB</strong><span class="fz-muted">index.css gzipped</span></div>
+      <div class="card" style="flex:1 1 0"><strong>3.8KB</strong><span class="fz-muted">entire framework gzipped</span></div>
+      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="fz-muted">JS in the CSS core</span></div>
+      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="fz-muted">dependencies</span></div>
+    </section>
+
+    <section id="quick-start" class="doc-section" aria-labelledby="quick-start-title">
+      <h2 id="quick-start-title">Quick start</h2>
+      <div class="fz-row fz-gap-4">
+        <div style="flex:1 1 0; min-width:0">
+          <h3>CSS — import what you need</h3>
+          <pre><code>@import "barefoot";                            /* base   */
+@import "barefoot/components/dialog.css";   /* extras */</code></pre>
+        </div>
+        <div style="flex:1 1 0; min-width:0">
+          <h3>HTML — just write plain elements</h3>
+          <pre><code>&lt;button&gt;Save&lt;/button&gt;
+&lt;input type="email" placeholder="you@example.com"&gt;</code></pre>
+        </div>
+      </div>
+      <p class="doc-muted fz-mt-4">Plain HTML is styled by Barefoot. No classes, no div soup, no ARIA to add.</p>
+    </section>
+
+    <section id="features" class="doc-section" aria-labelledby="features-title">
+      <h2 id="features-title">Why Barefoot</h2>
+      <div data-grid>
+        <div class="card"><h3>~10KB or bust</h3><p>Per-component entry points + a size budget enforced in CI. You only pay for what you import.</p></div>
+        <div class="card"><h3>Theming by default</h3><p>Every visual is a <code>--fz-*</code> variable. Re-skin in six lines — no Sass, no recompile.</p></div>
+        <div class="card"><h3>JS-free</h3><p>Dialogs, dropdowns, tabs, tooltips, carousels from native elements and the Popover API.</p></div>
+        <div class="card"><h3>Accessible out of the box</h3><p>Native semantics, focus traps, Esc-to-close — verified by an axe-core CI suite.</p></div>
+        <div class="card"><h3>No Bootstrap look</h3><p>Neutral by default. Ink on paper, thin borders, no shadows. The design is yours.</p></div>
+        <div class="card"><h3>Modern CSS, fully</h3><p>Cascade layers, container queries, <code>light-dark()</code>, view transitions. No transpiling.</p></div>
+      </div>
+    </section>
+
+    <section id="theming" class="doc-section" aria-labelledby="theming-title">
+      <h2 id="theming-title">Theming is just variables</h2>
+      <p>Color tokens are <code>light-dark()</code> pairs, so dark mode follows the OS for free. <code>data-theme</code> flips the palette — try it:</p>
+      <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
+        <span class="fz-muted">Theme:</span>
+        <button type="button" data-theme-btn="auto">Auto</button>
+        <button type="button" data-theme-btn="light">Light</button>
+        <button type="button" data-theme-btn="dark">Dark</button>
+        <button type="button" data-theme-btn="contrast">Contrast</button>
+        <button type="button" data-theme-btn="editorial">Editorial</button>
+        <button type="button" data-theme-btn="dashboard">Dashboard</button>
+        <button type="button" data-theme-btn="playful">Playful</button>
+      </div>
+      <pre class="fz-mt-4"><code>:root {
+  --fz-primary: #2563eb;   /* change the accent, everything follows */
+  --fz-radius: 0.5rem;
+  --fz-font: "Inter", system-ui, sans-serif;
+}</code></pre>
+      <p class="doc-muted">See <a href="theming.md">docs/theming.md</a> for the full token reference.</p>
+    </section>
+
+    <section id="tabs-demo" class="doc-section" aria-labelledby="tabs-demo-title">
+      <h2 id="tabs-demo-title">Tabs (opt-in, ~2.7KB)</h2>
+      <p>The WAI-ARIA tabs pattern when you need arrow-key navigation. Try <kbd>←</kbd>/<kbd>→</kbd>.</p>
+      <div data-fz-tabs>
+        <div role="tablist" aria-label="Tabs demo">
+          <button id="t-one" role="tab" aria-controls="p-one" aria-selected="true">One</button>
+          <button id="t-two" role="tab" aria-controls="p-two" aria-selected="false">Two</button>
+          <button id="t-three" role="tab" aria-controls="p-three" aria-selected="false">Three</button>
+        </div>
+        <div id="p-one" role="tabpanel" aria-labelledby="t-one" tabindex="0"><p>Tab one panel.</p></div>
+        <div id="p-two" role="tabpanel" aria-labelledby="t-two" tabindex="0"><p>Tab two panel.</p></div>
+        <div id="p-three" role="tabpanel" aria-labelledby="t-three" tabindex="0"><p>Tab three panel.</p></div>
+      </div>
+      <pre class="fz-mt-4"><code>&lt;script type="module"&gt;
+  import "barefoot/js/barefoot.js";
+&lt;/script&gt;</code></pre>
+    </section>
+
+    <section id="js" class="doc-section" aria-labelledby="js-title">
+      <h2 id="js-title">Opt-in JavaScript modules</h2>
+      <table class="doc-table">
+        <caption>Zero-dependency ES modules in <code>dist/js/</code></caption>
+        <thead><tr><th>Module</th><th>Adds</th></tr></thead>
+        <tbody>
+          <tr><td><code>tabs.js</code></td><td>WAI-ARIA tabs: roving tabindex, arrow keys, Home/End</td></tr>
+          <tr><td><code>details-close.js</code></td><td>Reliable Esc-close for <code>details[data-menu]</code></td></tr>
+          <tr><td><code>popover-menu.js</code></td><td>Arrow-key nav + focus restore for popover menus</td></tr>
+          <tr><td><code>barefoot.js</code></td><td>All three in one import</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-muted">See <a href="javascript.md">docs/javascript.md</a> for markup and behavior.</p>
+    </section>
+
+    <section id="a11y" class="doc-section" aria-labelledby="a11y-title">
+      <h2 id="a11y-title">Accessibility is inherited, not added</h2>
+      <p>Barefoot styles native elements — <code>&lt;button&gt;</code>, <code>&lt;dialog&gt;</code>, <code>&lt;details&gt;</code>, <code>&lt;th&gt;</code> — which ship focus traps, Esc-to-close, and semantics for free. The <a href="/demo/">conformance demo</a> labels every component with its WCAG level and walks each through with nothing but a keyboard.</p>
+      <p class="doc-muted">Guaranteed: 100% keyboard navigable, visible focus rings, AA contrast, reduced-motion respected. Verified by axe-core in CI on every push.</p>
+    </section>
+  </main>
+
+  <footer class="fz-container fz-mt-4" style="padding-block: var(--fz-space-6)">
+    <hr>
+    <div class="fz-row fz-gap-4">
+      <a href="../README.md">README</a>
+      <a href="components.md">Components</a>
+      <a href="theming.md">Theming</a>
+      <a href="javascript.md">JS</a>
+      <a href="accessibility.md">Accessibility</a>
+      <a href="../status.md">Status</a>
+      <a href="../plan.md">Plan</a>
+      <span class="fz-muted" style="margin-inline-start:auto">MIT — no boots, no baggage.</span>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const applyTheme = (t) => {
+      const set = () => { root.dataset.theme = t; };
+      if (document.startViewTransition) document.startViewTransition(set);
+      else set();
+    };
+    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    }
+  </script>
+  <script type="module">
+    import "../dist/js/barefoot.js";
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+/* Barefoot — tokens layer.
+   Every visual decision is a custom property. Re-skin by overriding
+   variables; never rebuild, never recompile.
+
+   Color tokens use light-dark() so light/dark "just work" with the
+   user's OS preference, and the [data-theme] attribute simply flips
+   the color-scheme — no duplicate palettes to maintain. */
+@layer tokens {
+  :root {
+    /* Let the browser pick light or dark, per OS preference. */
+    color-scheme: light dark;
+
+    /* ---- Typography ---- */
+    --fz-font: system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    --fz-font-mono: ui-monospace, "SF Mono", "Cascadia Mono",
+      "Segoe UI Mono", Menlo, Consolas, monospace;
+    --fz-line-height: 1.6;
+
+    /* ---- Spacing scale (1rem = 16px base) ---- */
+    --fz-space-1: 0.25rem;
+    --fz-space-2: 0.5rem;
+    --fz-space-3: 0.75rem;
+    --fz-space-4: 1rem;
+    --fz-space-5: 1.5rem;
+    --fz-space-6: 2rem;
+    --fz-space-7: 3rem;
+    --fz-space-8: 4rem;
+
+    /* ---- Radii (small, neutral — no "rounded identity") ---- */
+    --fz-radius: 0.375rem;
+    --fz-radius-sm: 0.25rem;
+    --fz-radius-lg: 0.625rem;
+
+    /* ---- Color ---- */
+    /* The accent. Defaults to ink on paper. Change this one variable
+       and every component follows. */
+    --fz-primary: light-dark(#1a1a1a, #ececec);
+    --fz-primary-fg: light-dark(#ffffff, #141414);
+
+    --fz-surface: light-dark(#ffffff, #161616);
+    --fz-surface-alt: light-dark(#f4f4f4, #202020);
+
+    --fz-text: light-dark(#1a1a1a, #e8e8e8);
+    --fz-muted: light-dark(#5a5a5a, #a0a0a0);
+
+    --fz-border: light-dark(#d8d8d8, #3a3a3a);
+
+    --fz-danger: light-dark(#b3261e, #f2b8b5);
+    --fz-danger-fg: light-dark(#ffffff, #201000);
+
+    --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8);
+
+    /* ---- Effects (default: no shadows — neutral by default) ---- */
+    --fz-shadow: none;
+    --fz-shadow-lifted: 0 1px 3px rgb(0 0 0 / 0.08),
+      0 4px 12px rgb(0 0 0 / 0.06);
+
+    --fz-transition: 150ms ease;
+    --fz-transition-slow: 250ms ease;
+
+    /* ---- Layout ---- */
+    --fz-content-width: 64ch;
+    --fz-max-width: 72rem;
+    --fz-control-height: 2.5rem;
+    --fz-z-dialog: 50;
+  }
+
+  /* ---- Typed properties (progressive enhancement) ----
+     Registered variables can transition/animate and are validated.
+     Browsers without @property support ignore these — safe to ship. */
+  @property --fz-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1a1a1a;
+  }
+  @property --fz-surface {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ffffff;
+  }
+  @property --fz-text {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1a1a1a;
+  }
+  @property --fz-border {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d8d8d8;
+  }
+  @property --fz-focus-ring {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1a1a1a;
+  }
+}
+
+/* ---- Theme presets ----
+   No rebuild needed. Set data-theme on <html> (or any subtree):
+   <html data-theme="dark">            → force dark
+   <html data-theme="light">           → force light
+   <html data-theme="contrast">        → high contrast
+   <html data-theme="auto">            → follow OS (default)
+
+   Because every color token is a light-dark() pair, "forcing" a theme
+   is just overriding color-scheme. That is the whole theme engine. */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="auto"] {
+  color-scheme: light dark;
+}
+
+[data-theme="contrast"] {
+  color-scheme: light dark;
+
+  --fz-primary: light-dark(#000000, #ffffff);
+  --fz-primary-fg: light-dark(#ffffff, #000000);
+  --fz-surface: light-dark(#ffffff, #000000);
+  --fz-surface-alt: light-dark(#f0f0f0, #101010);
+  --fz-text: light-dark(#000000, #ffffff);
+  --fz-muted: light-dark(#000000, #ffffff);
+  --fz-border: light-dark(#000000, #ffffff);
+  --fz-focus-ring: light-dark(#000000, #ffffff);
+  --fz-danger: light-dark(#000000, #ffffff);
+}

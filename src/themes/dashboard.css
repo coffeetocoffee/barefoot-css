@@ -1,0 +1,24 @@
+/* Barefoot starter theme — Dashboard.
+   Denser controls, blue accent, tighter radii. Changes ~6 variables.
+   Apply with <html data-theme="dashboard">. */
+@layer tokens {
+  [data-theme="dashboard"] {
+    color-scheme: light dark;
+
+    --fz-primary: light-dark(#2563eb, #93b4fd);
+    --fz-primary-fg: light-dark(#ffffff, #0b1526);
+    --fz-surface: light-dark(#f8fafc, #0f172a);
+    --fz-surface-alt: light-dark(#eef2f7, #1e293b);
+    --fz-text: light-dark(#0f172a, #e2e8f0);
+    --fz-muted: light-dark(#64748b, #94a3b8);
+    --fz-border: light-dark(#cbd5e1, #334155);
+    --fz-focus-ring: light-dark(#2563eb, #93b4fd);
+
+    --fz-radius: 0.5rem;
+    --fz-radius-sm: 0.375rem;
+    --fz-radius-lg: 0.75rem;
+
+    --fz-control-height: 2.25rem;
+    --fz-content-width: 80ch;
+  }
+}

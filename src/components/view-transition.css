@@ -1,0 +1,35 @@
+/* Barefoot — view transitions.
+   Opt-in hooks for the View Transitions API. Includes this file when
+   you call document.startViewTransition() (e.g. for theme switches) so
+   snapshots fade in instead of flashing, and reduced-motion users get
+   no animation.
+
+   <script>
+     if (document.startViewTransition) {
+       document.startViewTransition(() => { root.dataset.theme = "dark"; });
+     } else {
+       root.dataset.theme = "dark";
+     }
+   </script> */
+@layer components {
+  ::view-transition-old(root) {
+    animation: none;
+  }
+
+  ::view-transition-new(root) {
+    animation: fz-fade-in var(--fz-transition-slow);
+  }
+
+  @keyframes fz-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+name: Release
+
+# Publish a new version to npm when a vX.Y.Z tag is pushed.
+# Tag it with:  git tag v1.0.0 && git push origin v1.0.0
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build + size budget
+        run: npm run check
+
+      - name: Playwright browser
+        run: npx playwright install chromium --with-deps
+
+      - name: Tests (a11y + JS + CSS behavior)
+        run: npx playwright test tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
+
+      # Prepublish runs npm run check again; skip audit since npm publishes already-built dist.
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

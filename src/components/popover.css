@@ -1,0 +1,92 @@
+/* Barefoot — popover.
+   The Popover API. Fully declarative — a <button popovertarget="x">
+   opens <div popover id="x"> with zero JS. Position popovers with
+   anchor positioning (position-area / anchor attributes) or place
+   them yourself. */
+@layer components {
+  [popover] {
+    margin: 0;
+    padding: var(--fz-space-3);
+
+    color: var(--fz-text);
+    background: var(--fz-surface);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+    box-shadow: var(--fz-shadow-lifted);
+
+    width: max-content;
+    max-width: min(24rem, 90vw);
+
+    transition:
+      opacity var(--fz-transition),
+      transform var(--fz-transition),
+      display var(--fz-transition) allow-discrete,
+      overlay var(--fz-transition) allow-discrete;
+  }
+
+  @starting-style {
+    [popover]:popover-open {
+      opacity: 0;
+      transform: translateY(-0.25rem);
+    }
+  }
+
+  [popover]:popover-open {
+    opacity: 1;
+  }
+
+  /* Tooltip affordance: small, muted, no shadow. */
+  [popover][data-kind="tooltip"] {
+    font-size: 0.8125rem;
+    padding-block: var(--fz-space-1);
+    border-radius: var(--fz-radius-sm);
+    box-shadow: none;
+  }
+
+  /* Menu panel affordance: same visual language as dropdown.css. */
+  [popover][data-kind="menu"] {
+    min-width: 12rem;
+    padding: var(--fz-space-1);
+  }
+
+  [popover][data-kind="menu"] a,
+  [popover][data-kind="menu"] button {
+    display: block;
+    width: 100%;
+    text-align: start;
+    padding: var(--fz-space-2) var(--fz-space-3);
+    border-radius: var(--fz-radius-sm);
+  }
+
+  [popover][data-kind="menu"] a:hover,
+  [popover][data-kind="menu"] button:hover {
+    background: var(--fz-surface-alt);
+  }
+
+  /* ---- Opt-in anchoring ----
+     Browsers with anchor positioning (Chromium 125+, Firefox 128+,
+     Safari 18.2+) pin a popover to its trigger when it has a
+     position-anchor. Give the trigger an anchor-name (use the popover's
+     id) and the popover a matching position-anchor — one inline style
+     on each element:
+
+       <button style="anchor-name: --menu" popovertarget="menu">Actions</button>
+       <div popover id="menu" data-kind="menu"
+            style="position-anchor: --menu">…</div>
+
+     position-area then pins it (menu → below, left-aligned; tooltip →
+     above, centered). Each popover names its own anchor, so any number
+     can coexist on a page. Without anchor positioning, or when
+     position-anchor is missing, the popover keeps the default placement
+     — safe everywhere. (Note: we use a named anchor rather than the
+     `anchor` attribute because Chromium doesn't support that attribute
+     yet; and a shared anchor-name class silently breaks the moment a
+     page has two popovers — don't use one.) */
+  [popover][data-kind="menu"] {
+    position-area: bottom span-right;
+  }
+
+  [popover][data-kind="tooltip"] {
+    position-area: top center;
+  }
+}

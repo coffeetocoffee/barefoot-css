@@ -1,0 +1,52 @@
+/* Barefoot — tabs.
+   Styling for the opt-in WAI-ARIA tabs pattern (js/tabs.js drives the
+   behavior; this only styles it). The [hidden] rule matters: JS hides
+   inactive panels via the hidden attribute, which must win over any
+   default display.
+   No-JS first: without the module, every panel stays visible — content
+   is never lost. The module marks the group [data-fz-tabs-js] on init;
+   use it as a hook if you want styles that only apply once tabs are
+   interactive. */
+@layer components {
+  [data-fz-tabs] [role="tablist"] {
+    display: flex;
+    gap: var(--fz-space-2);
+    border-block-end: 1px solid var(--fz-border);
+  }
+
+  [data-fz-tabs] [role="tab"] {
+    appearance: none;
+    min-height: calc(var(--fz-control-height) * 0.85);
+    padding-inline: var(--fz-space-3);
+
+    font-weight: 500;
+    font-size: 0.9375rem;
+    color: var(--fz-muted);
+    background: none;
+    border: 0;
+    border-block-end: 2px solid transparent;
+    margin-block-end: -1px;
+
+    cursor: pointer;
+    transition:
+      color var(--fz-transition),
+      border-color var(--fz-transition);
+  }
+
+  [data-fz-tabs] [role="tab"]:hover {
+    color: var(--fz-text);
+  }
+
+  [data-fz-tabs] [role="tab"][aria-selected="true"] {
+    color: var(--fz-text);
+    border-block-end-color: var(--fz-primary);
+  }
+
+  [data-fz-tabs] [role="tabpanel"] {
+    padding-block: var(--fz-space-4);
+  }
+
+  [data-fz-tabs] [role="tabpanel"][hidden] {
+    display: none;
+  }
+}

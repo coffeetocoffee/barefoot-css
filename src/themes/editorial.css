@@ -1,0 +1,26 @@
+/* Barefoot starter theme — Editorial.
+   Serif, paper tones, square corners. Changes ~6 variables.
+   Apply with <html data-theme="editorial">. */
+@layer tokens {
+  [data-theme="editorial"] {
+    color-scheme: light dark;
+
+    --fz-font: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --fz-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+    --fz-primary: light-dark(#3a2e24, #d9c8b2);
+    --fz-primary-fg: light-dark(#faf6f0, #1d1711);
+    --fz-surface: light-dark(#faf6f0, #1d1915);
+    --fz-surface-alt: light-dark(#f1eadf, #2a241d);
+    --fz-text: light-dark(#2b2620, #e9e1d3);
+    --fz-muted: light-dark(#6b6255, #b3a68f);
+    --fz-border: light-dark(#ddd2bf, #4b4133);
+    --fz-focus-ring: light-dark(#3a2e24, #d9c8b2);
+
+    --fz-radius: 0;
+    --fz-radius-sm: 0;
+    --fz-radius-lg: 0;
+
+    --fz-content-width: 70ch;
+  }
+}

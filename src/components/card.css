@@ -1,0 +1,20 @@
+/* Barefoot — card. A class, because there is no native <card>.
+   Neutral by default: flat surface, thin border, no shadow. */
+@layer components {
+  .card {
+    background: var(--fz-surface);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius-lg);
+    padding: var(--fz-space-5);
+  }
+
+  .card > :where(header) {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-block-end: var(--fz-space-3);
+  }
+
+  .card[data-lifted] {
+    box-shadow: var(--fz-shadow-lifted);
+  }
+}

@@ -1,0 +1,39 @@
+/* Barefoot — tables. Plain, readable, no stripes by default. */
+@layer components {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    text-align: start;
+    color: var(--fz-muted);
+    font-size: 0.875rem;
+    padding-block-end: var(--fz-space-2);
+  }
+
+  th,
+  td {
+    padding: var(--fz-space-2) var(--fz-space-3);
+    text-align: start;
+    border-block-end: 1px solid var(--fz-border);
+  }
+
+  thead th {
+    font-weight: 600;
+    border-block-end-width: 2px;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fz-muted);
+  }
+
+  tbody tr:hover {
+    background: var(--fz-surface-alt);
+  }
+
+  table[data-striped] tbody tr:nth-child(odd) {
+    background: var(--fz-surface-alt);
+  }
+}

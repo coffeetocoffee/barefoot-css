@@ -1,0 +1,58 @@
+/* Barefoot — accordion.
+   <details data-accordion> styled as a disclosure/tab pattern.
+   For "one open at a time" (tabs-like behaviour), give every
+   <details> the same name attribute — the browser handles the
+   exclusivity, no JS. */
+@layer components {
+  details[data-accordion] {
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+    background: var(--fz-surface);
+  }
+
+  details[data-accordion] + details[data-accordion] {
+    margin-block-start: calc(-1px);
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+
+  details[data-accordion] + details[data-accordion]:not([open]) {
+    border-block-start: 1px solid var(--fz-border);
+  }
+
+  details[data-accordion][open] + details[data-accordion] {
+    border-block-start-width: 1px;
+  }
+
+  details[data-accordion] > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--fz-space-2);
+
+    padding: var(--fz-space-3) var(--fz-space-4);
+    font-weight: 500;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  details[data-accordion] > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[data-accordion] > summary::after {
+    content: "+";
+    margin-inline-start: auto;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--fz-muted);
+    transition: transform var(--fz-transition);
+  }
+
+  details[data-accordion][open] > summary::after {
+    transform: rotate(45deg);
+  }
+
+  details[data-accordion] > :not(summary) {
+    padding: 0 var(--fz-space-4) var(--fz-space-4);
+  }
+}

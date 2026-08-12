@@ -1,0 +1,39 @@
+/* Barefoot — carousel (scroll-snap).
+   A horizontal scroller with snapping. No JS at all.
+
+   <div data-carousel tabindex="0" aria-label="…">
+     <div>slide</div> <div>slide</div> …
+   </div>
+
+   The tabindex makes the scroller keyboard-scrollable; keep it, and
+   label it, for accessibility. */
+@layer components {
+  [data-carousel] {
+    container-type: inline-size; /* makes cqi units resolve to itself */
+
+    display: flex;
+    gap: var(--fz-space-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--fz-space-4);
+    scrollbar-width: none; /* hides the bar but keeps scrolling */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [data-carousel]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Slides sized in container units (60cqi = 60% of the carousel's own
+     width) — they shrink/grow with their container, not the viewport. */
+  [data-carousel] > * {
+    flex: 0 0 60cqi;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  [data-carousel] > :is(img, picture) {
+    border-radius: var(--fz-radius);
+    object-fit: cover;
+  }
+}

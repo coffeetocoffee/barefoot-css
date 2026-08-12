@@ -1,0 +1,73 @@
+/* Barefoot — dialog.
+   Native <dialog> styling. Focus trapping and Esc-to-close come from
+   the element itself. Opening a modal dialog needs one line of JS
+   (dialog.showModal()) — for a fully JS-free modal-like layer use the
+   Popover API (popover.css) instead. */
+@layer components {
+  dialog {
+    margin: auto;
+    padding: var(--fz-space-6);
+    max-width: min(32rem, calc(100vw - 2 * var(--fz-space-5)));
+
+    color: var(--fz-text);
+    background: var(--fz-surface);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius-lg);
+    box-shadow: var(--fz-shadow-lifted);
+
+    transition:
+      opacity var(--fz-transition-slow),
+      transform var(--fz-transition-slow),
+      display var(--fz-transition-slow) allow-discrete,
+      overlay var(--fz-transition-slow) allow-discrete;
+  }
+
+  @starting-style {
+    dialog[open] {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  dialog[open] {
+    opacity: 1;
+  }
+
+  /* Entrance fallback for engines without allow-discrete/@starting-style
+     (e.g. older Safari/Firefox): the transition can't animate from the
+     closed display:none, so give the open dialog a keyframe entrance
+     instead of snapping in. Reduced-motion is neutralized by base.css. */
+  @supports not (transition-behavior: allow-discrete) {
+    dialog[open] {
+      animation: fz-dialog-in var(--fz-transition-slow) ease-out;
+    }
+
+    @keyframes fz-dialog-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+      }
+    }
+  }
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 0.5);
+    backdrop-filter: blur(2px);
+  }
+
+  dialog[data-width="sm"] { max-width: 22rem; }
+  dialog[data-width="lg"] { max-width: 48rem; }
+
+  dialog > header {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-block-end: var(--fz-space-3);
+  }
+
+  dialog > footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--fz-space-3);
+    margin-block-start: var(--fz-space-5);
+  }
+}

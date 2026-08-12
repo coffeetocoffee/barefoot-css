@@ -1,0 +1,89 @@
+/* Barefoot — dropdown (details-based menu).
+   <details data-menu> = a native, keyboard-friendly menu with zero JS.
+   No focus trap needed — details/summary handles open/close and Esc.
+
+   <details data-menu>
+     <summary>Actions</summary>
+     <div> <a href="…">Item</a> <a href="…">Item</a> </div>
+   </details> */
+@layer components {
+  details[data-menu] {
+    position: relative;
+    display: inline-block;
+  }
+
+  details[data-menu] > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fz-space-2);
+
+    min-height: var(--fz-control-height);
+    padding-inline: var(--fz-space-4);
+
+    font-weight: 500;
+    font-size: 0.9375rem;
+    color: var(--fz-text);
+    background: var(--fz-surface);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  details[data-menu] > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details[data-menu] > summary::after {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    margin-inline-start: auto;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform var(--fz-transition);
+  }
+
+  details[data-menu][open] > summary::after {
+    transform: translateY(25%) rotate(225deg);
+  }
+
+  details[data-menu] > summary:hover {
+    background: var(--fz-surface-alt);
+  }
+
+  details[data-menu] > :not(summary) {
+    position: absolute;
+    inset-block-start: calc(100% + var(--fz-space-1));
+    inset-inline-start: 0;
+    z-index: 10;
+
+    min-width: 12rem;
+    padding: var(--fz-space-1);
+    margin: 0;
+
+    background: var(--fz-surface);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+    box-shadow: var(--fz-shadow-lifted);
+  }
+
+  details[data-menu] a,
+  details[data-menu] button {
+    display: block;
+    width: 100%;
+    text-align: start;
+    padding: var(--fz-space-2) var(--fz-space-3);
+    border-radius: var(--fz-radius-sm);
+    text-decoration: none;
+    color: var(--fz-text);
+  }
+
+  details[data-menu] a:hover,
+  details[data-menu] button:hover {
+    background: var(--fz-surface-alt);
+  }
+}
