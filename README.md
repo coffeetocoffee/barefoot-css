@@ -13,13 +13,13 @@ Barefoot is a CSS framework for people who are tired of shipping 200KB of styles
 ## Quick start
 
 ```bash
-npm install barefoot
+npm install barefoot-css
 ```
 
 ```css
 /* CSS */
-@import "barefoot";                       /* reset + tokens + base */
-@import "barefoot/components/dialog.css"; /* only what you need */
+@import "barefoot-css";                          /* reset + tokens + base */
+@import "barefoot-css/components/dialog.css";    /* only what you need */
 ```
 
 ```html

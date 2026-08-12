@@ -146,7 +146,7 @@ document.querySelector("dialog").showModal();
 
 ```html
 <script type="module">
-  import "barefoot/js/tabs.js";
+  import "barefoot-css/js/tabs.js";
 </script>
 ```
 

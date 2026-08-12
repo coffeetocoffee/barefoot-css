@@ -16,12 +16,12 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 ```html
 <!-- all three -->
 <script type="module">
-  import "barefoot/js/barefoot.js";
+  import "barefoot-css/js/barefoot.js";
 </script>
 
 <!-- just tabs -->
 <script type="module">
-  import "barefoot/js/tabs.js";
+  import "barefoot-css/js/tabs.js";
 </script>
 ```
 
@@ -31,7 +31,7 @@ the module is enough — no init call needed.
 For dynamic content, import the named functions:
 
 ```js
-import { initTabs } from "barefoot/js/tabs.js";
+import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
 
