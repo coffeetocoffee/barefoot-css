@@ -8,6 +8,17 @@ import { test, expect } from "@playwright/test";
 test.describe("container queries", () => {
   test("same [data-grid] markup: 1 column when narrow, 3 when wide", async ({ page }) => {
     await page.goto("/demo/");
+
+    // Pin the container widths explicitly. The demo's flex row puts the
+    // wide box within a few px of the 48rem breakpoint, and OS font
+    // metrics / scrollbar widths can tip it across the line on CI. The
+    // test is about the *markup*, not the demo's incidental sizing.
+    await page.evaluate(() => {
+      const [narrow, wide] = document.querySelectorAll(".fz-contain");
+      narrow.style.width = "14rem";
+      wide.style.width = "60rem";
+    });
+
     const cols = (sel) =>
       page
         .locator(sel)
