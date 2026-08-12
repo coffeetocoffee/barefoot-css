@@ -32,6 +32,19 @@ jobs:
         run: |
           mkdir -p _site
           cp -r docs demo dist README.md _site/
+          cat > _site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0; url=./docs/">
+            <title>Barefoot CSS</title>
+          </head>
+          <body>
+            <p>Barefoot CSS — <a href="./docs/">open the docs</a>.</p>
+          </body>
+          </html>
+          EOF
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
