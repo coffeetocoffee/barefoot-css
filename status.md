@@ -129,7 +129,7 @@ by import.
 
 ## Known gaps / next
 
-- [ ] **After first push:** initial commit + GitHub remote to activate workflows; `NPM_TOKEN` secret for release; update the placeholder `github.com/your-org/barefoot` URLs in `package.json` (`repository`, `homepage`, `bugs`) before the first npm publish
+- [ ] **After first push:** set the `NPM_TOKEN` secret on the repo for the release workflow; then `git tag v1.0.0 && git push origin v1.0.0` to publish (repo URLs in `package.json` now point at the real `coffeetocoffee/barefoot-css` repo)
 - [ ] **First push:** repo has no commits yet — `git init` done, need initial commit + GitHub remote to activate the workflow
 - [ ] **Firefox anchor positioning (real finding):** `position-area` clamps to the viewport edge when the popover's trigger is *off-screen* at open time (works fine when the trigger is in view — the normal click-to-open case; verified in Firefox 153). Watch for a fix; nothing to do in Barefoot's CSS.
 - [ ] **Safari `<details>` tab order (real finding):** WebKit skips the contents of an open `<details>` in the sequential tab order (verified in WebKit 26.5). Items stay clickable/focusable; a tiny opt-in JS shim could add `tabindex` there if demand justifies it.

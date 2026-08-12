@@ -45,11 +45,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/barefoot.git"
+    "url": "git+https://github.com/coffeetocoffee/barefoot-css.git"
   },
-  "homepage": "https://github.com/your-org/barefoot",
+  "homepage": "https://github.com/coffeetocoffee/barefoot-css",
   "bugs": {
-    "url": "https://github.com/your-org/barefoot/issues"
+    "url": "https://github.com/coffeetocoffee/barefoot-css/issues"
   },
   "keywords": [
     "css",
