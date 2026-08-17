@@ -148,6 +148,7 @@
             <label><input type="checkbox" name="pref"> Email me</label>
             <label><input type="radio" name="size" checked> Small</label>
             <label><input type="radio" name="size"> Large</label>
+            <label><input type="checkbox" data-switch name="night" checked> Night mode (switch)</label>
           </fieldset>
 
           <label for="amount">Amount</label>
@@ -287,6 +288,25 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Responsive table -->
+    <section id="table" aria-labelledby="table-title">
+      <h2 id="table-title">Responsive table</h2>
+      <p>Add <code>data-table="stack"</code> and wrap the table in a query container (here <code>.fz-contain</code>, same as the grid above): below ~40rem (640px) rows stack as cards and the header row hides. Purely presentational — the <code>&lt;th&gt;</code> headers stay in the DOM, so screen readers still announce them.</p>
+      <div class="fz-contain">
+        <table data-table="stack" data-striped>
+          <caption>Project status</caption>
+          <thead>
+            <tr><th>Project</th><th>Owner</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Barefoot</td><td>Ada</td><td>Active</td></tr>
+            <tr><td>Heel</td><td>Lin</td><td>Blocked</td></tr>
+            <tr><td>Laces</td><td>Ken</td><td>Done</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 

@@ -9,7 +9,7 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 1.3KB gzipped. The *entire* framework (all 14 components) is 3.8KB gzipped. Per-component entry points mean you only pay for what you import.
+- **~10KB or bust.** `index.css` is 1.4KB gzipped. The *entire* framework (all 14 components) is 4.2KB gzipped. Per-component entry points mean you only pay for what you import.
 - **Theming by default.** Every visual is a `--fz-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
 - **JS-free.** Dropdowns are `<details>`, modals are `<dialog>` (one line of native JS to open) or the Popover API (zero JS), accordions are `<details name>`. Optional tiny JS modules add tabs, Esc-close, and menu keyboard nav — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
@@ -46,8 +46,8 @@ npm install barefoot-css
 
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `index.css` (reset + tokens + base) | 3.50KB | **1.28KB** | 1.10KB |
-| `full.css` (everything) | 16.01KB | **3.80KB** | 3.34KB |
+| `index.css` (reset + tokens + base) | 3.77KB | **1.35KB** | 1.18KB |
+| `full.css` (everything) | 17.70KB | **4.16KB** | 3.66KB |
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.
 

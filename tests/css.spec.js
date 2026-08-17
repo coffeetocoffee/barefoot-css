@@ -54,6 +54,28 @@ test.describe("container queries", () => {
   });
 });
 
+test.describe("stackable tables", () => {
+  test("table[data-table='stack']: header row hidden when its container is narrow, table when wide", async ({ page }) => {
+    await page.goto("/demo/");
+    const table = page.locator('table[data-table="stack"]');
+    const firstCell = table.locator("tbody tr").first().locator("td").first();
+
+    // The nearest query container is the wrapping .fz-contain — pin its
+    // inline size and the @container rule re-evaluates with it.
+    await table.evaluate((el) => {
+      el.parentElement.style.width = "14rem";
+    });
+    await expect(table.locator("thead")).toBeHidden();
+    await expect(firstCell).toHaveCSS("display", "block");
+
+    await table.evaluate((el) => {
+      el.parentElement.style.width = "60rem";
+    });
+    await expect(table.locator("thead")).toBeVisible();
+    await expect(firstCell).toHaveCSS("display", "table-cell");
+  });
+});
+
 test.describe("anchored popovers (anchor positioning)", () => {
   test("menu popover pins below its own trigger (not the other popover's)", async ({ page }) => {
     await page.goto("/demo/");

@@ -1,10 +1,14 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-12 — milestones **0.1 + 0.2 + 0.3 + 1.0 (launch-ready)**_
+_Last updated: 2026-08-12 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, and 1.0 are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, and 1.1 are **done**.
+
+- **1.1:** switch component, stackable container-query tables, print
+  stylesheet, `scrollbar-gutter` stability, and a fresh-install
+  packaging smoke test in CI. Published as `barefoot-css@1.1.0`.
 
 - **0.1:** core architecture, all CSS components, build pipeline with size
   budget, conformance demo, docs. Size target beaten by a wide margin
@@ -27,33 +31,34 @@ Milestones 0.1, 0.2, 0.3, and 1.0 are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  20 passed (Chromium)
-   8 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
+$ npm test  →  23 passed (Chromium)
+    8 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
      states report ZERO violations; focus ring; details toggle; popover
      Esc; dialog Esc + focus return)
-   6 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
+    6 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
      hidden inactive with it; details Esc-close with focus return;
      popover-menu arrows + focus restore)
-   4 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
-     container units; anchored popover below trigger; theme switch via
-     startViewTransition)
-   2 × visual regression (light + dark full-page, committed baselines)
+    6 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+     container units; stackable table header hidden/visible; anchored
+     popover below trigger; theme switch via startViewTransition)
+    3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 10 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 10 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 11 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 11 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      16.01KB raw     3.80KB gzip     3.34KB brotli
-index.css                      3.50KB raw     1.28KB gzip     1.10KB brotli
+full.css                      17.70KB raw     4.16KB gzip     3.66KB brotli
+index.css                      3.77KB raw     1.35KB gzip     1.18KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
+components/forms.css           2.81KB raw     0.88KB gzip     0.73KB brotli
 js/popover-menu.js             1.99KB raw     0.82KB gzip     0.69KB brotli
-components/forms.css           2.00KB raw     0.69KB gzip     0.56KB brotli
 components/buttons.css         1.84KB raw     0.58KB gzip     0.48KB brotli
 components/dropdown.css        1.45KB raw     0.54KB gzip     0.42KB brotli
+components/table.css           0.89KB raw     0.41KB gzip     0.33KB brotli
 js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
 components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
 components/popover.css         1.10KB raw     0.43KB gzip     0.33KB brotli
@@ -62,18 +67,12 @@ components/accordion.css       1.00KB raw     0.39KB gzip     0.30KB brotli
 components/tabs.css            0.73KB raw     0.34KB gzip     0.26KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
 themes/editorial.css           0.57KB raw     0.32KB gzip     0.27KB brotli
-components/table.css           0.53KB raw     0.30KB gzip     0.25KB brotli
-components/badge.css           0.52KB raw     0.27KB gzip     0.22KB brotli
-themes/dashboard.css           0.49KB raw     0.26KB gzip     0.22KB brotli
-components/carousel.css        0.44KB raw     0.26KB gzip     0.20KB brotli
-components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
-themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
 js/barefoot.js                 0.24KB raw     0.17KB gzip     0.14KB brotli
 components/view-transition.css   0.28KB raw     0.16KB gzip     0.14KB brotli
 components/grid.css            0.26KB raw     0.16KB gzip     0.11KB brotli
 
-budget: dist/index.css 1.28KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.35KB gzip (limit 10.00KB) → PASS
 ```
 
 Opt-in JS (`dist/js/`, raw): tabs 2.70KB, details-close 0.90KB,
@@ -127,6 +126,14 @@ by import.
 - [x] Dialog entrance fallback: `@supports not (transition-behavior: allow-discrete)` keyframe entrance for engines without discrete transitions
 - [x] Tabs no-JS-first: `tabs.js` marks the group `data-fz-tabs-js` and hides inactive panels at init; without the module every panel stays visible (tests cover both)
 - [x] **Published `barefoot-css@1.0.0` to npm** (2026-08-12) via the release workflow (`git tag v1.0.0` → build + budget + tests → `npm publish`). The name `barefoot` was taken on npm by an unrelated project, so the package ships as **`barefoot-css`** (repo-matched, free, unscoped).
+
+### 1.1 — tight follow-up
+- [x] **Switch component** — `input[type="checkbox"][data-switch]` (CSS-only: track + thumb drawn with background layers on the element; native checkbox semantics, focus, `:checked`/`:indeterminate`, theme-aware). Checkbox/radio keep the native `accent-color` look (zero-risk, already themed).
+- [x] **Stackable tables** — `table[data-table="stack"]` + `@container (width <= 40rem)`: rows become cards, header row hides (DOM keeps the `<th>`s for screen readers). Requires a wrapping query container (`.fz-contain` — a `<table>` can't be a size container in browsers).
+- [x] **Print stylesheet** — `@media print` in base: flat colors, no depth, `break-inside: avoid` on tables/cards.
+- [x] `scrollbar-gutter: stable` on `<html>` (no content jump when scrollbars toggle).
+- [x] **Fresh-install packaging smoke test** — CI: `npm pack` → install in a throwaway consumer → resolve every public export to a real file.
+- [x] **Published `barefoot-css@1.1.0` to npm** (2026-08-12).
 
 ## Known gaps / next
 

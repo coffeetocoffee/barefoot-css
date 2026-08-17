@@ -66,6 +66,42 @@
     vertical-align: middle;
   }
 
+  /* Switch — input[type="checkbox"][data-switch].
+     A CSS-only toggle. The track and thumb are drawn with background
+     layers on the element itself — no pseudo-elements, no wrapper
+     markup — so it stays a native checkbox: keyboard-focusable,
+     screen-reader-announced, and theme-aware for free. */
+  input[type="checkbox"][data-switch] {
+    appearance: none;
+    width: 2.5em;
+    height: 1.5em;
+    margin-inline-end: var(--fz-space-2);
+    vertical-align: middle;
+    cursor: pointer;
+
+    border: 1px solid var(--fz-border);
+    border-radius: 999px;
+    background-color: var(--fz-surface-alt);
+    background-image: radial-gradient(circle, var(--fz-text) 42%, transparent 43%);
+    background-size: 1.05em 1.05em;
+    background-position: 0.3em center;
+    background-repeat: no-repeat;
+
+    transition:
+      background-color var(--fz-transition),
+      background-position var(--fz-transition);
+  }
+
+  input[type="checkbox"][data-switch]:checked {
+    background-color: var(--fz-primary);
+    background-image: radial-gradient(circle, var(--fz-primary-fg) 42%, transparent 43%);
+    background-position: calc(100% - 0.3em) center;
+  }
+
+  input[type="checkbox"][data-switch]:indeterminate {
+    background-position: center center;
+  }
+
   input[type="checkbox"]:disabled,
   input[type="radio"]:disabled,
   input:disabled,

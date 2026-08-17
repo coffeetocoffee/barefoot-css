@@ -19,6 +19,44 @@ jobs:
         # npm run check = build + enforce the 10KB gzip budget on
         # dist/index.css (npm run size fails if exceeded).
 
+  packaging:
+    name: Fresh-install smoke test (npm pack → install → import)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Pack the tarball, install it in a throwaway consumer, import it
+        run: |
+          npm pack >/dev/null 2>&1
+          TARBALL="barefoot-css-$(node -p "require('./package.json').version").tgz"
+          mkdir -p /tmp/consumer && cd /tmp/consumer
+          npm init -y >/dev/null 2>&1
+          npm install "$OLDPWD/$TARBALL" --silent >/dev/null 2>&1
+          cat > smoke.mjs <<'EOF'
+          import { existsSync } from "node:fs";
+          const targets = [
+            "barefoot-css",
+            "barefoot-css/full.css",
+            "barefoot-css/components/forms.css",
+            "barefoot-css/components/table.css",
+            "barefoot-css/themes/dashboard.css",
+            "barefoot-css/utilities.css",
+            "barefoot-css/js/barefoot.js",
+            "barefoot-css/src/index.css",
+          ];
+          for (const t of targets) {
+            const r = import.meta.resolve(t); // throws if the exports map rejects it
+            if (!existsSync(new URL(r))) throw new Error(`${t} resolved to a missing file: ${r}`);
+            console.log(`ok ${t} -> ${r.replace(process.cwd(), ".")}`);
+          }
+          EOF
+          node smoke.mjs
+
   behavior:
     name: Behavior + a11y (axe-core, JS, CSS, Chromium)
     runs-on: ubuntu-latest

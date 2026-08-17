@@ -36,4 +36,33 @@
   table[data-striped] tbody tr:nth-child(odd) {
     background: var(--fz-surface-alt);
   }
+
+  /* Stackable tables — table[data-table="stack"].
+     The table stacks into cards when its *nearest query container* is
+     narrow (<40rem). Wrap it in a container — e.g. .fz-contain, the
+     grid pattern — since a <table> element itself can't establish a
+     size container (browser limitation). Purely presentational: the
+     <th> headers stay in the DOM, so screen readers still announce
+     them. */
+  @container (width <= 40rem) {
+    table[data-table="stack"] thead {
+      display: none;
+    }
+
+    table[data-table="stack"] tr {
+      display: grid;
+      gap: var(--fz-space-1);
+      padding: var(--fz-space-3);
+      margin-block-end: var(--fz-space-3);
+      border: 1px solid var(--fz-border);
+      border-radius: var(--fz-radius);
+    }
+
+    table[data-table="stack"] th,
+    table[data-table="stack"] td {
+      display: block;
+      padding: 0;
+      border-block-end: 0;
+    }
+  }
 }
