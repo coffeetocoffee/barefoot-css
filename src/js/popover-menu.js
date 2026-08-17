@@ -36,10 +36,13 @@ export function initPopoverMenus(root = document) {
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
+        // From outside the list (idx -1) ArrowDown should land on the
+        // first item, not the second-to-last.
         list[(idx + 1) % list.length]?.focus();
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        list[(idx - 1 + list.length) % list.length]?.focus();
+        // From outside the list, ArrowUp wraps to the last item.
+        list[idx > 0 ? idx - 1 : list.length - 1]?.focus();
       } else if (e.key === "Home") {
         e.preventDefault();
         list[0]?.focus();

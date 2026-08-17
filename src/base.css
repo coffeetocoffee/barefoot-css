@@ -83,6 +83,24 @@
 
   /* ---- Print ---- */
   @media print {
+    /* Ink-first. Every component reads from the --fz-* tokens, so
+       resetting them here (with !important to beat themes and the
+       components layer) makes the whole page print light-on-white —
+       a dark theme would otherwise print dark surfaces with black
+       text. Plain hex, not light-dark(): print is always light. */
+    :root {
+      --fz-surface: #ffffff !important;
+      --fz-surface-alt: #f4f4f4 !important;
+      --fz-text: #000000 !important;
+      --fz-muted: #333333 !important;
+      --fz-border: #cccccc !important;
+      --fz-primary: #000000 !important;
+      --fz-primary-fg: #ffffff !important;
+      --fz-focus-ring: #000000 !important;
+      --fz-danger: #000000 !important;
+      --fz-danger-fg: #ffffff !important;
+    }
+
     body {
       background: #fff;
       color: #000;

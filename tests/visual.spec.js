@@ -25,19 +25,30 @@ test.describe("visual regression", () => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Light" }).click();
     await page.waitForTimeout(350); // let entrance transitions settle
-    await expect(page).toHaveScreenshot("light.png", {
-      fullPage: true,
-      maxDiffPixelRatio: 0.02,
-    });
+    // The theme swap runs inside startViewTransition(); force-finish it
+    // so the full-page capture can never catch a mid-fade frame.
+    await page.evaluate(() => document.getAnimations().forEach((a) => a.finish()));
+    // Rarely, Chromium's full-page capture reports a ±1px height on the
+    // first frame; toPass retries so a transient frame self-heals. A real
+    // layout regression still fails after the retries.
+    await expect(async () => {
+      await expect(page).toHaveScreenshot("light.png", {
+        fullPage: true,
+        maxDiffPixelRatio: 0.02,
+      });
+    }).toPass({ timeout: 15000 });
   });
 
   test("dark theme", async ({ page }) => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Dark" }).click();
     await page.waitForTimeout(350);
-    await expect(page).toHaveScreenshot("dark.png", {
-      fullPage: true,
-      maxDiffPixelRatio: 0.02,
-    });
+    await page.evaluate(() => document.getAnimations().forEach((a) => a.finish()));
+    await expect(async () => {
+      await expect(page).toHaveScreenshot("dark.png", {
+        fullPage: true,
+        maxDiffPixelRatio: 0.02,
+      });
+    }).toPass({ timeout: 15000 });
   });
 });

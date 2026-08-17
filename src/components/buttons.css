@@ -72,10 +72,22 @@
     border-color: var(--fz-primary);
   }
 
+  /* The generic button:hover (higher-up, lower specificity) can't reach
+     the variant rules, so give primary/danger their own hover step —
+     same treatment as input[type="submit"]:hover. */
+  button[data-variant="primary"]:hover,
+  input[data-variant="primary"]:hover {
+    background: color-mix(in oklab, var(--fz-primary), #000 8%);
+  }
+
   button[data-variant="danger"] {
     color: var(--fz-danger-fg);
     background: var(--fz-danger);
     border-color: var(--fz-danger);
+  }
+
+  button[data-variant="danger"]:hover {
+    background: color-mix(in oklab, var(--fz-danger), #000 8%);
   }
 
   button[data-variant="ghost"] {

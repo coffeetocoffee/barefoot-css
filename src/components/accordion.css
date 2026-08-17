@@ -16,6 +16,13 @@
     border-start-end-radius: 0;
   }
 
+  /* Flatten the item above the joint too, or its bottom corners stay
+     rounded where it meets the next item. */
+  details[data-accordion]:has(+ details[data-accordion]) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
   details[data-accordion] + details[data-accordion]:not([open]) {
     border-block-start: 1px solid var(--fz-border);
   }

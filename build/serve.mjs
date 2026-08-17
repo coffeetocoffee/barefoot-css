@@ -2,7 +2,7 @@
    Zero dependencies. Usage: npm run preview  → http://localhost:4173 */
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
-import { extname, join, dirname, normalize } from "node:path";
+import { extname, join, dirname, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,7 +23,10 @@ createServer(async (req, res) => {
     if (path.endsWith("/")) path += "index.html";
 
     const file = normalize(join(root, path));
-    if (!file.startsWith(root)) {
+    // Prefix check only: a sibling directory whose name starts with the
+    // project folder's (e.g. "Barefoot CSS 2") would otherwise pass
+    // startsWith(root). Require containment with the separator.
+    if (file !== root && !file.startsWith(root + sep)) {
       res.writeHead(403).end("forbidden");
       return;
     }

@@ -16,6 +16,10 @@ try {
 }
 
 const index = report["index.css"];
+if (!index) {
+  console.error("dist/sizes.json has no index.css entry — run `npm run build` first.");
+  process.exit(1);
+}
 const ok = index.gzip <= GZIP_BUDGET;
 console.log(
   `dist/index.css ${(index.gzip / 1024).toFixed(2)}KB gzip ` +
