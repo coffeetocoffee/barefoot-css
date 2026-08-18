@@ -123,9 +123,12 @@ and `.fz-*` utilities.
 
 - Firefox: anchoring clamps to the viewport when the trigger is off-screen
   at open time (real-browser finding) — revisit when Firefox fixes it.
-- Safari: `<details>` panel contents are skipped by the tab order
-  (long-standing WebKit behavior) — consider a tiny opt-in JS shim only if
-  demand justifies it.
+  The adjacent, fixable case (trigger near a viewport edge) shipped as
+  `position-try-fallbacks: flip-block` in 1.3; the off-screen-trigger
+  clamp itself is upstream (re-verified in Firefox 153, 2026-08-18).
+- ~~Safari: `<details>` panel contents are skipped by the tab order
+  (long-standing WebKit behavior)~~ — **done in 1.2** via the opt-in
+  `js/details-tabindex.js` shim.
 
 ## Decision log
 

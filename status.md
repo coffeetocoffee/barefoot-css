@@ -1,10 +1,23 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-12 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1**_
+_Last updated: 2026-08-18 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, 1.0, and 1.1 are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, and 1.3 are **done**.
+
+- **1.3:** anchor-positioning robustness (`position-try-fallbacks:
+  flip-block` — anchored menus/tooltips flip away from viewport edges
+  instead of spilling off-screen) and a fail-fast release workflow
+  (`npm whoami` preflight + documented bypass-2FA token requirement).
+  Versioned `barefoot-css@1.3.0` and ready to publish (tag
+  `v1.3.0` → CI publishes). The Firefox off-screen-trigger clamp
+  was re-verified and remains an upstream browser bug (details below).
+
+- **1.2:** the Safari/WebKit `<details>` tab-order shim
+  (`js/details-tabindex.js`) — open-`<details>` panel contents are now
+  reachable by Tab in every engine, with regression tests that run the
+  real keyboard contract cross-browser. Published as `barefoot-css@1.2.0`.
 
 - **1.1:** switch component, stackable container-query tables, print
   stylesheet, `scrollbar-gutter` stability, and a fresh-install
@@ -31,53 +44,62 @@ Milestones 0.1, 0.2, 0.3, 1.0, and 1.1 are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  23 passed (Chromium)
+$ npm test  →  27 passed (Chromium)
     8 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
      states report ZERO violations; focus ring; details toggle; popover
      Esc; dialog Esc + focus return)
-    6 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
+    9 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
-     hidden inactive with it; details Esc-close with focus return;
+     hidden inactive with it; details Esc-close with focus return; details
+     tab-order shim: Tab reaches panel links in every engine, already-open
+     panels fixed at init, closed untouched, tabindex=-1 preserved;
      popover-menu arrows + focus restore)
     6 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
-     popover below trigger; theme switch via startViewTransition)
+     popover below trigger; anchored popover flips above a trigger near
+     the viewport bottom; theme switch via startViewTransition)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 11 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 11 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 16 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 16 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      17.70KB raw     4.16KB gzip     3.66KB brotli
-index.css                      3.77KB raw     1.35KB gzip     1.18KB brotli
+full.css                      17.96KB raw     4.17KB gzip     3.68KB brotli
+index.css                      3.96KB raw     1.41KB gzip     1.21KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
-components/forms.css           2.81KB raw     0.88KB gzip     0.73KB brotli
-js/popover-menu.js             1.99KB raw     0.82KB gzip     0.69KB brotli
-components/buttons.css         1.84KB raw     0.58KB gzip     0.48KB brotli
+js/details-tabindex.js         1.86KB raw     0.91KB gzip     0.73KB brotli
+js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
+components/forms.css           2.74KB raw     0.86KB gzip     0.71KB brotli
+components/buttons.css         2.06KB raw     0.60KB gzip     0.49KB brotli
 components/dropdown.css        1.45KB raw     0.54KB gzip     0.42KB brotli
-components/table.css           0.89KB raw     0.41KB gzip     0.33KB brotli
 js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
 components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
-components/popover.css         1.10KB raw     0.43KB gzip     0.33KB brotli
+components/popover.css         1.17KB raw     0.44KB gzip     0.36KB brotli
+components/accordion.css       1.10KB raw     0.40KB gzip     0.32KB brotli
+components/table.css           0.87KB raw     0.40KB gzip     0.32KB brotli
 utilities.css                  0.87KB raw     0.40KB gzip     0.30KB brotli
-components/accordion.css       1.00KB raw     0.39KB gzip     0.30KB brotli
 components/tabs.css            0.73KB raw     0.34KB gzip     0.26KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
 themes/editorial.css           0.57KB raw     0.32KB gzip     0.27KB brotli
+components/badge.css           0.52KB raw     0.27KB gzip     0.22KB brotli
+themes/dashboard.css           0.49KB raw     0.26KB gzip     0.22KB brotli
+components/carousel.css        0.44KB raw     0.26KB gzip     0.20KB brotli
+components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
+themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
-js/barefoot.js                 0.24KB raw     0.17KB gzip     0.14KB brotli
+js/barefoot.js                 0.30KB raw     0.20KB gzip     0.16KB brotli
 components/view-transition.css   0.28KB raw     0.16KB gzip     0.14KB brotli
 components/grid.css            0.26KB raw     0.16KB gzip     0.11KB brotli
 
-budget: dist/index.css 1.35KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.41KB gzip (limit 10.00KB) → PASS
 ```
 
-Opt-in JS (`dist/js/`, raw): tabs 2.70KB, details-close 0.90KB,
-popover-menu 1.99KB, barefoot 0.24KB. Not part of the CSS budget — opt-in
-by import.
+Opt-in JS (`dist/js/`, raw): tabs 2.70KB, details-tabindex 1.86KB,
+details-close 0.90KB, popover-menu 2.17KB, barefoot 0.30KB. Not part of
+the CSS budget — opt-in by import.
 
 ## What's done
 
@@ -135,11 +157,45 @@ by import.
 - [x] **Fresh-install packaging smoke test** — CI: `npm pack` → install in a throwaway consumer → resolve every public export to a real file.
 - [x] **Published `barefoot-css@1.1.0` to npm** (2026-08-12).
 
+### 1.2 — Safari details tab-order shim
+- [x] `js/details-tabindex.js` — WebKit skips the contents of an *open*
+  `<details>` in the sequential tab order (long-standing quirk); the shim
+  walks the panel of every open `details` and gives its focusable
+  descendants an explicit `tabindex="0"`, preserving deliberate
+  `tabindex="-1"`. Handles `toggle` events after load and panels already
+  open at init. Zero dependencies, <1KB, readable.
+- [x] Wired into the all-in-one `js/barefoot.js` import.
+- [x] Regression tests: panel descendants reachable by Tab in every engine
+  (the old WebKit workaround in the Esc-close test is gone — the real
+  contract now runs everywhere); already-open panels fixed at init; closed
+  panels untouched; deliberate `tabindex="-1"` preserved.
+- [x] **Published `barefoot-css@1.2.0` to npm** (2026-08-18).
+
+### 1.3 — anchor robustness + release hardening
+- [x] `position-try-fallbacks: flip-block` on anchored menus/tooltips —
+  when the trigger sits near a viewport edge, the popover flips to the
+  opposite side instead of spilling off-screen (preferred `position-area`
+  still tried first). Verified flipping in Firefox + Chromium.
+- [x] Release workflow fail-fast: `npm whoami` preflight before the build
+  + test run (a missing/invalid `NPM_TOKEN` dies in seconds), and the
+  workflow header documents the granular-token-with-**"bypass 2FA"**
+  requirement in plain words.
+- [x] **Versioned `barefoot-css@1.3.0`** — ready to publish via the
+  release workflow (tag `v1.3.0` → CI publishes).
+
 ## Known gaps / next
 
-- [ ] **Firefox anchor positioning (real finding):** `position-area` clamps to the viewport edge when the popover's trigger is *off-screen* at open time (works fine when the trigger is in view — the normal click-to-open case; verified in Firefox 153). Watch for a fix; nothing to do in Barefoot's CSS.
-- [ ] **Safari `<details>` tab order (real finding):** WebKit skips the contents of an open `<details>` in the sequential tab order (verified in WebKit 26.5). Items stay clickable/focusable; a tiny opt-in JS shim could add `tabindex` there if demand justifies it.
-- [ ] **Release notes for future versions:** the publish account requires a **granular access token with "bypass 2FA" enabled** (npm rejects automated publishes otherwise — `E403`). Keep the `NPM_TOKEN` secret updated with a fresh token before each tag.
+- [ ] **Firefox anchor positioning (real finding, still open):**
+  `position-area` clamps to the viewport edge when the popover's trigger
+  is *off-screen* at open time (works fine when the trigger is in view —
+  the normal click-to-open case). **Re-verified 2026-08-18 in Firefox
+  153: still clamps.** The spec-default `position-visibility:
+  anchors-visible` (now Baseline 2026) does **not** mitigate it — both
+  Firefox and Chromium compute it as the default yet neither hides the
+  popover (empirically confirmed). What we shipped instead is the adjacent
+  fixable case: the viewport-edge flip (`position-try-fallbacks:
+  flip-block` in 1.3). The off-screen-trigger clamp itself is a browser
+  bug — watch for a fix; nothing more to do in Barefoot's CSS.
 
 ## Verification commands
 

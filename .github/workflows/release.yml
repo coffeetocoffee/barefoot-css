@@ -2,6 +2,16 @@ name: Release
 
 # Publish a new version to npm when a vX.Y.Z tag is pushed.
 # Tag it with:  git tag v1.0.0 && git push origin v1.0.0
+#
+# REQUIRED before tagging: the `NPM_TOKEN` secret must be a granular
+# access token with **"Publish to the public registry"** permission AND
+# **"bypass 2FA"** enabled — without "bypass 2FA", npm rejects automated
+# publishes with `E403 Forbidden` no matter what. Create it at:
+#   https://www.npmjs.com/settings/<user>/tokens → "new granular access
+#   token" → check "bypass 2FA" → save it as the `NPM_TOKEN` repository
+#   secret. Tokens are cheap to rotate: refresh the secret before each
+#   release, and the preflight step below catches a missing/wrong token
+#   within seconds instead of after the whole build+test run.
 on:
   push:
     tags:
@@ -21,6 +31,16 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
           cache: npm
+
+      # Fail fast: a missing/invalid token is useless to debug after a
+      # 2-minute build+test run. `npm whoami` resolves the token set up
+      # above and errors immediately if it can't authenticate. (It can't
+      # detect a *stale* token with bypass-2FA missing — npm only rejects
+      # that at publish time — but it catches the 90% case.)
+      - name: Preflight — token authenticates
+        run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install
         run: npm ci

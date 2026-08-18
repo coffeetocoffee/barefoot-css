@@ -4,6 +4,60 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] — 2026-08-18
+
+Anchor-positioning robustness (viewport-edge flip) and a fail-fast release
+workflow.
+
+### Added
+
+- **`position-try-fallbacks: flip-block`** on anchored menus and tooltips —
+  when the trigger sits near a viewport edge, the popover flips to the
+  opposite side instead of spilling off-screen (menu below a button at the
+  bottom of the screen flips above it). The preferred `position-area` is
+  tried first; the fallback only kicks in when it would overflow.
+
+### CI / engineering
+
+- **Release preflight** — the publish workflow now runs `npm whoami`
+  before the long build+test run, so a missing/invalid `NPM_TOKEN` fails
+  in seconds with a clear signal. The workflow header documents the
+  requirement in plain words: the token must be a **granular access token
+  with "Publish to the public registry" and "bypass 2FA" enabled** (npm
+  otherwise rejects automated publishes with `E403`).
+
+### Notes
+
+- The **Firefox off-screen-trigger clamp** remains an upstream browser bug
+  (popover clamps to the viewport edge when its trigger is off-screen at
+  open time). Verified still present in Firefox 153 on 2026-08-18; the
+  spec-default `position-visibility: anchors-visible` does not mitigate it
+  in any engine (both compute it as default yet neither hides the popover).
+  The flip fallback is the adjacent, shipable improvement; the bug itself
+  is tracked in status.md.
+
+## [1.2.0] — 2026-08-18
+
+Safari/WebKit tab-order shim for `details` panels, plus the regression
+tests that prove it works everywhere.
+
+### Added
+
+- **`js/details-tabindex.js`** (opt-in, <1KB, zero deps) — WebKit/Safari
+  skips the contents of an *open* `<details>` in the sequential tab order
+  (items stay clickable, but Tab never reaches them). The shim walks the
+  panel of every open `details` and gives its focusable descendants an
+  explicit `tabindex="0"` (preserving deliberate `tabindex="-1"`). Handles
+  panels opened after load via the `toggle` event, and panels already open
+  at init.
+- Wired into the all-in-one `js/barefoot.js` import.
+
+### Fixed
+
+- WebKit: links, buttons, and inputs inside open `<details>` panels are now
+  reachable by keyboard. The existing Esc-close test's WebKit workaround
+  was removed — the real Tab contract now runs in every engine.
+
 ## [1.1.0] — 2026-08-12
 
 Tight follow-up release: switch component, stackable tables, print
@@ -79,5 +133,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[1.3.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.0
+[1.2.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.2.0
 [1.1.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.1.0
 [1.0.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.0.0

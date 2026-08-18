@@ -1,20 +1,21 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-three small opt-in modules add the missing behavior. Each is a single
+four small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Size (raw) | Adds |
 |---|---|---|
 | `js/tabs.js` | ~2.7KB | WAI-ARIA tabs: roving tabindex, arrow-key nav |
 | `js/details-close.js` | ~0.9KB | Reliable Esc-close for `details[data-menu]` |
-| `js/popover-menu.js` | ~2.0KB | Arrow-key nav + focus restore for popover menus |
-| `js/barefoot.js` | — | All three in one import |
+| `js/details-tabindex.js` | ~1.9KB | WebKit tab-order fix for open `<details>` panels |
+| `js/popover-menu.js` | ~2.2KB | Arrow-key nav + focus restore for popover menus |
+| `js/barefoot.js` | — | All four in one import |
 
 ## Loading
 
 ```html
-<!-- all three -->
+<!-- all four -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -78,7 +79,30 @@ to the summary.
 Load the module; every `details[data-menu]` gets the behavior. No markup
 changes.
 
-## 3. Popover menu keyboard support (`js/popover-menu.js`)
+## 3. Details tab order (`js/details-tabindex.js`)
+
+WebKit/Safari skips the contents of an *open* `<details>` in the
+sequential tab order (a long-standing WebKit quirk): panel links and
+buttons stay clickable, but Tab never reaches them. This module walks the
+panel of every open `details` and gives its focusable descendants an
+explicit `tabindex="0"`, so keyboard users can Tab into the panel in every
+engine.
+
+```html
+<details>
+  <summary>Actions</summary>
+  <div><a href="#">Edit</a><a href="#">Share</a></div>
+</details>
+```
+
+- Watches the `open` attribute (a MutationObserver), so panels opened by
+  click, keyboard, or script are all covered.
+- Skips elements with a deliberate `tabindex="-1"`.
+- Panels already open when the module loads are fixed at init.
+- In Chromium/Firefox this is effectively a no-op — their native tab order
+  already includes open `<details>` contents.
+
+## 4. Popover menu keyboard support (`js/popover-menu.js`)
 
 For `[popover][data-kind="menu"]`, the APG menu-button behaviors:
 

@@ -64,8 +64,8 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 - **Safari doesn't tab into open `<details>` content** (a long-standing
   WebKit behavior): links inside an open `<details>` are skipped by the
   sequential tab order in Safari. They stay clickable and programmatically
-  focusable; use the **Popover API menu** if Tab-reachability in Safari
-  matters to you.
+  focusable; load the opt-in `js/details-tabindex.js` shim to give open
+  `<details>` panels a real tab stop in every engine.
 
 ## Conformance matrix (from demo/index.html)
 

@@ -64,7 +64,7 @@
   }
 
   /* ---- Opt-in anchoring ----
-     Browsers with anchor positioning (Chromium 125+, Firefox 128+,
+     Browsers with anchor positioning (Chromium 125+, Firefox 147+,
      Safari 18.2+) pin a popover to its trigger when it has a
      position-anchor. Give the trigger an anchor-name (use the popover's
      id) and the popover a matching position-anchor — one inline style
@@ -81,12 +81,23 @@
      — safe everywhere. (Note: we use a named anchor rather than the
      `anchor` attribute because Chromium doesn't support that attribute
      yet; and a shared anchor-name class silently breaks the moment a
-     page has two popovers — don't use one.) */
+     page has two popovers — don't use one.)
+
+     position-try-fallbacks: flip-block keeps the popover usable when
+     the trigger sits near a viewport edge — a menu anchored below a
+     button at the bottom of the screen flips above it instead of
+     spilling off-screen. It's a fallback list, so the preferred
+     position-area is tried first and untouched elsewhere. (Known
+     upstream gap: if the trigger itself is off-screen at open time,
+     Firefox clamps the popover to the viewport edge instead of hiding
+     it — a browser bug; nothing to do in our CSS. Tracked in status.md.) */
   [popover][data-kind="menu"] {
     position-area: bottom span-right;
+    position-try-fallbacks: flip-block;
   }
 
   [popover][data-kind="tooltip"] {
     position-area: top center;
+    position-try-fallbacks: flip-block;
   }
 }

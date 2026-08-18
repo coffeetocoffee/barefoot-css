@@ -80,19 +80,23 @@ document.querySelector("dialog").showModal();
 - **A11y:** light-dismiss + `Esc` native. Position with anchor positioning
   or your own CSS.
 - **Anchoring:** in browsers with anchor positioning (Chromium 125+,
-  Firefox 128+, Safari 18.2+), give the trigger `anchor-name: --x` and the
+  Firefox 147+, Safari 18.2+), give the trigger `anchor-name: --x` and the
   popover `position-anchor: --x` (use the popover's id as `--x`) and it
   pins to that trigger — the menu below, left-aligned; the tooltip above,
   centered. One inline style on each element, unique per popover, so any
   number of anchored popovers can coexist. (A named anchor is used rather
   than the `anchor` attribute because Chromium doesn't support that
   attribute yet.) Without anchor positioning the popover falls back to the
-  default placement.
+  default placement. `position-try-fallbacks: flip-block` flips the
+  popover to the opposite side when the trigger sits near a viewport edge
+  (e.g. a menu anchored below a button at the bottom of the screen opens
+  above it instead).
 - **Cross-browser:** `position-area` anchoring is verified in Chromium,
-  Firefox, and WebKit (Safari) by the CI behavior suite. One Firefox
-  limitation: if the trigger is *off-screen* when the popover opens, the
-  anchor resolves to the viewport edge — triggers are clicked in view, so
-  this only matters if a script opens a popover programmatically.
+  Firefox, and WebKit (Safari) by the CI behavior suite, including the
+  viewport-edge flip. One Firefox limitation: if the trigger is *off-screen*
+  when the popover opens, the anchor resolves to the viewport edge —
+  triggers are clicked in view, so this only matters if a script opens a
+  popover programmatically. Tracked in status.md; nothing to do in our CSS.
 - **Difference from dialog:** popover is non-modal (no focus trap) — right
   for menus/tooltips, not for blocking actions.
 
@@ -163,8 +167,9 @@ document.querySelector("dialog").showModal();
 
 ## Popover menus, Esc-close & friends
 
-See [docs/javascript.md](javascript.md) for the three opt-in JS modules
-(tabs, details Esc-close, popover-menu keyboard support) and their markup.
+See [docs/javascript.md](javascript.md) for the opt-in JS modules
+(tabs, details Esc-close, details tab-order shim, popover-menu keyboard
+support) and their markup.
 
 
 ## Carousel (scroll-snap)

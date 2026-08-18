@@ -46,13 +46,13 @@ npm install barefoot-css
 
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `index.css` (reset + tokens + base) | 3.77KB | **1.35KB** | 1.18KB |
-| `full.css` (everything) | 17.70KB | **4.16KB** | 3.66KB |
+| `index.css` (reset + tokens + base) | 3.96KB | **1.41KB** | 1.21KB |
+| `full.css` (everything) | 17.89KB | **4.15KB** | 3.67KB |
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.
 
-Opt-in JS (`dist/js/`, ~5.8KB total raw): `tabs.js`, `details-close.js`,
-`popover-menu.js`, plus `barefoot.js` (all three). See
+Opt-in JS (`dist/js/`, ~8KB total raw): `tabs.js`, `details-close.js`,
+`details-tabindex.js`, `popover-menu.js`, plus `barefoot.js` (all four). See
 [docs/javascript.md](docs/javascript.md).
 
 ## Browser baseline
@@ -69,7 +69,7 @@ src/
   reset.css, tokens.css, base.css
   components/          buttons, forms, dialog, popover, dropdown,
                        accordion, tabs, carousel, table, code, card, badge
-  js/                  opt-in modules: tabs, details-close, popover-menu, barefoot
+  js/                  opt-in modules: tabs, details-close, details-tabindex, popover-menu, barefoot
   themes/              editorial, dashboard, playful, custom template
   utilities.css        opt-in helpers
 demo/index.html        conformance page (keyboard walkthroughs)
@@ -99,7 +99,7 @@ npm run preview   # serve demo/ at localhost:4173
 
 ## Testing & CI
 
-`npm test` runs the full suite on Chromium — 20 tests, all passing:
+`npm test` runs the full suite on Chromium — 26 tests, all passing:
 
 - **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the
   demo page in four states (resting, dark, dialog-open, dropdown-open),
@@ -107,7 +107,8 @@ npm run preview   # serve demo/ at localhost:4173
   rings, `<details>` toggle, popover Esc, dialog focus return).
 - **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End),
   the tabs no-JS-first contract (all panels visible without the module;
-  marked + hidden with it), details Esc-close with focus return,
+  marked + hidden with it), details Esc-close with focus return, the
+  details tab-order shim (Tab reaches panel links in every engine),
   popover-menu keyboard nav.
 - **CSS behavior (`tests/css.spec.js`)** — container-query grid columns,
   container-unit carousel slides, anchored popover placement, theme switch
@@ -116,7 +117,7 @@ npm run preview   # serve demo/ at localhost:4173
   screenshots against committed baselines.
 
 The JS + CSS behavior suites also re-run cross-engine — `npm run test:ff`
-(Firefox) and `npm run test:webkit` (Safari's engine, 10 each, passing).
+(Firefox) and `npm run test:webkit` (Safari's engine, 15 each, passing).
 
 ```bash
 npm test                          # all tests (Chromium)

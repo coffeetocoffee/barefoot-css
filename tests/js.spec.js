@@ -75,7 +75,7 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
 });
 
 test.describe("opt-in JS: details Esc-close", () => {
-  test("Esc from inside a details menu closes it and returns focus to summary", async ({ page, browserName }) => {
+  test("Esc from inside a details menu closes it and returns focus to summary", async ({ page }) => {
     await page.goto("/demo/");
     const summary = page.locator('details[data-menu] summary');
     const panel = page.locator('details[data-menu] > :not(summary)');
@@ -84,20 +84,62 @@ test.describe("opt-in JS: details Esc-close", () => {
     await page.keyboard.press("Enter");
     await expect(panel).toBeVisible();
 
-    if (browserName === "webkit") {
-      // Safari/WebKit does not include the contents of an open <details>
-      // in the sequential tab order (a long-standing WebKit quirk), so the
-      // link is unreachable by Tab there. Focus it directly to still test
-      // the Esc-close + focus-return contract.
-      await page.locator('details[data-menu] a').first().focus();
-    } else {
-      await page.keyboard.press("Tab");
-      await expect(page.locator('details[data-menu] a').first()).toBeFocused();
-    }
+    await page.keyboard.press("Tab");
+    await expect(page.locator('details[data-menu] a').first()).toBeFocused();
 
     await page.keyboard.press("Escape");
     await expect(panel).toBeHidden();
     await expect(summary).toBeFocused();
+  });
+});
+
+test.describe("opt-in JS: details tab order (WebKit shim)", () => {
+  test("open panel descendants get tabindex=0 and are reachable by Tab in every engine", async ({ page }) => {
+    await page.goto("/demo/");
+    const summary = page.locator('details[data-menu] summary');
+    const link = page.locator('details[data-menu] a').first();
+
+    await expect(link).not.toHaveAttribute("tabindex", /.*/);
+
+    await summary.focus();
+    await page.keyboard.press("Enter");
+    await expect(link).toHaveAttribute("tabindex", "0");
+
+    // Tab lands on the panel link — the WebKit-skipped case is the point.
+    await summary.focus();
+    await page.keyboard.press("Tab");
+    await expect(link).toBeFocused();
+  });
+
+  test("already-open details are fixed at init; closed ones stay untouched", async ({ page }) => {
+    const markup = `
+      <details open>
+        <summary>Open</summary>
+        <a href="#">inside one</a>
+      </details>
+      <details>
+        <summary>Closed</summary>
+        <a href="#">inside two</a>
+      </details>`;
+    await page.setContent(markup);
+    await page.addScriptTag({ path: "./dist/js/details-tabindex.js", type: "module" });
+
+    await expect(page.locator('details[open] a')).toHaveAttribute("tabindex", "0");
+    await expect(page.locator("details:not([open]) a")).not.toHaveAttribute("tabindex", /.*/);
+  });
+
+  test("deliberate tabindex=-1 is preserved", async ({ page }) => {
+    const markup = `
+      <details open>
+        <summary>Open</summary>
+        <a href="#">normal</a>
+        <a href="#" tabindex="-1">removed</a>
+      </details>`;
+    await page.setContent(markup);
+    await page.addScriptTag({ path: "./dist/js/details-tabindex.js", type: "module" });
+
+    await expect(page.locator('a:has-text("normal")')).toHaveAttribute("tabindex", "0");
+    await expect(page.locator('a:has-text("removed")')).toHaveAttribute("tabindex", "-1");
   });
 });
 

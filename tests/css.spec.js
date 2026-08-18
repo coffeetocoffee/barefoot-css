@@ -98,6 +98,34 @@ test.describe("anchored popovers (anchor positioning)", () => {
     // a shared anchor name it would land there instead — guard it.
     expect(Math.abs(pb.x - ob.x)).toBeGreaterThan(10);
   });
+
+  test("menu flips above its trigger when the trigger sits near the viewport bottom", async ({ page }) => {
+    await page.goto("/demo/");
+    const trigger = page.locator("#help-trigger");
+    const pop = page.locator("#help-pop");
+
+    // Nudge the trigger to just above the bottom edge (in-view) so the
+    // preferred below-the-trigger placement would overflow the viewport.
+    // `behavior: "instant"` matters: the page uses scroll-behavior smooth,
+    // and Playwright's click auto-scroll would fight the placement.
+    await trigger.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      window.scrollTo({
+        top: window.scrollY + r.top - (window.innerHeight - 80),
+        behavior: "instant",
+      });
+    });
+
+    // Element.click() (not Playwright's click) so nothing re-scrolls.
+    await trigger.evaluate((el) => el.click());
+    await expect(pop).toBeVisible();
+
+    const tb = await trigger.boundingBox();
+    const pb = await pop.boundingBox();
+    // position-try-fallbacks: flip-block flipped it above: the popover's
+    // bottom edge sits at or above the trigger's top edge.
+    expect(pb.y + pb.height).toBeLessThanOrEqual(tb.y + 1);
+  });
 });
 
 test.describe("theme switching through view transitions", () => {
