@@ -1,6 +1,6 @@
 # Barefoot — Project plan
 
-Status: **Complete (0.1 → 1.0)** — see [status.md](status.md) for the live tracker.
+Status: **Complete (0.1 → 1.3.1)** — see [status.md](status.md) for the live tracker.
 
 ## Vision
 
@@ -117,18 +117,38 @@ and `.fz-*` utilities.
 - [x] **1.0** — `@container`-based responsive variants, `view-transition`
   hooks, anchored popovers (`position-area`), cross-browser behavior CI
   (Chromium + Firefox + WebKit), dogfooded docs site, npm publish prep.
-  Shipped; remaining release steps (commit, tag, publish) are in status.md.
+  Shipped as `barefoot-css@1.0.0` (2026-08-12).
+- [x] **1.1** — fresh-install packaging smoke test in CI, CSS-only switch
+  (`[data-switch]`), stackable tables (`[data-table="stack"]` +
+  `@container`), print stylesheet, typography (`text-wrap` +
+  `scrollbar-gutter`). Shipped as `barefoot-css@1.1.0` (2026-08-12).
+- [x] **1.2** — Safari/WebKit `<details>` tab-order shim
+  (`js/details-tabindex.js`), carried by the v1.3.0 release (never
+  published under its own version).
+- [x] **1.3** — anchor robustness (`position-try-fallbacks: flip-block`),
+  fail-fast release workflow (`npm whoami` preflight + bypass-2FA token
+  requirement). Shipped as `barefoot-css@1.3.0` (2026-08-18).
+- [x] **1.3.1** — anchored popover off-screen guard
+  (`js/popover-anchor.js`): closes an anchored `[popover]` whose trigger
+  is fully outside the viewport at open time (no engine honors
+  `position-visibility: anchors-visible`). Shipped as
+  `barefoot-css@1.3.1` (2026-08-18).
 
-## Beyond 1.0 (parked, not promised)
+## Next up — v1.4.0 candidates (deferred, pick from these)
 
-- Firefox: anchoring clamps to the viewport when the trigger is off-screen
-  at open time (real-browser finding) — revisit when Firefox fixes it.
-  The adjacent, fixable case (trigger near a viewport edge) shipped as
-  `position-try-fallbacks: flip-block` in 1.3; the off-screen-trigger
-  clamp itself is upstream (re-verified in Firefox 153, 2026-08-18).
-- ~~Safari: `<details>` panel contents are skipped by the tab order
-  (long-standing WebKit behavior)~~ — **done in 1.2** via the opt-in
-  `js/details-tabindex.js` shim.
+- [ ] Range-slider skin + `<progress>`/`<meter>` styling (CSS-only)
+- [ ] Tooltip via the Popover API (CSS-only, `data-tooltip`)
+- [ ] Carousel autoplay + controls as opt-in `js/carousel.js`
+- [ ] Breadcrumbs, pagination, one more starter theme
+- [ ] `prefers-contrast` / `prefers-reduced-transparency`, stylelint,
+      auto-generated README size table
+
+## Watch-list (no action until browsers fix it)
+
+- `position-visibility: anchors-visible` landing in engines — when it
+  does, the 1.3.1 `popover-anchor.js` guard becomes a no-op and can be
+  dropped. (The Firefox off-screen clamp itself is upstream, re-verified
+  in Firefox 153, 2026-08-18.)
 
 ## Decision log
 
@@ -147,6 +167,12 @@ and `.fz-*` utilities.
 - **Opt-in JS ships readable, not minified.** ~4.5KB total across the
   three modules; readable and commented source is a feature for a
   framework users may audit.
+- **Custom checkbox/radio skins were cut, a CSS-only switch was not.**
+  Native `accent-color` already follows the theme for checkboxes/radios,
+  so custom skins bought nothing but cross-browser risk. The switch
+  (`[data-switch]`) shipped because it genuinely needs drawing (track +
+  thumb); it keeps native checkbox semantics, focus, and
+  `:checked`/`:indeterminate`.
 - **Visual baselines are OS/hex-sensitive.** Committed as `*-win32.png`;
   CI runs the visual job on `windows-latest` to match.
 - **The 10KB budget is a floor, not a ceiling** — CI fails if

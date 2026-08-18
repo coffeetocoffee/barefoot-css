@@ -87,10 +87,10 @@
      the trigger sits near a viewport edge — a menu anchored below a
      button at the bottom of the screen flips above it instead of
      spilling off-screen. It's a fallback list, so the preferred
-     position-area is tried first and untouched elsewhere. (Known
-     upstream gap: if the trigger itself is off-screen at open time,
-     Firefox clamps the popover to the viewport edge instead of hiding
-     it — a browser bug; nothing to do in our CSS. Tracked in status.md.) */
+     position-area is tried first and untouched elsewhere. CSS can't
+     help when the trigger itself is off-screen at open time (the
+     engine clamps the popover to the viewport edge instead of hiding
+     it); opt-in js/popover-anchor.js closes that — see status.md.) */
   [popover][data-kind="menu"] {
     position-area: bottom span-right;
     position-try-fallbacks: flip-block;
