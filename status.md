@@ -9,8 +9,8 @@ Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, and 1.3.1 are **done**.
 - **1.3.1:** the last known gap closed — the opt-in `js/popover-anchor.js`
   guard closes an anchored popover whose trigger is fully off-screen at
   open time (Firefox clamped it to the viewport edge; Chromium/WebKit
-  pinned it off-screen; no engine hides it). Versioned
-  `barefoot-css@1.3.1`, published via the release workflow.
+  pinned it off-screen; no engine hides it). **Published as
+  `barefoot-css@1.3.1`** (2026-08-18).
 
 - **1.3:** anchor-positioning robustness (`position-try-fallbacks:
   flip-block` — anchored menus/tooltips flip away from viewport edges
@@ -208,8 +208,8 @@ the CSS budget — opt-in by import.
 - [x] Wired into the all-in-one `js/barefoot.js` import.
 - [x] Regression tests in every engine: script-open with the trigger
   off-screen closes the popover; a trigger in view still opens normally.
-- [x] Versioned `barefoot-css@1.3.1` — publish via the release workflow
-  (tag `v1.3.1` → CI publishes + creates the GitHub Release).
+- [x] Versioned `barefoot-css@1.3.1` — **published** (2026-08-18, tag
+  `v1.3.1` → CI released it; GitHub Release auto-created).
 
 ## Known gaps / next
 
