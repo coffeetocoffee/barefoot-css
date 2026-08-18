@@ -96,7 +96,10 @@ document.querySelector("dialog").showModal();
   viewport-edge flip. One Firefox limitation: if the trigger is *off-screen*
   when the popover opens, the anchor resolves to the viewport edge —
   triggers are clicked in view, so this only matters if a script opens a
-  popover programmatically. Tracked in status.md; nothing to do in our CSS.
+  popover programmatically. The opt-in `js/popover-anchor.js` module
+  closes such popovers (matching the spec intent of `position-visibility:
+  anchors-visible`); without it the popover may appear clipped at the
+  viewport edge in Firefox, or pinned off-screen in Chromium/WebKit.
 - **Difference from dialog:** popover is non-modal (no focus trap) — right
   for menus/tooltips, not for blocking actions.
 

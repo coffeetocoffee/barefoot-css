@@ -1,23 +1,29 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-18 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3**_
+_Last updated: 2026-08-18 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, and 1.3 are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, and 1.3.1 are **done**.
+
+- **1.3.1:** the last known gap closed — the opt-in `js/popover-anchor.js`
+  guard closes an anchored popover whose trigger is fully off-screen at
+  open time (Firefox clamped it to the viewport edge; Chromium/WebKit
+  pinned it off-screen; no engine hides it). Versioned
+  `barefoot-css@1.3.1`, published via the release workflow.
 
 - **1.3:** anchor-positioning robustness (`position-try-fallbacks:
   flip-block` — anchored menus/tooltips flip away from viewport edges
   instead of spilling off-screen) and a fail-fast release workflow
   (`npm whoami` preflight + documented bypass-2FA token requirement).
-  Versioned `barefoot-css@1.3.0` and ready to publish (tag
-  `v1.3.0` → CI publishes). The Firefox off-screen-trigger clamp
-  was re-verified and remains an upstream browser bug (details below).
+  **Published as `barefoot-css@1.3.0`** (2026-08-18).
 
 - **1.2:** the Safari/WebKit `<details>` tab-order shim
   (`js/details-tabindex.js`) — open-`<details>` panel contents are now
   reachable by Tab in every engine, with regression tests that run the
-  real keyboard contract cross-browser. Published as `barefoot-css@1.2.0`.
+  real keyboard contract cross-browser. **Note:** this milestone was
+  never published under its own version — the v1.3.0 release carried it
+  (see below).
 
 - **1.1:** switch component, stackable container-query tables, print
   stylesheet, `scrollbar-gutter` stability, and a fresh-install
@@ -44,24 +50,26 @@ Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, and 1.3 are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  27 passed (Chromium)
+$ npm test  →  29 passed (Chromium)
     8 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
      states report ZERO violations; focus ring; details toggle; popover
      Esc; dialog Esc + focus return)
-    9 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
+    11 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
      hidden inactive with it; details Esc-close with focus return; details
      tab-order shim: Tab reaches panel links in every engine, already-open
      panels fixed at init, closed untouched, tabindex=-1 preserved;
-     popover-menu arrows + focus restore)
-    6 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+     popover-menu arrows + focus restore; popover-anchor off-screen guard:
+     script-open with the trigger off-screen closes the popover, a trigger
+     in view still opens)
+    7 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
      popover below trigger; anchored popover flips above a trigger near
      the viewport bottom; theme switch via startViewTransition)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 16 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 16 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 18 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 18 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
@@ -70,6 +78,7 @@ $ npm run test:webkit   → 16 passed (WebKit/Safari: JS + CSS behavior)
 full.css                      17.96KB raw     4.17KB gzip     3.68KB brotli
 index.css                      3.96KB raw     1.41KB gzip     1.21KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
+js/popover-anchor.js           2.26KB raw     1.04KB gzip     0.84KB brotli
 js/details-tabindex.js         1.86KB raw     0.91KB gzip     0.73KB brotli
 js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
 components/forms.css           2.74KB raw     0.86KB gzip     0.71KB brotli
@@ -162,14 +171,18 @@ the CSS budget — opt-in by import.
   `<details>` in the sequential tab order (long-standing quirk); the shim
   walks the panel of every open `details` and gives its focusable
   descendants an explicit `tabindex="0"`, preserving deliberate
-  `tabindex="-1"`. Handles `toggle` events after load and panels already
-  open at init. Zero dependencies, <1KB, readable.
+  `tabindex="-1"`. Watches the `open` attribute via a MutationObserver
+  (a `<details>` can flip via click, keyboard, or script — and Chromium
+  doesn't fire the `toggle` event on a summary click) plus a pass at
+  init for panels already open. Zero dependencies, <1KB, readable.
 - [x] Wired into the all-in-one `js/barefoot.js` import.
 - [x] Regression tests: panel descendants reachable by Tab in every engine
   (the old WebKit workaround in the Esc-close test is gone — the real
   contract now runs everywhere); already-open panels fixed at init; closed
   panels untouched; deliberate `tabindex="-1"` preserved.
-- [x] **Published `barefoot-css@1.2.0` to npm** (2026-08-18).
+- [x] **Carried by the v1.3.0 release** — this milestone was not published
+  under its own version (no `v1.2.0` tag, no `barefoot-css@1.2.0` on npm);
+  it shipped inside `barefoot-css@1.3.0` (2026-08-18).
 
 ### 1.3 — anchor robustness + release hardening
 - [x] `position-try-fallbacks: flip-block` on anchored menus/tooltips —
@@ -180,22 +193,38 @@ the CSS budget — opt-in by import.
   + test run (a missing/invalid `NPM_TOKEN` dies in seconds), and the
   workflow header documents the granular-token-with-**"bypass 2FA"**
   requirement in plain words.
-- [x] **Versioned `barefoot-css@1.3.0`** — ready to publish via the
-  release workflow (tag `v1.3.0` → CI publishes).
+- [x] **Published `barefoot-css@1.3.0` to npm** (2026-08-18, tag
+  `v1.3.0` → CI released it; GitHub Release auto-created).
+
+### 1.3.1 — anchored popover off-screen guard
+- [x] `js/popover-anchor.js` (opt-in, ~2.3KB, zero deps) — closes an
+  anchored `[popover]` whose trigger is **fully outside the viewport**
+  when it opens (script-opened; click-to-open has the trigger in view).
+  Matches the spec intent of `position-visibility: anchors-visible`,
+  which no engine implements: Firefox 153 clamps such a popover to the
+  viewport edge, Chromium/WebKit pin it off-screen. Anchor found via
+  `anchorElement` where supported, else the documented inline
+  `anchor-name` pattern (computed-style fallback).
+- [x] Wired into the all-in-one `js/barefoot.js` import.
+- [x] Regression tests in every engine: script-open with the trigger
+  off-screen closes the popover; a trigger in view still opens normally.
+- [x] Versioned `barefoot-css@1.3.1` — publish via the release workflow
+  (tag `v1.3.1` → CI publishes + creates the GitHub Release).
 
 ## Known gaps / next
 
-- [ ] **Firefox anchor positioning (real finding, still open):**
-  `position-area` clamps to the viewport edge when the popover's trigger
-  is *off-screen* at open time (works fine when the trigger is in view —
-  the normal click-to-open case). **Re-verified 2026-08-18 in Firefox
-  153: still clamps.** The spec-default `position-visibility:
-  anchors-visible` (now Baseline 2026) does **not** mitigate it — both
-  Firefox and Chromium compute it as the default yet neither hides the
-  popover (empirically confirmed). What we shipped instead is the adjacent
-  fixable case: the viewport-edge flip (`position-try-fallbacks:
-  flip-block` in 1.3). The off-screen-trigger clamp itself is a browser
-  bug — watch for a fix; nothing more to do in Barefoot's CSS.
+- [x] **Firefox anchor positioning (off-screen trigger) — FIXED in 1.3.1.**
+  `position-area` clamped to the viewport edge when a popover's trigger
+  was *off-screen* at open time (Firefox 153), while Chromium/WebKit
+  pinned it to the off-screen trigger — no engine honors the spec-default
+  `position-visibility: anchors-visible`, so the popover was never hidden.
+  The opt-in `js/popover-anchor.js` guard closes an anchored popover whose
+  trigger is fully outside the viewport when it opens (spec-aligned),
+  verified in Chromium 29 / Firefox 18 / WebKit 18. Click-to-open with a
+  trigger in view is untouched. The 1.3 `position-try-fallbacks:
+  flip-block` remains for the adjacent near-viewport-edge case. If
+  `position-visibility: anchors-visible` ever lands in engines, the guard
+  becomes a no-op and can be dropped.
 
 ## Verification commands
 

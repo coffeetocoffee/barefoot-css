@@ -171,3 +171,48 @@ test.describe("opt-in JS: popover menu keyboard support", () => {
     await expect(trigger).toBeFocused();
   });
 });
+
+test.describe("opt-in JS: anchored popover off-screen guard", () => {
+  test("script-open with the trigger off-screen closes the popover (no viewport-edge clamp)", async ({ page }) => {
+    await page.goto("/demo/");
+    const trigger = page.locator("#help-trigger");
+    const pop = page.locator("#help-pop");
+
+    // Scroll the trigger fully below the viewport (its top edge just past
+    // the bottom). `behavior: "instant"` matters — the page scrolls smooth.
+    await trigger.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      window.scrollTo({
+        top: window.scrollY + r.top - (window.innerHeight + 100),
+        behavior: "instant",
+      });
+    });
+
+    await page.evaluate(() => document.querySelector("#help-pop").showPopover());
+
+    // The guard closes it immediately, so it can't be clamped to the
+    // viewport edge (Firefox 153) or pinned off-screen (Chromium/WebKit).
+    await expect(pop).not.toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.querySelector("#help-pop").matches(":popover-open"))
+      )
+      .toBe(false);
+  });
+
+  test("a trigger in view still opens its popover (guard doesn't over-hide)", async ({ page }) => {
+    await page.goto("/demo/");
+    const trigger = page.locator("#help-trigger");
+    const pop = page.locator("#help-pop");
+
+    // Normal click-to-open, trigger in view — untouched by the guard.
+    await trigger.click();
+    await expect(pop).toBeVisible();
+
+    // Programmatic open with the trigger scrolled into view — also kept.
+    await pop.evaluate((el) => el.hidePopover());
+    await trigger.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await page.evaluate(() => document.querySelector("#help-pop").showPopover());
+    await expect(pop).toBeVisible();
+  });
+});

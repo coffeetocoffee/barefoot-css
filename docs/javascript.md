@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-four small opt-in modules add the missing behavior. Each is a single
+five small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Size (raw) | Adds |
@@ -10,7 +10,8 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/details-close.js` | ~0.9KB | Reliable Esc-close for `details[data-menu]` |
 | `js/details-tabindex.js` | ~1.9KB | WebKit tab-order fix for open `<details>` panels |
 | `js/popover-menu.js` | ~2.2KB | Arrow-key nav + focus restore for popover menus |
-| `js/barefoot.js` | — | All four in one import |
+| `js/popover-anchor.js` | ~2.3KB | Closes anchored popovers whose trigger is off-screen |
+| `js/barefoot.js` | — | All five in one import |
 
 ## Loading
 
@@ -112,6 +113,28 @@ For `[popover][data-kind="menu"]`, the APG menu-button behaviors:
 
 This is **roving focus, not a modal trap** — popovers stay non-modal by
 design. Use a `<dialog>` for blocking actions.
+
+## 5. Anchored popover off-screen guard (`js/popover-anchor.js`)
+
+For `[popover]` elements that pin to a trigger via anchor positioning
+(`position-anchor`), the guard closes a popover whose trigger is **fully
+outside the viewport when it opens**:
+
+- A script calls `showPopover()` while the trigger is scrolled away, and
+  no engine hides the popover: Firefox 153+ clamps it to the viewport
+  edge (visible at the wrong place), Chromium/WebKit pin it to the
+  off-screen trigger. Both are wrong — the guard closes it instead,
+  matching the spec intent of `position-visibility: anchors-visible`,
+  which no engine implements yet.
+- A trigger **in view** is untouched: click-to-open and programmatic
+  opens behave exactly as native. Only the fully-off-screen case is
+  closed.
+- Runs once per popover open; the anchor is found via the popover's
+  `anchorElement` when supported, else the documented inline
+  `anchor-name` pattern (with a computed-style fallback).
+
+Without the module, the CSS-only behavior (including the viewport-edge
+flip in 1.3) is unchanged — the guard is purely additive.
 
 ## Why no bundle
 

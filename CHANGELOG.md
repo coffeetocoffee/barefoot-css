@@ -4,18 +4,58 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] — 2026-08-18
+
+Fix for the one remaining known gap: anchored popovers with an off-screen
+trigger.
+
+### Fixed
+
+- **Anchored popover off-screen guard** (`js/popover-anchor.js`, opt-in,
+  ~2.3KB, zero deps) — when a script opens an anchored popover whose
+  trigger is **fully outside the viewport**, the popover is closed
+  immediately. This resolves the Firefox behavior where such a popover is
+  clamped to the viewport edge (visible at the wrong place): Firefox 153
+  clamps, Chromium/WebKit pin it to the off-screen trigger — no engine
+  honors `position-visibility: anchors-visible` yet, so nothing hides it.
+  The guard matches that spec intent. A trigger **in view** is untouched:
+  click-to-open and programmatic opens behave exactly as native.
+- Wired into the all-in-one `js/barefoot.js` import.
+- Regression tests run in every engine (Chromium 29 / Firefox 18 /
+  WebKit 18 total suites): script-open with the trigger off-screen closes
+  the popover; a trigger in view still opens normally.
+
 ## [1.3.0] — 2026-08-18
 
-Anchor-positioning robustness (viewport-edge flip) and a fail-fast release
-workflow.
+Safari/WebKit tab-order shim for `details` panels, anchor-positioning
+robustness (viewport-edge flip), and a fail-fast release workflow.
+
+> **Note:** the shim work was originally scoped as "1.2.0", but it was
+> never published under its own version (no `v1.2.0` tag, no
+> `barefoot-css@1.2.0` on npm). It shipped in this release instead.
 
 ### Added
 
+- **`js/details-tabindex.js`** (opt-in, <1KB, zero deps) — WebKit/Safari
+  skips the contents of an *open* `<details>` in the sequential tab order
+  (items stay clickable, but Tab never reaches them). The shim walks the
+  panel of every open `details` and gives its focusable descendants an
+  explicit `tabindex="0"` (preserving deliberate `tabindex="-1"`). Watches
+  the `open` attribute via a `MutationObserver` — a `<details>` can flip
+  via click, keyboard, or script, and Chromium doesn't fire the `toggle`
+  event on a summary click — plus a pass at init for panels already open.
+- Wired into the all-in-one `js/barefoot.js` import.
 - **`position-try-fallbacks: flip-block`** on anchored menus and tooltips —
   when the trigger sits near a viewport edge, the popover flips to the
   opposite side instead of spilling off-screen (menu below a button at the
   bottom of the screen flips above it). The preferred `position-area` is
   tried first; the fallback only kicks in when it would overflow.
+
+### Fixed
+
+- WebKit: links, buttons, and inputs inside open `<details>` panels are now
+  reachable by keyboard. The existing Esc-close test's WebKit workaround
+  was removed — the real Tab contract now runs in every engine.
 
 ### CI / engineering
 
@@ -35,28 +75,6 @@ workflow.
   in any engine (both compute it as default yet neither hides the popover).
   The flip fallback is the adjacent, shipable improvement; the bug itself
   is tracked in status.md.
-
-## [1.2.0] — 2026-08-18
-
-Safari/WebKit tab-order shim for `details` panels, plus the regression
-tests that prove it works everywhere.
-
-### Added
-
-- **`js/details-tabindex.js`** (opt-in, <1KB, zero deps) — WebKit/Safari
-  skips the contents of an *open* `<details>` in the sequential tab order
-  (items stay clickable, but Tab never reaches them). The shim walks the
-  panel of every open `details` and gives its focusable descendants an
-  explicit `tabindex="0"` (preserving deliberate `tabindex="-1"`). Handles
-  panels opened after load via the `toggle` event, and panels already open
-  at init.
-- Wired into the all-in-one `js/barefoot.js` import.
-
-### Fixed
-
-- WebKit: links, buttons, and inputs inside open `<details>` panels are now
-  reachable by keyboard. The existing Esc-close test's WebKit workaround
-  was removed — the real Tab contract now runs in every engine.
 
 ## [1.1.0] — 2026-08-12
 
@@ -133,7 +151,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[1.3.1]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.1
 [1.3.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.0
-[1.2.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.2.0
 [1.1.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.1.0
 [1.0.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.0.0
