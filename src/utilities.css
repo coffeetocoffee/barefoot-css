@@ -55,6 +55,31 @@
     border: 0;
   }
 
+  /* Skip link — put it as the first element in <body>. Hidden (clipped)
+     until keyboard focus, then revealed top-left so Tab order lands
+     straight on "Skip to content". */
+  .fz-skip-link {
+    position: absolute;
+    inset-block-start: var(--fz-space-3);
+    inset-inline-start: var(--fz-space-3);
+    z-index: 999;
+    padding: var(--fz-space-2) var(--fz-space-3);
+    background: var(--fz-surface);
+    color: var(--fz-primary);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+    text-decoration: none;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .fz-skip-link:focus-visible {
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+  }
+
   /* Container query scopes */
   .fz-contain {
     container-type: inline-size;

@@ -1,6 +1,6 @@
 # Barefoot — Project plan
 
-Status: **Complete (0.1 → 1.4)** — see [status.md](status.md) for the live tracker.
+Status: **Complete (0.1 → 1.5)** — see [status.md](status.md) for the live tracker.
 
 ## Vision
 
@@ -135,8 +135,54 @@ and `.fz-*` utilities.
   `barefoot-css@1.3.1` (2026-08-18).
 - [x] **1.4** — the full candidate list below. Shipped as
   `barefoot-css@1.4.0` (2026-08-19).
+- [x] **1.5** — the candidate list below. Shipped as
+  `barefoot-css@1.5.0` (2026-08-19).
 
-## Next up — v1.4.0 candidates (all shipped in 1.4.0)
+## Next up — v1.5.0 candidates ("Forms, finished")
+
+1.4 skinned range/progress/meter, but the form is not finished: `<select>`
+still shows the raw OS arrow, `file`/`color` inputs are skipped, textareas
+don't auto-grow, and there's no required-asterisk affordance. v1.5 closes
+those gaps and rounds out base polish — all CSS-only, no new JS.
+
+### Form completion (`src/components/forms.css`)
+- [x] **`<select>` custom skin** — themed chevron (data-URI arrow on the
+  element, `appearance: none`), excluded for `[multiple]` / `[size]`;
+  keeps the native dropdown + focus ring.
+- [x] **`input[type="file"]`** — style `::file-selector-button` with the
+  button tokens (stays a native control).
+- [x] **`input[type="color"]`** — swatch: fixed size, radius, border,
+  focus ring.
+- [x] **Required marker** — `label:has(> input[required])::after` →
+  `"*"` in danger color (screen readers already announce `required`).
+- [x] **Auto-grow textarea** — `field-sizing: content` as an opt-in
+  `[data-autogrow]` (progressive enhancement; no-op where unsupported).
+- [x] **`form:has(:user-invalid)`** — subtle surface shift; docs on
+  pairing with `aria-invalid`.
+- [x] **`<output>`** live-region styling.
+
+### Base polish (`src/base.css`)
+- [x] `mark` (accent tint via `color-mix`), `kbd`, `samp`,
+  `figure`/`figcaption`, `address`, `del`/`ins`.
+
+### Utilities (`src/utilities.css`)
+- [x] **`.fz-skip-link`** — visually hidden until `:focus-visible`,
+  pinned top-left.
+
+### Motion (`src/components/accordion.css`)
+- [x] **`<details>` open/close height animation** — `interpolate-size:
+  allow-keywords` + `transition-behavior: allow-discrete` (safe no-op
+  elsewhere; must not break the existing accordion tests).
+
+### Tests / docs / versioning
+- [x] +7 CSS behavior tests (select chevron, file button, required
+  marker, autogrow, mark/kbd, form-`:has`, output), +1 a11y test (skip
+  link).
+- [x] Update `docs/components.md` (forms), `docs/accessibility.md`
+  (skip link + required marker), regenerate README size table.
+- [x] Versioned `barefoot-css@1.5.0` (published 2026-08-19).
+
+## Done — v1.4.0 candidates (all shipped in 1.4.0)
 
 - [x] Range-slider skin + `<progress>`/`<meter>` styling (CSS-only)
 - [x] Tooltip via the Popover API (CSS-only, `data-tooltip`)

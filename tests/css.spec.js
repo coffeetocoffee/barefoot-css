@@ -216,3 +216,60 @@ test.describe("themes & OS accessibility settings", () => {
     expect(text).toBe("rgb(0, 0, 0)");
   });
 });
+
+test.describe("v1.5 form completion", () => {
+  test("select gets a themed chevron (appearance none + reserved padding)", async ({ page }) => {
+    await page.goto("/demo/");
+    const sel = page.locator("#country");
+    await expect(sel).toHaveCSS("appearance", "none");
+    const arrow = await sel.evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(arrow).toContain("svg");
+    await expect(sel).not.toHaveCSS("padding-right", "0px");
+  });
+
+  test("file input button is skinned via ::file-selector-button", async ({ page }) => {
+    await page.goto("/demo/");
+    const btn = await page.evaluate(() => {
+      const el = document.querySelector("#file");
+      const s = getComputedStyle(el, "::file-selector-button");
+      return { bg: s.backgroundColor, h: s.height };
+    });
+    expect(btn.bg).toBe("rgb(244, 244, 244)"); // --fz-surface-alt (light)
+    expect(btn.h).toBe("40px"); // --fz-control-height
+  });
+
+  test("color input renders as a themed swatch", async ({ page }) => {
+    await page.goto("/demo/");
+    const c = page.locator("#favcolor");
+    await expect(c).toHaveCSS("height", "40px");
+    await expect(c).toHaveCSS("width", "40px");
+    await expect(c).toHaveCSS("border-radius", "4px"); // --fz-radius-sm
+  });
+
+  test("required controls get a danger asterisk on their wrapped label", async ({ page }) => {
+    await page.goto("/demo/");
+    const marker = await page.evaluate(() => {
+      const label = document.querySelector("label:has(> input[required])");
+      return getComputedStyle(label, "::after").content;
+    });
+    expect(marker).toBe('" *"');
+  });
+
+  test("autogrow textarea opts into field-sizing: content", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator("#bio")).toHaveCSS("field-sizing", "content");
+  });
+
+  test("form:has(:user-invalid) marks the whole form after user interaction", async ({ page }) => {
+    await page.goto("/demo/");
+    const email = page.locator("#email");
+    await email.fill("not-an-email");
+    await email.blur();
+    await expect(page.locator("#demo-form")).toHaveCSS("outline-style", "solid");
+  });
+
+  test("output is a styled live region", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator("#amount-out")).toHaveCSS("font-weight", "600");
+  });
+});

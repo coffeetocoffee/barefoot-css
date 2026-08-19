@@ -44,6 +44,7 @@
   </style>
 </head>
 <body>
+  <a class="fz-skip-link" href="#main">Skip to content</a>
   <header class="fz-container hero">
     <p class="fz-overline">Barefoot CSS</p>
     <h1>Conformance demo</h1>
@@ -128,7 +129,7 @@
     <!-- Forms -->
     <section id="forms" aria-labelledby="forms-title">
       <h2 id="forms-title">Forms</h2>
-      <form onsubmit="return false">
+      <form id="demo-form" onsubmit="return false">
         <div class="fz-stack">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" placeholder="Ada Lovelace" autocomplete="name">
@@ -143,8 +144,18 @@
             <option>Nowhere</option>
           </select>
 
-          <label for="bio">Bio</label>
-          <textarea id="bio" name="bio" rows="3" placeholder="Short and barefoot."></textarea>
+          <label for="bio">Bio (auto-grows)</label>
+          <textarea id="bio" name="bio" rows="3" data-autogrow placeholder="Short and barefoot."></textarea>
+
+          <label>Nickname (required)
+            <input type="text" name="nick" required placeholder="Required — wrapped label">
+          </label>
+
+          <label for="favcolor">Favorite color</label>
+          <input id="favcolor" name="favcolor" type="color" value="#1a1a1a">
+
+          <label for="file">Upload</label>
+          <input id="file" name="file" type="file">
 
           <fieldset>
             <legend>Preferences</legend>
@@ -157,6 +168,7 @@
 
           <label for="amount">Amount</label>
           <input id="amount" name="amount" type="range" min="0" max="100" value="40">
+          <output id="amount-out">40</output>
 
           <label for="prog">Progress</label>
           <progress id="prog" max="100" value="60">60%</progress>

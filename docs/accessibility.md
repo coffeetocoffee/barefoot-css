@@ -20,14 +20,20 @@ ARIA to the divs" — there are no divs.
   `button`, `details/summary`, `dialog`, `th/caption`, `progress`.
 - **Focus trap + Esc**, **light dismiss**: inherited from `<dialog>` and
   the Popover API.
+- **Skip link.** The `.fz-skip-link` utility (first element in `<body>`)
+  is clipped out of view until keyboard focus, so the first Tab stop is
+  "Skip to content" — the WCAG 2.4.1 bypass-block pattern, free.
+- **Validation without JS.** `:user-invalid` / `[aria-invalid]` get a
+  danger border, labels that wrap a required control get an asterisk, and
+  `form:has(:user-invalid)` draws a subtle ring around the whole form —
+  all browser-driven, no script.
 
 ## How each component earns it for free
 
 | Component | Native primitive | What the browser gives us |
 |---|---|---|
 | Button | `<button>` | `Enter`/`Space` activation, disabled semantics |
-| Forms | `<input>/<select>/<textarea>` | labels, validation, autofill, invalid state |
-| Dialog | `<dialog>` | focus trap, `Esc` close, modal semantics |
+| Forms | `<input>/<select>/<textarea>` | labels, validation, autofill, invalid state || Dialog | `<dialog>` | focus trap, `Esc` close, modal semantics |
 | Popover | Popover API | `Esc`, click-away dismiss, top-layer |
 | Dropdown | `<details>/<summary>` | disclosure semantics, toggle, `Esc` |
 | Accordion | `<details name>` | disclosure semantics, exclusivity |

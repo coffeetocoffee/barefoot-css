@@ -28,11 +28,20 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 <label for="email">Email</label>
 <input id="email" type="email">
 
+<label for="country">Country</label>
 <select id="country">…</select>
-<textarea rows="3">…</textarea>
+
+<label for="bio">Bio (auto-grows)</label>
+<textarea id="bio" rows="3" data-autogrow>…</textarea>
+
+<label>Nickname (required)
+  <input type="text" required>
+</label>
 
 <input type="checkbox"> <input type="radio">
+<input type="color"> <input type="file">
 <input type="range"> <progress max="100" value="60">
+<output>40</output>
 ```
 
 - Checkboxes/radios use `accent-color` — native, themed, free. Range
@@ -40,6 +49,23 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
   a `:focus-visible` ring), and `<progress>` / `<meter>` are drawn as
   themed bars (accent fill, alternate track) instead of the browser's
   default widget.
+- **`<select>`** gets a themed chevron (`appearance: none` + a
+  `currentColor` arrow); the dropdown list itself stays native.
+  `[multiple]` / `[size]` selects keep the browser's control.
+- **`input[type="file"]`** — the button is skinned via
+  `::file-selector-button` with the button tokens; it stays a native file
+  input.
+- **`input[type="color"]`** — a themed swatch sized to the control height.
+- **Auto-grow textarea** — add `data-autogrow` to opt into
+  `field-sizing: content` (progressive enhancement; the fixed `rows`/
+  `min-height` still hold where unsupported).
+- **Required marker** — a label that *wraps* a required control gets a
+  danger asterisk automatically (`label:has(> input[required])`). Screen
+  readers already announce the `required` attribute.
+- **Form-level invalid signal** — `form:has(:user-invalid)` draws a
+  subtle ring around the whole form once any touched field is invalid.
+  Pair each field with `.fz-field-error` text wired up via
+  `aria-describedby`.
 - Invalid states style automatically via `:user-invalid` (browser-driven,
   no JS) or `[aria-invalid]`.
 - **JS:** none.
@@ -139,6 +165,10 @@ document.querySelector("dialog").showModal();
 
 - A shared `name` makes the browser allow only one open — the
   one-at-a-time disclosure pattern, zero JS.
+- Panels animate open/close (height `0` ↔ `auto` via
+  `interpolate-size: allow-keywords`) where supported; engines without it
+  keep the instant toggle. `prefers-reduced-motion` collapses the
+  transition globally.
 - **JS:** none.
 - **A11y:** native disclosure semantics; `Tab` between summaries,
   `Enter` toggles.
@@ -269,4 +299,13 @@ support, carousel controls + autoplay) and their markup.
 
 `.fz-container`, `.fz-stack`, `.fz-row`, `.fz-gap-1…5`, `.fz-mt-4`,
 `.fz-mb-4`, `.fz-muted`, `.fz-center`, `.fz-overline`,
-`.fz-visually-hidden`. Layout-only; kept intentionally tiny.
+`.fz-visually-hidden`, `.fz-skip-link`. Layout-only; kept intentionally
+tiny.
+
+`.fz-skip-link` is the one a11y helper worth reaching for: put it as the
+**first element in `<body>`** and it's clipped out of view until keyboard
+focus, then revealed top-left so the first Tab stop is "Skip to content":
+
+```html
+<a class="fz-skip-link" href="#main">Skip to content</a>
+```

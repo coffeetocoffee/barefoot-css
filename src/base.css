@@ -81,6 +81,43 @@
     font-style: italic;
   }
 
+  mark {
+    background: color-mix(in oklab, var(--fz-primary), transparent 72%);
+    color: var(--fz-text);
+    border-radius: var(--fz-radius-sm);
+    padding-inline: 0.15em;
+  }
+
+  figure {
+    margin-block: var(--fz-space-5);
+  }
+
+  figure img {
+    border-radius: var(--fz-radius);
+  }
+
+  figcaption {
+    margin-block-start: var(--fz-space-2);
+    font-size: 0.875rem;
+    color: var(--fz-muted);
+  }
+
+  address {
+    font-style: normal;
+    color: var(--fz-muted);
+  }
+
+  del {
+    color: var(--fz-muted);
+  }
+
+  ins {
+    text-decoration: none;
+    background: color-mix(in oklab, var(--fz-primary), transparent 82%);
+    border-radius: var(--fz-radius-sm);
+    padding-inline: 0.1em;
+  }
+
   /* ---- Print ---- */
   @media print {
     /* Ink-first. Every component reads from the --fz-* tokens, so

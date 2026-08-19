@@ -92,4 +92,14 @@ test.describe("visible focus + keyboard contract", () => {
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();
   });
+
+  test("skip link is clipped until keyboard focus, then revealed", async ({ page }) => {
+    await page.goto("/demo/");
+    const skip = page.locator(".fz-skip-link");
+    // First tab stop on the page (it's first in <body>).
+    await expect(skip).toHaveCSS("clip-path", "inset(50%)");
+    await page.keyboard.press("Tab");
+    await expect(skip).toBeFocused();
+    await expect(skip).toHaveCSS("clip-path", "none");
+  });
 });

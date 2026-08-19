@@ -4,6 +4,55 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] — 2026-08-19
+
+The form is finished: `<select>` gets a themed chevron, `file` and `color`
+inputs get a skin, textareas can auto-grow, required fields announce
+themselves visually, and the whole form signals invalid state. Plus base
+typography polish, a skip-link utility, and animated accordion disclosure.
+
+### Added
+
+- **`<select>` skin** (`components/forms.css`) — `appearance: none` + a
+  themed chevron (a `currentColor` SVG arrow) replaces the raw OS arrow;
+  the dropdown list stays native. `[multiple]` / `[size]` selects keep
+  the browser's control.
+- **`input[type="file"]`** — the button is skinned via
+  `::file-selector-button` with the button tokens; it stays a native
+  file input.
+- **`input[type="color"]`** — a themed swatch sized to the control
+  height, with a focus ring from the shared input rule.
+- **Required marker** — a label that *wraps* a required control gets a
+  danger asterisk (`label:has(> input[required])::after`); screen
+  readers already announce the `required` attribute.
+- **Auto-grow textarea** — opt-in `[data-autogrow]` sets
+  `field-sizing: content` (progressive enhancement; the fixed rows /
+  `min-height` hold where unsupported).
+- **Form-level invalid signal** — `form:has(:user-invalid)` draws a
+  subtle ring around the whole form once any touched field is invalid.
+- **`<output>`** styled as a live-region value (semibold, text color).
+- **Base polish** (`src/base.css`) — `mark` (accent tint via
+  `color-mix`), `figure`/`figcaption`, `address` (no italics),
+  `del`/`ins` (kept inline, tinted). `kbd`/`samp` already shipped in
+  `components/code.css`.
+- **Skip-link utility** (`utilities.css`) — `.fz-skip-link`, first
+  element in `<body>`; clipped out of view until keyboard focus, then
+  revealed top-left (WCAG 2.4.1 bypass-block pattern).
+- **Accordion open/close motion** (`components/accordion.css`) — the
+  panel height animates `0` ↔ `auto` via
+  `interpolate-size: allow-keywords` where supported; engines without it
+  keep the instant toggle. `prefers-reduced-motion` collapses it
+  globally.
+
+### Tests
+
+- +7 CSS behavior tests (select chevron, file-button skin, color swatch,
+  required asterisk, autogrow, `form:has(:user-invalid)`, output), +1
+  a11y keyboard test (skip link hidden until focus).
+- Chromium 47 / Firefox 35 / WebKit 35 suites green; axe-core still zero
+  violations across all states; visual baselines regenerated for the
+  expanded demo form.
+
 ## [1.4.0] — 2026-08-19
 
 Form controls get a real skin, breadcrumbs and pagination ship, a fourth
@@ -213,6 +262,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[1.5.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.5.0
 [1.3.1]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.1
 [1.3.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.0
 [1.1.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.1.0

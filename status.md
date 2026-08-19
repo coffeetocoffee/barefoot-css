@@ -1,10 +1,19 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4**_
+_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, and 1.4 are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, and 1.5 are **done**.
+
+- **1.5.0:** the form is finished — a themed `<select>` chevron, a
+  skinned `file`/`color` input, opt-in auto-grow textareas
+  (`field-sizing: content`), a required-asterisk affordance for wrapped
+  labels, a `form:has(:user-invalid)` whole-form invalid ring, and
+  `<output>` styling. Plus base polish (`mark`, `figure`, `address`,
+  `del`/`ins`), the `.fz-skip-link` utility, and animated accordion
+  disclosure (`interpolate-size: allow-keywords`). All CSS-only.
+  **Published as `barefoot-css@1.5.0`** (2026-08-19).
 
 - **1.4.0:** the full v1.4.0 candidate list shipped — form-control skins
   (range/progress/meter), breadcrumbs, pagination, a fourth starter theme
@@ -57,10 +66,10 @@ Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, and 1.4 are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  39 passed (Chromium)
-    8 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
+$ npm test  →  47 passed (Chromium)
+    9 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
      states report ZERO violations; focus ring; details toggle; popover
-     Esc; dialog Esc + focus return)
+     Esc; dialog Esc + focus return; skip link hidden until keyboard focus)
     15 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
      hidden inactive with it; details Esc-close with focus return; details
@@ -71,38 +80,39 @@ $ npm test  →  39 passed (Chromium)
      in view still opens; carousel: role + aria-roledescription marked,
      prev/next scroll + wrap, autoplay initiates a forward scroll, autoplay
      stays off under reduced motion)
-    13 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+    20 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
      popover below trigger; anchored popover flips above a trigger near
      the viewport bottom; theme switch via startViewTransition;
      range/progress/meter skins; breadcrumbs separator + current muted;
      pagination current is a filled span; forest accent; prefers-contrast
-     tokens)
+     tokens; select chevron; file-button skin; color swatch; required
+     asterisk; autogrow field-sizing; form:has(:user-invalid); output)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 28 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 28 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 35 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 35 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      21.09KB raw     4.61KB gzip     4.08KB brotli
-index.css                      4.41KB raw     1.45KB gzip     1.24KB brotli
+full.css                      24.07KB raw     5.21KB gzip     4.62KB brotli
+index.css                      4.93KB raw     1.57KB gzip     1.35KB brotli
 js/carousel.js                 4.78KB raw     1.92KB gzip     1.63KB brotli
+components/forms.css           5.92KB raw     1.54KB gzip     1.31KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
 js/popover-anchor.js           2.26KB raw     1.04KB gzip     0.84KB brotli
-js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
 js/details-tabindex.js         1.86KB raw     0.91KB gzip     0.73KB brotli
-js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
-components/forms.css           4.13KB raw     1.10KB gzip     0.92KB brotli
+js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
 components/buttons.css         2.06KB raw     0.60KB gzip     0.49KB brotli
 components/dropdown.css        1.45KB raw     0.54KB gzip     0.42KB brotli
-components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
+utilities.css                  1.29KB raw     0.53KB gzip     0.42KB brotli
+js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
 components/popover.css         1.25KB raw     0.48KB gzip     0.39KB brotli
-components/accordion.css       1.10KB raw     0.40KB gzip     0.32KB brotli
+components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
+components/accordion.css       1.34KB raw     0.47KB gzip     0.37KB brotli
 components/table.css           0.87KB raw     0.40KB gzip     0.32KB brotli
-utilities.css                  0.87KB raw     0.40KB gzip     0.30KB brotli
 components/tabs.css            0.73KB raw     0.34KB gzip     0.26KB brotli
 components/pagination.css      0.75KB raw     0.33KB gzip     0.25KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
@@ -111,14 +121,15 @@ components/badge.css           0.52KB raw     0.27KB gzip     0.22KB brotli
 themes/forest.css              0.47KB raw     0.27KB gzip     0.23KB brotli
 themes/dashboard.css           0.49KB raw     0.26KB gzip     0.22KB brotli
 components/carousel.css        0.44KB raw     0.26KB gzip     0.20KB brotli
+components/breadcrumbs.css     0.51KB raw     0.25KB gzip     0.18KB brotli
+js/barefoot.js                 0.41KB raw     0.24KB gzip     0.20KB brotli
 components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
 themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
 components/view-transition.css 0.28KB raw     0.16KB gzip     0.14KB brotli
-components/breadcrumbs.css     0.51KB raw     0.25KB gzip     0.18KB brotli
 components/grid.css            0.26KB raw     0.16KB gzip     0.11KB brotli
 
-budget: dist/index.css 1.45KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.57KB gzip (limit 10.00KB) → PASS
 ```
 
 Opt-in JS (`dist/js/`, raw): carousel 4.78KB, tabs 2.70KB,
@@ -266,14 +277,51 @@ by import.
 - [x] **Versioned `barefoot-css@1.4.0`** — **published** (2026-08-19, tag
   `v1.4.0` → CI released it; GitHub Release auto-created).
 
+### 1.5 — forms, finished
+- [x] **`<select>` skin** (`components/forms.css`): `appearance: none` +
+  a themed chevron (a `currentColor` SVG arrow layered on the element)
+  replaces the raw OS arrow; the dropdown list stays native.
+  `[multiple]` / `[size]` selects keep the browser's control.
+- [x] **`input[type="file"]`**: the button is skinned via
+  `::file-selector-button` with the button tokens; still a native file
+  input (hover, theme-aware).
+- [x] **`input[type="color"]`**: a themed swatch sized to
+  `--fz-control-height` with the shared input focus ring.
+- [x] **Required marker**: `label:has(> input[required])::after` →
+  danger asterisk for wrapped labels (screen readers announce the
+  `required` attribute already).
+- [x] **Auto-grow textarea**: opt-in `[data-autogrow]` sets
+  `field-sizing: content` (progressive enhancement — verified in all
+  three engines, which now ship it).
+- [x] **`form:has(:user-invalid)`**: a subtle ring around the whole form
+  once any touched field is invalid.
+- [x] **`<output>`** styled as a live-region value.
+- [x] **Base polish** (`src/base.css`): `mark` (accent tint via
+  `color-mix`), `figure`/`figcaption`, `address`, `del`/`ins`. `kbd`/
+  `samp` were already shipped by `components/code.css`.
+- [x] **`.fz-skip-link`** (`utilities.css`): clipped until keyboard
+  focus, then revealed top-left — the WCAG 2.4.1 bypass-block pattern.
+- [x] **Accordion motion** (`components/accordion.css`): panel height
+  animates `0` ↔ `auto` via `interpolate-size: allow-keywords` (safe
+  no-op elsewhere; reduced motion collapses it globally).
+- [x] **Tests**: +7 CSS behavior (select chevron, file-button skin,
+  color swatch, required asterisk, autogrow, `form:has`, output), +1
+  a11y keyboard test (skip link hidden until focus).
+- [x] **Versioned `barefoot-css@1.5.0`** — **published** (2026-08-19, tag
+  `v1.5.0` → CI released it; GitHub Release auto-created).
+
 ## Known gaps / next
 
 - [x] **The entire v1.4.0 candidate list is shipped** (range/progress/meter
   skin, tooltip trigger, `js/carousel.js` controls + autoplay,
   breadcrumbs + pagination + forest theme, `prefers-contrast` /
   `prefers-reduced-transparency`, stylelint, auto-generated README size
-  table) — 2026-08-19. The next-version candidate list is open; no known
-  functional gaps remain.
+  table) — 2026-08-19.
+- [x] **The entire v1.5.0 candidate list is shipped** (select skin,
+  file/color inputs, auto-grow textareas, required marker,
+  `form:has(:user-invalid)`, `<output>`, base polish, `.fz-skip-link`,
+  accordion motion) — 2026-08-19. The next-version candidate list is
+  open; no known functional gaps remain.
 - [x] **Firefox anchor positioning (off-screen trigger) — FIXED in 1.3.1.**
   `position-area` clamped to the viewport edge when a popover's trigger
   was *off-screen* at open time (Firefox 153), while Chromium/WebKit

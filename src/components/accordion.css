@@ -62,4 +62,25 @@
   details[data-accordion] > :not(summary) {
     padding: 0 var(--fz-space-4) var(--fz-space-4);
   }
+
+  /* ---- Open/close motion ----
+     Animates the panel height. `interpolate-size: allow-keywords` lets
+     height transition between 0 and auto; engines without it keep the
+     instant toggle (safe no-op). Reduced motion collapses the
+     transition globally in base.css. */
+  @supports (interpolate-size: allow-keywords) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+
+    details[data-accordion] > :not(summary) {
+      height: 0;
+      overflow: hidden;
+      transition: height var(--fz-transition-slow);
+    }
+
+    details[data-accordion][open] > :not(summary) {
+      height: auto;
+    }
+  }
 }

@@ -55,6 +55,87 @@
     resize: vertical;
   }
 
+  /* Auto-grow textarea — opt in with [data-autogrow]. field-sizing is a
+     progressive enhancement: engines without it keep the fixed rows
+     (min-height still guarantees a usable box). */
+  textarea[data-autogrow] {
+    field-sizing: content;
+  }
+
+  /* ---- Select ----
+     Custom chevron (currentColor → theme-aware) replaces the native
+     arrow that appearance:none removes. The dropdown list stays native.
+     Multiple/size selects keep the browser's own control. */
+  select:not([multiple]):not([size]) {
+    appearance: none;
+    padding-inline-end: var(--fz-space-6);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--fz-space-3) center;
+    background-size: 1rem;
+  }
+
+  /* ---- File input ----
+     The native button is skinned with the button tokens via
+     ::file-selector-button; the control stays a native file input. */
+  input[type="file"] {
+    font-size: 0.875rem;
+    color: var(--fz-muted);
+  }
+
+  input[type="file"]::file-selector-button {
+    margin-inline-end: var(--fz-space-3);
+    height: var(--fz-control-height);
+    padding-inline: var(--fz-space-3);
+
+    font: inherit;
+    font-weight: 500;
+    color: var(--fz-text);
+    background: var(--fz-surface-alt);
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius-sm);
+
+    cursor: pointer;
+    transition:
+      background var(--fz-transition),
+      border-color var(--fz-transition);
+  }
+
+  input[type="file"]::file-selector-button:hover {
+    background: var(--fz-surface);
+    border-color: color-mix(in oklab, var(--fz-primary), var(--fz-border) 60%);
+  }
+
+  /* ---- Color input ----
+     A themed swatch: fixed control-sized box, radius, focus ring (the
+     shared input focus rule). */
+  input[type="color"] {
+    width: var(--fz-control-height);
+    height: var(--fz-control-height);
+    padding: 0;
+    border: 1px solid var(--fz-border);
+    border-radius: var(--fz-radius-sm);
+    background: var(--fz-surface);
+    cursor: pointer;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  input[type="color"]::-webkit-color-swatch,
+  input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--fz-radius-sm) - 1px);
+  }
+
+  /* ---- Output (live region) ---- */
+  output {
+    display: inline-block;
+    font-weight: 600;
+    color: var(--fz-text);
+  }
+
   /* Checkboxes & radios — native look, themed color. Keeps focus
      behavior free and keyboard-friendly for free. */
   input[type="checkbox"],
@@ -225,6 +306,25 @@
   textarea:user-invalid:focus-visible,
   [aria-invalid="true"]:focus-visible {
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-danger), transparent 75%);
+  }
+
+  /* Required marker — only when the control is wrapped in its label
+     (the accessible pattern). Screen readers already announce the
+     `required` attribute; the asterisk is a visual affordance. */
+  label:has(> input[required])::after,
+  label:has(> select[required])::after,
+  label:has(> textarea[required])::after {
+    content: " *";
+    color: var(--fz-danger);
+  }
+
+  /* The whole form signals once any field has been touched and is
+     invalid. A subtle ring — pair fields with aria-describedby error
+     text for the full picture. */
+  form:has(:user-invalid) {
+    outline: 1px solid color-mix(in oklab, var(--fz-danger), transparent 65%);
+    outline-offset: var(--fz-space-2);
+    border-radius: var(--fz-radius);
   }
 
   /* Help / error text. */
