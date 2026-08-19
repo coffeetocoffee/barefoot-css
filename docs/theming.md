@@ -29,6 +29,10 @@ Defined in `src/tokens.css` on `:root`.
 | `--fz-shadow-lifted` | soft drop | popovers, dialogs, `data-lifted` |
 | `--fz-content-width` | `64ch` | max measure for prose |
 | `--fz-max-width` | `72rem` | `.fz-container` width |
+| `--fz-grid-min` | `14rem` | minimum track in `[data-grid="auto-fit"/"auto-fill"]` |
+| `--fz-grid-gap` | `--fz-space-4` | default `[data-grid]` gap |
+| `--fz-sidebar-width` | `16rem` | aside width in `.fz-sidebar` |
+| `--fz-sticky-top` | `0` | offset for `.fz-sticky` |
 | `--fz-transition` / `--fz-transition-slow` | `150ms` / `250ms` ease | motion |
 
 ## How light/dark works (the trick)

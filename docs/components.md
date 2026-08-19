@@ -209,6 +209,36 @@ See [docs/javascript.md](javascript.md) for the opt-in JS modules
 (tabs, details Esc-close, details tab-order shim, popover-menu keyboard
 support, carousel controls + autoplay) and their markup.
 
+## Grid
+
+```html
+<div class="fz-contain">                 <!-- makes the query container -->
+  <div data-grid>                        <!-- 1 / 2 / 3 columns -->
+    <article class="card">…</article>
+  </div>
+</div>
+
+<div data-grid="auto-fit">               <!-- as many columns as fit -->
+  <article class="card">…</article>
+</div>
+
+<div data-grid="auto-fit" data-gap="2">  <!-- gap from the spacing scale -->
+  <article class="card">…</article>
+</div>
+```
+
+- **Base `[data-grid]`** — the column count responds to the *container's*
+  width (wrap it in `.fz-contain`): 1 column below 30rem, 2 up to 48rem,
+  3 after. Same markup, zero media queries.
+- **`[data-grid="auto-fit"]` / `[data-grid="auto-fill"]`** — flows as
+  many columns as fit, each at least `--fz-grid-min` (14rem by default).
+  Tracks size against the row itself, so no container query is needed.
+  (`auto-fill` keeps empty tracks; `auto-fit` collapses them.)
+- **`data-gap="0|1…8"`** — tunes the gap from the spacing scale
+  (default `4` → `--fz-space-4`). Override `--fz-grid-gap` for a global
+  default.
+- **JS:** none.
+- **A11y:** document order is visual order; cards are `<article>`s.
 
 ## Carousel (scroll-snap)
 
@@ -264,6 +294,35 @@ support, carousel controls + autoplay) and their markup.
 - **JS:** none.
 - **A11y:** `<nav aria-label>` + `<ol>`; labelled prev/next arrows.
 
+## Navigation
+
+```html
+<nav data-nav aria-label="Primary">
+  <a class="fz-brand" href="/">Acme</a>
+  <ul>
+    <li><a href="/" aria-current="page">Home</a></li>
+    <li><a href="/docs">Docs</a></li>
+  </ul>
+</nav>
+
+<nav data-nav="footer" aria-label="Footer">
+  <span>© 2026 Acme</span>
+  <ul><li><a href="/privacy">Privacy</a></li></ul>
+</nav>
+```
+
+- **`[data-nav]`** — a topbar row: an optional `.fz-brand` (a class,
+  because there is no native element for a site name) plus a link list.
+  The row wraps on narrow screens — nothing toggles, nothing hides.
+- **`data-nav="header"`** — topbar with a bottom hairline.
+  **`data-nav="footer"`** — footer row: muted, small, top hairline, links
+  pushed to the end.
+- **`aria-current="page"`** — marks the active link (accent + semibold).
+- **JS:** none.
+- **A11y:** a `<nav aria-label>` is a named landmark for free. Pair it
+  with `.fz-skip-link` as the first element in `<body>` so the first Tab
+  stop skips past the nav to `<main>`.
+
 ## Table
 
 ```html
@@ -297,10 +356,23 @@ support, carousel controls + autoplay) and their markup.
 
 ## Utilities
 
-`.fz-container`, `.fz-stack`, `.fz-row`, `.fz-gap-1…5`, `.fz-mt-4`,
-`.fz-mb-4`, `.fz-muted`, `.fz-center`, `.fz-overline`,
-`.fz-visually-hidden`, `.fz-skip-link`. Layout-only; kept intentionally
-tiny.
+Layout-only, opt-in:
+
+- **Container & flow** — `.fz-container`, `.fz-stack`, `.fz-row`,
+  `.fz-gap-1…5`.
+- **Spacing scale** — `.fz-mt-1…8` / `.fz-mb-1…8`
+  (margin-block-start/end), `.fz-p-1…8` (all-sides padding),
+  `.fz-px-1…8` / `.fz-py-1…8` (padding-inline/block). Each maps to the
+  matching `--fz-space-*` token. When `.fz-p-*` and an axis shorthand are
+  both applied, the axis shorthand wins.
+- **Split layout** — `.fz-sidebar`: the first child is the aside
+  (`--fz-sidebar-width`, 16rem), everything else flows beside it; the
+  split wraps to one column when the row can't fit the aside plus ≥60%
+  main. Zero media queries.
+- **Sticky** — `.fz-sticky` pins an element to `--fz-sticky-top` (`0`)
+  while its scrolling ancestor moves.
+- **Text & a11y** — `.fz-muted`, `.fz-center`, `.fz-overline`,
+  `.fz-visually-hidden`, `.fz-skip-link`.
 
 `.fz-skip-link` is the one a11y helper worth reaching for: put it as the
 **first element in `<body>`** and it's clipped out of view until keyboard

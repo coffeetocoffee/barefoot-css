@@ -64,6 +64,12 @@
     --fz-max-width: 72rem;
     --fz-control-height: 2.5rem;
     --fz-z-dialog: 50;
+
+    /* ---- Layout (v1.6: app shell) ---- */
+    --fz-grid-min: 14rem;      /* minimum track in [data-grid="auto-fit"] */
+    --fz-grid-gap: var(--fz-space-4);
+    --fz-sidebar-width: 16rem; /* fixed-ish aside in .fz-sidebar */
+    --fz-sticky-top: 0;        /* offset for .fz-sticky */
   }
 
   /* ---- Typed properties (progressive enhancement) ----

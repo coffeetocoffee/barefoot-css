@@ -1,6 +1,6 @@
 # Barefoot — Project plan
 
-Status: **Complete (0.1 → 1.5)** — see [status.md](status.md) for the live tracker.
+Status: **Complete (0.1 → 1.6)** — see [status.md](status.md) for the live tracker.
 
 ## Vision
 
@@ -137,25 +137,39 @@ and `.fz-*` utilities.
   `barefoot-css@1.4.0` (2026-08-19).
 - [x] **1.5** — the candidate list below. Shipped as
   `barefoot-css@1.5.0` (2026-08-19).
+- [x] **1.6** — the candidate list below. Shipped as
+  `barefoot-css@1.6.0` (2026-08-19).
 
-## Next — v1.6.0 → v2.0.0 ("the app shell → the design system")
+## Next — v1.7.0 → v2.0.0 ("feedback & status → the design system")
 
-Shipped through 1.5.0. The core (elements, components, interactivity,
-a11y, theming) is complete, and the size budget has ~6x headroom
-(`index.css` 1.57KB gzipped of the 10KB limit). The 1.6 → 2.0 arc fills
-what a real app still needs, then freezes the API.
+Shipped through 1.6.0. The app shell (layout, navigation, spacing) is
+complete, and the size budget has ~6x headroom (`index.css` 1.60KB
+gzipped of the 10KB limit). The 1.7 → 2.0 arc fills what a real app
+still needs, then freezes the API.
 
-### v1.6 — Layout & navigation (the app shell)
+## Done — v1.6.0 candidates ("layout & navigation", all shipped in 1.6.0)
 
-- [ ] **Full spacing scale from the tokens** — `.fz-mt/mb/p-{1..8}`,
-      `.fz-px/py` (layout-only; stays inside the no-utility-framework
-      non-goal).
-- [ ] **`[data-grid]` variants** — `auto-fit`/`minmax` + gap options.
-- [ ] **`components/nav.css`** — `<nav>` topbar/header/footer patterns,
-      `[aria-current]` states, pairs with `.fz-skip-link`.
-- [ ] **`.fz-sidebar` split layout** (content + aside) and a `.fz-sticky`
-      utility.
-- [ ] Tests, docs, and demo coverage for each.
+- [x] **Full spacing scale from the tokens** — `.fz-mt/mb-{1..8}`
+      (margin-block-start/end), `.fz-p-{1..8}` (all-sides padding),
+      `.fz-px/py-{1..8}` (padding-inline/block); each maps to the
+      matching `--fz-space-*` token, and the axis shorthands win over
+      `.fz-p-*` when both apply (layout-only; inside the
+      no-utility-framework non-goal).
+- [x] **`[data-grid]` variants** — `[data-grid="auto-fit"]` /
+      `[data-grid="auto-fill"]` (`repeat(auto-fit|auto-fill,
+      minmax(var(--fz-grid-min), 1fr))`, no container query needed) +
+      `data-gap="0|1…8"` gap options from the spacing scale. The fixed
+      container-query counts now exclude the variants explicitly.
+- [x] **`components/nav.css`** — `<nav data-nav>` topbar/header/footer
+      patterns (hairline separators), `.fz-brand`, `[aria-current]`
+      states, pairs with `.fz-skip-link`.
+- [x] **`.fz-sidebar` split layout** — first child is the aside
+      (`--fz-sidebar-width`, 16rem), the rest flows beside it, wrapping
+      to one column when the row can't fit the aside plus ≥60% main.
+      **`.fz-sticky`** utility pins to `--fz-sticky-top` (`0`).
+- [x] Tests (+7 CSS behavior, +1 a11y keyboard), docs
+      (components/accessibility/theming), and demo coverage for each.
+- [x] Versioned `barefoot-css@1.6.0` (2026-08-19).
 
 ### v1.7 — Feedback & status
 

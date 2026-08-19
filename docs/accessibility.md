@@ -39,6 +39,8 @@ ARIA to the divs" — there are no divs.
 | Accordion | `<details name>` | disclosure semantics, exclusivity |
 | Carousel | scrollable div + `tabindex` | keyboard scrolling (with our docs) |
 | Table | `<th>/<caption>` | header/cell association for SRs |
+| Navigation | `<nav>` + `<ul>` | named landmark, list semantics, `aria-current` |
+| Layout | flex/grid + `position: sticky` | visual structure only; order is document order |
 
 ## What we ask of you (small, documented)
 
@@ -86,6 +88,8 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 | Tabs (opt-in JS) | AA | Tab into tablist, arrows switch, Home/End jump |
 | Carousel | A | Tab, then arrow keys |
 | Table | AA | th/caption announced |
+| Navigation | AA | Tab through links; `aria-current` announces the current page |
+| Layout | AA | Sidebar stacks when narrow; sticky pins while scrolling |
 
 ## CI — wired (0.2, expanded for 1.0)
 

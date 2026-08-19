@@ -27,9 +27,83 @@
   .fz-gap-4 { gap: var(--fz-space-4); }
   .fz-gap-5 { gap: var(--fz-space-5); }
 
-  /* Spacing helpers */
+  /* Spacing scale — layout-only helpers, each mapped to a --fz-space-*
+     token (1…8). Logical properties: mt/mb are margin-block-start/end,
+     px/py are padding-inline/block. Order matters: the axis shorthands
+     (px/py) come AFTER the all-sides shorthand (p), so they win on
+     their axis when both classes are present. */
+  .fz-mt-1 { margin-block-start: var(--fz-space-1); }
+  .fz-mt-2 { margin-block-start: var(--fz-space-2); }
+  .fz-mt-3 { margin-block-start: var(--fz-space-3); }
   .fz-mt-4 { margin-block-start: var(--fz-space-4); }
+  .fz-mt-5 { margin-block-start: var(--fz-space-5); }
+  .fz-mt-6 { margin-block-start: var(--fz-space-6); }
+  .fz-mt-7 { margin-block-start: var(--fz-space-7); }
+  .fz-mt-8 { margin-block-start: var(--fz-space-8); }
+
+  .fz-mb-1 { margin-block-end: var(--fz-space-1); }
+  .fz-mb-2 { margin-block-end: var(--fz-space-2); }
+  .fz-mb-3 { margin-block-end: var(--fz-space-3); }
   .fz-mb-4 { margin-block-end: var(--fz-space-4); }
+  .fz-mb-5 { margin-block-end: var(--fz-space-5); }
+  .fz-mb-6 { margin-block-end: var(--fz-space-6); }
+  .fz-mb-7 { margin-block-end: var(--fz-space-7); }
+  .fz-mb-8 { margin-block-end: var(--fz-space-8); }
+
+  .fz-p-1 { padding: var(--fz-space-1); }
+  .fz-p-2 { padding: var(--fz-space-2); }
+  .fz-p-3 { padding: var(--fz-space-3); }
+  .fz-p-4 { padding: var(--fz-space-4); }
+  .fz-p-5 { padding: var(--fz-space-5); }
+  .fz-p-6 { padding: var(--fz-space-6); }
+  .fz-p-7 { padding: var(--fz-space-7); }
+  .fz-p-8 { padding: var(--fz-space-8); }
+
+  .fz-px-1 { padding-inline: var(--fz-space-1); }
+  .fz-px-2 { padding-inline: var(--fz-space-2); }
+  .fz-px-3 { padding-inline: var(--fz-space-3); }
+  .fz-px-4 { padding-inline: var(--fz-space-4); }
+  .fz-px-5 { padding-inline: var(--fz-space-5); }
+  .fz-px-6 { padding-inline: var(--fz-space-6); }
+  .fz-px-7 { padding-inline: var(--fz-space-7); }
+  .fz-px-8 { padding-inline: var(--fz-space-8); }
+
+  .fz-py-1 { padding-block: var(--fz-space-1); }
+  .fz-py-2 { padding-block: var(--fz-space-2); }
+  .fz-py-3 { padding-block: var(--fz-space-3); }
+  .fz-py-4 { padding-block: var(--fz-space-4); }
+  .fz-py-5 { padding-block: var(--fz-space-5); }
+  .fz-py-6 { padding-block: var(--fz-space-6); }
+  .fz-py-7 { padding-block: var(--fz-space-7); }
+  .fz-py-8 { padding-block: var(--fz-space-8); }
+
+  /* Sidebar split — a fixed-ish aside plus fluid main, wrapping to a
+     single column when the row can't fit the aside plus at least 60%
+     main. The first child is the sidebar; everything else flows beside
+     it. Zero media queries. */
+  .fz-sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--fz-space-6);
+  }
+
+  .fz-sidebar > :first-child {
+    flex: 1 1 var(--fz-sidebar-width, 16rem);
+    min-width: 0;
+  }
+
+  .fz-sidebar > :not(:first-child) {
+    flex: 999 1 0;
+    min-width: 60%;
+  }
+
+  /* Sticky — pin an element while its scrolling ancestor moves.
+     Override the offset with --fz-sticky-top. */
+  .fz-sticky {
+    position: sticky;
+    top: var(--fz-sticky-top, 0);
+  }
 
   /* Text */
   .fz-muted { color: var(--fz-muted); }

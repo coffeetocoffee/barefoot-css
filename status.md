@@ -1,10 +1,19 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5**_
+_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5 + 1.6**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, and 1.5 are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, 1.5, and 1.6
+are **done**.
+
+- **1.6.0:** the app shell — a full spacing scale
+  (`.fz-mt/mb-{1..8}`, `.fz-p-{1..8}`, `.fz-px/py-{1..8}` from the
+  tokens), auto-flowing `[data-grid="auto-fit"/"auto-fill"]` variants +
+  `data-gap` options, `components/nav.css` (`[data-nav]` topbar/footer
+  patterns, `.fz-brand`, `aria-current` states), the `.fz-sidebar`
+  split layout and `.fz-sticky` utility. All CSS-only, no new JS.
+  **Versioned as `barefoot-css@1.6.0`** (2026-08-19).
 
 - **1.5.0:** the form is finished — a themed `<select>` chevron, a
   skinned `file`/`color` input, opt-in auto-grow textareas
@@ -66,10 +75,11 @@ Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, and 1.5 are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  47 passed (Chromium)
-    9 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
+$ npm test  →  55 passed (Chromium)
+    10 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
      states report ZERO violations; focus ring; details toggle; popover
-     Esc; dialog Esc + focus return; skip link hidden until keyboard focus)
+     Esc; dialog Esc + focus return; skip link hidden until keyboard focus;
+     nav links focusable in order + aria-current carried)
     15 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
      hidden inactive with it; details Esc-close with focus return; details
@@ -80,44 +90,49 @@ $ npm test  →  47 passed (Chromium)
      in view still opens; carousel: role + aria-roledescription marked,
      prev/next scroll + wrap, autoplay initiates a forward scroll, autoplay
      stays off under reduced motion)
-    20 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+    27 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
      popover below trigger; anchored popover flips above a trigger near
      the viewport bottom; theme switch via startViewTransition;
      range/progress/meter skins; breadcrumbs separator + current muted;
      pagination current is a filled span; forest accent; prefers-contrast
      tokens; select chevron; file-button skin; color swatch; required
-     asterisk; autogrow field-sizing; form:has(:user-invalid); output)
+     asterisk; autogrow field-sizing; form:has(:user-invalid); output;
+     + v1.6: spacing scale mt/p/px/py mapping + axis-shorthand precedence;
+     grid auto-fit ≥--fz-grid-min; data-gap; nav current-page + pills;
+     nav footer variant; sidebar split + narrow stack; sticky)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 35 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 35 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 42 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 42 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      24.07KB raw     5.21KB gzip     4.62KB brotli
-index.css                      4.93KB raw     1.57KB gzip     1.35KB brotli
+full.css                      27.55KB raw     5.80KB gzip     5.05KB brotli
 js/carousel.js                 4.78KB raw     1.92KB gzip     1.63KB brotli
+index.css                      5.02KB raw     1.60KB gzip     1.39KB brotli
 components/forms.css           5.92KB raw     1.54KB gzip     1.31KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
 js/popover-anchor.js           2.26KB raw     1.04KB gzip     0.84KB brotli
 js/details-tabindex.js         1.86KB raw     0.91KB gzip     0.73KB brotli
 js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
+utilities.css                  3.08KB raw     0.83KB gzip     0.62KB brotli
 components/buttons.css         2.06KB raw     0.60KB gzip     0.49KB brotli
 components/dropdown.css        1.45KB raw     0.54KB gzip     0.42KB brotli
-utilities.css                  1.29KB raw     0.53KB gzip     0.42KB brotli
 js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
 components/popover.css         1.25KB raw     0.48KB gzip     0.39KB brotli
 components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
 components/accordion.css       1.34KB raw     0.47KB gzip     0.37KB brotli
 components/table.css           0.87KB raw     0.40KB gzip     0.32KB brotli
+components/nav.css             0.88KB raw     0.38KB gzip     0.30KB brotli
 components/tabs.css            0.73KB raw     0.34KB gzip     0.26KB brotli
 components/pagination.css      0.75KB raw     0.33KB gzip     0.25KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
 themes/editorial.css           0.57KB raw     0.32KB gzip     0.27KB brotli
 components/badge.css           0.52KB raw     0.27KB gzip     0.22KB brotli
+components/grid.css            0.98KB raw     0.27KB gzip     0.22KB brotli
 themes/forest.css              0.47KB raw     0.27KB gzip     0.23KB brotli
 themes/dashboard.css           0.49KB raw     0.26KB gzip     0.22KB brotli
 components/carousel.css        0.44KB raw     0.26KB gzip     0.20KB brotli
@@ -127,9 +142,8 @@ components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
 themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
 components/view-transition.css 0.28KB raw     0.16KB gzip     0.14KB brotli
-components/grid.css            0.26KB raw     0.16KB gzip     0.11KB brotli
 
-budget: dist/index.css 1.57KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.60KB gzip (limit 10.00KB) → PASS
 ```
 
 Opt-in JS (`dist/js/`, raw): carousel 4.78KB, tabs 2.70KB,
@@ -310,6 +324,40 @@ by import.
 - [x] **Versioned `barefoot-css@1.5.0`** — **published** (2026-08-19, tag
   `v1.5.0` → CI released it; GitHub Release auto-created).
 
+### 1.6 — layout & navigation (the app shell)
+- [x] **Full spacing scale from the tokens** (`utilities.css`):
+  `.fz-mt-1…8` / `.fz-mb-1…8` (margin-block-start/end),
+  `.fz-p-1…8` (all-sides padding), `.fz-px-1…8` / `.fz-py-1…8`
+  (padding-inline/block). Each maps to the matching `--fz-space-*`
+  token; axis shorthands are ordered after `.fz-p-*` so they win on
+  their axis when both apply.
+- [x] **`[data-grid]` variants** (`components/grid.css`):
+  `[data-grid="auto-fit"]` / `[data-grid="auto-fill"]` flow as many
+  columns as fit, each ≥ `--fz-grid-min` (14rem) — no container query
+  needed. `data-gap="0|1…8"` tunes the gap from the spacing scale;
+  `--fz-grid-gap` sets the default. The fixed container-query counts
+  exclude the variants (`:not([data-grid="auto-fit"]):not(...)`), so
+  `auto-fit` is never overridden at 30/48rem.
+- [x] **`components/nav.css`** — `[data-nav]` topbar row (brand + link
+  list, flex-wrap on narrow screens), `data-nav="header"` /
+  `data-nav="footer"` variants (hairline separators, muted footer),
+  `.fz-brand` (no native element for a site name), and
+  `[aria-current="page"]` accent + semibold. Pairs with
+  `.fz-skip-link`.
+- [x] **`.fz-sidebar` split layout** (`utilities.css`) — first child is
+  the aside (`--fz-sidebar-width`, 16rem); the rest flows beside it and
+  the split wraps to one column when the row can't fit the aside plus
+  ≥60% main. **`.fz-sticky`** pins to `--fz-sticky-top` (`0`).
+- [x] **New tokens** (`tokens.css`) — `--fz-grid-min`, `--fz-grid-gap`,
+  `--fz-sidebar-width`, `--fz-sticky-top`.
+- [x] **Tests**: +7 CSS behavior (spacing scale + axis-shorthand
+  precedence, auto-fit track count/width ≥ `--fz-grid-min`, `data-gap`,
+  nav current-page + pills, nav footer variant, sidebar split + narrow
+  stack, sticky), +1 a11y keyboard test (nav links focusable in order,
+  `aria-current` carried). Axe-core still zero violations across all
+  states.
+- [x] **Versioned `barefoot-css@1.6.0`** (2026-08-19).
+
 ## Known gaps / next
 
 - [x] **The entire v1.4.0 candidate list is shipped** (range/progress/meter
@@ -323,8 +371,10 @@ by import.
   accordion motion) — 2026-08-19.
 - [x] **v1.5.0 released** — tag `v1.5.0` pushed (2026-08-19) → the
   release workflow ran (build + budget + tests → `npm publish`); GitHub
-  Release auto-created. The next-version candidate list is open; no
-  known functional gaps remain.
+  Release auto-created.
+- [x] **The entire v1.6.0 candidate list is shipped** (spacing scale,
+  grid auto-fit/fill + `data-gap`, nav, sidebar split, sticky) —
+  2026-08-19. Versioned `barefoot-css@1.6.0`; the app shell is closed.
 - [x] **Firefox anchor positioning (off-screen trigger) — FIXED in 1.3.1.**
   `position-area` clamped to the viewport edge when a popover's trigger
   was *off-screen* at open time (Firefox 153), while Chromium/WebKit
@@ -337,15 +387,14 @@ by import.
   flip-block` remains for the adjacent near-viewport-edge case. If
   `position-visibility: anchors-visible` ever lands in engines, the guard
   becomes a no-op and can be dropped.
-- [ ] **Next arc: v1.6.0 → v2.0.0** ("the app shell → the design
-  system") — planned in plan.md. 1.6 fills layout & navigation (spacing
-  scale, grid variants, nav, sidebar split, sticky); 1.7 ships status
-  feedback (success/info/warning tokens, alerts, field-level validation
-  states, skeleton); 1.8 ships content & media (fluid type, `.fz-prose`,
+- [ ] **Next arc: v1.7.0 → v2.0.0** ("feedback & status → the design
+  system") — planned in plan.md. 1.7 ships status feedback
+  (success/info/warning tokens, alerts, field-level validation states,
+  skeleton); 1.8 ships content & media (fluid type, `.fz-prose`,
   avatars, aspect-ratio media); 1.9 closes every component gap + a
   consistency pass; 2.0 freezes the public API, audits the token system,
   ships a theme gallery, and rewrites the docs. The budget has ~6x
-  headroom (`index.css` 1.57KB gzipped of 10KB) — no size pressure on
+  headroom (`index.css` 1.60KB gzipped of 10KB) — no size pressure on
   the arc. — 2026-08-19.
 
 ## Verification commands

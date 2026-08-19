@@ -1,0 +1,85 @@
+/* Barefoot — navigation.
+   Element-first site chrome. A <nav> landmark with an aria-label gets a
+   topbar row: an optional brand (.fz-brand — there is no native element
+   for a site name) at the start, a link list beside it. The row wraps on
+   narrow screens — nothing toggles, nothing hides.
+
+   <nav data-nav aria-label="Primary">
+     <a class="fz-brand" href="/">Acme</a>
+     <ul>
+       <li><a href="/" aria-current="page">Home</a></li>
+       <li><a href="/docs">Docs</a></li>
+     </ul>
+   </nav>
+
+   Variants:
+     data-nav="header"  → topbar with a bottom hairline
+     data-nav="footer"  → footer row: muted, small, top hairline
+
+   Pairs with .fz-skip-link (put that FIRST in <body>): the first Tab
+   stop jumps past this nav to <main>. Mark the active link with
+   aria-current="page" — it gets the accent + semibold. */
+@layer components {
+  [data-nav] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fz-space-3);
+    padding-block: var(--fz-space-3);
+  }
+
+  [data-nav] > ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fz-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-nav] a {
+    display: inline-block;
+    padding: var(--fz-space-2) var(--fz-space-3);
+    border-radius: var(--fz-radius);
+    color: var(--fz-text);
+    text-decoration: none;
+  }
+
+  [data-nav] a:hover {
+    background: var(--fz-surface-alt);
+  }
+
+  [data-nav] [aria-current="page"] {
+    color: var(--fz-primary);
+    font-weight: 600;
+  }
+
+  [data-nav="header"] {
+    border-block-end: 1px solid var(--fz-border);
+  }
+
+  [data-nav="footer"] {
+    justify-content: space-between;
+    border-block-start: 1px solid var(--fz-border);
+    color: var(--fz-muted);
+    font-size: 0.875rem;
+  }
+
+  [data-nav="footer"] a {
+    color: var(--fz-muted);
+  }
+
+  .fz-brand {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fz-text);
+    text-decoration: none;
+  }
+
+  [data-nav] .fz-brand {
+    /* Flush at the row start and push the link list to the end. */
+    margin-inline-end: auto;
+    padding: 0;
+  }
+}

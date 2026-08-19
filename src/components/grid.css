@@ -10,23 +10,51 @@
    </div>
 
    Put that same markup in a 14rem sidebar → 1 column.
-   Full-width page → 3 columns. Same CSS, zero media queries. */
+   Full-width page → 3 columns. Same CSS, zero media queries.
+
+   Variants (v1.6):
+     [data-grid="auto-fit"]  → repeat(auto-fit,  minmax(--fz-grid-min, 1fr))
+     [data-grid="auto-fill"] → repeat(auto-fill, minmax(--fz-grid-min, 1fr))
+       The track count flows with the row itself — no container query
+       needed; --fz-grid-min (14rem) is the minimum track size.
+     data-gap="0|1…8"        → gap from the spacing scale (default 4). */
 @layer components {
   [data-grid] {
     display: grid;
-    gap: var(--fz-space-4);
+    gap: var(--fz-grid-gap, var(--fz-space-4));
     grid-template-columns: 1fr;
   }
 
   @container (min-width: 30rem) {
-    [data-grid] {
+    /* The auto-fit/fill variants set their own track list — the fixed
+       responsive counts must not override them. */
+    [data-grid]:not([data-grid="auto-fit"]):not([data-grid="auto-fill"]) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @container (min-width: 48rem) {
-    [data-grid] {
+    [data-grid]:not([data-grid="auto-fit"]):not([data-grid="auto-fill"]) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
+
+  [data-grid="auto-fit"] {
+    grid-template-columns: repeat(auto-fit, minmax(var(--fz-grid-min, 14rem), 1fr));
+  }
+
+  [data-grid="auto-fill"] {
+    grid-template-columns: repeat(auto-fill, minmax(var(--fz-grid-min, 14rem), 1fr));
+  }
+
+  /* Gap options — any step of the spacing scale. */
+  [data-grid][data-gap="0"] { gap: 0; }
+  [data-grid][data-gap="1"] { gap: var(--fz-space-1); }
+  [data-grid][data-gap="2"] { gap: var(--fz-space-2); }
+  [data-grid][data-gap="3"] { gap: var(--fz-space-3); }
+  [data-grid][data-gap="4"] { gap: var(--fz-space-4); }
+  [data-grid][data-gap="5"] { gap: var(--fz-space-5); }
+  [data-grid][data-gap="6"] { gap: var(--fz-space-6); }
+  [data-grid][data-gap="7"] { gap: var(--fz-space-7); }
+  [data-grid][data-gap="8"] { gap: var(--fz-space-8); }
 }

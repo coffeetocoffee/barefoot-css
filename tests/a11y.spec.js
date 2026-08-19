@@ -102,4 +102,15 @@ test.describe("visible focus + keyboard contract", () => {
     await expect(skip).toBeFocused();
     await expect(skip).toHaveCSS("clip-path", "none");
   });
+
+  test("nav: links are focusable in order, current page carries aria-current", async ({ page }) => {
+    await page.goto("/demo/");
+    const links = page.locator("#demo-nav a");
+    await expect(links.first()).toHaveText("Barefoot"); // brand is a link
+    await links.nth(0).focus();
+    await expect(links.nth(0)).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(links.nth(1)).toBeFocused();
+    await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
+  });
 });

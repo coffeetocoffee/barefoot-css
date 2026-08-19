@@ -86,6 +86,8 @@
           <tr><td>Table</td><td class="wcag">AA</td><td>Screen reader: headers announced via <code>&lt;th&gt;</code>. Hover affordance only.</td></tr>
           <tr><td>Breadcrumbs</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; current page announced via <code>aria-current="page"</code>.</td></tr>
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
+          <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>.</td></tr>
+          <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.fz-sticky</code> pins while scrolling.</td></tr>
         </tbody>
       </table>
     </section>
@@ -377,6 +379,77 @@
           <li><a href="#pagination" aria-label="Next page">&rarr;</a></li>
         </ul>
       </nav>
+    </section>
+
+    <!-- Navigation -->
+    <section id="nav" aria-labelledby="nav-title">
+      <h2 id="nav-title">Navigation</h2>
+      <p>A topbar <code>&lt;nav&gt;</code> landmark: a <code>.fz-brand</code>, a link list, and the current page marked with <code>aria-current="page"</code>. The row wraps on narrow screens — nothing toggles, nothing hides. Pair with <code>.fz-skip-link</code> as the first element in <code>&lt;body&gt;</code>.</p>
+      <nav data-nav="header" aria-label="Primary" id="demo-nav">
+        <a class="fz-brand" href="#nav">Barefoot</a>
+        <ul>
+          <li><a href="#nav" aria-current="page">Home</a></li>
+          <li><a href="#typography">Docs</a></li>
+          <li><a href="#forms">Forms</a></li>
+          <li><a href="#cards">Components</a></li>
+        </ul>
+      </nav>
+      <nav data-nav="footer" aria-label="Footer" class="fz-mt-5">
+        <span>&copy; 2026 Barefoot</span>
+        <ul>
+          <li><a href="#nav">Privacy</a></li>
+          <li><a href="#nav">Terms</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <!-- Layout: sidebar + sticky -->
+    <section id="layout" aria-labelledby="layout-title">
+      <h2 id="layout-title">Layout</h2>
+      <p><code>.fz-sidebar</code> splits a fixed-ish aside (first child, <code>--fz-sidebar-width</code> = 16rem) from fluid content; when the row can't fit the aside plus at least 60% main it stacks to one column. <code>.fz-sticky</code> pins an element to <code>--fz-sticky-top</code> while its scrolling ancestor moves.</p>
+      <div class="fz-sidebar" id="demo-sidebar">
+        <aside class="card">
+          <header>Aside</header>
+          <p>The first child is the sidebar. In a narrow row it stacks above the main content.</p>
+          <p class="fz-mt-4 fz-sticky" id="demo-sticky"><span class="badge">sticky</span> I stay pinned while the page scrolls.</p>
+        </aside>
+        <div>
+          <h3>Main content</h3>
+          <p>Everything after the first child flows beside it. The main column grows to fill the row; when the row can't fit the sidebar plus at least 60% main, the whole split wraps to a single column — the classic sidebar pattern, zero media queries.</p>
+          <p>There is no dedicated sticky section to try; the pinned badge above only demonstrates the utility's <code>position: sticky</code> + <code>--fz-sticky-top</code> contract.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid variants -->
+    <section id="grid-variants" aria-labelledby="grid-variants-title">
+      <h2 id="grid-variants-title">Grid variants</h2>
+      <p><code>[data-grid="auto-fit"]</code> flows as many columns as fit, each at least <code>--fz-grid-min</code> (14rem) — no container query needed, the tracks size against the row itself. <code>data-gap="0|1…8"</code> tunes the gap from the spacing scale.</p>
+      <div data-grid="auto-fit" id="demo-grid-auto">
+        <article class="card"><header>Auto-fit</header><p>As many columns as fit, each ≥ 14rem.</p></article>
+        <article class="card"><header>Auto-fit</header><p>Resize the row and the flow follows.</p></article>
+        <article class="card"><header>Auto-fit</header><p>No container queries involved.</p></article>
+      </div>
+      <div data-grid="auto-fit" data-gap="2" id="demo-grid-gap" class="fz-mt-5">
+        <article class="card"><header>Tight</header><p>data-gap="2" → 0.5rem gaps.</p></article>
+        <article class="card"><header>Tight</header><p>Any 1…8 from the spacing scale.</p></article>
+        <article class="card"><header>Tight</header><p>Same auto-fit flow, tighter rhythm.</p></article>
+      </div>
+    </section>
+
+    <!-- Spacing utilities -->
+    <section id="spacing" aria-labelledby="spacing-title">
+      <h2 id="spacing-title">Spacing utilities</h2>
+      <p>The full token scale as layout-only helpers: <code>.fz-mt-*</code> / <code>.fz-mb-*</code> (block-start/end margins), <code>.fz-p-*</code> (all-sides padding), <code>.fz-px-*</code> / <code>.fz-py-*</code> (inline/block padding), each mapped to <code>--fz-space-1…8</code>.</p>
+      <div class="fz-row fz-gap-2">
+        <span class="badge" data-variant="primary">mt-6</span>
+        <span class="badge">p-5</span>
+        <span class="badge">px-3</span>
+        <span class="badge">py-2</span>
+      </div>
+      <div class="fz-mt-6 fz-p-5 fz-px-3 fz-py-2" id="spacing-probe">
+        <p class="fz-muted" style="margin-block: 0">This box uses <code>fz-mt-6 fz-p-5 fz-px-3 fz-py-2</code>: 2rem of margin above, 0.5rem padding on the block axis and 0.75rem on the inline axis (the axis shorthands win over the all-sides padding).</p>
+      </div>
     </section>
 
     </main>

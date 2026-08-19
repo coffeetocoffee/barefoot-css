@@ -4,6 +4,48 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] — 2026-08-19
+
+The app shell: full spacing scale, auto-flowing grid variants, site
+navigation, and split/sticky layout — everything a real app needs to put
+Barefoot's components on a page. All CSS-only, no new JS.
+
+### Added
+
+- **Full spacing scale** (`utilities.css`) — `.fz-mt-1…8` /
+  `.fz-mb-1…8` (margin-block-start/end), `.fz-p-1…8` (all-sides
+  padding), `.fz-px-1…8` / `.fz-py-1…8` (padding-inline/block), each
+  mapped to the matching `--fz-space-*` token. Axis shorthands win over
+  `.fz-p-*` when both are applied.
+- **Grid variants** (`components/grid.css`) — `[data-grid="auto-fit"]`
+  and `[data-grid="auto-fill"]` flow as many columns as fit (each ≥
+  `--fz-grid-min`, 14rem) without a container query, and
+  `data-gap="0|1…8"` tunes the gap from the spacing scale. The fixed
+  container-query counts no longer override the variants.
+- **Navigation** (`components/nav.css`) — `[data-nav]` topbar row with
+  an optional `.fz-brand` and a link list (`data-nav="header"` /
+  `"footer"` variants, hairline separators); `aria-current="page"`
+  marks the active link (accent + semibold). Wraps on narrow screens —
+  nothing toggles, nothing hides.
+- **Split layout** (`utilities.css`) — `.fz-sidebar`: the first child is
+  the aside (`--fz-sidebar-width`, 16rem), the rest flows beside it, and
+  the split stacks to one column when the row can't fit the aside plus
+  ≥60% main. Zero media queries.
+- **Sticky utility** (`utilities.css`) — `.fz-sticky` pins an element to
+  `--fz-sticky-top` (`0`) while its scrolling ancestor moves.
+- **New tokens** (`tokens.css`) — `--fz-grid-min`, `--fz-grid-gap`,
+  `--fz-sidebar-width`, `--fz-sticky-top`.
+
+### Tests
+
+- +7 CSS behavior tests (spacing scale + axis-shorthand precedence,
+  grid `auto-fit` track count/width, `data-gap`, nav current-page +
+  pills, nav footer variant, sidebar split + narrow stack, sticky) and
+  +1 a11y keyboard test (nav links focusable in order, `aria-current`
+  carried). Chromium 55 / Firefox 42 / WebKit 42 suites green; axe-core
+  still zero violations; visual baselines regenerated for the expanded
+  demo.
+
 ## [1.5.0] — 2026-08-19
 
 The form is finished: `<select>` gets a themed chevron, `file` and `color`
@@ -262,6 +304,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[1.6.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.6.0
 [1.5.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.5.0
 [1.3.1]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.1
 [1.3.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.0

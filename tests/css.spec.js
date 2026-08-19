@@ -273,3 +273,87 @@ test.describe("v1.5 form completion", () => {
     await expect(page.locator("#amount-out")).toHaveCSS("font-weight", "600");
   });
 });
+
+test.describe("v1.6 layout & navigation", () => {
+  test("spacing scale: mt/p/px/py map to the token scale (axis shorthands win)", async ({ page }) => {
+    await page.goto("/demo/");
+    const cs = await page.locator("#spacing-probe").evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        mt: s.marginBlockStart,
+        pt: s.paddingTop,
+        pb: s.paddingBottom,
+        pl: s.paddingLeft,
+        pr: s.paddingRight,
+      };
+    });
+    expect(cs.mt).toBe("32px");  // --fz-space-6 (2rem)
+    expect(cs.pt).toBe("8px");   // --fz-space-2 (0.5rem, from py-2)
+    expect(cs.pb).toBe("8px");
+    expect(cs.pl).toBe("12px");  // --fz-space-3 (0.75rem, from px-3)
+    expect(cs.pr).toBe("12px");
+  });
+
+  test("grid auto-fit: as many columns as fit, each ≥ --fz-grid-min", async ({ page }) => {
+    await page.goto("/demo/");
+    const cards = page.locator("#demo-grid-auto .card");
+    // All three cards on one row → the grid fit ≥3 columns.
+    const tops = await cards.evaluateAll((els) =>
+      els.map((el) => Math.round(el.getBoundingClientRect().top))
+    );
+    expect(new Set(tops).size).toBe(1);
+    // Each card ≥ the min track (14rem = 224px), minus 1px rounding.
+    for (const w of await cards.evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().width)
+    )) {
+      expect(w).toBeGreaterThanOrEqual(223);
+    }
+  });
+
+  test("grid gap follows data-gap from the spacing scale", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator("#demo-grid-gap")).toHaveCSS("gap", "8px"); // --fz-space-2
+  });
+
+  test("nav: current page is accent + semibold, links are padded pills", async ({ page }) => {
+    await page.goto("/demo/");
+    const current = page.locator('#demo-nav [aria-current="page"]');
+    await expect(current).toHaveText("Home");
+    await expect(current).toHaveCSS("font-weight", "600");
+    const color = await current.evaluate((el) => getComputedStyle(el).color);
+    expect(color).toBe("rgb(26, 26, 26)"); // --fz-primary (light)
+    await expect(page.locator("#demo-nav a").nth(1)).toHaveCSS("padding-left", "12px"); // space-3 pill
+  });
+
+  test("nav footer variant is muted with a top hairline", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator('[data-nav="footer"]')).toHaveCSS("border-top-style", "solid");
+    const fg = await page.locator('[data-nav="footer"] > span').evaluate(
+      (el) => getComputedStyle(el.parentElement).color
+    );
+    expect(fg).toBe("rgb(90, 90, 90)"); // --fz-muted (light)
+  });
+
+  test("sidebar splits aside from main and stacks when narrow", async ({ page }) => {
+    await page.goto("/demo/");
+    const sidebar = page.locator("#demo-sidebar");
+    await expect(sidebar).toHaveCSS("display", "flex");
+    const basis = await sidebar
+      .locator(":scope > :first-child")
+      .evaluate((el) => getComputedStyle(el).flexBasis);
+    expect(basis).toBe("256px"); // --fz-sidebar-width (16rem)
+
+    // Narrow the row → the split wraps to a single column.
+    await sidebar.evaluate((el) => { el.style.width = "20rem"; });
+    const tops = await sidebar.locator(":scope > *").evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().top)
+    );
+    expect(tops[1] - tops[0]).toBeGreaterThan(0);
+  });
+
+  test("sticky utility pins to --fz-sticky-top", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator("#demo-sticky")).toHaveCSS("position", "sticky");
+    await expect(page.locator("#demo-sticky")).toHaveCSS("top", "0px");
+  });
+});
