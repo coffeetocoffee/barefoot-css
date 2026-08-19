@@ -337,6 +337,16 @@ by import.
   flip-block` remains for the adjacent near-viewport-edge case. If
   `position-visibility: anchors-visible` ever lands in engines, the guard
   becomes a no-op and can be dropped.
+- [ ] **Next arc: v1.6.0 → v2.0.0** ("the app shell → the design
+  system") — planned in plan.md. 1.6 fills layout & navigation (spacing
+  scale, grid variants, nav, sidebar split, sticky); 1.7 ships status
+  feedback (success/info/warning tokens, alerts, field-level validation
+  states, skeleton); 1.8 ships content & media (fluid type, `.fz-prose`,
+  avatars, aspect-ratio media); 1.9 closes every component gap + a
+  consistency pass; 2.0 freezes the public API, audits the token system,
+  ships a theme gallery, and rewrites the docs. The budget has ~6x
+  headroom (`index.css` 1.57KB gzipped of 10KB) — no size pressure on
+  the arc. — 2026-08-19.
 
 ## Verification commands
 

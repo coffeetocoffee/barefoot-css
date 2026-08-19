@@ -138,6 +138,69 @@ and `.fz-*` utilities.
 - [x] **1.5** — the candidate list below. Shipped as
   `barefoot-css@1.5.0` (2026-08-19).
 
+## Next — v1.6.0 → v2.0.0 ("the app shell → the design system")
+
+Shipped through 1.5.0. The core (elements, components, interactivity,
+a11y, theming) is complete, and the size budget has ~6x headroom
+(`index.css` 1.57KB gzipped of the 10KB limit). The 1.6 → 2.0 arc fills
+what a real app still needs, then freezes the API.
+
+### v1.6 — Layout & navigation (the app shell)
+
+- [ ] **Full spacing scale from the tokens** — `.fz-mt/mb/p-{1..8}`,
+      `.fz-px/py` (layout-only; stays inside the no-utility-framework
+      non-goal).
+- [ ] **`[data-grid]` variants** — `auto-fit`/`minmax` + gap options.
+- [ ] **`components/nav.css`** — `<nav>` topbar/header/footer patterns,
+      `[aria-current]` states, pairs with `.fz-skip-link`.
+- [ ] **`.fz-sidebar` split layout** (content + aside) and a `.fz-sticky`
+      utility.
+- [ ] Tests, docs, and demo coverage for each.
+
+### v1.7 — Feedback & status
+
+- [ ] **Semantic status tokens** — `--fz-success`, `--fz-info`,
+      `--fz-warning`: `light-dark()` pairs, `@property` registrations,
+      contrast-audited.
+- [ ] **`components/alert.css`** — role-aware notices (`role="alert"` for
+      errors, `aria-live` for dynamic), dismissible.
+- [ ] **Field-level validation states** — `:user-invalid` / `:user-valid`
+      + `[aria-invalid]` styling and error-message helpers.
+- [ ] **`components/skeleton.css`** — loading placeholders, pure CSS,
+      respects `prefers-reduced-motion`.
+- [ ] **Toasts via the Popover API** — if they stay honest (declarative,
+      JS-free).
+
+### v1.8 — Content & media
+
+- [ ] **Fluid type scale** — headings via `clamp()` / container units,
+      replacing the fixed `rem` sizes.
+- [ ] **`.fz-prose`** long-form wrapper — heading rhythm, code, tables,
+      blockquote inside an article.
+- [ ] **`.fz-avatar`**, `[data-media]` aspect-ratio embeds, responsive
+      image sizing, thumbnail cards.
+
+### v1.9 — Components, complete
+
+- [ ] Stepper, fieldset/legend, input groups (leading icon), date/number/
+      email polish.
+- [ ] Component consistency pass across every file; full demo section;
+      re-run the axe matrix.
+
+### v2.0 — The design-system release
+
+- [ ] **Token audit** — complete semantic palette, alpha ramps via
+      `color-mix`, auto-generated token reference in docs (size-table
+      pattern).
+- [ ] **Public API freeze** — lock the `data-*` attribute API, the
+      `--fz-*` contract, and the export map; document the deprecation
+      policy (v2 promise: no silent breaks).
+- [ ] **Theme gallery** on the docs site — all starter themes behind a
+      live switcher (the marketing demo).
+- [ ] **Docs rewrite** restructured by category; a 1.x → 2.0 note that
+      says "nothing changed".
+- [ ] **Final size re-verification** — stays well under the 10KB budget.
+
 ## Done — v1.5.0 candidates ("Forms, finished", all shipped in 1.5.0)
 
 1.4 skinned range/progress/meter, but the form was still unfinished:
