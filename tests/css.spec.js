@@ -142,3 +142,77 @@ test.describe("theme switching through view transitions", () => {
     expect(hasApi).toBe(true);
   });
 });
+
+test.describe("range, progress & meter skins", () => {
+  test("range slider is fully skinned (appearance none + themed height)", async ({ page }) => {
+    await page.goto("/demo/");
+    const range = page.locator("#amount");
+    // Chromium's getComputedStyle doesn't reflect author styles on the
+    // ::-webkit-slider-* shadow pseudos, so assert the element-level skin:
+    // native chrome stripped, height from --fz-control-height, no surface.
+    await expect(range).toHaveCSS("appearance", "none");
+    await expect(range).toHaveCSS("height", "40px");
+    await expect(range).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(range).toHaveCSS("cursor", "pointer");
+  });
+
+  test("progress and meter are themed bars (accent fill, alt track)", async ({ page }) => {
+    await page.goto("/demo/");
+    for (const id of ["#prog", "#storage"]) {
+      const bar = page.locator(id);
+      await expect(bar).toHaveCSS("height", "12px");
+      await expect(bar).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt (light)
+      await expect(bar).toHaveCSS("overflow", "hidden");
+      await expect(bar).toHaveCSS("accent-color", "rgb(26, 26, 26)"); // --fz-primary (light)
+    }
+  });
+});
+
+test.describe("breadcrumbs & pagination", () => {
+  test("breadcrumbs: slash separator between items, current is muted text", async ({ page }) => {
+    await page.goto("/demo/");
+    const second = page.locator('[data-breadcrumbs] li').nth(1);
+    const sep = await second.evaluate((el) =>
+      getComputedStyle(el, "::before").content
+    );
+    expect(sep).toBe('"/"');
+    await expect(page.locator('[data-breadcrumbs] [aria-current="page"]')).toHaveText("Theming");
+  });
+
+  test("pagination: current page is a filled span, never a link", async ({ page }) => {
+    await page.goto("/demo/");
+    const current = page.locator('[data-pagination] [aria-current="page"]');
+    await expect(current).toHaveText("2");
+    const bg = await current.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg).toBe("rgb(26, 26, 26)"); // --fz-primary (light)
+    await expect(page.locator('[data-pagination] a[aria-current]')).toHaveCount(0);
+  });
+});
+
+test.describe("themes & OS accessibility settings", () => {
+  test("forest theme flips the accent to green", async ({ page }) => {
+    await page.goto("/demo/");
+    const root = page.locator("html");
+    const before = await root.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--fz-primary").trim()
+    );
+    await root.evaluate((el) => {
+      el.dataset.theme = "forest";
+    });
+    const after = await root.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--fz-primary").trim()
+    );
+    expect(before).not.toBe(after);
+    expect(after).toBe("rgb(47, 107, 79)");
+  });
+
+  test("prefers-contrast: more forces black-on-white tokens", async ({ page }) => {
+    await page.emulateMedia({ contrast: "more" });
+    await page.goto("/demo/");
+    const root = page.locator("html");
+    const text = await root.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--fz-text").trim()
+    );
+    expect(text).toBe("rgb(0, 0, 0)");
+  });
+});

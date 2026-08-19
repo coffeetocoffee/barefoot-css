@@ -216,3 +216,92 @@ test.describe("opt-in JS: anchored popover off-screen guard", () => {
     await expect(pop).toBeVisible();
   });
 });
+
+test.describe("opt-in JS: carousel controls + autoplay", () => {
+  // A synthetic scroller so the test never depends on the demo's layout
+  // or the demo carousel's lack of autoplay. Re-imports the already-loaded
+  // module and inits only this element.
+  const buildCarousel = (opts = "") => `
+    <div data-carousel data-autoplay="200" ${opts} style="display:flex;overflow-x:auto;width:600px">
+      <div style="flex:0 0 60%;height:2rem">a</div>
+      <div style="flex:0 0 60%;height:2rem">b</div>
+      <div style="flex:0 0 60%;height:2rem">c</div>
+      <div style="flex:0 0 60%;height:2rem">d</div>
+    </div>`;
+
+  const initCarousel = (page) =>
+    page.evaluate(async () => {
+      const el = document.getElementById("auto-c");
+      const m = await import("/dist/js/carousel.js");
+      m.initCarousels(el);
+    });
+
+  test("module marks the scroller role=group + aria-roledescription", async ({ page }) => {
+    await page.goto("/demo/");
+    const carousel = page.locator("#demo-carousel");
+    await expect(carousel).toHaveAttribute("role", "group");
+    await expect(carousel).toHaveAttribute("aria-roledescription", "carousel");
+  });
+
+  test("prev/next controls scroll and wrap (instant under reduced motion)", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/demo/");
+    const carousel = page.locator("#demo-carousel");
+    const left = () => carousel.evaluate((el) => el.scrollLeft);
+
+    await expect.poll(left).toBe(0);
+    await page.getByRole("button", { name: "Next slide" }).click();
+    await expect.poll(left).toBeGreaterThan(0);
+    await page.getByRole("button", { name: "Previous slide" }).click();
+    await expect.poll(left).toBeLessThan(5);
+
+    // 4 slides → 4 forwards wraps back to the start.
+    for (let i = 0; i < 4; i++) {
+      await page.getByRole("button", { name: "Next slide" }).click();
+    }
+    await expect.poll(left).toBeLessThan(5);
+  });
+
+  test("autoplay advances the scroller", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.evaluate((markup) => {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = markup;
+      const el = wrap.firstElementChild;
+      el.id = "auto-c";
+      document.body.appendChild(el);
+      // Record the module's scrollTo calls: headless Firefox does not run
+      // smooth-scroll animations, so assert the contract (it initiates a
+      // forward scroll) instead of the animated scrollLeft.
+      window.__scrolls = [];
+      const native = el.scrollTo.bind(el);
+      el.scrollTo = (opts) => {
+        window.__scrolls.push(opts.left);
+        native(opts);
+      };
+    }, buildCarousel());
+    await initCarousel(page);
+
+    // data-autoplay="200" is clamped to a 1000ms floor; wait past the first fire.
+    await page.waitForTimeout(1600);
+    const calls = await page.evaluate(() => window.__scrolls);
+    expect(calls.length).toBeGreaterThan(0);
+    expect(calls[0]).toBeGreaterThan(0);
+  });
+
+  test("autoplay stays off under prefers-reduced-motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/demo/");
+    await page.evaluate((markup) => {
+      const wrap = document.createElement("div");
+      wrap.innerHTML = markup;
+      wrap.firstElementChild.id = "auto-c";
+      document.body.appendChild(wrap.firstElementChild);
+    }, buildCarousel());
+    await initCarousel(page);
+
+    // Must outlast the 1000ms autoplay floor to prove no timer ever starts.
+    await page.waitForTimeout(1600);
+    await expect.poll(() => page.$eval("#auto-c", (el) => el.scrollLeft)).toBe(0);
+  });
+});

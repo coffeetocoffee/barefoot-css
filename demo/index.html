@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../dist/themes/editorial.css">
   <link rel="stylesheet" href="../dist/themes/dashboard.css">
   <link rel="stylesheet" href="../dist/themes/playful.css">
+  <link rel="stylesheet" href="../dist/themes/forest.css">
   <link rel="stylesheet" href="../dist/components/view-transition.css">
   <style>
     /* Page chrome only — the demo styling is all Barefoot.
@@ -57,6 +58,7 @@
       <button type="button" data-theme-btn="editorial">Editorial</button>
       <button type="button" data-theme-btn="dashboard">Dashboard</button>
       <button type="button" data-theme-btn="playful">Playful</button>
+      <button type="button" data-theme-btn="forest">Forest</button>
     </div>
   </header>
 
@@ -81,6 +83,8 @@
           <tr><td>Tabs (opt-in JS)</td><td class="wcag">AA</td><td>Tab into tablist → <kbd>←</kbd>/<kbd>→</kbd> switch, <kbd>Home</kbd>/<kbd>End</kbd> jump, <kbd>Tab</kbd> into the panel. Via <code>js/tabs.js</code>.</td></tr>
           <tr><td>Carousel</td><td class="wcag">A</td><td><kbd>Tab</kbd> to scroller → arrow keys scroll → snaps.</td></tr>
           <tr><td>Table</td><td class="wcag">AA</td><td>Screen reader: headers announced via <code>&lt;th&gt;</code>. Hover affordance only.</td></tr>
+          <tr><td>Breadcrumbs</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; current page announced via <code>aria-current="page"</code>.</td></tr>
+          <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
         </tbody>
       </table>
     </section>
@@ -157,6 +161,9 @@
           <label for="prog">Progress</label>
           <progress id="prog" max="100" value="60">60%</progress>
 
+          <label for="storage">Storage</label>
+          <meter id="storage" min="0" max="100" low="25" high="75" optimum="100" value="40">40% of 100GB</meter>
+
           <div class="fz-row">
             <button type="submit">Submit (primary)</button>
             <button type="reset">Reset</button>
@@ -193,7 +200,7 @@
           <a href="#">Archive</a>
         </div>
 
-        <button id="tip-trigger" type="button" style="anchor-name: --tip-pop" popovertarget="tip-pop" popovertargetaction="show">Tooltip</button>
+        <button id="tip-trigger" type="button" data-tooltip style="anchor-name: --tip-pop" popovertarget="tip-pop" popovertargetaction="show">Tooltip</button>
         <div popover id="tip-pop" data-kind="tooltip" style="position-anchor: --tip-pop">This is a tooltip.</div>
       </div>
     </section>
@@ -257,11 +264,16 @@
     <!-- Carousel -->
     <section id="carousel" aria-labelledby="carousel-title">
       <h2 id="carousel-title">Carousel (scroll-snap)</h2>
-      <p>Tab to the scroller, then scroll with the arrow keys. Pure CSS. Slides are sized in container units (<code>60cqi</code> = 60% of the carousel's own width) — they adapt to their container, not the viewport.</p>
-      <div data-carousel tabindex="0" aria-label="Demo slides">
+      <p>Tab to the scroller, then scroll with the arrow keys. Pure CSS. Slides are sized in container units (<code>60cqi</code> = 60% of the carousel's own width) — they adapt to their container, not the viewport. Add <code>data-autoplay</code> (opt-in <code>js/carousel.js</code>) to auto-advance; controls below are wired by the same module.</p>
+      <div data-carousel id="demo-carousel" tabindex="0" aria-label="Demo slides">
         <div class="card">Slide 1 — press <kbd>→</kbd></div>
         <div class="card">Slide 2 — still snapping</div>
         <div class="card">Slide 3 — no JS anywhere</div>
+        <div class="card">Slide 4 — controls wired by carousel.js</div>
+      </div>
+      <div class="fz-row fz-mt-3">
+        <button type="button" data-carousel-prev="#demo-carousel" aria-label="Previous slide">&larr;</button>
+        <button type="button" data-carousel-next="#demo-carousel" aria-label="Next slide">&rarr;</button>
       </div>
     </section>
 
@@ -324,6 +336,35 @@
           <p>Add <code>data-lifted</code> to opt into a soft shadow.</p>
         </article>
       </div>
+    </section>
+
+    <!-- Breadcrumbs -->
+    <section id="breadcrumbs" aria-labelledby="breadcrumbs-title">
+      <h2 id="breadcrumbs-title">Breadcrumbs</h2>
+      <p>A <code>nav</code> with a labeled list. The current page is plain text with <code>aria-current="page"</code>, not a link.</p>
+      <nav aria-label="Breadcrumb" data-breadcrumbs>
+        <ol>
+          <li><a href="#top">Home</a></li>
+          <li><a href="#breadcrumbs">Docs</a></li>
+          <li aria-current="page">Theming</li>
+        </ol>
+      </nav>
+    </section>
+
+    <!-- Pagination -->
+    <section id="pagination" aria-labelledby="pagination-title">
+      <h2 id="pagination-title">Pagination</h2>
+      <p>The current page is a <code>&lt;span aria-current="page"&gt;</code>, never a link.</p>
+      <nav aria-label="Pagination" data-pagination>
+        <ul>
+          <li><span aria-label="Previous page" aria-disabled="true">&larr;</span></li>
+          <li><a href="#pagination">1</a></li>
+          <li><span aria-current="page">2</span></li>
+          <li><a href="#pagination">3</a></li>
+          <li><a href="#pagination">4</a></li>
+          <li><a href="#pagination" aria-label="Next page">&rarr;</a></li>
+        </ul>
+      </nav>
     </section>
 
     </main>

@@ -44,16 +44,47 @@ npm install barefoot-css
 
 ## Size (measured, current build)
 
+<!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `index.css` (reset + tokens + base) | 3.96KB | **1.41KB** | 1.21KB |
-| `full.css` (everything) | 17.89KB | **4.15KB** | 3.67KB |
+| `full.css` | 21.10KB | **4.61KB** | 4.08KB |
+| `js/carousel.js` | 4.78KB | **1.92KB** | 1.63KB |
+| `index.css` | 4.41KB | **1.45KB** | 1.24KB |
+| `components/forms.css` | 4.13KB | **1.10KB** | 0.92KB |
+| `js/tabs.js` | 2.70KB | **1.10KB** | 0.89KB |
+| `js/popover-anchor.js` | 2.26KB | **1.04KB** | 0.84KB |
+| `js/details-tabindex.js` | 1.86KB | **0.91KB** | 0.73KB |
+| `js/popover-menu.js` | 2.17KB | **0.89KB** | 0.75KB |
+| `components/buttons.css` | 2.06KB | **0.60KB** | 0.49KB |
+| `components/dropdown.css` | 1.45KB | **0.54KB** | 0.42KB |
+| `js/details-close.js` | 0.90KB | **0.51KB** | 0.39KB |
+| `components/popover.css` | 1.25KB | **0.48KB** | 0.39KB |
+| `components/dialog.css` | 1.05KB | **0.48KB** | 0.38KB |
+| `components/accordion.css` | 1.10KB | **0.40KB** | 0.32KB |
+| `components/table.css` | 0.87KB | **0.40KB** | 0.32KB |
+| `utilities.css` | 0.87KB | **0.40KB** | 0.30KB |
+| `components/tabs.css` | 0.73KB | **0.34KB** | 0.26KB |
+| `components/pagination.css` | 0.75KB | **0.33KB** | 0.25KB |
+| `themes/playful.css` | 0.58KB | **0.33KB** | 0.30KB |
+| `themes/editorial.css` | 0.57KB | **0.32KB** | 0.27KB |
+| `components/badge.css` | 0.52KB | **0.27KB** | 0.22KB |
+| `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
+| `themes/dashboard.css` | 0.49KB | **0.26KB** | 0.22KB |
+| `components/carousel.css` | 0.44KB | **0.26KB** | 0.20KB |
+| `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
+| `js/barefoot.js` | 0.41KB | **0.24KB** | 0.20KB |
+| `components/code.css` | 0.45KB | **0.24KB** | 0.18KB |
+| `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
+| `components/card.css` | 0.29KB | **0.20KB** | 0.14KB |
+| `components/view-transition.css` | 0.28KB | **0.16KB** | 0.14KB |
+| `components/grid.css` | 0.26KB | **0.16KB** | 0.11KB |
+<!-- SIZES:END -->
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.
 
-Opt-in JS (`dist/js/`, ~8KB total raw): `tabs.js`, `details-close.js`,
-`details-tabindex.js`, `popover-menu.js`, plus `barefoot.js` (all four). See
-[docs/javascript.md](docs/javascript.md).
+Opt-in JS (`dist/js/`, ~9KB total raw): `tabs.js`, `details-close.js`,
+`details-tabindex.js`, `popover-menu.js`, `carousel.js`, plus `barefoot.js`
+(all five). See [docs/javascript.md](docs/javascript.md).
 
 ## Browser baseline
 

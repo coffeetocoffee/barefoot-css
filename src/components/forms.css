@@ -111,20 +111,105 @@
     cursor: not-allowed;
   }
 
-  /* Range / progress / meter — theme-aware accents. */
-  input[type="range"],
-  progress,
-  meter {
-    accent-color: var(--fz-primary);
+  /* ---- Range slider ----
+     Fully skinned: a themed track + thumb drawn with the standard
+     vendor pseudo-elements. Keep appearance:none on the element so no
+     native chrome leaks through; the thumb re-applies its own look. */
+  input[type="range"] {
+    appearance: none;
     width: 100%;
+    height: var(--fz-control-height);
+    background: transparent;
+    cursor: pointer;
   }
 
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 999px;
+    background: var(--fz-surface-alt);
+    border: 1px solid var(--fz-border);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 999px;
+    background: var(--fz-surface-alt);
+    border: 1px solid var(--fz-border);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: -0.4375rem; /* (track height − thumb height) / 2 */
+    border-radius: 50%;
+    border: 2px solid var(--fz-surface);
+    background: var(--fz-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--fz-surface);
+    background: var(--fz-primary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  }
+
+  input[type="range"]:hover:not(:disabled) {
+    background: transparent;
+  }
+
+  input[type="range"]:focus-visible {
+    outline: 2px solid var(--fz-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* ---- Progress & meter ----
+     Themed bar in Chromium/WebKit; Firefox renders the native meter and
+     respects accent-color. The container keeps a native appearance so
+     the bar pseudos can't be over-painted by UA chrome. */
   progress,
   meter {
+    width: 100%;
     height: 0.75rem;
     border: 1px solid var(--fz-border);
     border-radius: 999px;
     background: var(--fz-surface-alt);
+    accent-color: var(--fz-primary);
+    overflow: hidden;
+  }
+
+  progress::-webkit-progress-bar {
+    background: transparent;
+  }
+
+  progress::-webkit-progress-value {
+    background: var(--fz-primary);
+    border-radius: 999px;
+  }
+
+  progress::-moz-progress-bar {
+    background: var(--fz-primary);
+    border-radius: 999px;
+  }
+
+  meter::-webkit-meter-bar {
+    background: transparent;
+    border: none;
+  }
+
+  meter::-webkit-meter-optimum-value {
+    background: var(--fz-primary);
+  }
+
+  meter::-webkit-meter-suboptimum-value {
+    background: color-mix(in oklab, var(--fz-primary), var(--fz-danger) 35%);
+  }
+
+  meter::-webkit-meter-even-less-good-value {
+    background: var(--fz-danger);
   }
 
   /* Validation without JS. */

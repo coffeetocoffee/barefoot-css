@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-five small opt-in modules add the missing behavior. Each is a single
+six small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Size (raw) | Adds |
@@ -11,19 +11,20 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/details-tabindex.js` | ~1.9KB | WebKit tab-order fix for open `<details>` panels |
 | `js/popover-menu.js` | ~2.2KB | Arrow-key nav + focus restore for popover menus |
 | `js/popover-anchor.js` | ~2.3KB | Closes anchored popovers whose trigger is off-screen |
-| `js/barefoot.js` | — | All five in one import |
+| `js/carousel.js` | ~4.8KB | Carousel autoplay + prev/next controls |
+| `js/barefoot.js` | — | All six in one import |
 
 ## Loading
 
 ```html
-<!-- all four -->
+<!-- all six -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
 
-<!-- just tabs -->
+<!-- just carousel -->
 <script type="module">
-  import "barefoot-css/js/tabs.js";
+  import "barefoot-css/js/carousel.js";
 </script>
 ```
 
@@ -135,6 +136,37 @@ outside the viewport when it opens**:
 
 Without the module, the CSS-only behavior (including the viewport-edge
 flip in 1.3) is unchanged — the guard is purely additive.
+
+## 6. Carousel controls + autoplay (`js/carousel.js`)
+
+The base `[data-carousel]` is a pure scroll-snap scroller (CSS only,
+zero JS). This module adds optional autoplay and prev/next buttons.
+
+```html
+<div data-carousel id="c" tabindex="0" aria-label="Slides" data-autoplay="3000">
+  <div>Slide 1</div><div>Slide 2</div><div>Slide 3</div>
+</div>
+<button type="button" data-carousel-prev="#c" aria-label="Previous slide">←</button>
+<button type="button" data-carousel-next="#c" aria-label="Next slide">→</button>
+```
+
+- **Autoplay** — `data-autoplay="ms"` (3000ms default, floored at 1000ms).
+  It pauses on hover, keyboard focus, and when the tab is hidden, and
+  never starts under `prefers-reduced-motion: reduce`. An autoplaying
+  carousel is marked `aria-live="off"` unless the author already set it —
+  the prev/next controls (and the scroller's own keyboard use) are the way
+  in.
+- **Controls** — `data-carousel-prev` / `data-carousel-next` take a
+  selector for the scroller (it's a sibling, never a child — children
+  become slides). Clicking steps exactly one slide and wraps at both ends.
+  Controls work with or without autoplay.
+- **Semantics** — the module sets `role="group"` +
+  `aria-roledescription="carousel"` on scrollers that don't already have a
+  role; it never invents a name.
+- **No-JS first** — without this module the scroller is still
+  keyboard-scrollable and keyboard users never lose the slides. Nothing
+  is hidden from a JS-less user; they just don't get auto-advance or
+  buttons.
 
 ## Why no bundle
 

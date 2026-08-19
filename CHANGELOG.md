@@ -4,6 +4,68 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] — 2026-08-19
+
+Form controls get a real skin, breadcrumbs and pagination ship, a fourth
+starter theme joins, OS accessibility settings are honored, and the
+carousel grows opt-in autoplay + prev/next controls. Plus a stylelint
+pass and an auto-generated README size table.
+
+### Added
+
+- **Form control skins** (`components/forms.css`) — a custom range-slider
+  skin (WebKit + Gecko pseudo-elements, focus-visible ring) and themed
+  `<progress>` / `<meter>` bars that match the accent instead of the raw
+  browser default.
+- **Breadcrumbs** (`components/breadcrumbs.css`) — `[data-breadcrumbs]`
+  nav: slash separators, `aria-current="page"` muted.
+- **Pagination** (`components/pagination.css`) — `[data-pagination]` nav:
+  the current page is a filled `<span aria-current="page">`, never a link.
+- **Forest theme** (`themes/forest.css`) — a fourth starter theme: deep
+  greens on warm paper.
+- **Tooltip trigger affordance** (`components/popover.css`) — `[data-tooltip]`
+  gets a dotted underline + `cursor: help`, pairing with
+  `[popover][data-kind="tooltip"]`.
+- **`js/carousel.js`** (opt-in, ~4.8KB, zero deps) — autoplay
+  (`data-autoplay="ms"`, 3000ms default, 1000ms floor, pauses on hover /
+  focus / hidden tab, never starts under reduced motion) and
+  `data-carousel-prev` / `data-carousel-next` buttons (also work without
+  autoplay). Marks the scroller `role="group"` +
+  `aria-roledescription="carousel"` only when the author hasn't already.
+  Wired into the all-in-one `js/barefoot.js` import.
+- **OS accessibility settings** (`src/tokens.css`) — `@media
+  (prefers-contrast: more)` forces black-on-white tokens; `@media
+  (prefers-reduced-transparency: reduce)` drops shadows. An explicit
+  `data-theme` still wins over both.
+- **stylelint** — `.stylelintrc.json` tuned to the codebase's deliberate
+  style + `npm run lint:css`; the source is lint-clean.
+- **Auto-generated README size table** — `build/readme-size.mjs` +
+  `npm run docs:size` regenerate the size table between
+  `<!-- SIZES:START -->` markers from `dist/sizes.json`.
+
+### Changed
+
+- `npm run check` now also runs `docs:size` and `lint:css`.
+- Range/progress/meter drop `accent-color` for the full skin; text inputs,
+  checkboxes, and radios keep the native themed `accent-color`.
+
+### Fixed
+
+- Carousel `step()` snap math: prev/next move exactly one slide and wrap
+  in every engine (the centered-snap offset — 60cqi slides — is cancelled
+  by computing snap positions from each slide's `offsetLeft`, instead of
+  raw `scrollLeft` arithmetic).
+
+### Tests
+
+- +10 behavior tests (6 CSS, 4 JS): range/progress/meter skins,
+  breadcrumbs, pagination, forest theme, prefers-contrast; carousel
+  role/roledescription marking, prev/next wrap, autoplay (asserts the
+  contract — it initiates a forward scroll — because headless Firefox
+  doesn't run smooth-scroll animations), autoplay-off under reduced motion.
+- Chromium 39 / Firefox 28 / WebKit 28 suites green; visual baselines
+  regenerated for the expanded demo.
+
 ## [1.3.1] — 2026-08-18
 
 Fix for the one remaining known gap: anchored popovers with an off-screen

@@ -1,6 +1,6 @@
 # Barefoot — Project plan
 
-Status: **Complete (0.1 → 1.3.1)** — see [status.md](status.md) for the live tracker.
+Status: **Complete (0.1 → 1.4)** — see [status.md](status.md) for the live tracker.
 
 ## Vision
 
@@ -133,14 +133,16 @@ and `.fz-*` utilities.
   is fully outside the viewport at open time (no engine honors
   `position-visibility: anchors-visible`). Shipped as
   `barefoot-css@1.3.1` (2026-08-18).
+- [x] **1.4** — the full candidate list below. Shipped as
+  `barefoot-css@1.4.0` (2026-08-19).
 
-## Next up — v1.4.0 candidates (deferred, pick from these)
+## Next up — v1.4.0 candidates (all shipped in 1.4.0)
 
-- [ ] Range-slider skin + `<progress>`/`<meter>` styling (CSS-only)
-- [ ] Tooltip via the Popover API (CSS-only, `data-tooltip`)
-- [ ] Carousel autoplay + controls as opt-in `js/carousel.js`
-- [ ] Breadcrumbs, pagination, one more starter theme
-- [ ] `prefers-contrast` / `prefers-reduced-transparency`, stylelint,
+- [x] Range-slider skin + `<progress>`/`<meter>` styling (CSS-only)
+- [x] Tooltip via the Popover API (CSS-only, `data-tooltip`)
+- [x] Carousel autoplay + controls as opt-in `js/carousel.js`
+- [x] Breadcrumbs, pagination, one more starter theme (forest)
+- [x] `prefers-contrast` / `prefers-reduced-transparency`, stylelint,
       auto-generated README size table
 
 ## Watch-list (no action until browsers fix it)

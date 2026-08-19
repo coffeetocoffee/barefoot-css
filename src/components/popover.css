@@ -43,6 +43,17 @@
     box-shadow: none;
   }
 
+  /* The tooltip trigger: a dotted underline marks "this control has a
+     tooltip". Pair it with a [popover][data-kind="tooltip"] anchored to
+     the trigger (see the anchoring section below) — the bubble is
+     unadorned by design so position-try-fallbacks: flip-block stays
+     correct when the tooltip flips below the trigger. */
+  [data-tooltip] {
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+    cursor: help;
+  }
+
   /* Menu panel affordance: same visual language as dropdown.css. */
   [popover][data-kind="menu"] {
     min-width: 12rem;

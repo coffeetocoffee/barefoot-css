@@ -35,7 +35,11 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 <input type="range"> <progress max="100" value="60">
 ```
 
-- Checkboxes/radios/range/progress use `accent-color` — native, themed, free.
+- Checkboxes/radios use `accent-color` — native, themed, free. Range
+  sliders get a full custom skin (track + thumb in the theme tokens, with
+  a `:focus-visible` ring), and `<progress>` / `<meter>` are drawn as
+  themed bars (accent fill, alternate track) instead of the browser's
+  default widget.
 - Invalid states style automatically via `:user-invalid` (browser-driven,
   no JS) or `[aria-invalid]`.
 - **JS:** none.
@@ -75,7 +79,8 @@ document.querySelector("dialog").showModal();
 ```
 
 - `data-kind="menu"` → panel with menu item styling.
-- `data-kind="tooltip"` → small muted tooltip.
+- `data-kind="tooltip"` → small muted tooltip. Mark the trigger with
+  `data-tooltip` for the affordance (dotted underline, `cursor: help`).
 - **JS:** none — Popover API is declarative.
 - **A11y:** light-dismiss + `Esc` native. Position with anchor positioning
   or your own CSS.
@@ -172,7 +177,7 @@ document.querySelector("dialog").showModal();
 
 See [docs/javascript.md](javascript.md) for the opt-in JS modules
 (tabs, details Esc-close, details tab-order shim, popover-menu keyboard
-support) and their markup.
+support, carousel controls + autoplay) and their markup.
 
 
 ## Carousel (scroll-snap)
@@ -185,9 +190,49 @@ support) and their markup.
 
 - `scroll-snap-type: x mandatory`; scrollbar hidden but scrolling works
   (touch, wheel, and — with the `tabindex` — keyboard).
-- **JS:** none.
+- **JS:** none for the base scroller. Opt-in `js/carousel.js` adds
+  prev/next buttons (`data-carousel-prev` / `data-carousel-next` pointing
+  at the scroller's id) and autoplay (`data-autoplay="3000"`). Without it
+  nothing changes.
 - **A11y:** keep the `tabindex` and `aria-label`; that's what makes it
   keyboard reachable.
+
+## Breadcrumbs
+
+```html
+<nav aria-label="Breadcrumb" data-breadcrumbs>
+  <ol>
+    <li><a href="/">Home</a></li>
+    <li><a href="/docs/">Docs</a></li>
+    <li><span aria-current="page">Theming</span></li>
+  </ol>
+</nav>
+```
+
+- Slash separators between items; the current page is muted text. Mark the
+  last item `aria-current="page"` (a `<span>`, not a link).
+- **JS:** none.
+- **A11y:** `<nav aria-label>` + `<ol>` give screen readers the landmark
+  and list semantics.
+
+## Pagination
+
+```html
+<nav aria-label="Pagination" data-pagination>
+  <ol>
+    <li><span aria-disabled="true" aria-hidden="true">←</span></li>
+    <li><span aria-current="page">1</span></li>
+    <li><a href="#pagination">2</a></li>
+    <li><a href="#pagination" aria-label="Next page">→</a></li>
+  </ol>
+</nav>
+```
+
+- The current page is a **filled `<span aria-current="page">`, never a
+  link** — the page you're on isn't clickable. Disabled controls are
+  `<span aria-disabled="true" aria-hidden="true">`, not dead links.
+- **JS:** none.
+- **A11y:** `<nav aria-label>` + `<ol>`; labelled prev/next arrows.
 
 ## Table
 

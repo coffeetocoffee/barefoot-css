@@ -17,5 +17,7 @@
 @import "./components/code.css";
 @import "./components/card.css";
 @import "./components/badge.css";
+@import "./components/breadcrumbs.css";
+@import "./components/pagination.css";
 @import "./components/view-transition.css";
 @import "./utilities.css";

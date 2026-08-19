@@ -74,14 +74,33 @@ tokens — you never "reset" anything.
 
 ## Starter themes
 
-Three built-in demos of how far six variables go. See the files in
+Four built-in demos of how far a few variables go. See the files in
 `src/themes/`:
 
 - **Editorial** — serif, paper tones, square corners.
 - **Dashboard** — denser controls, blue accent, tighter radii.
 - **Playful** — rounded, saturated, bouncier transitions.
+- **Forest** — deep greens on warm paper.
 
-They are the marketing proof: *six variables, completely different product.*
+They are the marketing proof: *a handful of variables, completely
+different product.*
+
+## OS accessibility settings
+
+Tokens also respect OS settings via media queries at the end of
+`src/tokens.css`:
+
+- **`prefers-contrast: more`** — forces black-on-white tokens (pure
+  `#000`/`#fff`, no `light-dark()` pairs), so high-contrast users get a
+  maximally distinct palette even in a themed app.
+- **`prefers-reduced-transparency: reduce`** — drops the lifted shadow to
+  `none`, removing depth effects.
+
+An **explicit `data-theme` still wins** over both: a theme selector like
+`[data-theme="forest"]` outranks the plain `:root` the media queries set,
+so choosing a theme (explicit intent) beats OS preference. The manual
+`[data-theme="contrast"]` preset sets the same values as the
+`prefers-contrast` block, so the two never fight.
 
 ## Typed properties (progressive enhancement)
 

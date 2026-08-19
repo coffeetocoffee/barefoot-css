@@ -1,0 +1,53 @@
+/* Barefoot — breadcrumbs.
+   <nav aria-label="Breadcrumb" data-breadcrumbs>
+     <ol>
+       <li><a href="/">Home</a></li>
+       <li><a href="/docs">Docs</a></li>
+       <li aria-current="page">Theming</li>
+     </ol>
+   </nav>
+
+   The current page is NOT a link (the last <li> is plain text with
+   aria-current="page"). Element-first: a <nav> with an aria-label, so
+   screen readers get a named landmark for free. */
+@layer components {
+  [data-breadcrumbs] {
+    font-size: 0.875rem;
+  }
+
+  [data-breadcrumbs] ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fz-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-breadcrumbs] li {
+    display: flex;
+    align-items: center;
+    gap: var(--fz-space-2);
+  }
+
+  /* Separator between crumbs (not before the first). */
+  [data-breadcrumbs] li + li::before {
+    content: "/";
+    color: var(--fz-muted);
+  }
+
+  [data-breadcrumbs] a {
+    color: var(--fz-primary);
+    text-decoration: none;
+  }
+
+  [data-breadcrumbs] a:hover {
+    text-decoration: underline;
+  }
+
+  [data-breadcrumbs] li[aria-current="page"] {
+    color: var(--fz-muted);
+    text-decoration: none;
+  }
+}

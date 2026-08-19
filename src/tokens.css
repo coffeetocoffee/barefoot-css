@@ -130,3 +130,30 @@
   --fz-focus-ring: light-dark(#000000, #ffffff);
   --fz-danger: light-dark(#000000, #ffffff);
 }
+
+/* ---- OS accessibility settings ----
+   prefers-contrast / prefers-reduced-transparency follow the user's
+   OS settings automatically. A loaded starter theme (loaded after this
+   file) wins over these — an explicit visual choice beats the media
+   query. The manual [data-theme="contrast"] above sets the same values,
+   so the two never fight. */
+@media (prefers-contrast: more) {
+  :root {
+    --fz-primary: light-dark(#000000, #ffffff);
+    --fz-primary-fg: light-dark(#ffffff, #000000);
+    --fz-surface: light-dark(#ffffff, #000000);
+    --fz-surface-alt: light-dark(#f0f0f0, #101010);
+    --fz-text: light-dark(#000000, #ffffff);
+    --fz-muted: light-dark(#000000, #ffffff);
+    --fz-border: light-dark(#000000, #ffffff);
+    --fz-focus-ring: light-dark(#000000, #ffffff);
+    --fz-danger: light-dark(#000000, #ffffff);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --fz-shadow: none;
+    --fz-shadow-lifted: none;
+  }
+}

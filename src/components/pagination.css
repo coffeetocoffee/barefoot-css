@@ -1,0 +1,62 @@
+/* Barefoot — pagination.
+   <nav aria-label="Pagination" data-pagination>
+     <ul>
+       <li><a href="?p=1" aria-label="Previous page">←</a></li>
+       <li><a href="?p=1">1</a></li>
+       <li><span aria-current="page">2</span></li>
+       <li><a href="?p=3">3</a></li>
+       <li><a href="?p=3" aria-label="Next page">→</a></li>
+     </ul>
+   </nav>
+
+   The current page is a <span aria-current="page">, not a link. Use a
+   span with aria-disabled="true" (or [aria-disabled] on an <a>) for
+   disabled prev/next. */
+@layer components {
+  [data-pagination] {
+    display: flex;
+    justify-content: center;
+  }
+
+  [data-pagination] ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fz-space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-pagination] a,
+  [data-pagination] [aria-current="page"],
+  [data-pagination] [aria-disabled="true"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding-inline: var(--fz-space-2);
+    border-radius: var(--fz-radius);
+    font-size: 0.9375rem;
+    text-decoration: none;
+  }
+
+  [data-pagination] a {
+    color: var(--fz-text);
+  }
+
+  [data-pagination] a:hover {
+    background: var(--fz-surface-alt);
+  }
+
+  [data-pagination] [aria-current="page"] {
+    background: var(--fz-primary);
+    color: var(--fz-primary-fg);
+  }
+
+  [data-pagination] [aria-disabled="true"] {
+    color: var(--fz-muted);
+    pointer-events: none;
+  }
+}
