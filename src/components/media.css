@@ -1,0 +1,68 @@
+/* Barefoot — media. Avatars, aspect-ratio embeds, thumbnail cards.
+   Classes/attributes only where there is no native element.
+
+   .fz-avatar                 → circular image, --fz-avatar-size (2.5rem)
+   .fz-avatar[data-size="sm"] → 1.75rem
+   .fz-avatar[data-size="lg"] → 4rem
+
+   [data-media]               → 16:9 box (img/video/iframe/div)
+   [data-media][data-ratio]   → "4/3" | "1/1" | "21/9"
+
+   .card[data-media]          → thumbnail card: media bleeds to the top
+                                edge, the rest gets card padding. */
+@layer components {
+  /* ---- Avatars ---- */
+  .fz-avatar {
+    display: inline-block;
+    width: var(--fz-avatar-size, 2.5rem);
+    height: var(--fz-avatar-size, 2.5rem);
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+  }
+
+  .fz-avatar[data-size="sm"] {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .fz-avatar[data-size="lg"] {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  /* ---- Aspect-ratio embeds ----
+     A locked ratio for video/iframe/img or a bare placeholder box.
+     Defaults to 16:9; data-ratio picks a different frame. The width
+     follows the container, the height follows the ratio. */
+  [data-media] {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--fz-radius);
+    object-fit: cover;
+  }
+
+  [data-media][data-ratio="4/3"] { aspect-ratio: 4 / 3; }
+  [data-media][data-ratio="1/1"] { aspect-ratio: 1 / 1; }
+  [data-media][data-ratio="21/9"] { aspect-ratio: 21 / 9; }
+
+  /* ---- Thumbnail cards ----
+     .card[data-media] leads with media that bleeds to the top edge
+     (the card's own overflow: hidden clips it to the card radius);
+     everything else below it gets the card's padding. */
+  .card[data-media] {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .card[data-media] > :is([data-media], img) {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .card[data-media] > :not(:is([data-media], img)) {
+    padding: var(--fz-space-5);
+  }
+}

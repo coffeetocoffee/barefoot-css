@@ -17,6 +17,19 @@
       "Segoe UI Mono", Menlo, Consolas, monospace;
     --fz-line-height: 1.6;
 
+    /* ---- Type scale (v1.8: fluid) ----
+       Headings are clamp() across the viewport: the sizes above
+       shrink on small screens instead of overflowing their measure,
+       and grow to the cap on large ones. Override any step with a
+       fixed rem to opt back into a static scale. */
+    --fz-type-xs: 0.75rem;
+    --fz-type-sm: 0.875rem;
+    --fz-type-base: 1rem;
+    --fz-type-md: clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem);    /* h4 */
+    --fz-type-lg: clamp(1.125rem, 1rem + 0.625vw, 1.375rem);      /* h3 */
+    --fz-type-xl: clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem);   /* h2 */
+    --fz-type-2xl: clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem);    /* h1 */
+
     /* ---- Spacing scale (1rem = 16px base) ---- */
     --fz-space-1: 0.25rem;
     --fz-space-2: 0.5rem;
@@ -79,6 +92,9 @@
     --fz-grid-gap: var(--fz-space-4);
     --fz-sidebar-width: 16rem; /* fixed-ish aside in .fz-sidebar */
     --fz-sticky-top: 0;        /* offset for .fz-sticky */
+
+    /* ---- Layout (v1.8: content & media) ---- */
+    --fz-avatar-size: 2.5rem;  /* edge of .fz-avatar (matches control height) */
   }
 
   /* ---- Typed properties (progressive enhancement) ----

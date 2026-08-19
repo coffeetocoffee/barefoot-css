@@ -40,7 +40,22 @@ Defined in `src/tokens.css` on `:root`.
 | `--fz-grid-gap` | `--fz-space-4` | default `[data-grid]` gap |
 | `--fz-sidebar-width` | `16rem` | aside width in `.fz-sidebar` |
 | `--fz-sticky-top` | `0` | offset for `.fz-sticky` |
+| `--fz-avatar-size` | `2.5rem` | edge of `.fz-avatar` (matches control height) |
 | `--fz-transition` / `--fz-transition-slow` | `150ms` / `250ms` ease | motion |
+
+## Fluid type tokens (v1.8)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-type-xs` | `0.75rem` | tiny text (footnotes) |
+| `--fz-type-sm` | `0.875rem` | small text (figcaptions, hints) |
+| `--fz-type-base` | `1rem` | body text |
+| `--fz-type-md` | `clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem)` | h4 |
+| `--fz-type-lg` | `clamp(1.125rem, 1rem + 0.625vw, 1.375rem)` | h3 |
+| `--fz-type-xl` | `clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem)` | h2 |
+| `--fz-type-2xl` | `clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem)` | h1 |
+
+Headings use these tokens automatically. Override any step with a fixed `rem` to opt back into a static scale.
 
 ## How light/dark works (the trick)
 

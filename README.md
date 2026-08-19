@@ -47,9 +47,9 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 31.39KB | **6.38KB** | 5.58KB |
+| `full.css` | 32.72KB | **6.70KB** | 5.89KB |
 | `js/carousel.js` | 4.78KB | **1.92KB** | 1.63KB |
-| `index.css` | 6.21KB | **1.79KB** | 1.53KB |
+| `index.css` | 6.57KB | **1.90KB** | 1.63KB |
 | `components/forms.css` | 6.27KB | **1.59KB** | 1.35KB |
 | `js/tabs.js` | 2.70KB | **1.10KB** | 0.89KB |
 | `js/popover-anchor.js` | 2.26KB | **1.04KB** | 0.84KB |
@@ -71,6 +71,7 @@ npm install barefoot-css
 | `themes/playful.css` | 0.58KB | **0.33KB** | 0.30KB |
 | `themes/editorial.css` | 0.57KB | **0.32KB** | 0.27KB |
 | `components/badge.css` | 0.85KB | **0.32KB** | 0.26KB |
+| `components/media.css` | 0.71KB | **0.31KB** | 0.26KB |
 | `components/skeleton.css` | 0.52KB | **0.30KB** | 0.24KB |
 | `components/grid.css` | 0.98KB | **0.27KB** | 0.22KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
@@ -82,6 +83,7 @@ npm install barefoot-css
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/card.css` | 0.29KB | **0.20KB** | 0.14KB |
 | `components/view-transition.css` | 0.28KB | **0.16KB** | 0.14KB |
+| `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
 <!-- SIZES:END -->
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.

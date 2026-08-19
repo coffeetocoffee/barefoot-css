@@ -389,6 +389,74 @@ support, carousel controls + autoplay) and their markup.
 - **JS:** none.
 - **A11y:** role/`aria-live` come from your markup.
 
+## Prose
+
+```html
+<article class="fz-prose">
+  <h3>Section heading</h3>
+  <p>A paragraph of long-form copy…</p>
+  <blockquote>“No boots, no baggage.”</blockquote>
+  <h3>Another section</h3>
+  <table>…</table>
+</article>
+```
+
+- **`.fz-prose`** — an opt-in wrapper that imposes heading rhythm and
+  section spacing on long-form content. One beat between siblings; a
+  full section gap before headings; tight gap below. The element look
+  (blockquote border, code/keycaps, table rows) comes from the base and
+  component layers — the wrapper only adds the pace.
+- The measure stays capped at `--fz-content-width` (64ch) so lines
+  remain readable.
+- **JS:** none.
+- **A11y:** plain semantic HTML; no hidden ordering or live regions.
+
+## Media & avatars
+
+```html
+<!-- Circular avatar, token-sized (--fz-avatar-size = 2.5rem) -->
+<img class="fz-avatar" alt="Ada">
+
+<!-- data-size="sm" (1.75rem) or "lg" (4rem) -->
+<img class="fz-avatar" data-size="lg" alt="Ada">
+
+<!-- Responsive image: shrinks to container, keeps ratio -->
+<img src="wide-banner.svg" alt="…">
+
+<!-- Aspect-ratio embed: 16:9 by default; data-ratio for 4/3, 1/1, 21/9 -->
+<div data-media style="background: var(--fz-surface-alt)">
+  16:9 placeholder
+</div>
+<div data-media data-ratio="1/1" style="background: var(--fz-surface-alt)">
+  1:1
+</div>
+
+<!-- Thumbnail card: media bleeds to the top edge -->
+<article class="card" data-media>
+  <img data-media src="…" alt="…">
+  <header>Featured</header>
+  <p>Body keeps card padding.</p>
+</article>
+```
+
+- **`.fz-avatar`** — circular image; size from `--fz-avatar-size`
+  (2.5rem, matches `--fz-control-height`). `data-size="sm"` → 1.75rem,
+  `data-size="lg"` → 4rem. Always include `alt` text.
+- **`[data-media]`** — locks a ratio box on an `img`, `video`,
+  `iframe`, or any element (a bare `div` becomes a placeholder box).
+  Width follows the container; height follows the ratio. Default 16:9;
+  `data-ratio="4/3|1/1|21/9"` picks another frame. Use `object-fit:
+  cover` on replaced elements so the content fills the box.
+- **`.card[data-media]`** — a thumbnail card whose first child (a
+  `[data-media]` element or `img`) bleeds to the top edge; the rest of
+  the card keeps standard padding. The card clips the media to its own
+  border radius.
+- **Responsive images** — `img` and `video` have `max-width: 100%` and
+  `height: auto` in the base layer, so they scale down and keep their
+  aspect ratio automatically.
+- **JS:** none.
+- **A11y:** images need `alt`; iframe embeds should include a `title`.
+
 ## Table
 
 ```html

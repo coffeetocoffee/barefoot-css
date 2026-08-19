@@ -22,5 +22,7 @@
 @import "./components/badge.css";
 @import "./components/breadcrumbs.css";
 @import "./components/pagination.css";
+@import "./components/prose.css";
+@import "./components/media.css";
 @import "./components/view-transition.css";
 @import "./utilities.css";

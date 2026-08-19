@@ -486,3 +486,122 @@ test.describe("v1.7 feedback & status", () => {
     expect(colors.w).toBe("rgb(154, 103, 0)");
   });
 });
+
+test.describe("v1.8 content & media", () => {
+  test("fluid type: headings clamp — smaller on a narrow viewport, capped on a wide one", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/demo/");
+    const wide = await page
+      .locator("#typography h1")
+      .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    const narrow = await page
+      .locator("#typography h1")
+      .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+    expect(wide).toBe(40);   // --fz-type-2xl caps at 2.5rem
+    expect(narrow).toBeLessThan(wide);
+    expect(narrow).toBeGreaterThan(20); // never collapses on phones
+  });
+
+  test("fluid type: headings read the --fz-type-* tokens", async ({ page }) => {
+    await page.goto("/demo/");
+    const sizes = await page.locator("#typography h1, #typography h2, #typography h3, #typography h4").evaluateAll((els) => {
+      const root = getComputedStyle(document.documentElement);
+      // Resolve a token to its used px (same viewport) so the heading's
+      // computed size can be compared with the token it should read.
+      const resolve = (token) => {
+        const probe = document.createElement("span");
+        probe.style.fontSize = root.getPropertyValue(token).trim();
+        document.body.append(probe);
+        const px = getComputedStyle(probe).fontSize;
+        probe.remove();
+        return px;
+      };
+      return els.map((el) => ({
+        heading: getComputedStyle(el).fontSize,
+        token: resolve(el.tagName === "H1" ? "--fz-type-2xl"
+          : el.tagName === "H2" ? "--fz-type-xl"
+          : el.tagName === "H3" ? "--fz-type-lg"
+          : "--fz-type-md"),
+      }));
+    });
+    for (const { heading, token } of sizes) {
+      expect(heading).toBe(token);
+    }
+  });
+
+  test("prose: headings open a section (big gap above, tight gap below)", async ({ page }) => {
+    await page.goto("/demo/");
+    // The first h3 is :first-child → margin-block-start: 0 (by design).
+    // Test the second h3 to assert the section rhythm.
+    const heading = page.locator("#demo-prose h3").nth(1);
+    const mt = parseFloat(await heading.evaluate((el) => getComputedStyle(el).marginTop));
+    const mb = parseFloat(await heading.evaluate((el) => getComputedStyle(el).marginBottom));
+    expect(mt).toBe(48); // --fz-space-7 (3rem)
+    expect(mb).toBe(12); // --fz-space-3 (0.75rem)
+    expect(mt).toBeGreaterThan(mb);
+  });
+
+  test("prose: tables get their own vertical room inside the wrapper", async ({ page }) => {
+    await page.goto("/demo/");
+    const table = page.locator("#demo-prose table");
+    const mt = parseFloat(await table.evaluate((el) => getComputedStyle(el).marginTop));
+    expect(mt).toBe(24); // --fz-space-5 (1.5rem)
+    // Table is width: 100% (computed = parent width in px). Assert it fills the prose container.
+    const { w: tableW, pw: proseW } = await table.evaluate((el) => {
+      return { w: el.getBoundingClientRect().width, pw: el.closest(".fz-prose").getBoundingClientRect().width };
+    });
+    expect(tableW).toBeCloseTo(proseW, 1);
+  });
+
+  test("avatar: circular, token-sized, object-fit cover", async ({ page }) => {
+    await page.goto("/demo/");
+    const av = page.locator("#demo-avatar");
+    await expect(av).toHaveCSS("border-radius", "50%");
+    await expect(av).toHaveCSS("width", "40px"); // --fz-avatar-size (2.5rem)
+    await expect(av).toHaveCSS("height", "40px");
+    await expect(av).toHaveCSS("object-fit", "cover");
+  });
+
+  test("avatar: data-size sm/lg resize from the token edge", async ({ page }) => {
+    await page.goto("/demo/");
+    await expect(page.locator("#demo-avatar-sm")).toHaveCSS("width", "28px"); // 1.75rem
+    const lg = page.locator('#media .fz-avatar[data-size="lg"]');
+    await expect(lg).toHaveCSS("width", "64px"); // 4rem
+  });
+
+  test("media: [data-media] locks a 16:9 box, data-ratio overrides", async ({ page }) => {
+    await page.goto("/demo/");
+    const ratio = async (sel) => {
+      const box = await page.locator(sel).boundingBox();
+      return box.height / box.width;
+    };
+    expect(await ratio("#demo-media-16")).toBeCloseTo(9 / 16, 2);
+    expect(await ratio('#media [data-media][data-ratio="1/1"]')).toBeCloseTo(1, 2);
+    expect(await ratio('#media [data-media][data-ratio="21/9"]')).toBeCloseTo(9 / 21, 2);
+  });
+
+  test("media: images are responsive — capped width, kept ratio", async ({ page }) => {
+    await page.goto("/demo/");
+    const img = page.locator("#demo-responsive-img");
+    await expect(img).toHaveCSS("max-width", "100%");
+    const fits = await img.evaluate((el) => {
+      const imgBox = el.getBoundingClientRect();
+      const parentBox = el.parentElement.getBoundingClientRect();
+      return { w: imgBox.width, pw: parentBox.width, hw: imgBox.width / imgBox.height };
+    });
+    // 2000×500 source: rendering must stay within the container and keep 4:1.
+    expect(fits.w).toBeLessThanOrEqual(fits.pw + 1);
+    expect(fits.hw).toBeCloseTo(4, 1);
+  });
+
+  test("media card: card[data-media] bleeds media to the top, body keeps padding", async ({ page }) => {
+    await page.goto("/demo/");
+    const card = page.locator("#demo-media-card");
+    await expect(card).toHaveCSS("padding", "0px");
+    await expect(card.locator(":scope > img")).toHaveCSS("border-radius", "0px");
+    await expect(card.locator(":scope > header")).toHaveCSS("padding", "24px"); // --fz-space-5
+  });
+});

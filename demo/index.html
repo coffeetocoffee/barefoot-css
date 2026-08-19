@@ -91,6 +91,8 @@
           <tr><td>Alerts</td><td class="wcag">AA</td><td><code>role="alert"</code> announces errors; <code>aria-live="polite"</code> announces updates; dismiss button is a focusable <code>button</code>.</td></tr>
           <tr><td>Skeleton</td><td class="wcag">AA</td><td>Decorative placeholder — real content must follow; no motion under <code>prefers-reduced-motion</code>.</td></tr>
           <tr><td>Toast</td><td class="wcag">AA</td><td><code>role="status"</code> announces politely; <kbd>Esc</kbd> or click-away closes.</td></tr>
+          <tr><td>Prose</td><td class="wcag">AA</td><td>Heading rhythm and section spacing for long-form content via <code>.fz-prose</code>; nothing hidden, no ordering.</td></tr>
+          <tr><td>Media &amp; avatars</td><td class="wcag">AA</td><td>Images carry <code>alt</code>; <code>[data-media]</code> keeps a locked ratio; <code>.fz-avatar</code> is an image, announced like any other.</td></tr>
         </tbody>
       </table>
     </section>
@@ -111,6 +113,77 @@
 @layer tokens {
   --fz-primary: #1a1a1a;
 }</code></pre>
+    </section>
+
+    <!-- Prose -->
+    <section id="prose" aria-labelledby="prose-title">
+      <h2 id="prose-title">Prose</h2>
+      <p><code>.fz-prose</code> wraps long-form content and adds heading rhythm and section spacing. The element look — blockquote border, <code>pre</code>, table rows — comes from the base and component layers; the wrapper only imposes the pace. The measure is still capped at <code>--fz-content-width</code> (64ch) so lines stay readable.</p>
+      <article class="fz-prose" id="demo-prose">
+        <h3>Section heading</h3>
+        <p>A paragraph of long-form copy. Prose puts one beat between siblings and a full section gap before headings — each heading opens a new section and sits close to what it introduces.</p>
+        <blockquote>“No boots, no baggage — but the words still need room to breathe.”</blockquote>
+        <h3>Tables and code keep the rhythm</h3>
+        <p>Headings get a large gap above and a tight gap below; tables and code blocks get their own vertical room.</p>
+        <ul>
+          <li>First list item</li>
+          <li>Second list item</li>
+          <li>Third list item</li>
+        </ul>
+        <table>
+          <caption>Fluid type steps</caption>
+          <thead><tr><th>Token</th><th>Heading</th></tr></thead>
+          <tbody>
+            <tr><td><code>--fz-type-md</code></td><td>h4</td></tr>
+            <tr><td><code>--fz-type-lg</code></td><td>h3</td></tr>
+            <tr><td><code>--fz-type-xl</code></td><td>h2</td></tr>
+            <tr><td><code>--fz-type-2xl</code></td><td>h1</td></tr>
+          </tbody>
+        </table>
+        <p>A closing paragraph so the block doesn't end on the table.</p>
+      </article>
+    </section>
+
+    <!-- Media -->
+    <section id="media" aria-labelledby="media-title">
+      <h2 id="media-title">Media &amp; avatars</h2>
+      <p>Responsive images scale down to their container (<code>max-width: 100%</code> + <code>height: auto</code> in the base layer). <code>.fz-avatar</code> is a circular image; <code>[data-media]</code> locks a ratio box (16:9 by default, <code>data-ratio</code> for others); <code>.card[data-media]</code> is a thumbnail card whose media bleeds to the top edge.</p>
+
+      <h3>Avatars</h3>
+      <p>Circular, sized from <code>--fz-avatar-size</code> (2.5rem); <code>data-size="sm|lg"</code> for other sizes. Always <code>alt</code> — an avatar is an image like any other.</p>
+      <div class="fz-row fz-gap-3">
+        <img class="fz-avatar" data-size="sm" id="demo-avatar-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
+        <img class="fz-avatar" id="demo-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
+        <img class="fz-avatar" data-size="lg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
+      </div>
+
+      <h3>Responsive images</h3>
+      <p>The banner below is 2000px wide; it shrinks to its container and keeps its ratio.</p>
+      <img id="demo-responsive-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2000' height='500' viewBox='0 0 2000 500'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23d8d8d8'/%3E%3Cstop offset='1' stop-color='%23f4f4f4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='2000' height='500' fill='url(%23g)'/%3E%3C/svg%3E" alt="Wide gradient banner that shrinks to its container">
+
+      <h3>Aspect-ratio embeds</h3>
+      <p><code>[data-media]</code> locks a ratio box on an <code>img</code>, <code>video</code>, <code>iframe</code>, or any element; the width follows the container and the height follows the ratio.</p>
+      <div class="fz-row fz-gap-4">
+        <div style="flex: 1 1 10rem; min-width: 0">
+          <div data-media id="demo-media-16" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">16:9</div>
+        </div>
+        <div style="flex: 1 1 10rem; min-width: 0">
+          <div data-media data-ratio="1/1" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">1:1</div>
+        </div>
+        <div style="flex: 1 1 10rem; min-width: 0">
+          <div data-media data-ratio="21/9" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">21:9</div>
+        </div>
+      </div>
+
+      <h3>Thumbnail cards</h3>
+      <p><code>.card[data-media]</code> leads with media that bleeds to the card's top edge; the body below keeps the card padding.</p>
+      <div class="fz-row">
+        <article class="card" data-media id="demo-media-card" style="max-width: 24rem">
+          <img data-media src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Crect width='1600' height='900' fill='%231a7f37'/%3E%3Ccircle cx='800' cy='450' r='240' fill='%237ee2a8'/%3E%3C/svg%3E" alt="Green field with a lighter circle">
+          <header>Featured story</header>
+          <p>The media bleeds to the card's top edge; the body keeps the standard card padding.</p>
+        </article>
+      </div>
     </section>
 
     <!-- Buttons -->

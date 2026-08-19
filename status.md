@@ -1,93 +1,26 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5 + 1.6 + 1.7**_
+_Last updated: 2026-08-19 — v1.8.0_
 
-## Summary
+## Snapshot
 
-Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, 1.5, 1.6, and
-1.7 are **done**.
-
-- **1.7.0:** feedback & status — semantic status tokens
-  (`--fz-success` / `--fz-info` / `--fz-warning` + `*-fg` pairs,
-  `light-dark()`, `@property`), role-aware `[data-alert]` notices
-  (dismissible via opt-in `js/alert-dismiss.js`), field-level validation
-  states (`:user-valid` / `[aria-invalid="false"]` success borders +
-  `.fz-field-*` helpers), a pure-CSS `.skeleton` placeholder
-  (reduced-motion safe), and declarative toasts on the Popover API
-  (`[popover][data-kind="toast"]`). Also fixed a latent cascade bug in
-  forms.css (a `(0,5,1)` text-input rule silently shadowed hover/focus/
-  validation rules until it was `:where()`-scoped).
-  **Versioned as `barefoot-css@1.7.0`** (2026-08-19).
-
-- **1.6.0:** the app shell — a full spacing scale
-  (`.fz-mt/mb-{1..8}`, `.fz-p-{1..8}`, `.fz-px/py-{1..8}` from the
-  tokens), auto-flowing `[data-grid="auto-fit"/"auto-fill"]` variants +
-  `data-gap` options, `components/nav.css` (`[data-nav]` topbar/footer
-  patterns, `.fz-brand`, `aria-current` states), the `.fz-sidebar`
-  split layout and `.fz-sticky` utility. All CSS-only, no new JS.
-  **Versioned as `barefoot-css@1.6.0`** (2026-08-19).
-
-- **1.5.0:** the form is finished — a themed `<select>` chevron, a
-  skinned `file`/`color` input, opt-in auto-grow textareas
-  (`field-sizing: content`), a required-asterisk affordance for wrapped
-  labels, a `form:has(:user-invalid)` whole-form invalid ring, and
-  `<output>` styling. Plus base polish (`mark`, `figure`, `address`,
-  `del`/`ins`), the `.fz-skip-link` utility, and animated accordion
-  disclosure (`interpolate-size: allow-keywords`). All CSS-only.
-  **Published as `barefoot-css@1.5.0`** (2026-08-19).
-
-- **1.4.0:** the full v1.4.0 candidate list shipped — form-control skins
-  (range/progress/meter), breadcrumbs, pagination, a fourth starter theme
-  (forest), OS accessibility settings (`prefers-contrast` /
-  `prefers-reduced-transparency`), the opt-in `js/carousel.js` autoplay +
-  controls module, stylelint, and an auto-generated README size table.
-  **Published as `barefoot-css@1.4.0`** (2026-08-19).
-
-- **1.3.1:** the last known gap closed — the opt-in `js/popover-anchor.js`
-  guard closes an anchored popover whose trigger is fully off-screen at
-  open time (Firefox clamped it to the viewport edge; Chromium/WebKit
-  pinned it off-screen; no engine hides it). **Published as
-  `barefoot-css@1.3.1`** (2026-08-18).
-
-- **1.3:** anchor-positioning robustness (`position-try-fallbacks:
-  flip-block` — anchored menus/tooltips flip away from viewport edges
-  instead of spilling off-screen) and a fail-fast release workflow
-  (`npm whoami` preflight + documented bypass-2FA token requirement).
-  **Published as `barefoot-css@1.3.0`** (2026-08-18).
-
-- **1.2:** the Safari/WebKit `<details>` tab-order shim
-  (`js/details-tabindex.js`) — open-`<details>` panel contents are now
-  reachable by Tab in every engine, with regression tests that run the
-  real keyboard contract cross-browser. **Note:** this milestone was
-  never published under its own version — the v1.3.0 release carried it
-  (see below).
-
-- **1.1:** switch component, stackable container-query tables, print
-  stylesheet, `scrollbar-gutter` stability, and a fresh-install
-  packaging smoke test in CI. Published as `barefoot-css@1.1.0`.
-
-- **0.1:** core architecture, all CSS components, build pipeline with size
-  budget, conformance demo, docs. Size target beaten by a wide margin
-  (budget 10KB gzipped; we ship 1.28KB).
-- **0.2:** CI wired — Playwright + axe-core accessibility conformance
-  (zero violations, verified), visual regression with committed baselines,
-  size-budget check, GitHub Actions workflow. The tests caught and we
-  fixed a real dark-mode contrast bug and two demo landmark/role issues.
-- **0.3:** opt-in JS extras shipped — WAI-ARIA tabs (`js/tabs.js`),
-  reliable Esc-close for `details[data-menu]` (`js/details-close.js`),
-  and popover-menu keyboard support (`js/popover-menu.js`), plus
-  `components/tabs.css` and a `tests/js.spec.js` suite. Zero dependencies,
-  all verified green.
-- **1.0:** container-query `[data-grid]` variants, container-unit carousel
-  slides (`60cqi`), anchored popovers (`position-area`), view-transition
-  theme crossfades, a dogfooded docs site at `/`, npm publish prep
-  (1.0.0 manifest + release workflow), and a new `tests/css.spec.js`
-  behavior suite.
+- **Current:** `barefoot-css@1.8.0` (2026-08-19) — content & media:
+  fluid type, `.fz-prose`, avatars, aspect-ratio embeds, responsive images,
+  thumbnail cards. Release notes: `CHANGELOG.md`.
+- **Next:** v1.9.0 → v2.0.0 — component completeness (stepper, fieldset,
+  input groups) → the design-system release (API freeze, theme gallery).
+  Roadmap: `plan.md`.
+- **Tests:** Chromium 75 (11 a11y / 15 JS / 46 CSS / 3 visual) · Firefox
+  61 · WebKit 61 — all green.
+- **Build:** `index.css` 1.90KB gzip · `full.css` 6.70KB gzip (10KB
+  budget → PASS).
+- **Done:** milestones 0.1 → 1.8. Per-version history in the sections
+  below — read only the ones you touch.
 
 ## Test results (current)
 
 ```
-$ npm test  →  66 passed (Chromium)
+$ npm test  →  75 passed (Chromium)
     11 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open,
      toast-open states report ZERO violations; focus ring; details toggle;
      popover Esc; dialog Esc + focus return; skip link hidden until keyboard
@@ -102,7 +35,7 @@ $ npm test  →  66 passed (Chromium)
      in view still opens; carousel: role + aria-roledescription marked,
      prev/next scroll + wrap, autoplay initiates a forward scroll, autoplay
      stays off under reduced motion)
-    37 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+    46 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
      popover below trigger; anchored popover flips above a trigger near
      the viewport bottom; theme switch via startViewTransition;
@@ -116,19 +49,22 @@ $ npm test  →  66 passed (Chromium)
      + v1.7: status tokens flip with color-scheme; alert edge tints;
      alert dismiss; :user-invalid/:user-valid border painting;
      [aria-invalid] mirror; skeleton base + reduced-motion;
-     toast open/Esc/edge pin + variant; badge variants)
+     toast open/Esc/edge pin + variant; badge variants
+     + v1.8: fluid type clamp; heading token mapping; prose rhythm;
+     avatar size + data-size; media aspect-ratio + data-ratio; responsive
+     image scaling; media card bleed + body padding)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 52 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 52 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 61 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 61 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      31.39KB raw     6.38KB gzip     5.58KB brotli
+full.css                      32.72KB raw     6.70KB gzip     5.89KB brotli
 js/carousel.js                 4.78KB raw     1.92KB gzip     1.63KB brotli
-index.css                      6.21KB raw     1.79KB gzip     1.53KB brotli
+index.css                      6.57KB raw     1.90KB gzip     1.63KB brotli
 components/forms.css           6.27KB raw     1.59KB gzip     1.35KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
 js/popover-anchor.js           2.26KB raw     1.04KB gzip     0.84KB brotli
@@ -150,6 +86,7 @@ components/pagination.css      0.75KB raw     0.33KB gzip     0.25KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
 themes/editorial.css           0.57KB raw     0.32KB gzip     0.27KB brotli
 components/badge.css           0.85KB raw     0.32KB gzip     0.26KB brotli
+components/media.css           0.71KB raw     0.31KB gzip     0.26KB brotli
 components/skeleton.css        0.52KB raw     0.30KB gzip     0.24KB brotli
 components/grid.css            0.98KB raw     0.27KB gzip     0.22KB brotli
 themes/forest.css              0.47KB raw     0.27KB gzip     0.23KB brotli
@@ -161,8 +98,9 @@ components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
 themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
 components/view-transition.css 0.28KB raw     0.16KB gzip     0.14KB brotli
+components/prose.css           0.30KB raw     0.15KB gzip     0.13KB brotli
 
-budget: dist/index.css 1.79KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.90KB gzip (limit 10.00KB) → PASS
 ```
 
 Opt-in JS (`dist/js/`, raw): carousel 4.78KB, tabs 2.70KB,
@@ -412,6 +350,25 @@ the CSS budget — opt-in by import.
   visual baselines regenerated for the expanded demo.
 - [x] **Versioned `barefoot-css@1.7.0`** (2026-08-19).
 
+### 1.8 — Content & media
+- [x] **Fluid type scale** (`tokens.css`) — `--fz-type-xs` through
+  `--fz-type-2xl`: headings use `clamp()` so they shrink on small screens
+  and cap on large ones, replacing the fixed `rem` sizes.
+- [x] **`.fz-prose`** (`components/prose.css`) — an opt-in long-form
+  wrapper that adds heading rhythm and section spacing; the element look
+  comes from base/components.
+- [x] **`.fz-avatar`** (`components/media.css`) — circular images sized
+  from `--fz-avatar-size` (2.5rem); `data-size="sm|lg"` for 1.75rem/4rem.
+- [x] **`[data-media]` aspect-ratio embeds** (`components/media.css`) —
+  locks a ratio box (default 16:9); `data-ratio="4/3|1/1|21/9"` picks
+  another frame.
+- [x] **Responsive images** (`base.css`) — `img`, `video` get `height:
+  auto` so they scale to their container and keep ratio.
+- [x] **Thumbnail cards** (`components/media.css`) — `.card[data-media]`
+  bleeds media to the top edge; body keeps standard padding.
+- [x] **Tests** — +9 CSS behavior (fluid type, prose, avatar, media, cards).
+- [x] **Versioned `barefoot-css@1.8.0`** (2026-08-19).
+
 ## Known gaps / next
 
 - [x] **The entire v1.4.0 candidate list is shipped** (range/progress/meter
@@ -445,13 +402,15 @@ the CSS budget — opt-in by import.
   flip-block` remains for the adjacent near-viewport-edge case. If
   `position-visibility: anchors-visible` ever lands in engines, the guard
   becomes a no-op and can be dropped.
-- [ ] **Next arc: v1.8.0 → v2.0.0** ("content & media → the design
-  system") — planned in plan.md. 1.8 ships content & media (fluid type,
-  `.fz-prose`, avatars, aspect-ratio media); 1.9 closes every component
-  gap + a consistency pass; 2.0 freezes the public API, audits the token
-  system, ships a theme gallery, and rewrites the docs. The budget has
-  ~5x headroom (`index.css` 1.79KB gzipped of 10KB) — no size pressure
-  on the arc. — 2026-08-19.
+- [x] **The entire v1.8.0 candidate list is shipped** (fluid type, prose,
+  avatars, aspect-ratio embeds, responsive images, media cards) —
+  2026-08-19.
+- [ ] **Next arc: v1.9.0 → v2.0.0** ("components, complete → the design
+  system") — planned in plan.md. 1.9 ships stepper, fieldset/legend,
+  input groups, date/number/email polish + a consistency pass; 2.0 freezes
+  the public API, audits the token system, ships a theme gallery, and
+  rewrites the docs. The budget has ~5x headroom (`index.css` 1.90KB
+  gzipped of 10KB) — no size pressure on the arc. — 2026-08-19.
 
 ## Verification commands
 

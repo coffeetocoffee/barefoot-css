@@ -57,7 +57,10 @@ ARIA to the divs" — there are no divs.
    `<header>`), and open with `showModal()`, not `show()`.
 3. **Icons/link labels:** provide text; don't ship icon-only buttons
    without an accessible name.
-4. **Images:** `alt` text is yours, not ours.
+4. **Images:** `alt` text is yours, not ours — including `.fz-avatar`
+   and any `img` inside `.card[data-media]` or `[data-media]`.
+5. **Embeds:** `iframe` with `[data-media]` should include a `title`
+   attribute for screen readers.
 
 That's the whole list. Compare that to "add `role`, `tabindex`, focus trap,
 Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
@@ -101,6 +104,8 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 | Alert | AA | `role="alert"` announces errors; `aria-live` announces updates |
 | Skeleton | AA | decorative; real content replaces it |
 | Toast | AA | `role="status"` announces politely; Esc/click-away closes |
+| Prose | AA | semantic headings/blockquote/table; rhythm only, no hidden content |
+| Media & avatars | AA | images carry `alt`; `[data-media]` keeps ratio; avatars are images |
 
 ## CI — wired (0.2, expanded for 1.0)
 

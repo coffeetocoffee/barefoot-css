@@ -28,17 +28,20 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ---- Typography ---- */
+  /* ---- Typography ----
+     Headings are fluid (clamp() steps from the --fz-type-* tokens in
+     tokens.css): they shrink on small screens and cap on large ones.
+     Override --fz-type-* (or set a fixed rem here) to opt out. */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.2;
     text-wrap: balance;
   }
 
-  h1 { font-size: 2.25rem; }
-  h2 { font-size: 1.75rem; }
-  h3 { font-size: 1.375rem; }
-  h4 { font-size: 1.125rem; }
+  h1 { font-size: var(--fz-type-2xl); }
+  h2 { font-size: var(--fz-type-xl); }
+  h3 { font-size: var(--fz-type-lg); }
+  h4 { font-size: var(--fz-type-md); }
 
   p,
   li,
@@ -90,6 +93,14 @@
 
   figure {
     margin-block: var(--fz-space-5);
+  }
+
+  /* Responsive media (v1.8): images and video scale down to their
+     container and keep their aspect ratio. The reset already caps
+     max-width at 100%; height: auto is what preserves the ratio. */
+  img,
+  video {
+    height: auto;
   }
 
   figure img {

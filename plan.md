@@ -1,6 +1,6 @@
 # Barefoot — Project plan
 
-Status: **Complete (0.1 → 1.6)** — see [status.md](status.md) for the live tracker.
+Status: **Complete (0.1 → 1.8)** — see [status.md](status.md) for the live tracker.
 
 ## Vision
 
@@ -141,8 +141,10 @@ and `.fz-*` utilities.
   `barefoot-css@1.6.0` (2026-08-19).
 - [x] **1.7** — the candidate list below (feedback & status).
   Shipped as `barefoot-css@1.7.0` (2026-08-19).
+- [x] **1.8** — the candidate list below (content & media).
+  Shipped as `barefoot-css@1.8.0` (2026-08-19).
 
-## Next — v1.8.0 → v2.0.0 ("content & media → the design system")
+## Next — v1.9.0 → v2.0.0 ("components, complete → the design system")
 
 Shipped through 1.7.0. The app shell (layout, navigation, spacing) and
 feedback (alerts, validation, skeletons, toasts) are complete, and the
@@ -196,11 +198,11 @@ freezes the API.
 
 ### v1.8 — Content & media
 
-- [ ] **Fluid type scale** — headings via `clamp()` / container units,
+- [x] **Fluid type scale** — headings via `clamp()` / container units,
       replacing the fixed `rem` sizes.
-- [ ] **`.fz-prose`** long-form wrapper — heading rhythm, code, tables,
+- [x] **`.fz-prose`** long-form wrapper — heading rhythm, code, tables,
       blockquote inside an article.
-- [ ] **`.fz-avatar`**, `[data-media]` aspect-ratio embeds, responsive
+- [x] **`.fz-avatar`**, `[data-media]` aspect-ratio embeds, responsive
       image sizing, thumbnail cards.
 
 ### v1.9 — Components, complete

@@ -4,6 +4,40 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] — 2026-08-19
+
+Content & media: fluid type scale, a prose wrapper for long-form content,
+circular avatars, aspect-ratio embeds, responsive images, and thumbnail
+cards — all CSS-only.
+
+### Added
+
+- **Fluid type scale** (`tokens.css`) — `--fz-type-xs` through
+  `--fz-type-2xl`: headings now use `clamp()` so they shrink on small
+  screens and cap on large ones, replacing the fixed `rem` sizes.
+  Override any step with a fixed `rem` to opt back into a static scale.
+- **Prose wrapper** (`components/prose.css`) — `.fz-prose` imposes
+  heading rhythm and section spacing on long-form content: one beat
+  between siblings, a full section gap before headings, tight gap below.
+  The element look (blockquote, code, tables) comes from the base and
+  component layers; the wrapper only adds pace.
+- **Avatars** (`components/media.css`) — `.fz-avatar` circular images
+  sized from `--fz-avatar-size` (2.5rem, matches `--fz-control-height`);
+  `data-size="sm|lg"` for 1.75rem / 4rem.
+- **Aspect-ratio embeds** (`components/media.css`) — `[data-media]` locks
+  a ratio box on `img`, `video`, `iframe`, or any element (default 16:9);
+  `data-ratio="4/3|1/1|21/9"` picks another frame.
+- **Thumbnail cards** (`components/media.css`) — `.card[data-media]`
+  bleeds media to the top edge; the body below keeps standard card padding.
+- **Responsive images** (`base.css`) — `img` and `video` get `height:
+  auto` so they scale down to their container and keep their aspect ratio.
+- **Tests** — +9 CSS behavior tests (fluid type, prose rhythm, avatar,
+  media ratios, responsive images, media cards). Chromium 75 / Firefox 61
+  / WebKit 61 suites green; axe-core still zero violations; visual
+  baselines regenerated for the expanded demo.
+
+[1.8.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.8.0
+
 ## [1.7.0] — 2026-08-19
 
 Feedback & status: the app can now tell the user what happened. Semantic
