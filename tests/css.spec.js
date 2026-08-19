@@ -357,3 +357,132 @@ test.describe("v1.6 layout & navigation", () => {
     await expect(page.locator("#demo-sticky")).toHaveCSS("top", "0px");
   });
 });
+
+test.describe("v1.7 feedback & status", () => {
+  test("status tokens resolve as light-dark pairs (flip with color-scheme)", async ({ page }) => {
+    await page.goto("/demo/");
+    const t = await page.evaluate(() => {
+      const root = document.documentElement;
+      const read = () => {
+        const s = getComputedStyle(root);
+        return {
+          success: s.getPropertyValue("--fz-success").trim(),
+          info: s.getPropertyValue("--fz-info").trim(),
+          warning: s.getPropertyValue("--fz-warning").trim(),
+        };
+      };
+      root.style.colorScheme = "light";
+      const light = read();
+      root.style.colorScheme = "dark";
+      const dark = read();
+      root.style.colorScheme = "";
+      return { light, dark };
+    });
+    expect(t.light.success).toBe("rgb(26, 127, 55)");
+    expect(t.light.info).toBe("rgb(9, 105, 218)");
+    expect(t.light.warning).toBe("rgb(154, 103, 0)");
+    expect(t.dark.success).not.toBe(t.light.success);
+    expect(t.dark.info).not.toBe(t.light.info);
+    expect(t.dark.warning).not.toBe(t.light.warning);
+  });
+
+  test("alert: data-alert variants paint the status edge from the tokens", async ({ page }) => {
+    await page.goto("/demo/");
+    // light() → light value of --fz-danger (#b3261e → rgb(179, 38, 30)).
+    await expect(page.locator("#demo-alert-danger")).toHaveCSS("border-inline-start-color", "rgb(179, 38, 30)");
+    await expect(page.locator("#demo-alert-success")).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)");
+    await expect(page.locator("#demo-alert-info")).toHaveCSS("border-inline-start-color", "rgb(9, 105, 218)");
+    await expect(page.locator("#demo-alert-warning")).toHaveCSS("border-inline-start-color", "rgb(154, 103, 0)");
+  });
+
+  test("alert dismiss button removes its alert (opt-in js/alert-dismiss.js)", async ({ page }) => {
+    await page.goto("/demo/");
+    const alert = page.locator("#demo-alert-danger");
+    await alert.getByRole("button", { name: "Dismiss" }).click();
+    await expect(alert).toHaveCount(0);
+  });
+
+  test("field validation: touched invalid fields get the danger border, valid get success", async ({ page }) => {
+    await page.goto("/demo/");
+    const email = page.locator("#demo-email");
+    await email.fill("nope");
+    await email.blur();
+    await expect(email).toHaveCSS("border-color", "rgb(179, 38, 30)"); // --fz-danger (light)
+
+    await email.fill("you@example.com");
+    await email.blur();
+    await expect(email).toHaveCSS("border-color", "rgb(26, 127, 55)"); // --fz-success (light)
+  });
+
+  test("field validation: [aria-invalid] mirrors the state for script-driven forms", async ({ page }) => {
+    await page.goto("/demo/");
+    const input = page.locator("#demo-user");
+    await input.evaluate((el) => {
+      el.setAttribute("aria-invalid", "true");
+      el.setAttribute("aria-describedby", "user-msg");
+    });
+    await expect(input).toHaveCSS("border-color", "rgb(179, 38, 30)");
+    await input.evaluate((el) => el.setAttribute("aria-invalid", "false"));
+    await expect(input).toHaveCSS("border-color", "rgb(26, 127, 55)");
+  });
+
+  test("skeleton: shimmering placeholder with a surface-alt base", async ({ page }) => {
+    await page.goto("/demo/");
+    const sk = page.locator("#demo-skeleton-line");
+    await expect(sk).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt (light)
+    const anim = await sk.evaluate((el) => getComputedStyle(el, "::after").animationName);
+    expect(anim).toBe("fz-skeleton-shimmer");
+  });
+
+  test("skeleton: shimmer disabled under prefers-reduced-motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/demo/");
+    const anim = await page
+      .locator("#demo-skeleton-line")
+      .evaluate((el) => getComputedStyle(el, "::after").animationName);
+    expect(anim).toBe("none");
+  });
+
+  test("toast: popover opens declaratively, Esc closes, pinned to bottom edge", async ({ page }) => {
+    await page.goto("/demo/");
+    const toast = page.locator("#demo-toast");
+    await expect(toast).toBeHidden();
+    await page.locator("#toast-trigger").click();
+    await expect(toast).toBeVisible();
+    await expect(toast).toHaveAttribute("role", "status");
+    const pos = await toast.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { bottom: r.bottom, vh: window.innerHeight };
+    });
+    expect(pos.vh - pos.bottom).toBeLessThan(100); // pinned near the viewport bottom
+
+    await page.keyboard.press("Escape");
+    await expect(toast).toBeHidden();
+  });
+
+  test("toast: data-variant tints the edge from the status tokens", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.locator("#toast-trigger").click();
+    await expect(page.locator("#demo-toast")).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)");
+  });
+
+  test("badge: status variants map to the status tokens", async ({ page }) => {
+    await page.goto("/demo/");
+    // Reuse the alert section badges? None there — check token-backed styles
+    // via the conformance demo by injecting a badge in a temp container.
+    const colors = await page.evaluate(() => {
+      const host = document.createElement("div");
+      host.innerHTML = `
+        <span class="badge" data-variant="success">ok</span>
+        <span class="badge" data-variant="info">i</span>
+        <span class="badge" data-variant="warning">w</span>`;
+      document.body.append(host);
+      const [s, i, w] = [...host.children].map((el) => getComputedStyle(el).borderColor);
+      host.remove();
+      return { s, i, w };
+    });
+    expect(colors.s).toBe("rgb(26, 127, 55)");
+    expect(colors.i).toBe("rgb(9, 105, 218)");
+    expect(colors.w).toBe("rgb(154, 103, 0)");
+  });
+});

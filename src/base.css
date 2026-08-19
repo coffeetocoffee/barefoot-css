@@ -136,6 +136,12 @@
       --fz-focus-ring: #000000 !important;
       --fz-danger: #000000 !important;
       --fz-danger-fg: #ffffff !important;
+      --fz-success: #000000 !important;
+      --fz-success-fg: #ffffff !important;
+      --fz-info: #000000 !important;
+      --fz-info-fg: #ffffff !important;
+      --fz-warning: #000000 !important;
+      --fz-warning-fg: #ffffff !important;
     }
 
     body {

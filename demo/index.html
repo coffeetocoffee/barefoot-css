@@ -88,6 +88,9 @@
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
           <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>.</td></tr>
           <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.fz-sticky</code> pins while scrolling.</td></tr>
+          <tr><td>Alerts</td><td class="wcag">AA</td><td><code>role="alert"</code> announces errors; <code>aria-live="polite"</code> announces updates; dismiss button is a focusable <code>button</code>.</td></tr>
+          <tr><td>Skeleton</td><td class="wcag">AA</td><td>Decorative placeholder — real content must follow; no motion under <code>prefers-reduced-motion</code>.</td></tr>
+          <tr><td>Toast</td><td class="wcag">AA</td><td><code>role="status"</code> announces politely; <kbd>Esc</kbd> or click-away closes.</td></tr>
         </tbody>
       </table>
     </section>
@@ -449,6 +452,76 @@
       </div>
       <div class="fz-mt-6 fz-p-5 fz-px-3 fz-py-2" id="spacing-probe">
         <p class="fz-muted" style="margin-block: 0">This box uses <code>fz-mt-6 fz-p-5 fz-px-3 fz-py-2</code>: 2rem of margin above, 0.5rem padding on the block axis and 0.75rem on the inline axis (the axis shorthands win over the all-sides padding).</p>
+      </div>
+    </section>
+
+    <!-- Alerts -->
+    <section id="alerts" aria-labelledby="alerts-title">
+      <h2 id="alerts-title">Alerts &amp; status tokens</h2>
+      <p>Role-aware notices styled from the status tokens. Pick the ARIA role for the semantics — <code>role="alert"</code> for errors, <code>aria-live="polite"</code> for updates — and Barefoot paints it. Dismissible alerts pair a <code>[data-alert-dismiss]</code> button with the opt-in <code>js/alert-dismiss.js</code> module.</p>
+      <div class="fz-stack">
+        <div data-alert="danger" role="alert" id="demo-alert-danger">
+          <p>Deploy failed — the build timed out after 10 minutes.</p>
+          <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
+        </div>
+        <div data-alert="success" role="status" id="demo-alert-success">
+          <p>Backup completed at 02:00 UTC.</p>
+        </div>
+        <div data-alert="info" role="status" id="demo-alert-info">
+          <p>New version available — see the changelog.</p>
+        </div>
+        <div data-alert="warning" aria-live="polite" id="demo-alert-warning">
+          <p>You're running low on storage.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Field validation -->
+    <section id="validation" aria-labelledby="validation-title">
+      <h2 id="validation-title">Field validation</h2>
+      <p><code>:user-invalid</code> / <code>:user-valid</code> fire only after a control is touched — nothing flashes before it. Pair with <code>aria-invalid</code> for script-driven forms and <code>aria-describedby</code> for the message.</p>
+      <form id="demo-validation-form">
+        <div class="fz-stack">
+          <div>
+            <label for="demo-email">Email</label>
+            <input id="demo-email" name="email" type="email" required
+                   aria-describedby="email-msg">
+            <small id="email-msg" class="fz-field-hint">e.g. you@example.com</small>
+          </div>
+          <div>
+            <label for="demo-phone">Phone</label>
+            <input id="demo-phone" name="phone" type="tel" pattern="[0-9+ ]+"
+                   aria-describedby="phone-msg">
+            <small id="phone-msg" class="fz-field-hint">Digits and <code>+</code> only.</small>
+          </div>
+          <div>
+            <label for="demo-user">Username</label>
+            <input id="demo-user" name="username" type="text" minlength="3">
+            <small id="user-msg" class="fz-field-hint">At least 3 characters.</small>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Skeleton -->
+    <section id="skeleton" aria-labelledby="skeleton-title">
+      <h2 id="skeleton-title">Skeleton</h2>
+      <p>Pure-CSS loading placeholders. Add <code>.skeleton</code> to any element; the shimmer is decorative and static under <code>prefers-reduced-motion</code>. Always replace with real content — the placeholder is never announced.</p>
+      <div class="card">
+        <div class="skeleton" id="demo-skeleton-line" style="height: 1rem; width: 60%"></div>
+        <div class="skeleton fz-mt-3" style="height: 1rem"></div>
+        <div class="skeleton fz-mt-2" style="height: 1rem; width: 80%"></div>
+        <div class="skeleton fz-mt-5" style="height: 8rem; border-radius: var(--fz-radius)"></div>
+      </div>
+    </section>
+
+    <!-- Toast -->
+    <section id="toast" aria-labelledby="toast-title">
+      <h2 id="toast-title">Toast</h2>
+      <p>A status notice pinned to the bottom edge, built on the Popover API — declarative, JS-free. The trigger opens it; <kbd>Esc</kbd> or click-away closes it. Use <code>role="status"</code> for non-urgent, <code>role="alert"</code> for urgent.</p>
+      <button type="button" id="toast-trigger" popovertarget="demo-toast">Show toast</button>
+      <div popover id="demo-toast" data-kind="toast" data-variant="success" role="status">
+        <p>Saved successfully.</p>
       </div>
     </section>
 

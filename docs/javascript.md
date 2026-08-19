@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-six small opt-in modules add the missing behavior. Each is a single
+seven small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Size (raw) | Adds |
@@ -12,12 +12,13 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/popover-menu.js` | ~2.2KB | Arrow-key nav + focus restore for popover menus |
 | `js/popover-anchor.js` | ~2.3KB | Closes anchored popovers whose trigger is off-screen |
 | `js/carousel.js` | ~4.8KB | Carousel autoplay + prev/next controls |
-| `js/barefoot.js` | — | All six in one import |
+| `js/alert-dismiss.js` | ~0.8KB | Dismisses `[data-alert]` notices on click |
+| `js/barefoot.js` | — | All seven in one import |
 
 ## Loading
 
 ```html
-<!-- all six -->
+<!-- all seven -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>

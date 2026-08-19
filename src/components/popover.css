@@ -60,6 +60,44 @@
     padding: var(--fz-space-1);
   }
 
+  /* Toast — a status notice pinned to the bottom edge. Declarative and
+     JS-free: <button popovertarget="toast"> opens it, Esc/click-away
+     closes it. Auto-dismiss (timed) would need JS — keep toasts
+     dismissible by the user instead. Pair data-kind="toast" with
+     role="status" for non-urgent or role="alert" for urgent, and
+     data-variant="success|info|warning|danger" to tint the edge. */
+  [popover][data-kind="toast"] {
+    position: fixed;
+    inset: auto;
+    inset-block-end: var(--fz-space-5);
+    inset-inline: 0;
+    margin-inline: auto;
+    width: max-content;
+    max-width: min(24rem, 90vw);
+    padding: var(--fz-space-3) var(--fz-space-4);
+    border-inline-start: 3px solid var(--fz-border);
+  }
+
+  [popover][data-kind="toast"]:popover-open {
+    transform: none;
+  }
+
+  [popover][data-kind="toast"][data-variant="success"] {
+    border-inline-start-color: var(--fz-success);
+  }
+
+  [popover][data-kind="toast"][data-variant="info"] {
+    border-inline-start-color: var(--fz-info);
+  }
+
+  [popover][data-kind="toast"][data-variant="warning"] {
+    border-inline-start-color: var(--fz-warning);
+  }
+
+  [popover][data-kind="toast"][data-variant="danger"] {
+    border-inline-start-color: var(--fz-danger);
+  }
+
   [popover][data-kind="menu"] a,
   [popover][data-kind="menu"] button {
     display: block;

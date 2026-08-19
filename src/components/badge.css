@@ -29,4 +29,22 @@
     background: var(--fz-danger);
     border-color: var(--fz-danger);
   }
+
+  .badge[data-variant="success"] {
+    color: var(--fz-success-fg);
+    background: var(--fz-success);
+    border-color: var(--fz-success);
+  }
+
+  .badge[data-variant="info"] {
+    color: var(--fz-info-fg);
+    background: var(--fz-info);
+    border-color: var(--fz-info);
+  }
+
+  .badge[data-variant="warning"] {
+    color: var(--fz-warning-fg);
+    background: var(--fz-warning);
+    border-color: var(--fz-warning);
+  }
 }

@@ -49,6 +49,15 @@
     --fz-danger: light-dark(#b3261e, #f2b8b5);
     --fz-danger-fg: light-dark(#ffffff, #201000);
 
+    --fz-success: light-dark(#1a7f37, #7ee2a8);
+    --fz-success-fg: light-dark(#ffffff, #0a2a16);
+
+    --fz-info: light-dark(#0969da, #8ac7ff);
+    --fz-info-fg: light-dark(#ffffff, #0b1f38);
+
+    --fz-warning: light-dark(#9a6700, #e3b341);
+    --fz-warning-fg: light-dark(#ffffff, #2a1f00);
+
     --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8);
 
     /* ---- Effects (default: no shadows — neutral by default) ---- */
@@ -100,6 +109,26 @@
     inherits: true;
     initial-value: #1a1a1a;
   }
+  @property --fz-danger {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #b3261e;
+  }
+  @property --fz-success {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #1a7f37;
+  }
+  @property --fz-info {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #0969da;
+  }
+  @property --fz-warning {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #9a6700;
+  }
 }
 
 /* ---- Theme presets ----
@@ -135,6 +164,13 @@
   --fz-border: light-dark(#000000, #ffffff);
   --fz-focus-ring: light-dark(#000000, #ffffff);
   --fz-danger: light-dark(#000000, #ffffff);
+  --fz-danger-fg: light-dark(#ffffff, #000000);
+  --fz-success: light-dark(#000000, #ffffff);
+  --fz-success-fg: light-dark(#ffffff, #000000);
+  --fz-info: light-dark(#000000, #ffffff);
+  --fz-info-fg: light-dark(#ffffff, #000000);
+  --fz-warning: light-dark(#000000, #ffffff);
+  --fz-warning-fg: light-dark(#ffffff, #000000);
 }
 
 /* ---- OS accessibility settings ----
@@ -154,6 +190,13 @@
     --fz-border: light-dark(#000000, #ffffff);
     --fz-focus-ring: light-dark(#000000, #ffffff);
     --fz-danger: light-dark(#000000, #ffffff);
+    --fz-danger-fg: light-dark(#ffffff, #000000);
+    --fz-success: light-dark(#000000, #ffffff);
+    --fz-success-fg: light-dark(#ffffff, #000000);
+    --fz-info: light-dark(#000000, #ffffff);
+    --fz-info-fg: light-dark(#ffffff, #000000);
+    --fz-warning: light-dark(#000000, #ffffff);
+    --fz-warning-fg: light-dark(#ffffff, #000000);
   }
 }
 

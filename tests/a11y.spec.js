@@ -38,6 +38,13 @@ test.describe("accessibility conformance (axe-core)", () => {
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
+
+  test("toast open has no violations", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.locator("#toast-trigger").click();
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
 });
 
 test.describe("visible focus + keyboard contract", () => {

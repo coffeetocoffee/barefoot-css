@@ -1,11 +1,23 @@
 # Barefoot — Status
 
-_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5 + 1.6**_
+_Last updated: 2026-08-19 — milestones **0.1 + 0.2 + 0.3 + 1.0 + 1.1 + 1.2 + 1.3 + 1.3.1 + 1.4 + 1.5 + 1.6 + 1.7**_
 
 ## Summary
 
-Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, 1.5, and 1.6
-are **done**.
+Milestones 0.1, 0.2, 0.3, 1.0, 1.1, 1.2, 1.3, 1.3.1, 1.4, 1.5, 1.6, and
+1.7 are **done**.
+
+- **1.7.0:** feedback & status — semantic status tokens
+  (`--fz-success` / `--fz-info` / `--fz-warning` + `*-fg` pairs,
+  `light-dark()`, `@property`), role-aware `[data-alert]` notices
+  (dismissible via opt-in `js/alert-dismiss.js`), field-level validation
+  states (`:user-valid` / `[aria-invalid="false"]` success borders +
+  `.fz-field-*` helpers), a pure-CSS `.skeleton` placeholder
+  (reduced-motion safe), and declarative toasts on the Popover API
+  (`[popover][data-kind="toast"]`). Also fixed a latent cascade bug in
+  forms.css (a `(0,5,1)` text-input rule silently shadowed hover/focus/
+  validation rules until it was `:where()`-scoped).
+  **Versioned as `barefoot-css@1.7.0`** (2026-08-19).
 
 - **1.6.0:** the app shell — a full spacing scale
   (`.fz-mt/mb-{1..8}`, `.fz-p-{1..8}`, `.fz-px/py-{1..8}` from the
@@ -75,11 +87,11 @@ are **done**.
 ## Test results (current)
 
 ```
-$ npm test  →  55 passed (Chromium)
-    10 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open
-     states report ZERO violations; focus ring; details toggle; popover
-     Esc; dialog Esc + focus return; skip link hidden until keyboard focus;
-     nav links focusable in order + aria-current carried)
+$ npm test  →  66 passed (Chromium)
+    11 × accessibility (axe-core: resting, dark, dialog-open, dropdown-open,
+     toast-open states report ZERO violations; focus ring; details toggle;
+     popover Esc; dialog Esc + focus return; skip link hidden until keyboard
+     focus; nav links focusable in order + aria-current carried)
     15 × opt-in JS (tabs click + arrows + Home/End; tabs no-JS-first: all
      panels visible without the module, group marked data-fz-tabs-js +
      hidden inactive with it; details Esc-close with focus return; details
@@ -90,7 +102,7 @@ $ npm test  →  55 passed (Chromium)
      in view still opens; carousel: role + aria-roledescription marked,
      prev/next scroll + wrap, autoplay initiates a forward scroll, autoplay
      stays off under reduced motion)
-    27 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
+    37 × CSS behavior (container-query grid 1 vs 3 columns; carousel in
      container units; stackable table header hidden/visible; anchored
      popover below trigger; anchored popover flips above a trigger near
      the viewport bottom; theme switch via startViewTransition;
@@ -100,56 +112,63 @@ $ npm test  →  55 passed (Chromium)
      asterisk; autogrow field-sizing; form:has(:user-invalid); output;
      + v1.6: spacing scale mt/p/px/py mapping + axis-shorthand precedence;
      grid auto-fit ≥--fz-grid-min; data-gap; nav current-page + pills;
-     nav footer variant; sidebar split + narrow stack; sticky)
+     nav footer variant; sidebar split + narrow stack; sticky
+     + v1.7: status tokens flip with color-scheme; alert edge tints;
+     alert dismiss; :user-invalid/:user-valid border painting;
+     [aria-invalid] mirror; skeleton base + reduced-motion;
+     toast open/Esc/edge pin + variant; badge variants)
     3 × visual regression (light + dark full-page + webfont canary)
 
-$ npm run test:ff       → 42 passed (Firefox: JS + CSS behavior)
-$ npm run test:webkit   → 42 passed (WebKit/Safari: JS + CSS behavior)
+$ npm run test:ff       → 52 passed (Firefox: JS + CSS behavior)
+$ npm run test:webkit   → 52 passed (WebKit/Safari: JS + CSS behavior)
 ```
 
 ## Build results (current)
 
 ```
-full.css                      27.55KB raw     5.80KB gzip     5.05KB brotli
+full.css                      31.39KB raw     6.38KB gzip     5.58KB brotli
 js/carousel.js                 4.78KB raw     1.92KB gzip     1.63KB brotli
-index.css                      5.02KB raw     1.60KB gzip     1.39KB brotli
-components/forms.css           5.92KB raw     1.54KB gzip     1.31KB brotli
+index.css                      6.21KB raw     1.79KB gzip     1.53KB brotli
+components/forms.css           6.27KB raw     1.59KB gzip     1.35KB brotli
 js/tabs.js                     2.70KB raw     1.10KB gzip     0.89KB brotli
 js/popover-anchor.js           2.26KB raw     1.04KB gzip     0.84KB brotli
 js/details-tabindex.js         1.86KB raw     0.91KB gzip     0.73KB brotli
 js/popover-menu.js             2.17KB raw     0.89KB gzip     0.75KB brotli
 utilities.css                  3.08KB raw     0.83KB gzip     0.62KB brotli
+components/popover.css         1.91KB raw     0.61KB gzip     0.51KB brotli
 components/buttons.css         2.06KB raw     0.60KB gzip     0.49KB brotli
 components/dropdown.css        1.45KB raw     0.54KB gzip     0.42KB brotli
 js/details-close.js            0.90KB raw     0.51KB gzip     0.39KB brotli
-components/popover.css         1.25KB raw     0.48KB gzip     0.39KB brotli
 components/dialog.css          1.05KB raw     0.48KB gzip     0.38KB brotli
 components/accordion.css       1.34KB raw     0.47KB gzip     0.37KB brotli
+js/alert-dismiss.js            0.81KB raw     0.45KB gzip     0.35KB brotli
 components/table.css           0.87KB raw     0.40KB gzip     0.32KB brotli
 components/nav.css             0.88KB raw     0.38KB gzip     0.30KB brotli
 components/tabs.css            0.73KB raw     0.34KB gzip     0.26KB brotli
+components/alert.css           0.83KB raw     0.33KB gzip     0.26KB brotli
 components/pagination.css      0.75KB raw     0.33KB gzip     0.25KB brotli
 themes/playful.css             0.58KB raw     0.33KB gzip     0.30KB brotli
 themes/editorial.css           0.57KB raw     0.32KB gzip     0.27KB brotli
-components/badge.css           0.52KB raw     0.27KB gzip     0.22KB brotli
+components/badge.css           0.85KB raw     0.32KB gzip     0.26KB brotli
+components/skeleton.css        0.52KB raw     0.30KB gzip     0.24KB brotli
 components/grid.css            0.98KB raw     0.27KB gzip     0.22KB brotli
 themes/forest.css              0.47KB raw     0.27KB gzip     0.23KB brotli
 themes/dashboard.css           0.49KB raw     0.26KB gzip     0.22KB brotli
 components/carousel.css        0.44KB raw     0.26KB gzip     0.20KB brotli
 components/breadcrumbs.css     0.51KB raw     0.25KB gzip     0.18KB brotli
-js/barefoot.js                 0.41KB raw     0.24KB gzip     0.20KB brotli
+js/barefoot.js                 0.42KB raw     0.24KB gzip     0.19KB brotli
 components/code.css            0.45KB raw     0.24KB gzip     0.18KB brotli
 themes/custom.css              0.45KB raw     0.23KB gzip     0.19KB brotli
 components/card.css            0.29KB raw     0.20KB gzip     0.14KB brotli
 components/view-transition.css 0.28KB raw     0.16KB gzip     0.14KB brotli
 
-budget: dist/index.css 1.60KB gzip (limit 10.00KB) → PASS
+budget: dist/index.css 1.79KB gzip (limit 10.00KB) → PASS
 ```
 
 Opt-in JS (`dist/js/`, raw): carousel 4.78KB, tabs 2.70KB,
 popover-anchor 2.26KB, popover-menu 2.17KB, details-tabindex 1.86KB,
-details-close 0.90KB, barefoot 0.41KB. Not part of the CSS budget — opt-in
-by import.
+details-close 0.90KB, alert-dismiss 0.81KB, barefoot 0.42KB. Not part of
+the CSS budget — opt-in by import.
 
 ## What's done
 
@@ -358,6 +377,41 @@ by import.
   states.
 - [x] **Versioned `barefoot-css@1.6.0`** (2026-08-19).
 
+### 1.7 — feedback & status
+- [x] **Status tokens** (`tokens.css`) — `--fz-success`, `--fz-info`,
+  `--fz-warning` + `*-fg` pairs, all `light-dark()`, `@property`-
+  registered, audited against the `contrast` theme /
+  `prefers-contrast` / print overrides. Badge gains
+  `data-variant="success|info|warning"`.
+- [x] **`components/alert.css`** — `[data-alert]` role-aware notices
+  (bare or `data-alert="danger|success|info|warning"`, edge-tinted from
+  the tokens); ARIA semantics (`role="alert"`, `aria-live="polite"`) come
+  from the markup. Dismissible via `[data-alert-dismiss]` + opt-in
+  `js/alert-dismiss.js` (wired into `js/barefoot.js`).
+- [x] **Field-level validation** (`components/forms.css`) —
+  `:user-invalid` / `:user-valid` + `[aria-invalid="true"/"false"]`
+  paint the control border danger/success (touched-only); helpers
+  `.fz-field-hint` / `.fz-field-error` / `.fz-field-success`. Also fixed
+  a latent cascade bug: the shared text-input rule was `(0,5,1)` from
+  five `:not([type])` exclusions and shadowed hover/focus/validation
+  rules — now `:where()`-scoped.
+- [x] **`components/skeleton.css`** — `.skeleton`, a pure-CSS shimmering
+  placeholder; static under `prefers-reduced-motion`.
+- [x] **Toasts** (`components/popover.css`) — `[popover][data-kind="toast"]`
+  pinned to the bottom edge, `data-variant` tints. Declarative (Popover
+  API): trigger opens, Esc/click-away closes. Auto-dismiss stays out —
+  it needs JS.
+- [x] **Visual harness** (`tests/visual.spec.js`) — infinite animations
+  are cancelled, not force-finished, so the full-page capture stays
+  deterministic with the skeleton shimmer on the page.
+- [x] **Tests**: +10 CSS behavior (status tokens flip with
+  `color-scheme`, alert edge tints, alert dismiss, `:user-invalid` /
+  `:user-valid` border painting, `[aria-invalid]` mirror, skeleton base +
+  reduced-motion, toast open/Esc/edge pin + variant tint, badge variants),
+  +1 a11y state (toast-open axe run). Axe-core still zero violations;
+  visual baselines regenerated for the expanded demo.
+- [x] **Versioned `barefoot-css@1.7.0`** (2026-08-19).
+
 ## Known gaps / next
 
 - [x] **The entire v1.4.0 candidate list is shipped** (range/progress/meter
@@ -375,6 +429,10 @@ by import.
 - [x] **The entire v1.6.0 candidate list is shipped** (spacing scale,
   grid auto-fit/fill + `data-gap`, nav, sidebar split, sticky) —
   2026-08-19. Versioned `barefoot-css@1.6.0`; the app shell is closed.
+- [x] **The entire v1.7.0 candidate list is shipped** (status tokens,
+  alerts, field-level validation, skeleton, toasts) — 2026-08-19.
+  Versioned `barefoot-css@1.7.0`; the feedback & status milestone is
+  closed.
 - [x] **Firefox anchor positioning (off-screen trigger) — FIXED in 1.3.1.**
   `position-area` clamped to the viewport edge when a popover's trigger
   was *off-screen* at open time (Firefox 153), while Chromium/WebKit
@@ -387,15 +445,13 @@ by import.
   flip-block` remains for the adjacent near-viewport-edge case. If
   `position-visibility: anchors-visible` ever lands in engines, the guard
   becomes a no-op and can be dropped.
-- [ ] **Next arc: v1.7.0 → v2.0.0** ("feedback & status → the design
-  system") — planned in plan.md. 1.7 ships status feedback
-  (success/info/warning tokens, alerts, field-level validation states,
-  skeleton); 1.8 ships content & media (fluid type, `.fz-prose`,
-  avatars, aspect-ratio media); 1.9 closes every component gap + a
-  consistency pass; 2.0 freezes the public API, audits the token system,
-  ships a theme gallery, and rewrites the docs. The budget has ~6x
-  headroom (`index.css` 1.60KB gzipped of 10KB) — no size pressure on
-  the arc. — 2026-08-19.
+- [ ] **Next arc: v1.8.0 → v2.0.0** ("content & media → the design
+  system") — planned in plan.md. 1.8 ships content & media (fluid type,
+  `.fz-prose`, avatars, aspect-ratio media); 1.9 closes every component
+  gap + a consistency pass; 2.0 freezes the public API, audits the token
+  system, ships a theme gallery, and rewrites the docs. The budget has
+  ~5x headroom (`index.css` 1.79KB gzipped of 10KB) — no size pressure
+  on the arc. — 2026-08-19.
 
 ## Verification commands
 

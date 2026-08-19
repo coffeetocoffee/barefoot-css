@@ -11,9 +11,18 @@
     color: var(--fz-text);
   }
 
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
-  select,
-  textarea {
+  /* :where() zeroes the specificity of this shared rule. The type
+     exclusions stay meaningful for matching, but they must not beat the
+     hover/focus/validation rules below (each :not() adds an attribute's
+     specificity — without :where() the five exclusions made this rule
+     (0,5,1) and silently out-specified :user-invalid/:user-valid/
+     [aria-invalid]/:hover/:focus-visible, so invalid borders and hover
+     hints never rendered. */
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+    select,
+    textarea
+  ) {
     width: 100%;
     min-height: var(--fz-control-height);
     padding: var(--fz-space-2) var(--fz-space-3);
@@ -293,7 +302,11 @@
     background: var(--fz-danger);
   }
 
-  /* Validation without JS. */
+  /* Validation without JS.
+     :user-invalid / :user-valid fire only after the user has interacted
+     with the control (not on page load), so nothing flashes red before
+     it's touched. [aria-invalid] covers script-driven forms; pairing
+     aria-invalid="false" with a filled field reads as valid. */
   input:user-invalid,
   select:user-invalid,
   textarea:user-invalid,
@@ -306,6 +319,20 @@
   textarea:user-invalid:focus-visible,
   [aria-invalid="true"]:focus-visible {
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-danger), transparent 75%);
+  }
+
+  input:user-valid,
+  select:user-valid,
+  textarea:user-valid,
+  [aria-invalid="false"] {
+    border-color: var(--fz-success);
+  }
+
+  input:user-valid:focus-visible,
+  select:user-valid:focus-visible,
+  textarea:user-valid:focus-visible,
+  [aria-invalid="false"]:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-success), transparent 75%);
   }
 
   /* Required marker — only when the control is wrapped in its label
@@ -336,6 +363,10 @@
 
   .fz-field-error {
     color: var(--fz-danger);
+  }
+
+  .fz-field-success {
+    color: var(--fz-success);
   }
 
   fieldset {

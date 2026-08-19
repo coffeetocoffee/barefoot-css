@@ -17,6 +17,13 @@ Defined in `src/tokens.css` on `:root`.
 | `--fz-muted` | `#5a5a5a` / `#a0a0a0` | secondary text |
 | `--fz-border` | `#d8d8d8` / `#3a3a3a` | hairlines, borders |
 | `--fz-danger` | `#b3261e` / `#f2b8b5` | errors, destructive |
+| `--fz-danger-fg` | `#fff` / `#201000` | text/icon on the danger fill |
+| `--fz-success` | `#1a7f37` / `#7ee2a8` | success states, valid fields |
+| `--fz-success-fg` | `#fff` / `#0a2a16` | text/icon on the success fill |
+| `--fz-info` | `#0969da` / `#8ac7ff` | informational states |
+| `--fz-info-fg` | `#fff` / `#0b1f38` | text/icon on the info fill |
+| `--fz-warning` | `#9a6700` / `#e3b341` | warnings, caution |
+| `--fz-warning-fg` | `#fff` / `#2a1f00` | text/icon on the warning fill |
 | `--fz-focus-ring` | ink / paper | focus outline color |
 | `--fz-radius` | `0.375rem` | component corners |
 | `--fz-radius-sm` / `--fz-radius-lg` | `0.25rem` / `0.625rem` | small / large corners |

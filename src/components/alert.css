@@ -1,0 +1,72 @@
+/* Barefoot — alert. Role-aware status notices, styled from the status
+   tokens. Pick the ARIA role for the semantics and Barefoot paints it:
+
+   Static, page-load errors → role="alert" (assertive live region):
+     <div data-alert="danger" role="alert">
+       <p>Deploy failed.</p>
+     </div>
+
+   Dynamic, non-urgent updates → aria-live="polite" (or role="status"):
+     <div data-alert="success" aria-live="polite">Saved.</div>
+
+   Dismissible: add a <button data-alert-dismiss aria-label="Dismiss">×
+   </button> and opt in to js/alert-dismiss.js (wired in barefoot.js),
+   which removes the alert on click. Without the module the button is a
+   no-op visual affordance — alerts stay honest, dismissal stays opt-in.
+
+   Alerts are 1:1 with the status tokens: data-alert="danger|success|
+   info|warning" (or bare [data-alert] for a neutral notice). */
+@layer components {
+  [data-alert] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--fz-space-3);
+
+    padding: var(--fz-space-3) var(--fz-space-4);
+    border: 1px solid var(--fz-border);
+    border-inline-start: 3px solid var(--fz-border);
+    border-radius: var(--fz-radius);
+    background: var(--fz-surface-alt);
+    color: var(--fz-text);
+  }
+
+  [data-alert] > :first-child {
+    flex: 1;
+  }
+
+  [data-alert] p {
+    max-width: none;
+  }
+
+  [data-alert="danger"] {
+    border-inline-start-color: var(--fz-danger);
+  }
+
+  [data-alert="success"] {
+    border-inline-start-color: var(--fz-success);
+  }
+
+  [data-alert="info"] {
+    border-inline-start-color: var(--fz-info);
+  }
+
+  [data-alert="warning"] {
+    border-inline-start-color: var(--fz-warning);
+  }
+
+  [data-alert-dismiss] {
+    flex: 0 0 auto;
+    padding: 0 var(--fz-space-1);
+    line-height: 1.4;
+    font-size: 1.125rem;
+    color: var(--fz-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--fz-radius-sm);
+    cursor: pointer;
+  }
+
+  [data-alert-dismiss]:hover {
+    color: var(--fz-text);
+  }
+}

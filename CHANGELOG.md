@@ -4,6 +4,54 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] — 2026-08-19
+
+Feedback & status: the app can now tell the user what happened. Semantic
+status tokens, role-aware alerts, field-level validation states, pure-CSS
+skeletons, and declarative toasts — all JS-free except the opt-in alert
+dismiss.
+
+### Added
+
+- **Status tokens** (`tokens.css`) — `--fz-success`, `--fz-info`,
+  `--fz-warning` (+ `*-fg` pairs), all `light-dark()`, `@property`-
+  registered, and audited against the `contrast` theme /
+  `prefers-contrast` / print overrides. `badge` gains
+  `data-variant="success|info|warning"`.
+- **Alerts** (`components/alert.css`) — `[data-alert]` role-aware status
+  notices: bare (neutral) or `data-alert="danger|success|info|warning"`,
+  edge-tinted from the tokens. ARIA semantics (`role="alert"`,
+  `aria-live="polite"`) come from your markup — Barefoot only paints.
+  Dismissible via `[data-alert-dismiss]` + opt-in `js/alert-dismiss.js`
+  (wired into `js/barefoot.js`).
+- **Field-level validation** (`components/forms.css`) — `:user-invalid`
+  / `:user-valid` and `[aria-invalid="true"/"false"]` now paint the
+  control border danger/success (touched-only, nothing on page load).
+  Message helpers: `.fz-field-hint`, `.fz-field-error`,
+  `.fz-field-success`. Also fixed a latent cascade bug: the shared
+  text-input rule was `(0,5,1)` from five `:not([type])` exclusions and
+  silently out-specified hover/focus/validation rules — it's now
+  `:where()`-scoped so those rules win again.
+- **Skeleton** (`components/skeleton.css`) — `.skeleton`, a pure-CSS
+  shimmering placeholder; static under `prefers-reduced-motion`.
+- **Toasts** (`components/popover.css`) — `[popover][data-kind="toast"]`
+  pinned to the bottom edge, `data-variant` tints from the status tokens.
+  Declarative (Popover API): trigger opens, Esc/click-away closes.
+  Auto-dismiss stays out — it needs JS.
+- **Visual harness** (`tests/visual.spec.js`) — infinite animations
+  (the skeleton shimmer) are cancelled, not force-finished, so the
+  full-page capture stays deterministic.
+
+### Tests
+
+- +10 CSS behavior tests (status tokens flip with `color-scheme`, alert
+  edge tints, alert dismiss, `:user-invalid`/`:user-valid` border
+  painting, `[aria-invalid]` mirror, skeleton base + reduced-motion,
+  toast open/Esc/edge pin + variant tint, badge variants) and +1 a11y
+  state (toast-open axe run). Chromium 62 / Firefox 52 / WebKit 52 suites
+  green; axe-core still zero violations; visual baselines regenerated for
+  the expanded demo.
+
 ## [1.6.0] — 2026-08-19
 
 The app shell: full spacing scale, auto-flowing grid variants, site
@@ -304,6 +352,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[1.7.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.7.0
 [1.6.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.6.0
 [1.5.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.5.0
 [1.3.1]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.3.1

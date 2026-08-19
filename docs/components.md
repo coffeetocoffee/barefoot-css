@@ -66,8 +66,13 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
   subtle ring around the whole form once any touched field is invalid.
   Pair each field with `.fz-field-error` text wired up via
   `aria-describedby`.
-- Invalid states style automatically via `:user-invalid` (browser-driven,
-  no JS) or `[aria-invalid]`.
+- **Field-level states** — `:user-invalid` / `:user-valid` fire only
+  *after* a control is touched (nothing flashes on page load): invalid
+  fields get the danger border, valid fields get the success border.
+  Script-driven forms can mirror the state with
+  `aria-invalid="true"` / `"false"` — same painting, no interaction
+  heuristic. Message helpers: `.fz-field-hint` (muted guidance),
+  `.fz-field-error` (danger), `.fz-field-success` (success).
 - **JS:** none.
 - **A11y:** native controls + browser validation UX.
 
@@ -323,6 +328,67 @@ support, carousel controls + autoplay) and their markup.
   with `.fz-skip-link` as the first element in `<body>` so the first Tab
   stop skips past the nav to `<main>`.
 
+## Alert
+
+```html
+<div data-alert="danger" role="alert">
+  <p>Deploy failed — the build timed out.</p>
+  <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
+</div>
+
+<div data-alert="success" aria-live="polite">Backup completed.</div>
+```
+
+- **`[data-alert]`** — a role-aware status notice. Bare by default
+  (neutral surface); `data-alert="danger|success|info|warning"` tints
+  the inline-start edge from the matching status token.
+- **ARIA is yours to choose:** `role="alert"` for errors (assertive),
+  `role="status"` / `aria-live="polite"` for non-urgent updates. Barefoot
+  only paints; it never invents a live region.
+- **Dismissible:** a `[data-alert-dismiss]` button + the opt-in
+  `js/alert-dismiss.js` module (wired into `js/barefoot.js`) removes the
+  alert on click. Without the module the button is a no-op visual
+  affordance.
+- **JS:** none required; opt-in `js/alert-dismiss.js` for dismissal.
+- **A11y:** `role="alert"` / `aria-live` semantics come from your
+  markup; the dismiss control is a real `<button>` (focusable).
+
+## Skeleton
+
+```html
+<div class="skeleton" style="height: 1rem; width: 60%"></div>
+```
+
+- **`.skeleton`** — a pure-CSS loading placeholder: a surface-alt bar
+  with a shimmering highlight sweeping left→right. Set the size to
+  match the content it will replace (text lines ≈ 1rem tall).
+- **`prefers-reduced-motion`** — the shimmer stops; the placeholder
+  stays static.
+- **JS:** none.
+- **A11y:** decorative only — it must be replaced by (or paired with)
+  real content before a screen reader would ever announce it.
+
+## Toast
+
+```html
+<button type="button" popovertarget="toast">Show toast</button>
+<div popover id="toast" data-kind="toast" data-variant="success"
+     role="status"><p>Saved successfully.</p></div>
+```
+
+- **`[popover][data-kind="toast"]`** — a status notice pinned to the
+  bottom edge, built on the Popover API: declarative, JS-free. The
+  trigger opens it; <kbd>Esc</kbd> or click-away closes it.
+- **`data-variant="success|info|warning|danger"`** tints the edge from
+  the status tokens.
+- **`role="status"`** for non-urgent, **`role="alert"`** for urgent
+  announcements.
+- **Honest note:** auto-dismiss after N seconds needs a timer, i.e. JS.
+  Barefoot keeps toasts user-dismissible by default; bring your own
+  timeout if you want one.
+- **JS:** none.
+- **A11y:** role/`aria-live` come from your markup.
+
 ## Table
 
 ```html
@@ -352,7 +418,9 @@ support, carousel controls + autoplay) and their markup.
 ```
 
 - Classes, because there is no native `<card>`/`<badge>`. Neutral by
-  default; `data-lifted` opts into a shadow.
+  default; `data-lifted` opts into a shadow. Badge variants:
+  `data-variant="primary|danger|success|info|warning"` — each filled
+  from its token pair.
 
 ## Utilities
 

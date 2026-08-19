@@ -14,6 +14,8 @@
 @import "./components/carousel.css";
 @import "./components/grid.css";
 @import "./components/nav.css";
+@import "./components/alert.css";
+@import "./components/skeleton.css";
 @import "./components/table.css";
 @import "./components/code.css";
 @import "./components/card.css";

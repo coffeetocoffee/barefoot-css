@@ -1,0 +1,47 @@
+/* Barefoot — skeleton. Loading placeholders, pure CSS. Apply .skeleton
+   to any element to swap its content for a shimmering bar sized to that
+   element. For text lines, set the height yourself:
+
+     <div class="skeleton" style="height: 1rem"></div>
+
+   A shimmer travels left→right over the base surface. prefers-reduced-
+   motion swaps the shimmer for a static bar — the placeholder stays, the
+   motion goes. */
+@layer components {
+  .skeleton {
+    display: block;
+    position: relative;
+    overflow: hidden;
+
+    min-height: 1rem;
+    border-radius: var(--fz-radius-sm);
+    background: var(--fz-surface-alt);
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--fz-surface), transparent 55%),
+      transparent
+    );
+    animation: fz-skeleton-shimmer 1.6s infinite;
+  }
+
+  @keyframes fz-skeleton-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+      animation: none;
+    }
+  }
+}

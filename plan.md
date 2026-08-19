@@ -139,13 +139,16 @@ and `.fz-*` utilities.
   `barefoot-css@1.5.0` (2026-08-19).
 - [x] **1.6** — the candidate list below. Shipped as
   `barefoot-css@1.6.0` (2026-08-19).
+- [x] **1.7** — the candidate list below (feedback & status).
+  Shipped as `barefoot-css@1.7.0` (2026-08-19).
 
-## Next — v1.7.0 → v2.0.0 ("feedback & status → the design system")
+## Next — v1.8.0 → v2.0.0 ("content & media → the design system")
 
-Shipped through 1.6.0. The app shell (layout, navigation, spacing) is
-complete, and the size budget has ~6x headroom (`index.css` 1.60KB
-gzipped of the 10KB limit). The 1.7 → 2.0 arc fills what a real app
-still needs, then freezes the API.
+Shipped through 1.7.0. The app shell (layout, navigation, spacing) and
+feedback (alerts, validation, skeletons, toasts) are complete, and the
+size budget has ~5x headroom (`index.css` 1.79KB gzipped of the 10KB
+limit). The 1.8 → 2.0 arc fills what a real app still needs, then
+freezes the API.
 
 ## Done — v1.6.0 candidates ("layout & navigation", all shipped in 1.6.0)
 
@@ -173,17 +176,23 @@ still needs, then freezes the API.
 
 ### v1.7 — Feedback & status
 
-- [ ] **Semantic status tokens** — `--fz-success`, `--fz-info`,
+- [x] **Semantic status tokens** — `--fz-success`, `--fz-info`,
       `--fz-warning`: `light-dark()` pairs, `@property` registrations,
       contrast-audited.
-- [ ] **`components/alert.css`** — role-aware notices (`role="alert"` for
-      errors, `aria-live` for dynamic), dismissible.
-- [ ] **Field-level validation states** — `:user-invalid` / `:user-valid`
-      + `[aria-invalid]` styling and error-message helpers.
-- [ ] **`components/skeleton.css`** — loading placeholders, pure CSS,
+- [x] **`components/alert.css`** — role-aware notices (`role="alert"` for
+      errors, `aria-live` for dynamic), dismissible (`[data-alert-dismiss]`
+      + opt-in `js/alert-dismiss.js`).
+- [x] **Field-level validation states** — `:user-invalid` / `:user-valid`
+      + `[aria-invalid]` styling and `.fz-field-error` / `.fz-field-success`
+      helpers. (Also fixed a latent cascade bug: the shared text-input rule
+      was `(0,5,1)` from five `:not([type])` exclusions and shadowed
+      hover/focus/validation rules — now `:where()`-scoped.)
+- [x] **`components/skeleton.css`** — loading placeholders, pure CSS,
       respects `prefers-reduced-motion`.
-- [ ] **Toasts via the Popover API** — if they stay honest (declarative,
-      JS-free).
+- [x] **Toasts via the Popover API** — declarative and JS-free
+      (`[popover][data-kind="toast"]`), so they stayed honest.
+- [x] Tests (+10 CSS behavior, +1 a11y state), docs
+      (components/accessibility/theming), and demo coverage for each.
 
 ### v1.8 — Content & media
 

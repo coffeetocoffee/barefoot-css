@@ -23,10 +23,15 @@ ARIA to the divs" — there are no divs.
 - **Skip link.** The `.fz-skip-link` utility (first element in `<body>`)
   is clipped out of view until keyboard focus, so the first Tab stop is
   "Skip to content" — the WCAG 2.4.1 bypass-block pattern, free.
-- **Validation without JS.** `:user-invalid` / `[aria-invalid]` get a
-  danger border, labels that wrap a required control get an asterisk, and
-  `form:has(:user-invalid)` draws a subtle ring around the whole form —
-  all browser-driven, no script.
+- **Validation without JS.** `:user-invalid` / `:user-valid` /
+  `[aria-invalid]` get a danger (invalid) or success (valid) border —
+  touched only, nothing flashes on page load. Labels that wrap a
+  required control get an asterisk, and `form:has(:user-invalid)` draws
+  a subtle ring around the whole form — all browser-driven, no script.
+- **Status feedback.** Alerts take their live-region semantics from
+  *your* markup (`role="alert"`, `aria-live="polite"`); toasts (Popover
+  API) pair `role="status"` / `role="alert"` with an open/close contract
+  (`Esc`, click-away). Skeleton is decorative — it never announces.
 
 ## How each component earns it for free
 
@@ -41,6 +46,9 @@ ARIA to the divs" — there are no divs.
 | Table | `<th>/<caption>` | header/cell association for SRs |
 | Navigation | `<nav>` + `<ul>` | named landmark, list semantics, `aria-current` |
 | Layout | flex/grid + `position: sticky` | visual structure only; order is document order |
+| Alert | `role="alert"` / `aria-live` | live-region semantics are your markup; we paint |
+| Skeleton | decorative | no announced semantics; content replaces it |
+| Toast | Popover API | `Esc` + click-away dismiss, top-layer |
 
 ## What we ask of you (small, documented)
 
@@ -90,14 +98,18 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 | Table | AA | th/caption announced |
 | Navigation | AA | Tab through links; `aria-current` announces the current page |
 | Layout | AA | Sidebar stacks when narrow; sticky pins while scrolling |
+| Alert | AA | `role="alert"` announces errors; `aria-live` announces updates |
+| Skeleton | AA | decorative; real content replaces it |
+| Toast | AA | `role="status"` announces politely; Esc/click-away closes |
 
 ## CI — wired (0.2, expanded for 1.0)
 
 `npm test` runs the conformance suite (see `tests/`); GitHub Actions
 (`.github/workflows/ci.yml`) runs all of it on every push/PR:
 
-- **axe-core a11y** — demo page in four states (resting, dark,
-  dialog-open, dropdown-open) must report **zero violations**.
+- **axe-core a11y** — demo page in five states (resting, dark,
+  dialog-open, dropdown-open, toast-open) must report **zero
+  violations**.
 - **Keyboard-contract tests** — focus ring present, `<details>` toggle
   and item focus, popover Esc-close, dialog Esc + focus return.
 - **Cross-engine behavior** — the JS + CSS behavior suites re-run on

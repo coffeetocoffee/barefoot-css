@@ -26,8 +26,18 @@ test.describe("visual regression", () => {
     await page.getByRole("button", { name: "Light" }).click();
     await page.waitForTimeout(350); // let entrance transitions settle
     // The theme swap runs inside startViewTransition(); force-finish it
-    // so the full-page capture can never catch a mid-fade frame.
-    await page.evaluate(() => document.getAnimations().forEach((a) => a.finish()));
+    // so the full-page capture can never catch a mid-fade frame. Infinite
+    // animations (the skeleton shimmer) can't be finished — cancel them;
+    // the base placeholder still renders, so the frame stays deterministic.
+    await page.evaluate(() => {
+      for (const a of document.getAnimations()) {
+        try {
+          a.finish();
+        } catch {
+          a.cancel();
+        }
+      }
+    });
     // Rarely, Chromium's full-page capture reports a ±1px height on the
     // first frame; toPass retries so a transient frame self-heals. A real
     // layout regression still fails after the retries.
@@ -43,7 +53,15 @@ test.describe("visual regression", () => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Dark" }).click();
     await page.waitForTimeout(350);
-    await page.evaluate(() => document.getAnimations().forEach((a) => a.finish()));
+    await page.evaluate(() => {
+      for (const a of document.getAnimations()) {
+        try {
+          a.finish();
+        } catch {
+          a.cancel();
+        }
+      }
+    });
     await expect(async () => {
       await expect(page).toHaveScreenshot("dark.png", {
         fullPage: true,
