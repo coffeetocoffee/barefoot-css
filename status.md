@@ -320,8 +320,11 @@ by import.
 - [x] **The entire v1.5.0 candidate list is shipped** (select skin,
   file/color inputs, auto-grow textareas, required marker,
   `form:has(:user-invalid)`, `<output>`, base polish, `.fz-skip-link`,
-  accordion motion) — 2026-08-19. The next-version candidate list is
-  open; no known functional gaps remain.
+  accordion motion) — 2026-08-19.
+- [x] **v1.5.0 released** — tag `v1.5.0` pushed (2026-08-19) → the
+  release workflow ran (build + budget + tests → `npm publish`); GitHub
+  Release auto-created. The next-version candidate list is open; no
+  known functional gaps remain.
 - [x] **Firefox anchor positioning (off-screen trigger) — FIXED in 1.3.1.**
   `position-area` clamped to the viewport edge when a popover's trigger
   was *off-screen* at open time (Firefox 153), while Chromium/WebKit

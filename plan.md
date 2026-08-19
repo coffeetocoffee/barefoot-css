@@ -138,12 +138,13 @@ and `.fz-*` utilities.
 - [x] **1.5** — the candidate list below. Shipped as
   `barefoot-css@1.5.0` (2026-08-19).
 
-## Next up — v1.5.0 candidates ("Forms, finished")
+## Done — v1.5.0 candidates ("Forms, finished", all shipped in 1.5.0)
 
-1.4 skinned range/progress/meter, but the form is not finished: `<select>`
-still shows the raw OS arrow, `file`/`color` inputs are skipped, textareas
-don't auto-grow, and there's no required-asterisk affordance. v1.5 closes
-those gaps and rounds out base polish — all CSS-only, no new JS.
+1.4 skinned range/progress/meter, but the form was still unfinished:
+`<select>` showed the raw OS arrow, `file`/`color` inputs were skipped,
+textareas couldn't auto-grow, and there was no required-asterisk
+affordance. v1.5 closed those gaps and rounded out base polish — all
+CSS-only, no new JS.
 
 ### Form completion (`src/components/forms.css`)
 - [x] **`<select>` custom skin** — themed chevron (data-URI arrow on the
