@@ -605,3 +605,126 @@ test.describe("v1.8 content & media", () => {
     await expect(card.locator(":scope > header")).toHaveCSS("padding", "24px"); // --fz-space-5
   });
 });
+
+test.describe("v1.9 stepper & input groups", () => {
+  test("stepper horizontal: completed steps use success token, current uses primary", async ({ page }) => {
+    await page.goto("/demo/");
+    const stepper = page.locator("#demo-stepper-h");
+    const circles = stepper.locator("[data-step-circle]");
+
+    // First step (completed) — success colors
+    await expect(circles.nth(0)).toHaveCSS("border-color", "rgb(26, 127, 55)"); // --fz-success
+    await expect(circles.nth(0)).toHaveCSS("background-color", "rgb(26, 127, 55)");
+    await expect(circles.nth(0)).toHaveCSS("color", "rgb(255, 255, 255)"); // --fz-success-fg
+
+    // Second step (current) — primary colors
+    await expect(circles.nth(1)).toHaveCSS("border-color", "rgb(26, 26, 26)"); // --fz-primary
+    await expect(circles.nth(1)).toHaveCSS("background-color", "rgb(26, 26, 26)");
+    await expect(circles.nth(1)).toHaveCSS("color", "rgb(255, 255, 255)"); // --fz-primary-fg
+
+    // Third step (pending) — muted/border colors
+    await expect(circles.nth(2)).toHaveCSS("border-color", "rgb(216, 216, 216)"); // --fz-border
+    await expect(circles.nth(2)).toHaveCSS("background-color", "rgb(255, 255, 255)"); // --fz-surface
+    await expect(circles.nth(2)).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
+  });
+
+  test("stepper vertical: same token mapping, vertical layout", async ({ page }) => {
+    await page.goto("/demo/");
+    const stepper = page.locator("#demo-stepper-v");
+    const circles = stepper.locator("[data-step-circle]");
+
+    // First step (completed)
+    await expect(circles.nth(0)).toHaveCSS("border-color", "rgb(26, 127, 55)");
+    await expect(circles.nth(0)).toHaveCSS("background-color", "rgb(26, 127, 55)");
+
+    // Second step (current)
+    await expect(circles.nth(1)).toHaveCSS("border-color", "rgb(26, 26, 26)");
+    await expect(circles.nth(1)).toHaveCSS("background-color", "rgb(26, 26, 26)");
+
+    // Third step (pending)
+    await expect(circles.nth(2)).toHaveCSS("border-color", "rgb(216, 216, 216)");
+    await expect(circles.nth(2)).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  });
+
+  test("input group: leading affix shares input focus state", async ({ page }) => {
+    await page.goto("/demo/");
+    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    const affix = group.locator(":scope > :first-child");
+    const input = group.locator("input");
+
+    // Default state — check border-inline-start-color to avoid shorthand
+    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(216, 216, 216)"); // --fz-border
+    await expect(affix).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
+    await expect(affix).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt
+
+    // Focus state
+    await input.focus();
+    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(26, 26, 26)"); // --fz-focus-ring
+    await expect(affix).toHaveCSS("color", "rgb(26, 26, 26)");
+  });
+
+  test("input group: leading affix shares input validation state (invalid)", async ({ page }) => {
+    await page.goto("/demo/");
+    // Use the username input (text type) for invalid test
+    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    const affix = group.locator(":scope > :first-child");
+    const input = group.locator("input");
+
+    // Trigger invalid state — fill with invalid email-like text then blur
+    // Actually, let's use the required attribute approach
+    await input.evaluate((el) => el.setAttribute("aria-invalid", "true"));
+    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(179, 38, 30)"); // --fz-danger
+    await expect(affix).toHaveCSS("color", "rgb(179, 38, 30)");
+  });
+
+  test("input group: leading affix shares input validation state (valid)", async ({ page }) => {
+    await page.goto("/demo/");
+    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    const affix = group.locator(":scope > :first-child");
+    const input = group.locator("input");
+
+    // Trigger valid state
+    await input.evaluate((el) => el.setAttribute("aria-invalid", "false"));
+    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)"); // --fz-success
+    await expect(affix).toHaveCSS("color", "rgb(26, 127, 55)");
+  });
+
+  test("date/number/email inputs get themed surface and validation", async ({ page }) => {
+    await page.goto("/demo/");
+    const email = page.locator("#polish-email");
+    const number = page.locator("#polish-number");
+    const date = page.locator("#polish-date");
+
+    // All should have the shared input styles — height may be 42px due to line-height
+    await expect(email).toHaveCSS("background-color", "rgb(255, 255, 255)"); // --fz-surface
+    await expect(email).toHaveCSS("border-color", "rgb(216, 216, 216)"); // --fz-border
+    await expect(email).toHaveCSS("min-height", "40px"); // --fz-control-height
+
+    await expect(number).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(number).toHaveCSS("min-height", "40px");
+
+    await expect(date).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(date).toHaveCSS("min-height", "40px");
+  });
+
+  test("number input hides spinner by default (appearance: textfield)", async ({ page }) => {
+    await page.goto("/demo/");
+    const number = page.locator("#polish-number");
+
+    // Should have appearance: textfield (hiding native spinner)
+    await expect(number).toHaveCSS("appearance", "textfield");
+  });
+
+  test("date input has themed calendar picker indicator", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "WebKit/Blink pseudo-element");
+    await page.goto("/demo/");
+    const date = page.locator("#polish-date");
+
+    // The calendar picker indicator should have opacity transition (default 1, 0.6 on hover)
+    const indicatorOpacity = await date.evaluate((el) =>
+      getComputedStyle(el, "::-webkit-calendar-picker-indicator").opacity
+    );
+    // Default opacity is 1 in Chromium; hover transitions to 1 but base is 0.6
+    expect(indicatorOpacity).toBe("1");
+  });
+});

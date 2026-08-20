@@ -7,20 +7,18 @@ bundled per-entry-point by Lightning CSS into `dist/`.
 
 ## Read first — the state
 
-The project keeps its memory in three files. Read the *snapshots*, not
+The project keeps its memory in two files. Read the *snapshots*, not
 the whole files, at session start:
 
-- `status.md` — read the **Snapshot** block at the top (current version,
-  next arc, test/build numbers). The history sections below it are
-  deep-read only for the area you touch.
+- `plan.md` — read the **Snapshot** block at the top (current version,
+  next arc, test/build numbers). The roadmap, decisions, and v2.0 plan
+  below it are deep-read only when planning or rolling milestones.
 - `CHANGELOG.md` — the latest entry at the top is the current release.
-- `plan.md` — only when planning or rolling milestones; the roadmap and
-  decisions.
 
 For the component or doc you're touching, also read the matching file in
 `docs/` (components, theming, accessibility, javascript).
 
-Update `status.md` (Snapshot + the touched sections) and `CHANGELOG.md`
+Update `plan.md` (Snapshot + the touched sections) and `CHANGELOG.md`
 when you ship something.
 
 ## Conventions (cache — not discoverable from the code)

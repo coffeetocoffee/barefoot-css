@@ -4,6 +4,81 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] — 2026-08-20
+
+The design-system release. API freeze, token audit, and docs rewrite.
+**No breaking changes** — v2.0 is a stability declaration, not a
+rewrite. If your app works on 1.9, it works on 2.0 with zero changes.
+
+### Added
+
+- **Alpha ramp tokens** (`tokens.css`) — `--fz-surface-2`,
+  `--fz-surface-3`, `--fz-overlay`, `--fz-overlay-heavy`,
+  `--fz-primary-subtle`, `--fz-primary-muted`, `--fz-primary-strong`,
+  `--fz-primary-darken`, `--fz-danger-darken`, `--fz-danger-muted`,
+  `--fz-success-muted`, `--fz-border-strong`. All derived from base
+  tokens via `color-mix()` — override `--fz-primary` and the ramps
+  follow.
+- **`--fz-backdrop`** token — dialog/modal backdrop overlay, `light-dark()`
+  pair, `@property`-registered. Replaces the hardcoded
+  `rgb(0 0 0 / 0.5)`.
+- **`--fz-shadow-sm`** token — small shadow for subtle depth (range
+  slider thumb). Replaces the hardcoded `0 1px 2px rgb(0 0 0 / 0.25)`.
+- **API reference** (`docs/api.md`) — frozen export map, `data-*`
+  attribute reference, stability tiers, deprecation policy, and
+  1.x→2.0 migration guide.
+- **Updated token reference** (`docs/theming.md`) — restructured into
+  categories (Colors, Alpha ramps, Radii, Spacing, Typography, Effects,
+  Layout) with the new tokens documented.
+
+### Changed
+
+- Components now use alpha ramp tokens instead of inline `color-mix()`
+  in several places: button hover darken, input hover border, form
+  validation focus rings, dialog backdrop, range slider shadow.
+- Disabled opacity normalized to `0.5` across buttons and forms
+  (was `0.5` in buttons, `0.6` in forms).
+- Landing page (`docs/index.html`) updated: forest theme added to
+  live switcher, size stats updated, API reference linked in nav/footer.
+
+### Token count
+
+- **Before:** 49 tokens (16 `light-dark()`, 9 `@property`)
+- **After:** 62 tokens (17 `light-dark()`, 10 `@property`)
+
+## [1.9.0] — 2026-08-20
+
+Components, complete: stepper progress tracker, input groups with leading
+affix, and date/number/email polish — all CSS-only.
+
+### Added
+
+- **Stepper** (`components/stepper.css`) — `[data-stepper]` progress tracker
+  with native `<ol>` semantics and `aria-current="step"`. Horizontal
+  (default) and vertical (`data-orientation="vertical"`) variants.
+  Completed steps styled from `--fz-success`, current from `--fz-primary`,
+  pending from `--fz-border`/`--fz-muted`. Connecting lines follow completion.
+- **Input groups** (`components/forms.css`) — `[data-input-group]` wraps an
+  input with a leading affix (icon, currency symbol, unit). The affix
+  receives `aria-hidden="true"` and shares the input's focus and validation
+  states via `:has()` selectors. Works with `input`, `select`, `textarea`.
+- **Date/number/email polish** (`components/forms.css`) — Native pickers and
+  spinners preserved; themed surface and validation states apply. Number
+  inputs hide spinner by default (`appearance: textfield`); date inputs get
+  themed calendar picker indicator with opacity transition (0.6 base, 1 on
+  hover).
+
+### Tests
+
+- +9 CSS behavior tests: stepper horizontal/vertical token mapping, input
+  group focus/validation sharing, date/number/email themed surface, number
+  spinner hidden, calendar picker indicator.
+- +3 accessibility tests: stepper native `ol` semantics with `aria-current`,
+  input group affix `aria-hidden`, date/number/email native validation
+  announcement.
+- Chromium 86 / Firefox 69 (1 skipped) / WebKit 69 (1 skipped) suites green;
+  axe-core zero violations; visual baselines regenerated for expanded demo.
+
 ## [1.8.0] — 2026-08-19
 
 Content & media: fluid type scale, a prose wrapper for long-form content,
@@ -309,7 +384,7 @@ robustness (viewport-edge flip), and a fail-fast release workflow.
   spec-default `position-visibility: anchors-visible` does not mitigate it
   in any engine (both compute it as default yet neither hides the popover).
   The flip fallback is the adjacent, shipable improvement; the bug itself
-  is tracked in status.md.
+  is tracked in plan.md.
 
 ## [1.1.0] — 2026-08-12
 

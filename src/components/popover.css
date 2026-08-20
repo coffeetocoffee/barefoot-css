@@ -139,7 +139,7 @@
      position-area is tried first and untouched elsewhere. CSS can't
      help when the trigger itself is off-screen at open time (the
      engine clamps the popover to the viewport edge instead of hiding
-     it); opt-in js/popover-anchor.js closes that — see status.md.) */
+     it); opt-in js/popover-anchor.js closes that — see plan.md.) */
   [popover][data-kind="menu"] {
     position-area: bottom span-right;
     position-try-fallbacks: flip-block;

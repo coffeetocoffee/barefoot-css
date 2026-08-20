@@ -1,0 +1,158 @@
+/* Barefoot — stepper.
+   A progress tracker for multi-step flows. Native <ol> semantics;
+   current step gets aria-current="step". No JS required. */
+@layer components {
+  [data-stepper] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fz-space-4);
+  }
+
+  [data-stepper] ol {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-stepper] li {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  [data-stepper] li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--fz-space-3) + 0.5rem);
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--fz-border);
+    z-index: 0;
+  }
+
+  [data-stepper] [data-step] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fz-space-2);
+    position: relative;
+    z-index: 1;
+  }
+
+  [data-stepper] [data-step-circle] {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid var(--fz-border);
+    background: var(--fz-surface);
+    color: var(--fz-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition:
+      border-color var(--fz-transition),
+      background-color var(--fz-transition),
+      color var(--fz-transition);
+  }
+
+  [data-stepper] [data-step-label] {
+    font-size: 0.8125rem;
+    color: var(--fz-muted);
+    text-align: center;
+    max-width: 8ch;
+  }
+
+  /* Completed step — explicit [data-complete] */
+  [data-stepper] [data-complete] [data-step-circle] {
+    border-color: var(--fz-success);
+    background: var(--fz-success);
+    color: var(--fz-success-fg);
+  }
+
+  [data-stepper] [data-complete] [data-step-label] {
+    color: var(--fz-success);
+  }
+
+  [data-stepper] [data-complete]:not(:last-child)::after {
+    background: var(--fz-success);
+  }
+
+  /* Current step */
+  [data-stepper] [aria-current="step"] [data-step-circle] {
+    border-color: var(--fz-primary);
+    background: var(--fz-primary);
+    color: var(--fz-primary-fg);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-primary), transparent 80%);
+  }
+
+  [data-stepper] [aria-current="step"] [data-step-label] {
+    color: var(--fz-text);
+    font-weight: 500;
+  }
+
+  /* Connector before current step (steps before current are complete) */
+  [data-stepper] [aria-current="step"]::after {
+    background: var(--fz-success);
+  }
+
+  /* Horizontal variant for tight spaces */
+  [data-stepper][data-orientation="horizontal"] {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  [data-stepper][data-orientation="horizontal"] ol {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  [data-stepper][data-orientation="horizontal"] li {
+    flex-direction: column;
+  }
+
+  [data-stepper][data-orientation="horizontal"] li:not(:last-child)::after {
+    top: var(--fz-space-3);
+    left: 50%;
+    width: 100%;
+    height: 2px;
+  }
+
+  /* Vertical variant (default) */
+  [data-stepper][data-orientation="vertical"] ol {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  [data-stepper][data-orientation="vertical"] li {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--fz-space-4);
+    width: 100%;
+  }
+
+  [data-stepper][data-orientation="vertical"] li:not(:last-child)::after {
+    top: calc(var(--fz-space-3) + 1rem);
+    left: 1rem;
+    width: 2px;
+    height: 100%;
+  }
+
+  [data-stepper][data-orientation="vertical"] [data-step] {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--fz-space-3);
+    text-align: left;
+    width: 100%;
+  }
+
+  [data-stepper][data-orientation="vertical"] [data-step-label] {
+    text-align: left;
+    max-width: none;
+  }
+}

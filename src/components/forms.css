@@ -48,7 +48,7 @@
   input:hover:not(:disabled),
   select:hover:not(:disabled),
   textarea:hover:not(:disabled) {
-    border-color: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%);
+    border-color: var(--fz-border-strong);
   }
 
   input:focus-visible,
@@ -112,7 +112,7 @@
 
   input[type="file"]::file-selector-button:hover {
     background: var(--fz-surface);
-    border-color: color-mix(in oklab, var(--fz-primary), var(--fz-border) 60%);
+    border-color: var(--fz-border-strong);
   }
 
   /* ---- Color input ----
@@ -197,7 +197,7 @@
   input:disabled,
   select:disabled,
   textarea:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
@@ -235,7 +235,7 @@
     border-radius: 50%;
     border: 2px solid var(--fz-surface);
     background: var(--fz-primary);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    box-shadow: var(--fz-shadow-sm);
   }
 
   input[type="range"]::-moz-range-thumb {
@@ -244,7 +244,7 @@
     border-radius: 50%;
     border: 2px solid var(--fz-surface);
     background: var(--fz-primary);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    box-shadow: var(--fz-shadow-sm);
   }
 
   input[type="range"]:hover:not(:disabled) {
@@ -318,7 +318,7 @@
   select:user-invalid:focus-visible,
   textarea:user-invalid:focus-visible,
   [aria-invalid="true"]:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-danger), transparent 75%);
+    box-shadow: 0 0 0 3px var(--fz-danger-muted);
   }
 
   input:user-valid,
@@ -332,7 +332,7 @@
   select:user-valid:focus-visible,
   textarea:user-valid:focus-visible,
   [aria-invalid="false"]:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-success), transparent 75%);
+    box-shadow: 0 0 0 3px var(--fz-success-muted);
   }
 
   /* Required marker — only when the control is wrapped in its label
@@ -377,5 +377,106 @@
   legend {
     font-weight: 600;
     margin-block-end: var(--fz-space-2);
+  }
+
+  /* ---- Input groups (leading icon / affix) ----
+     Wrap an input + a leading element in [data-input-group].
+     The leading element (icon, currency, unit) gets a muted
+     background and the shared input border radius on the inner side. */
+  [data-input-group] {
+    display: flex;
+    width: 100%;
+  }
+
+  [data-input-group] > :first-child:not(input):not(select):not(textarea) {
+    display: grid;
+    place-items: center;
+    padding-inline: var(--fz-space-3);
+    color: var(--fz-muted);
+    background: var(--fz-surface-alt);
+    border: 1px solid var(--fz-border);
+    border-inline-end: none;
+    border-radius: var(--fz-radius) 0 0 var(--fz-radius);
+    font-size: 0.9375rem;
+  }
+
+  [data-input-group] > input,
+  [data-input-group] > select,
+  [data-input-group] > textarea {
+    flex: 1;
+    border-radius: 0 var(--fz-radius) var(--fz-radius) 0;
+  }
+
+  [data-input-group]:has(> input:focus-visible) > :first-child,
+  [data-input-group]:has(> select:focus-visible) > :first-child,
+  [data-input-group]:has(> textarea:focus-visible) > :first-child {
+    border-color: var(--fz-focus-ring);
+    color: var(--fz-focus-ring);
+  }
+
+  [data-input-group]:has(> input:user-invalid) > :first-child,
+  [data-input-group]:has(> select:user-invalid) > :first-child,
+  [data-input-group]:has(> textarea:user-invalid) > :first-child,
+  [data-input-group]:has(> [aria-invalid="true"]) > :first-child {
+    border-color: var(--fz-danger);
+    color: var(--fz-danger);
+  }
+
+  [data-input-group]:has(> input:user-valid) > :first-child,
+  [data-input-group]:has(> select:user-valid) > :first-child,
+  [data-input-group]:has(> textarea:user-valid) > :first-child,
+  [data-input-group]:has(> [aria-invalid="false"]) > :first-child {
+    border-color: var(--fz-success);
+    color: var(--fz-success);
+  }
+
+  /* ---- Date / number / email polish ----
+     The native pickers/spinners stay; we only theme the surface
+     and ensure the shared validation states apply. */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="password"] {
+    /* Inherit the shared input rule — nothing extra needed,
+       but keeping these listed documents the supported types
+       and makes it easy to add type-specific tweaks later. */
+  }
+
+  /* Number input — hide the native spinner on hover/focus for a cleaner look;
+     the arrows reappear on active interaction (keyboard/mouse). */
+  input[type="number"] {
+    appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  /* Date/time inputs — ensure the native picker button is themed. */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator,
+  input[type="week"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--fz-transition);
+  }
+
+  input[type="date"]:hover::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]:hover::-webkit-calendar-picker-indicator,
+  input[type="time"]:hover::-webkit-calendar-picker-indicator,
+  input[type="month"]:hover::-webkit-calendar-picker-indicator,
+  input[type="week"]:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
   }
 }

@@ -1,6 +1,18 @@
-# Barefoot — Project plan
+# Barefoot — Status & plan
 
-Status: **Complete (0.1 → 1.8)** — see [status.md](status.md) for the live tracker.
+_Last updated: 2026-08-20 — v2.0.0_
+
+## Snapshot
+
+- **Current:** `barefoot-css@2.0.0` (2026-08-20) — the design-system
+  release: API freeze, token audit with alpha ramps, docs rewrite.
+  Release notes: `CHANGELOG.md`.
+- **Next:** post-2.0 maintenance and incremental improvements.
+- **Tests:** Chromium 86 (14 a11y / 15 JS / 54 CSS / 3 visual) · Firefox
+  69 (1 skipped) · WebKit 69 (1 skipped) — all green.
+- **Build:** `index.css` 2.06KB gzip · `full.css` 7.47KB gzip (10KB
+  budget → PASS).
+- **Done:** milestones 0.1 → 2.0. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -60,7 +72,7 @@ tree-shaking.
 modal requires `showModal()`. The fully JS-free modal-like layer is the
 Popover API. We ship both and document the difference. Tabs ship as the
 `details[name]` accordion (the plan's own answer); true tabs with
-arrow-key navigation are deferred as an opt-in JS module (see status.md).
+arrow-key navigation are deferred as an opt-in JS module.
 
 ### 4. Accessibility out of the box
 
@@ -133,152 +145,30 @@ and `.fz-*` utilities.
   is fully outside the viewport at open time (no engine honors
   `position-visibility: anchors-visible`). Shipped as
   `barefoot-css@1.3.1` (2026-08-18).
-- [x] **1.4** — the full candidate list below. Shipped as
+- [x] **1.4** — form skins, breadcrumbs, pagination, forest theme, carousel
+  autoplay/controls, `prefers-contrast`, stylelint. Shipped as
   `barefoot-css@1.4.0` (2026-08-19).
-- [x] **1.5** — the candidate list below. Shipped as
+- [x] **1.5** — select skin, file/color inputs, auto-grow, required marker,
+  form validation, skip link, accordion motion. Shipped as
   `barefoot-css@1.5.0` (2026-08-19).
-- [x] **1.6** — the candidate list below. Shipped as
-  `barefoot-css@1.6.0` (2026-08-19).
-- [x] **1.7** — the candidate list below (feedback & status).
+- [x] **1.7** — status tokens, alerts, field validation, skeleton, toasts.
   Shipped as `barefoot-css@1.7.0` (2026-08-19).
-- [x] **1.8** — the candidate list below (content & media).
+- [x] **1.8** — fluid type, prose, avatars, media embeds, responsive images.
   Shipped as `barefoot-css@1.8.0` (2026-08-19).
+- [x] **1.9** — stepper, input groups, date/number/email polish. Shipped as
+  `barefoot-css@1.9.0` (2026-08-20).
+- [x] **2.0** — API freeze, token audit (alpha ramps, `--fz-backdrop`,
+  `--fz-shadow-sm`), docs rewrite (token reference, API reference,
+  deprecation policy), theme gallery (all 5 themes in live switcher),
+  1.x→2.0 migration note. Shipped as `barefoot-css@2.0.0` (2026-08-20).
 
-## Next — v1.9.0 → v2.0.0 ("components, complete → the design system")
+## Next — post-2.0
 
-Shipped through 1.7.0. The app shell (layout, navigation, spacing) and
-feedback (alerts, validation, skeletons, toasts) are complete, and the
-size budget has ~5x headroom (`index.css` 1.79KB gzipped of the 10KB
-limit). The 1.8 → 2.0 arc fills what a real app still needs, then
-freezes the API.
-
-## Done — v1.6.0 candidates ("layout & navigation", all shipped in 1.6.0)
-
-- [x] **Full spacing scale from the tokens** — `.fz-mt/mb-{1..8}`
-      (margin-block-start/end), `.fz-p-{1..8}` (all-sides padding),
-      `.fz-px/py-{1..8}` (padding-inline/block); each maps to the
-      matching `--fz-space-*` token, and the axis shorthands win over
-      `.fz-p-*` when both apply (layout-only; inside the
-      no-utility-framework non-goal).
-- [x] **`[data-grid]` variants** — `[data-grid="auto-fit"]` /
-      `[data-grid="auto-fill"]` (`repeat(auto-fit|auto-fill,
-      minmax(var(--fz-grid-min), 1fr))`, no container query needed) +
-      `data-gap="0|1…8"` gap options from the spacing scale. The fixed
-      container-query counts now exclude the variants explicitly.
-- [x] **`components/nav.css`** — `<nav data-nav>` topbar/header/footer
-      patterns (hairline separators), `.fz-brand`, `[aria-current]`
-      states, pairs with `.fz-skip-link`.
-- [x] **`.fz-sidebar` split layout** — first child is the aside
-      (`--fz-sidebar-width`, 16rem), the rest flows beside it, wrapping
-      to one column when the row can't fit the aside plus ≥60% main.
-      **`.fz-sticky`** utility pins to `--fz-sticky-top` (`0`).
-- [x] Tests (+7 CSS behavior, +1 a11y keyboard), docs
-      (components/accessibility/theming), and demo coverage for each.
-- [x] Versioned `barefoot-css@1.6.0` (2026-08-19).
-
-### v1.7 — Feedback & status
-
-- [x] **Semantic status tokens** — `--fz-success`, `--fz-info`,
-      `--fz-warning`: `light-dark()` pairs, `@property` registrations,
-      contrast-audited.
-- [x] **`components/alert.css`** — role-aware notices (`role="alert"` for
-      errors, `aria-live` for dynamic), dismissible (`[data-alert-dismiss]`
-      + opt-in `js/alert-dismiss.js`).
-- [x] **Field-level validation states** — `:user-invalid` / `:user-valid`
-      + `[aria-invalid]` styling and `.fz-field-error` / `.fz-field-success`
-      helpers. (Also fixed a latent cascade bug: the shared text-input rule
-      was `(0,5,1)` from five `:not([type])` exclusions and shadowed
-      hover/focus/validation rules — now `:where()`-scoped.)
-- [x] **`components/skeleton.css`** — loading placeholders, pure CSS,
-      respects `prefers-reduced-motion`.
-- [x] **Toasts via the Popover API** — declarative and JS-free
-      (`[popover][data-kind="toast"]`), so they stayed honest.
-- [x] Tests (+10 CSS behavior, +1 a11y state), docs
-      (components/accessibility/theming), and demo coverage for each.
-
-### v1.8 — Content & media
-
-- [x] **Fluid type scale** — headings via `clamp()` / container units,
-      replacing the fixed `rem` sizes.
-- [x] **`.fz-prose`** long-form wrapper — heading rhythm, code, tables,
-      blockquote inside an article.
-- [x] **`.fz-avatar`**, `[data-media]` aspect-ratio embeds, responsive
-      image sizing, thumbnail cards.
-
-### v1.9 — Components, complete
-
-- [ ] Stepper, fieldset/legend, input groups (leading icon), date/number/
-      email polish.
-- [ ] Component consistency pass across every file; full demo section;
-      re-run the axe matrix.
-
-### v2.0 — The design-system release
-
-- [ ] **Token audit** — complete semantic palette, alpha ramps via
-      `color-mix`, auto-generated token reference in docs (size-table
-      pattern).
-- [ ] **Public API freeze** — lock the `data-*` attribute API, the
-      `--fz-*` contract, and the export map; document the deprecation
-      policy (v2 promise: no silent breaks).
-- [ ] **Theme gallery** on the docs site — all starter themes behind a
-      live switcher (the marketing demo).
-- [ ] **Docs rewrite** restructured by category; a 1.x → 2.0 note that
-      says "nothing changed".
-- [ ] **Final size re-verification** — stays well under the 10KB budget.
-
-## Done — v1.5.0 candidates ("Forms, finished", all shipped in 1.5.0)
-
-1.4 skinned range/progress/meter, but the form was still unfinished:
-`<select>` showed the raw OS arrow, `file`/`color` inputs were skipped,
-textareas couldn't auto-grow, and there was no required-asterisk
-affordance. v1.5 closed those gaps and rounded out base polish — all
-CSS-only, no new JS.
-
-### Form completion (`src/components/forms.css`)
-- [x] **`<select>` custom skin** — themed chevron (data-URI arrow on the
-  element, `appearance: none`), excluded for `[multiple]` / `[size]`;
-  keeps the native dropdown + focus ring.
-- [x] **`input[type="file"]`** — style `::file-selector-button` with the
-  button tokens (stays a native control).
-- [x] **`input[type="color"]`** — swatch: fixed size, radius, border,
-  focus ring.
-- [x] **Required marker** — `label:has(> input[required])::after` →
-  `"*"` in danger color (screen readers already announce `required`).
-- [x] **Auto-grow textarea** — `field-sizing: content` as an opt-in
-  `[data-autogrow]` (progressive enhancement; no-op where unsupported).
-- [x] **`form:has(:user-invalid)`** — subtle surface shift; docs on
-  pairing with `aria-invalid`.
-- [x] **`<output>`** live-region styling.
-
-### Base polish (`src/base.css`)
-- [x] `mark` (accent tint via `color-mix`), `kbd`, `samp`,
-  `figure`/`figcaption`, `address`, `del`/`ins`.
-
-### Utilities (`src/utilities.css`)
-- [x] **`.fz-skip-link`** — visually hidden until `:focus-visible`,
-  pinned top-left.
-
-### Motion (`src/components/accordion.css`)
-- [x] **`<details>` open/close height animation** — `interpolate-size:
-  allow-keywords` + `transition-behavior: allow-discrete` (safe no-op
-  elsewhere; must not break the existing accordion tests).
-
-### Tests / docs / versioning
-- [x] +7 CSS behavior tests (select chevron, file button, required
-  marker, autogrow, mark/kbd, form-`:has`, output), +1 a11y test (skip
-  link).
-- [x] Update `docs/components.md` (forms), `docs/accessibility.md`
-  (skip link + required marker), regenerate README size table.
-- [x] Versioned `barefoot-css@1.5.0` (published 2026-08-19).
-
-## Done — v1.4.0 candidates (all shipped in 1.4.0)
-
-- [x] Range-slider skin + `<progress>`/`<meter>` styling (CSS-only)
-- [x] Tooltip via the Popover API (CSS-only, `data-tooltip`)
-- [x] Carousel autoplay + controls as opt-in `js/carousel.js`
-- [x] Breadcrumbs, pagination, one more starter theme (forest)
-- [x] `prefers-contrast` / `prefers-reduced-transparency`, stylelint,
-      auto-generated README size table
+- [ ] **Theme gallery page** — dedicated HTML page with live theme
+      preview cards (currently the switcher is inline in index.html).
+- [ ] **CI: axe-core on every PR** — automated accessibility gate.
+- [ ] **Token reference auto-generation** — script to parse tokens.css
+      and emit the theming.md table automatically.
 
 ## Watch-list (no action until browsers fix it)
 

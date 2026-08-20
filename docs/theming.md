@@ -3,9 +3,14 @@
 The whole framework is variables. Change a variable, everything that
 depends on it follows. There is no build step, no Sass, no recompile.
 
+> **v2.0:** The token API is frozen. See [api.md](api.md) for the
+> stability contract and deprecation policy.
+
 ## Token reference
 
 Defined in `src/tokens.css` on `:root`.
+
+### Colors
 
 | Token | Default (light / dark) | Purpose |
 |---|---|---|
@@ -25,25 +30,51 @@ Defined in `src/tokens.css` on `:root`.
 | `--fz-warning` | `#9a6700` / `#e3b341` | warnings, caution |
 | `--fz-warning-fg` | `#fff` / `#2a1f00` | text/icon on the warning fill |
 | `--fz-focus-ring` | ink / paper | focus outline color |
+| `--fz-backdrop` | `rgba(0,0,0,0.5)` / `rgba(0,0,0,0.6)` | dialog/modal backdrop overlay |
+
+### Alpha ramps (v2.0)
+
+Derived from base tokens via `color-mix()`. Override the base token and
+the ramps follow — no duplicate palettes.
+
+| Token | Derivation | Purpose |
+|---|---|---|
+| `--fz-surface-2` | surface + 5% primary | subtle raised surface |
+| `--fz-surface-3` | surface + 10% primary | stronger raised surface |
+| `--fz-overlay` | surface + 20% transparent | light overlay |
+| `--fz-overlay-heavy` | surface + 5% transparent | heavy overlay (backdrop) |
+| `--fz-primary-subtle` | primary + 88% transparent | very light primary tint |
+| `--fz-primary-muted` | primary + 75% transparent | light primary tint (focus rings) |
+| `--fz-primary-strong` | primary + 12% transparent | strong primary tint |
+| `--fz-primary-darken` | primary + 8% black | hover darken for primary fills |
+| `--fz-danger-darken` | danger + 8% black | hover darken for danger fills |
+| `--fz-danger-muted` | danger + 75% transparent | light danger tint (focus rings) |
+| `--fz-success-muted` | success + 75% transparent | light success tint (focus rings) |
+| `--fz-border-strong` | border + 20% text | stronger border on hover |
+
+### Radii
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--fz-radius` | `0.375rem` | component corners |
-| `--fz-radius-sm` / `--fz-radius-lg` | `0.25rem` / `0.625rem` | small / large corners |
-| `--fz-space-1…8` | `0.25rem…4rem` | spacing scale |
+| `--fz-radius-sm` | `0.25rem` | small corners |
+| `--fz-radius-lg` | `0.625rem` | large corners |
+
+### Spacing
+
+| Token | Default |
+|---|---|
+| `--fz-space-1…8` | `0.25rem…4rem` |
+
+### Typography
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--fz-font` | system-ui stack | body font |
 | `--fz-font-mono` | ui-monospace stack | code font |
 | `--fz-line-height` | `1.6` | body leading |
-| `--fz-control-height` | `2.5rem` | buttons/inputs height |
-| `--fz-shadow` | `none` | default shadow (neutral by default) |
-| `--fz-shadow-lifted` | soft drop | popovers, dialogs, `data-lifted` |
-| `--fz-content-width` | `64ch` | max measure for prose |
-| `--fz-max-width` | `72rem` | `.fz-container` width |
-| `--fz-grid-min` | `14rem` | minimum track in `[data-grid="auto-fit"/"auto-fill"]` |
-| `--fz-grid-gap` | `--fz-space-4` | default `[data-grid]` gap |
-| `--fz-sidebar-width` | `16rem` | aside width in `.fz-sidebar` |
-| `--fz-sticky-top` | `0` | offset for `.fz-sticky` |
-| `--fz-avatar-size` | `2.5rem` | edge of `.fz-avatar` (matches control height) |
-| `--fz-transition` / `--fz-transition-slow` | `150ms` / `250ms` ease | motion |
 
-## Fluid type tokens (v1.8)
+### Fluid type scale (v1.8)
 
 | Token | Default | Purpose |
 |---|---|---|
@@ -56,6 +87,30 @@ Defined in `src/tokens.css` on `:root`.
 | `--fz-type-2xl` | `clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem)` | h1 |
 
 Headings use these tokens automatically. Override any step with a fixed `rem` to opt back into a static scale.
+
+### Effects
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-shadow` | `none` | default shadow (neutral by default) |
+| `--fz-shadow-sm` | `0 1px 2px rgba(0,0,0,0.25)` | small shadow (thumbs, subtle depth) |
+| `--fz-shadow-lifted` | soft drop | popovers, dialogs, `data-lifted` |
+| `--fz-transition` | `150ms ease` | default motion |
+| `--fz-transition-slow` | `250ms ease` | slower motion |
+
+### Layout
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-control-height` | `2.5rem` | buttons/inputs height |
+| `--fz-content-width` | `64ch` | max measure for prose |
+| `--fz-max-width` | `72rem` | `.fz-container` width |
+| `--fz-grid-min` | `14rem` | minimum track in `[data-grid="auto-fit"/"auto-fill"]` |
+| `--fz-grid-gap` | `--fz-space-4` | default `[data-grid]` gap |
+| `--fz-sidebar-width` | `16rem` | aside width in `.fz-sidebar` |
+| `--fz-sticky-top` | `0` | offset for `.fz-sticky` |
+| `--fz-avatar-size` | `2.5rem` | edge of `.fz-avatar` (matches control height) |
+| `--fz-z-dialog` | `50` | dialog z-index |
 
 ## How light/dark works (the trick)
 
@@ -100,13 +155,14 @@ tokens — you never "reset" anything.
 
 ## Starter themes
 
-Four built-in demos of how far a few variables go. See the files in
+Five built-in demos of how far a few variables go. See the files in
 `src/themes/`:
 
 - **Editorial** — serif, paper tones, square corners.
 - **Dashboard** — denser controls, blue accent, tighter radii.
 - **Playful** — rounded, saturated, bouncier transitions.
 - **Forest** — deep greens on warm paper.
+- **Custom** — a copy-and-rename template for your own theme.
 
 They are the marketing proof: *a handful of variables, completely
 different product.*

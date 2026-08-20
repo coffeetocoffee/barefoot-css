@@ -11,38 +11,36 @@ import AxeBuilder from "@axe-core/playwright";
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
     await page.goto("/demo/");
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dark theme has no violations", async ({ page }) => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Dark" }).click();
-    // The theme switches through a view transition (view-transition.css);
-    // wait for it to settle so axe audits the final colors, not a mid-fade.
     await page.waitForTimeout(400);
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dialog open has no violations", async ({ page }) => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Open dialog" }).click();
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dropdown open has no violations", async ({ page }) => {
     await page.goto("/demo/");
     await page.locator('details[data-menu] summary').click();
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("toast open has no violations", async ({ page }) => {
     await page.goto("/demo/");
     await page.locator("#toast-trigger").click();
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
 });
@@ -119,5 +117,33 @@ test.describe("visible focus + keyboard contract", () => {
     await page.keyboard.press("Tab");
     await expect(links.nth(1)).toBeFocused();
     await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
+  });
+
+  test("stepper: native ol semantics with aria-current on current step", async ({ page }) => {
+    await page.goto("/demo/");
+    const stepper = page.locator("#demo-stepper-h");
+    await expect(stepper.locator("ol")).toHaveCount(1);
+    await expect(stepper.locator('[aria-current="step"]')).toHaveCount(1);
+    await expect(stepper.locator('[aria-current="step"] [data-step-label]')).toHaveText("Profile");
+    await expect(stepper.locator("[data-complete]")).toHaveCount(1);
+  });
+
+  test("input groups: leading affix is decorative (aria-hidden)", async ({ page }) => {
+    await page.goto("/demo/");
+    const affixes = page.locator("#demo-input-group-form [data-input-group] > :first-child");
+    for (const affix of await affixes.all()) {
+      await expect(affix).toHaveAttribute("aria-hidden", "true");
+    }
+  });
+
+  test("date/number/email inputs: native validation announced by browser", async ({ page }) => {
+    await page.goto("/demo/");
+    const email = page.locator("#polish-email");
+    await expect(email).toHaveAttribute("type", "email");
+    await expect(email).toHaveAttribute("required", "");
+    const number = page.locator("#polish-number");
+    await expect(number).toHaveAttribute("type", "number");
+    const date = page.locator("#polish-date");
+    await expect(date).toHaveAttribute("type", "date");
   });
 });

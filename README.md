@@ -47,20 +47,21 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 32.72KB | **6.70KB** | 5.89KB |
+| `full.css` | 38.12KB | **7.47KB** | 6.58KB |
+| `index.css` | 7.58KB | **2.06KB** | 1.77KB |
 | `js/carousel.js` | 4.78KB | **1.92KB** | 1.63KB |
-| `index.css` | 6.57KB | **1.90KB** | 1.63KB |
-| `components/forms.css` | 6.27KB | **1.59KB** | 1.35KB |
+| `components/forms.css` | 8.20KB | **1.88KB** | 1.60KB |
 | `js/tabs.js` | 2.70KB | **1.10KB** | 0.89KB |
 | `js/popover-anchor.js` | 2.26KB | **1.04KB** | 0.84KB |
 | `js/details-tabindex.js` | 1.86KB | **0.91KB** | 0.73KB |
 | `js/popover-menu.js` | 2.17KB | **0.89KB** | 0.75KB |
 | `utilities.css` | 3.08KB | **0.83KB** | 0.62KB |
+| `components/stepper.css` | 2.57KB | **0.68KB** | 0.54KB |
 | `components/popover.css` | 1.91KB | **0.61KB** | 0.51KB |
-| `components/buttons.css` | 2.06KB | **0.60KB** | 0.49KB |
+| `components/buttons.css` | 1.95KB | **0.58KB** | 0.46KB |
 | `components/dropdown.css` | 1.45KB | **0.54KB** | 0.42KB |
 | `js/details-close.js` | 0.90KB | **0.51KB** | 0.39KB |
-| `components/dialog.css` | 1.05KB | **0.48KB** | 0.38KB |
+| `components/dialog.css` | 1.06KB | **0.48KB** | 0.38KB |
 | `components/accordion.css` | 1.34KB | **0.47KB** | 0.37KB |
 | `js/alert-dismiss.js` | 0.81KB | **0.45KB** | 0.35KB |
 | `components/table.css` | 0.87KB | **0.40KB** | 0.32KB |
@@ -125,7 +126,7 @@ build/                 Lightning CSS bundler + size budget + preview server
 - [Components](docs/components.md) — markup, behavior, JS status for each component
 - [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
 - [Accessibility](docs/accessibility.md) — conformance stance and keyboard matrix
-- [Status](status.md) — what's built, what's next
+- [Status](plan.md) — what's built, what's next
 - [Plan](plan.md) — the original plan and the decisions made
 
 ## Development

@@ -262,7 +262,153 @@
       </form>
     </section>
 
-    <!-- Dialog -->
+    <!-- Stepper -->
+    <section id="stepper" aria-labelledby="stepper-title">
+      <h2 id="stepper-title">Stepper</h2>
+      <p>A progress tracker for multi-step flows. Native <code><ol></code> semantics; the current step gets <code>aria-current="step"</code>. Completed steps are styled from the success token. Horizontal (default) and vertical (<code>data-orientation="vertical"</code>) variants.</p>
+
+      <h3>Horizontal</h3>
+      <div data-stepper id="demo-stepper-h">
+        <ol>
+          <li data-complete>
+            <div data-step>
+              <span data-step-circle>1</span>
+              <span data-step-label>Account</span>
+            </div>
+          </li>
+          <li aria-current="step">
+            <div data-step>
+              <span data-step-circle>2</span>
+              <span data-step-label>Profile</span>
+            </div>
+          </li>
+          <li>
+            <div data-step>
+              <span data-step-circle>3</span>
+              <span data-step-label>Confirm</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <h3>Vertical</h3>
+      <div data-stepper data-orientation="vertical" id="demo-stepper-v">
+        <ol>
+          <li data-complete>
+            <div data-step>
+              <span data-step-circle>1</span>
+              <span data-step-label>Shipping</span>
+            </div>
+          </li>
+          <li aria-current="step">
+            <div data-step>
+              <span data-step-circle>2</span>
+              <span data-step-label>Payment</span>
+            </div>
+          </li>
+          <li>
+            <div data-step>
+              <span data-step-circle>3</span>
+              <span data-step-label>Review</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Input groups -->
+    <section id="input-groups" aria-labelledby="input-groups-title">
+      <h2 id="input-groups-title">Input groups</h2>
+      <p>Wrap an input with a leading icon, currency, or unit in <code>[data-input-group]</code>. The affix shares the input's focus and validation states. Works with <code>input</code>, <code>select</code>, and <code>textarea</code>.</p>
+
+      <form id="demo-input-group-form" class="fz-stack">
+        <div>
+          <label for="ig-username">Username</label>
+          <div data-input-group>
+            <span aria-hidden="true">@</span>
+            <input id="ig-username" name="username" type="text" placeholder="johndoe" autocomplete="username">
+          </div>
+        </div>
+
+        <div>
+          <label for="ig-amount">Amount</label>
+          <div data-input-group>
+            <span aria-hidden="true">$</span>
+            <input id="ig-amount" name="amount" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+
+        <div>
+          <label for="ig-search">Search</label>
+          <div data-input-group>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg>
+            <input id="ig-search" name="search" type="search" placeholder="Search…">
+          </div>
+        </div>
+
+        <div>
+          <label for="ig-url">Website</label>
+          <div data-input-group>
+            <span aria-hidden="true">https://</span>
+            <input id="ig-url" name="url" type="url" placeholder="example.com">
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Date / number / email polish -->
+    <section id="form-polish" aria-labelledby="form-polish-title">
+      <h2 id="form-polish-title">Date, number & email polish</h2>
+      <p>Native pickers and spinners stay; Barefoot themes the surface and ensures validation states apply. Number inputs hide the spinner until hovered/focused; date inputs get a themed calendar button.</p>
+
+      <form id="demo-polish-form" class="fz-stack">
+        <div>
+          <label for="polish-email">Email</label>
+          <input id="polish-email" name="email" type="email" placeholder="you@example.com" required>
+          <small class="fz-field-hint">Validated on blur — try an invalid address.</small>
+        </div>
+
+        <div>
+          <label for="polish-date">Date</label>
+          <input id="polish-date" name="date" type="date">
+        </div>
+
+        <div>
+          <label for="polish-datetime">Date & time</label>
+          <input id="polish-datetime" name="datetime" type="datetime-local">
+        </div>
+
+        <div>
+          <label for="polish-time">Time</label>
+          <input id="polish-time" name="time" type="time">
+        </div>
+
+        <div>
+          <label for="polish-number">Quantity</label>
+          <input id="polish-number" name="quantity" type="number" min="0" max="100" step="1" value="1">
+        </div>
+
+        <div>
+          <label for="polish-tel">Phone</label>
+          <input id="polish-tel" name="tel" type="tel" placeholder="+1 555 000 0000" pattern="[0-9+ ]+">
+        </div>
+
+        <div>
+          <label for="polish-url">URL</label>
+          <input id="polish-url" name="url" type="url" placeholder="https://example.com">
+        </div>
+
+        <div>
+          <label for="polish-search">Search</label>
+          <input id="polish-search" name="search" type="search" placeholder="Type to search…">
+        </div>
+
+        <div>
+          <label for="polish-password">Password</label>
+          <input id="polish-password" name="password" type="password" placeholder="••••••••" minlength="8">
+        </div>
+      </form>
+    </section>
     <section id="dialog" aria-labelledby="dialog-title">
       <h2 id="dialog-title">Dialog</h2>
       <p>Native <code>&lt;dialog&gt;</code>. Focus trap + <kbd>Esc</kbd>-to-close are built in. Opening a <em>modal</em> dialog is the one place Barefoot needs a single line of JS (<code>showModal()</code>) — the Popover below is the fully JS-free alternative.</p>

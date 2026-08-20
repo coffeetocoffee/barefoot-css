@@ -73,10 +73,30 @@
 
     --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8);
 
+    /* ---- Backdrop ---- */
+    --fz-backdrop: light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.6));
+
     /* ---- Effects (default: no shadows — neutral by default) ---- */
     --fz-shadow: none;
+    --fz-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25);
     --fz-shadow-lifted: 0 1px 3px rgb(0 0 0 / 0.08),
       0 4px 12px rgb(0 0 0 / 0.06);
+
+    /* ---- Alpha ramps (v2.0: color-mix) ----
+       Derived from base tokens. Override the base token and the ramps
+       follow — no duplicate palettes to maintain. */
+    --fz-surface-2: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 5%);
+    --fz-surface-3: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 10%);
+    --fz-overlay: color-mix(in oklab, var(--fz-surface), transparent 20%);
+    --fz-overlay-heavy: color-mix(in oklab, var(--fz-surface), transparent 5%);
+    --fz-primary-subtle: color-mix(in oklab, var(--fz-primary), transparent 88%);
+    --fz-primary-muted: color-mix(in oklab, var(--fz-primary), transparent 75%);
+    --fz-primary-strong: color-mix(in oklab, var(--fz-primary), transparent 12%);
+    --fz-primary-darken: color-mix(in oklab, var(--fz-primary), #000000 8%);
+    --fz-danger-darken: color-mix(in oklab, var(--fz-danger), #000000 8%);
+    --fz-danger-muted: color-mix(in oklab, var(--fz-danger), transparent 75%);
+    --fz-success-muted: color-mix(in oklab, var(--fz-success), transparent 75%);
+    --fz-border-strong: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%);
 
     --fz-transition: 150ms ease;
     --fz-transition-slow: 250ms ease;
@@ -144,6 +164,11 @@
     syntax: "<color>";
     inherits: true;
     initial-value: #9a6700;
+  }
+  @property --fz-backdrop {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgb(0 0 0 / 0.5);
   }
 }
 

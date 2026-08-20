@@ -24,5 +24,6 @@
 @import "./components/pagination.css";
 @import "./components/prose.css";
 @import "./components/media.css";
+@import "./components/stepper.css";
 @import "./components/view-transition.css";
 @import "./utilities.css";

@@ -7,7 +7,7 @@ die at the `npm whoami` preflight).
 
 1. Bump `version` in `package.json`.
 2. Add the `CHANGELOG.md` entry (Keep a Changelog format); regenerate
-   the README size table (`npm run docs:size`); roll `status.md` (Snapshot
+   the README size table (`npm run docs:size`); roll `plan.md` (Snapshot
    + the touched milestone sections) and `plan.md` (mark the candidates
    shipped).
 3. `npm run check` + the full matrix green — `npm test` (Chromium), then
