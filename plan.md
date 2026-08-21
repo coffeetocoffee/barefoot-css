@@ -1,18 +1,22 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-20 — v2.0.0_
+_Last updated: 2026-08-21 — v2.2.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.0.0` (2026-08-20) — the design-system
-  release: API freeze, token audit with alpha ramps, docs rewrite.
-  Release notes: `CHANGELOG.md`.
-- **Next:** post-2.0 maintenance and incremental improvements.
-- **Tests:** Chromium 86 (14 a11y / 15 JS / 54 CSS / 3 visual) · Firefox
-  69 (1 skipped) · WebKit 69 (1 skipped) — all green.
-- **Build:** `index.css` 2.06KB gzip · `full.css` 7.47KB gzip (10KB
+- **Current:** `barefoot-css@2.2.0` (2026-08-21) — token & test gaps:
+  alpha ramps completed (`--fz-info-muted`, `--fz-warning-muted`),
+  `--fz-border-width` / `--fz-radius-full`, z-index scale wired into
+  components, contrast-mode + reduced-motion + print tests, stepper &
+  view-transition docs, per-PR axe-core CI job. Release notes:
+  `CHANGELOG.md`.
+- **Next:** v2.4.0 — component gaps (avatar group, spinner, divider
+  with text, form-validation a11y test, theming tutorial).
+- **Tests:** Chromium 91 (15 a11y / 15 JS / 58 CSS / 3 visual) · Firefox
+  73 (1 skipped) · WebKit 73 (1 skipped) — all green.
+- **Build:** `index.css` 2.12KB gzip · `full.css` 7.56KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 2.0. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 2.2. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -161,14 +165,57 @@ and `.fz-*` utilities.
   `--fz-shadow-sm`), docs rewrite (token reference, API reference,
   deprecation policy), theme gallery (all 5 themes in live switcher),
   1.x→2.0 migration note. Shipped as `barefoot-css@2.0.0` (2026-08-20).
+- [x] **2.2** — token & test gaps: `--fz-info-muted`/`--fz-warning-muted`
+  ramps, `--fz-border-width`, `--fz-radius-full`, z-index scale
+  (`--fz-z-dropdown/sticky/dialog/toast`, wired into dropdown, sticky,
+  dialog, toast), contrast-mode axe test, reduced-motion + print tests,
+  stepper & view-transition docs, dedicated per-PR axe-core CI job.
+  Shipped as `barefoot-css@2.2.0` (2026-08-21).
 
-## Next — post-2.0
+## Next — v2.4 through v3.0
 
-- [ ] **Theme gallery page** — dedicated HTML page with live theme
-      preview cards (currently the switcher is inline in index.html).
-- [ ] **CI: axe-core on every PR** — automated accessibility gate.
-- [ ] **Token reference auto-generation** — script to parse tokens.css
-      and emit the theming.md table automatically.
+### v2.4.0 — Component gaps
+
+Expand the component set with missing pieces.
+
+- [ ] **Avatar group** (`.fz-avatar-group`) — overlapping avatars, CSS-only
+- [ ] **Loading spinner** (`[data-spinner]`) — indeterminate, CSS-only
+- [ ] **Divider with text** (`[data-divider]`) — `<hr>` with centered label
+- [ ] **Form validation a11y test** — invalid states with axe-core
+- [ ] **Mobile/viewport test** — narrow viewport behavior
+- [ ] **Docs: theming tutorial** — "build your first theme" step-by-step
+
+### v2.6.0 — Responsive nav + JS growth
+
+The biggest user-facing improvement: mobile navigation.
+
+- [ ] **Nav hamburger** (`src/js/nav.js`) — toggle for `data-nav="header"`,
+      CSS-only fallback (menu stays visible without JS)
+- [ ] **Chip/tag input** (`[data-chip]`) — removable inline badges
+- [ ] **`--fz-font-weight-*`** tokens (replace hardcoded 500/600)
+- [ ] **`--fz-letter-spacing`** tokens
+- [ ] **Nav hamburger a11y + keyboard test**
+- [ ] **Chip/tag interaction test**
+
+### v2.8.0 — Polish & documentation
+
+Make the project presentation-ready before the v3 breaking wave.
+
+- [ ] **Theme gallery page** — dedicated HTML with live preview cards
+- [ ] **Performance budget docs** — size targets and how to stay under them
+- [ ] **API reference audit** — every `data-*` attribute tested
+- [ ] **Token reference auto-gen** — script to parse tokens.css → theming.md
+- [ ] **Contrast-mode full suite** — all components in contrast theme
+- [ ] **Cross-browser visual baseline refresh**
+
+### v3.0.0 — Breaking changes
+
+The namespace cleanup. Specifics TBD based on what v2.x reveals.
+
+- [ ] **Token rename** — `--fz-*` → `--barefoot-*` (or similar, TBD)
+- [ ] **Attribute cleanup** — `data-theme` → `data-fz-theme` (avoid collisions)
+- [ ] **Migration guide + codemod script**
+- [ ] **Drop any deprecated items from v2.x**
 
 ## Watch-list (no action until browsers fix it)
 

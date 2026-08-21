@@ -57,8 +57,25 @@ jobs:
           EOF
           node smoke.mjs
 
+  a11y:
+    name: A11y (axe-core on every PR)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        # dist/ is gitignored — the demo page is unstyled until built.
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=chromium tests/a11y.spec.js
+        # Every PR gets the full axe-core conformance suite (resting,
+        # dark, contrast, dialog/dropdown/toast open) as its own check.
+
   behavior:
-    name: Behavior + a11y (axe-core, JS, CSS, Chromium)
+    name: Behavior (JS + CSS, Chromium)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -71,7 +88,7 @@ jobs:
         # dist/ is gitignored, so the demo page is unstyled until it's
         # built — the test jobs must build before running Playwright.
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --project=chromium tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
+      - run: npx playwright test --project=chromium tests/js.spec.js tests/css.spec.js
 
   firefox:
     name: Behavior (JS + CSS, Firefox)

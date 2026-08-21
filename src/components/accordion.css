@@ -5,7 +5,7 @@
    exclusivity, no JS. */
 @layer components {
   details[data-accordion] {
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius);
     background: var(--fz-surface);
   }
@@ -24,11 +24,11 @@
   }
 
   details[data-accordion] + details[data-accordion]:not([open]) {
-    border-block-start: 1px solid var(--fz-border);
+    border-block-start: var(--fz-border-width) solid var(--fz-border);
   }
 
   details[data-accordion][open] + details[data-accordion] {
-    border-block-start-width: 1px;
+    border-block-start-width: var(--fz-border-width);
   }
 
   details[data-accordion] > summary {

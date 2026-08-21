@@ -11,13 +11,13 @@
   }
 
   kbd {
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-block-end-width: 2px;
   }
 
   pre {
     background: var(--fz-surface-alt);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius);
     padding: var(--fz-space-4);
     overflow-x: auto;

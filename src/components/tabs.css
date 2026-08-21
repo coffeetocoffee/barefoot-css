@@ -11,7 +11,7 @@
   [data-fz-tabs] [role="tablist"] {
     display: flex;
     gap: var(--fz-space-2);
-    border-block-end: 1px solid var(--fz-border);
+    border-block-end: var(--fz-border-width) solid var(--fz-border);
   }
 
   [data-fz-tabs] [role="tab"] {

@@ -17,7 +17,7 @@
   td {
     padding: var(--fz-space-2) var(--fz-space-3);
     text-align: start;
-    border-block-end: 1px solid var(--fz-border);
+    border-block-end: var(--fz-border-width) solid var(--fz-border);
   }
 
   thead th {
@@ -54,7 +54,7 @@
       gap: var(--fz-space-1);
       padding: var(--fz-space-3);
       margin-block-end: var(--fz-space-3);
-      border: 1px solid var(--fz-border);
+      border: var(--fz-border-width) solid var(--fz-border);
       border-radius: var(--fz-radius);
     }
 

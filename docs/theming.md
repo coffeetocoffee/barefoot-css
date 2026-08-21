@@ -50,6 +50,8 @@ the ramps follow — no duplicate palettes.
 | `--fz-danger-darken` | danger + 8% black | hover darken for danger fills |
 | `--fz-danger-muted` | danger + 75% transparent | light danger tint (focus rings) |
 | `--fz-success-muted` | success + 75% transparent | light success tint (focus rings) |
+| `--fz-info-muted` | info + 75% transparent | light info tint (focus rings) |
+| `--fz-warning-muted` | warning + 75% transparent | light warning tint (focus rings) |
 | `--fz-border-strong` | border + 20% text | stronger border on hover |
 
 ### Radii
@@ -59,6 +61,13 @@ the ramps follow — no duplicate palettes.
 | `--fz-radius` | `0.375rem` | component corners |
 | `--fz-radius-sm` | `0.25rem` | small corners |
 | `--fz-radius-lg` | `0.625rem` | large corners |
+| `--fz-radius-full` | `999px` | pills — badges, switches, sliders, progress |
+
+### Strokes
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-border-width` | `1px` | hairline stroke for every component border |
 
 ### Spacing
 
@@ -110,7 +119,18 @@ Headings use these tokens automatically. Override any step with a fixed `rem` to
 | `--fz-sidebar-width` | `16rem` | aside width in `.fz-sidebar` |
 | `--fz-sticky-top` | `0` | offset for `.fz-sticky` |
 | `--fz-avatar-size` | `2.5rem` | edge of `.fz-avatar` (matches control height) |
-| `--fz-z-dialog` | `50` | dialog z-index |
+
+### Z-index scale
+
+One ladder for the whole framework — override a rung and the stacking
+order stays coherent.
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-z-dropdown` | `10` | dropdown / menu panels |
+| `--fz-z-sticky` | `20` | `.fz-sticky` chrome |
+| `--fz-z-dialog` | `50` | dialogs (modal dialogs use the top layer) |
+| `--fz-z-toast` | `60` | toasts — top of the ladder |
 
 ## How light/dark works (the trick)
 

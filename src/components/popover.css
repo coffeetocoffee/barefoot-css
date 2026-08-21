@@ -10,7 +10,7 @@
 
     color: var(--fz-text);
     background: var(--fz-surface);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius);
     box-shadow: var(--fz-shadow-lifted);
 
@@ -75,7 +75,9 @@
     width: max-content;
     max-width: min(24rem, 90vw);
     padding: var(--fz-space-3) var(--fz-space-4);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-inline-start: 3px solid var(--fz-border);
+    z-index: var(--fz-z-toast);
   }
 
   [popover][data-kind="toast"]:popover-open {

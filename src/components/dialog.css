@@ -11,9 +11,10 @@
 
     color: var(--fz-text);
     background: var(--fz-surface);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius-lg);
     box-shadow: var(--fz-shadow-lifted);
+    z-index: var(--fz-z-dialog);
 
     transition:
       opacity var(--fz-transition-slow),

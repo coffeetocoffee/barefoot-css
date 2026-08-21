@@ -14,8 +14,8 @@
 
     color: var(--fz-muted);
     background: var(--fz-surface-alt);
-    border: 1px solid var(--fz-border);
-    border-radius: 999px;
+    border: var(--fz-border-width) solid var(--fz-border);
+    border-radius: var(--fz-radius-full);
   }
 
   .badge[data-variant="primary"] {

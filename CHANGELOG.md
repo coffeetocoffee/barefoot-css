@@ -4,6 +4,56 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] — 2026-08-21
+
+Token & test gaps — filling foundational holes. No new components, no
+breaking changes: every default value is unchanged, so 2.0 apps render
+identically on 2.2.
+
+### Added
+
+- **Alpha ramps completed** (`tokens.css`) — `--fz-info-muted`,
+  `--fz-warning-muted`. All four status colors now have muted tints,
+  derived via `color-mix()` like the rest of the ramp family.
+- **`--fz-border-width`** token (`1px`) — every component border reads
+  the token; override one variable for thicker strokes everywhere.
+- **`--fz-radius-full`** token (`999px`) — pills (badge, switch, slider
+  track, progress/meter bars) read the token.
+- **Z-index scale** — `--fz-z-dropdown` (10), `--fz-z-sticky` (20),
+  `--fz-z-dialog` (50), `--fz-z-toast` (60): one ladder, documented in
+  the token reference. Dropdown panels, `.fz-sticky`, open dialogs, and
+  toasts consume their rungs (sticky chrome and non-modal dialogs now
+  stack coherently instead of ad-hoc).
+- **Contrast-mode a11y test** — `data-theme="contrast"` runs the full
+  axe-core suite (black-on-white / white-on-black stays violation-free).
+- **Reduced-motion test** — under `prefers-reduced-motion: reduce`,
+  smooth scroll switches off, transitions collapse, and the skeleton
+  shimmer stops.
+- **Print stylesheet test** — even with a dark theme active, print
+  media forces ink-on-white, kills shadows, and avoids splitting blocks.
+- **Token smoke tests** — stroke/pill tokens resolve and drive real
+  components; the z-ladder orders dropdown < sticky < dialog < toast.
+- **CI: axe-core on every PR** — the conformance suite is its own named
+  workflow job, not bundled into the behavior job.
+
+### Docs
+
+- **Stepper** section in `docs/components.md` (markup, state
+  attributes, orientation variant).
+- **View transitions** section in `docs/components.md` (the opt-in
+  `components/view-transition.css` hooks).
+- Token reference (`docs/theming.md`) updated: new alpha ramps, radii,
+  strokes, and z-index scale tables.
+
+### Tests & size
+
+- Chromium suite 86 → 91 (15 a11y / 15 JS / 58 CSS / 3 visual); Firefox
+  and WebKit pick up the four new CSS tests. All green; visual
+  baselines unchanged (no default renders differently).
+- Tokens: 62 → 69 (17 `light-dark()`, 10 `@property` unchanged).
+- `index.css` 2.06 → 2.12KB gzip · `full.css` 7.47 → 7.56KB gzip
+  (10KB budget → PASS).
+
 ## [2.0.0] — 2026-08-20
 
 The design-system release. API freeze, token audit, and docs rewrite.

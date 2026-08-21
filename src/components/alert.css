@@ -23,7 +23,7 @@
     gap: var(--fz-space-3);
 
     padding: var(--fz-space-3) var(--fz-space-4);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-inline-start: 3px solid var(--fz-border);
     border-radius: var(--fz-radius);
     background: var(--fz-surface-alt);

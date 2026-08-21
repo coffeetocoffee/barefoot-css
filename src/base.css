@@ -65,7 +65,7 @@
 
   hr {
     border: 0;
-    border-top: 1px solid var(--fz-border);
+    border-top: var(--fz-border-width) solid var(--fz-border);
     margin-block: var(--fz-space-6);
   }
 

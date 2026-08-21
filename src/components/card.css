@@ -3,7 +3,7 @@
 @layer components {
   .card {
     background: var(--fz-surface);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius-lg);
     padding: var(--fz-space-5);
   }

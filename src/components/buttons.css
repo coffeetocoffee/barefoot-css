@@ -21,7 +21,7 @@
 
     color: var(--fz-text);
     background: var(--fz-surface);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius);
 
     cursor: pointer;

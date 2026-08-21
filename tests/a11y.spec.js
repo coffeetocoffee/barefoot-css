@@ -23,6 +23,17 @@ test.describe("accessibility conformance (axe-core)", () => {
     expect(results.violations).toEqual([]);
   });
 
+  test("contrast theme has no violations", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.getByRole("button", { name: "Contrast" }).click();
+    await page.waitForTimeout(400);
+    // data-theme="contrast" forces black-on-white (and white-on-black in
+    // dark) — the palette must stay axe-clean end to end.
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    expect(results.violations).toEqual([]);
+  });
+
   test("dialog open has no violations", async ({ page }) => {
     await page.goto("/demo/");
     await page.getByRole("button", { name: "Open dialog" }).click();

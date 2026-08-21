@@ -44,6 +44,10 @@
     --fz-radius: 0.375rem;
     --fz-radius-sm: 0.25rem;
     --fz-radius-lg: 0.625rem;
+    --fz-radius-full: 999px;
+
+    /* ---- Strokes (v2.2) ---- */
+    --fz-border-width: 1px;
 
     /* ---- Color ---- */
     /* The accent. Defaults to ink on paper. Change this one variable
@@ -96,6 +100,8 @@
     --fz-danger-darken: color-mix(in oklab, var(--fz-danger), #000000 8%);
     --fz-danger-muted: color-mix(in oklab, var(--fz-danger), transparent 75%);
     --fz-success-muted: color-mix(in oklab, var(--fz-success), transparent 75%);
+    --fz-info-muted: color-mix(in oklab, var(--fz-info), transparent 75%);
+    --fz-warning-muted: color-mix(in oklab, var(--fz-warning), transparent 75%);
     --fz-border-strong: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%);
 
     --fz-transition: 150ms ease;
@@ -105,7 +111,15 @@
     --fz-content-width: 64ch;
     --fz-max-width: 72rem;
     --fz-control-height: 2.5rem;
+
+    /* ---- Z-index scale (v2.2) ----
+       One ladder for the whole framework: dropdowns sit above sticky
+       chrome, dialogs above those, toasts on top. Override a rung and
+       the stacking order stays coherent. */
+    --fz-z-dropdown: 10;
+    --fz-z-sticky: 20;
     --fz-z-dialog: 50;
+    --fz-z-toast: 60;
 
     /* ---- Layout (v1.6: app shell) ---- */
     --fz-grid-min: 14rem;      /* minimum track in [data-grid="auto-fit"] */

@@ -56,12 +56,12 @@
   }
 
   [data-nav="header"] {
-    border-block-end: 1px solid var(--fz-border);
+    border-block-end: var(--fz-border-width) solid var(--fz-border);
   }
 
   [data-nav="footer"] {
     justify-content: space-between;
-    border-block-start: 1px solid var(--fz-border);
+    border-block-start: var(--fz-border-width) solid var(--fz-border);
     color: var(--fz-muted);
     font-size: 0.875rem;
   }

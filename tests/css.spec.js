@@ -728,3 +728,99 @@ test.describe("v1.9 stepper & input groups", () => {
     expect(indicatorOpacity).toBe("1");
   });
 });
+
+test.describe("v2.2 tokens, motion & print safety", () => {
+  test("stroke and pill tokens resolve and drive components", async ({ page }) => {
+    await page.goto("/demo/");
+    const root = page.locator("html");
+    const borderWidth = await root.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--fz-border-width").trim()
+    );
+    const radiusFull = await root.evaluate((el) =>
+      getComputedStyle(el).getPropertyValue("--fz-radius-full").trim()
+    );
+    expect(borderWidth).toBe("1px");
+    expect(radiusFull).toBe("999px");
+
+    // Components consume the tokens: a button's stroke and a badge's
+    // pill shape must come from --fz-border-width / --fz-radius-full.
+    const button = page.getByRole("button", { name: "Open dialog" });
+    await expect(button).toHaveCSS("border-top-width", "1px");
+    const badgeRadius = await page.locator(".badge").first().evaluate(
+      (el) => getComputedStyle(el).borderRadius
+    );
+    expect(badgeRadius).toBe("999px");
+  });
+
+  test("z-index scale orders dropdown < sticky < dialog < toast", async ({ page }) => {
+    await page.goto("/demo/");
+    const root = page.locator("html");
+    const z = async (name) =>
+      parseInt(
+        await root.evaluate(
+          (el, n) => getComputedStyle(el).getPropertyValue(n).trim(),
+          name
+        )
+      );
+    expect(await z("--fz-z-dropdown")).toBeLessThan(await z("--fz-z-sticky"));
+    expect(await z("--fz-z-sticky")).toBeLessThan(await z("--fz-z-dialog"));
+    expect(await z("--fz-z-dialog")).toBeLessThan(await z("--fz-z-toast"));
+
+    // The dropdown panel consumes its rung of the ladder.
+    const panelZ = await page
+      .locator("details[data-menu] > :not(summary)")
+      .first()
+      .evaluate((el) => getComputedStyle(el).zIndex);
+    expect(panelZ).toBe("10");
+  });
+
+  test("prefers-reduced-motion: reduce neutralizes motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/demo/");
+
+    // Smooth scrolling is switched off…
+    const scrollBehavior = await page
+      .locator("html")
+      .evaluate((el) => getComputedStyle(el).scrollBehavior);
+    expect(scrollBehavior).toBe("auto");
+
+    // …and every transition collapses to (almost) zero duration.
+    const button = page.getByRole("button", { name: "Open dialog" });
+    const durations = await button.evaluate((el) =>
+      getComputedStyle(el).transitionDuration.split(",").map(parseFloat)
+    );
+    for (const d of durations) expect(d).toBeLessThan(1);
+
+    // The skeleton shimmer stops too (animation runs once, ~no time).
+    const skeleton = page.locator("#demo-skeleton-line");
+    const iteration = await skeleton.evaluate(
+      (el) => getComputedStyle(el, "::after").animationIterationCount
+    );
+    expect(iteration).toBe("1");
+  });
+
+  test("print stylesheet forces light-on-white, no shadows", async ({ page }) => {
+    await page.goto("/demo/");
+    // Even with a dark theme active, paper gets ink on white.
+    await page.locator("html").evaluate((el) => { el.dataset.theme = "dark"; });
+    await page.emulateMedia({ media: "print" });
+
+    const body = page.locator("body");
+    await expect(body).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(body).toHaveCSS("color", "rgb(0, 0, 0)");
+
+    // Decorative depth never survives printing.
+    const liftedShadow = await page
+      .locator(".card[data-lifted]")
+      .first()
+      .evaluate((el) => getComputedStyle(el).boxShadow);
+    expect(liftedShadow).toBe("none");
+
+    // Blocks don't split across pages.
+    const breakInside = await page
+      .locator("pre")
+      .first()
+      .evaluate((el) => getComputedStyle(el).breakInside);
+    expect(breakInside).toBe("avoid");
+  });
+});

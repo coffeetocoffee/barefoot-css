@@ -299,6 +299,44 @@ support, carousel controls + autoplay) and their markup.
 - **JS:** none.
 - **A11y:** `<nav aria-label>` + `<ol>`; labelled prev/next arrows.
 
+## Stepper
+
+```html
+<div data-stepper>
+  <ol>
+    <li data-complete>
+      <div data-step>
+        <span data-step-circle>1</span>
+        <span data-step-label>Account</span>
+      </div>
+    </li>
+    <li aria-current="step">
+      <div data-step>
+        <span data-step-circle>2</span>
+        <span data-step-label>Profile</span>
+      </div>
+    </li>
+    <li>
+      <div data-step>
+        <span data-step-circle>3</span>
+        <span data-step-label>Confirm</span>
+      </div>
+    </li>
+  </ol>
+</div>
+```
+
+- A progress tracker for multi-step flows. The state lives in plain
+  attributes the consumer controls: `data-complete` on finished steps,
+  `aria-current="step"` on the active one. Completed circles fill from
+  `--fz-success`, current from `--fz-primary`, pending stay muted — and
+  the connecting lines follow completion.
+- **`data-orientation="vertical"`** stacks the steps (default is
+  horizontal).
+- **JS:** none.
+- **A11y:** native `<ol>` semantics; screen readers announce the current
+  step from `aria-current="step"`. Nothing is invented.
+
 ## Navigation
 
 ```html
@@ -489,6 +527,32 @@ support, carousel controls + autoplay) and their markup.
   default; `data-lifted` opts into a shadow. Badge variants:
   `data-variant="primary|danger|success|info|warning"` — each filled
   from its token pair.
+
+## View transitions
+
+```html
+<link rel="stylesheet" href="barefoot-css/components/view-transition.css">
+<script>
+  if (document.startViewTransition) {
+    document.startViewTransition(() => { root.dataset.theme = "dark"; });
+  } else {
+    root.dataset.theme = "dark";
+  }
+</script>
+```
+
+- Opt-in hooks for the View Transitions API. Import
+  `components/view-transition.css` when you call
+  `document.startViewTransition()` (theme switches, SPA-ish page swaps):
+  the outgoing snapshot is dropped (`animation: none`) and the incoming
+  one fades in over `--fz-transition-slow`, instead of the default
+  cross-fade flash.
+- **Reduced motion:** under `prefers-reduced-motion: reduce` both
+  snapshots render statically — no fade, no movement.
+- **JS:** yours — Barefoot ships only the `::view-transition-*` styling;
+  you decide when to call `startViewTransition()`.
+- **A11y:** motion-safe by default; without the media-query guard a
+  theme flip would animate for everyone.
 
 ## Utilities
 

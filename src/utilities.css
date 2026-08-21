@@ -103,6 +103,7 @@
   .fz-sticky {
     position: sticky;
     top: var(--fz-sticky-top, 0);
+    z-index: var(--fz-z-sticky);
   }
 
   /* Text */
@@ -140,7 +141,7 @@
     padding: var(--fz-space-2) var(--fz-space-3);
     background: var(--fz-surface);
     color: var(--fz-primary);
-    border: 1px solid var(--fz-border);
+    border: var(--fz-border-width) solid var(--fz-border);
     border-radius: var(--fz-radius);
     text-decoration: none;
     clip: rect(0 0 0 0);
