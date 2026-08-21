@@ -47,7 +47,7 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 39.15KB | **7.56KB** | 6.65KB |
+| `full.css` | 40.27KB | **7.76KB** | 6.80KB |
 | `index.css` | 7.84KB | **2.12KB** | 1.82KB |
 | `js/carousel.js` | 4.78KB | **1.92KB** | 1.63KB |
 | `components/forms.css` | 8.46KB | **1.88KB** | 1.61KB |
@@ -66,15 +66,16 @@ npm install barefoot-css
 | `js/alert-dismiss.js` | 0.81KB | **0.45KB** | 0.35KB |
 | `components/table.css` | 0.91KB | **0.41KB** | 0.32KB |
 | `components/nav.css` | 0.92KB | **0.39KB** | 0.30KB |
+| `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
 | `components/tabs.css` | 0.75KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.29KB |
 | `components/pagination.css` | 0.75KB | **0.33KB** | 0.25KB |
 | `themes/playful.css` | 0.58KB | **0.33KB** | 0.30KB |
 | `components/badge.css` | 0.89KB | **0.33KB** | 0.27KB |
 | `themes/editorial.css` | 0.57KB | **0.32KB** | 0.27KB |
-| `components/media.css` | 0.71KB | **0.31KB** | 0.26KB |
 | `components/skeleton.css` | 0.52KB | **0.30KB** | 0.24KB |
-| `components/grid.css` | 0.98KB | **0.27KB** | 0.22KB |
+| `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
+| `components/grid.css` | 0.99KB | **0.28KB** | 0.22KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.49KB | **0.26KB** | 0.22KB |
 | `components/carousel.css` | 0.44KB | **0.26KB** | 0.20KB |
@@ -82,6 +83,7 @@ npm install barefoot-css
 | `components/code.css` | 0.48KB | **0.25KB** | 0.20KB |
 | `js/barefoot.js` | 0.42KB | **0.24KB** | 0.19KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
+| `components/divider.css` | 0.33KB | **0.21KB** | 0.16KB |
 | `components/card.css` | 0.30KB | **0.21KB** | 0.14KB |
 | `components/view-transition.css` | 0.28KB | **0.16KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |

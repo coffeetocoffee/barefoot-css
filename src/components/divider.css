@@ -1,0 +1,30 @@
+/* Barefoot — divider. A separator with an optional centered label.
+   <hr> is a void element (it cannot contain text), so the labelled
+   pattern applies to any element that can hold text:
+
+     <p data-divider>Section two</p>
+     <h2 data-divider>Chapter 3</h2>
+
+   The label stays real content — announced like any other text; the
+   two hairlines are decorative pseudo-elements. A bare <hr data-divider>
+   renders as a plain rule, same as the base style. */
+@layer components {
+  [data-divider] {
+    display: flex;
+    align-items: center;
+    gap: var(--fz-space-4);
+    border: 0;
+    margin-block: var(--fz-space-6);
+    color: var(--fz-muted);
+    font-size: var(--fz-type-sm);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  [data-divider]::before,
+  [data-divider]::after {
+    content: "";
+    flex: 1 1 0;
+    border-top: var(--fz-border-width) solid var(--fz-border);
+  }
+}

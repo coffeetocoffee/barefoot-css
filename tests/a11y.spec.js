@@ -54,6 +54,18 @@ test.describe("accessibility conformance (axe-core)", () => {
     const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
     expect(results.violations).toEqual([]);
   });
+
+  test("invalid form state has no violations", async ({ page }) => {
+    await page.goto("/demo/");
+    // Touch the field with an invalid value so :user-invalid paints the
+    // danger border and the whole form draws its invalid ring.
+    const email = page.locator("#demo-email");
+    await email.fill("not-an-email");
+    await email.blur();
+    await expect(email).toHaveCSS("border-color", "rgb(179, 38, 30)"); // --fz-danger
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    expect(results.violations).toEqual([]);
+  });
 });
 
 test.describe("visible focus + keyboard contract", () => {

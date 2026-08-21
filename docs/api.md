@@ -87,7 +87,7 @@ All component attributes and their valid values:
 |---|---|---|---|
 | `data-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `custom` | 0.1 |
 | `data-variant` | `<button>` | `primary`, `danger`, `ghost` | 0.1 |
-| `data-size` | `<button>`, `.fz-avatar` | `sm`, `lg` | 0.1 |
+| `data-size` | `<button>`, `.fz-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
 | `data-table` | `<table>` | `stack` | 1.1 |
@@ -105,6 +105,8 @@ All component attributes and their valid values:
 | `data-tooltip` | trigger element | (boolean) | 1.4 |
 | `data-media` | `<img>`, `<video>`, `.card` | (boolean) | 1.8 |
 | `data-ratio` | `[data-media]` | `4/3`, `1/1`, `21/9` | 1.8 |
+| `data-spinner` | any element | (boolean) | 2.4 |
+| `data-divider` | any text-holding element | (boolean) | 2.4 |
 | `data-fz-tabs` | tabs container | (boolean) | 0.1 |
 | `data-autoplay` | carousel scroller | `ms` value (default 3000) | 1.4 |
 | `data-carousel-prev` | button | (boolean) | 1.4 |

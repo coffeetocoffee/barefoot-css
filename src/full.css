@@ -16,6 +16,8 @@
 @import "./components/nav.css";
 @import "./components/alert.css";
 @import "./components/skeleton.css";
+@import "./components/spinner.css";
+@import "./components/divider.css";
 @import "./components/table.css";
 @import "./components/code.css";
 @import "./components/card.css";

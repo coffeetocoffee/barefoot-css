@@ -824,3 +824,88 @@ test.describe("v2.2 tokens, motion & print safety", () => {
     expect(breakInside).toBe("avoid");
   });
 });
+
+test.describe("v2.4 components", () => {
+  test("avatar group overlaps avatars behind a surface ring", async ({ page }) => {
+    await page.goto("/demo/");
+    const avatars = page.locator("#demo-avatar-group .fz-avatar");
+    await expect(avatars).toHaveCount(4);
+
+    // The second avatar starts before the first one ends — a real
+    // overlap of about a third of an avatar's width.
+    const boxes = await avatars.evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect())
+    );
+    const overlap = boxes[0].right - boxes[1].left;
+    expect(overlap).toBeGreaterThan(boxes[0].width / 4);
+    expect(overlap).toBeLessThan(boxes[0].width / 2);
+
+    // Each face is separated from the one beneath by the surface ring.
+    const shadow = await avatars.nth(1).evaluate(
+      (el) => getComputedStyle(el).boxShadow
+    );
+    expect(shadow).toContain("rgb(255, 255, 255)"); // --fz-surface (light)
+  });
+
+  test("spinner rotates via fz-spin and reads the accent tokens", async ({ page }) => {
+    await page.goto("/demo/");
+    const spinner = page.locator("#demo-spinner");
+    const name = await spinner.evaluate(
+      (el) => getComputedStyle(el).animationName
+    );
+    expect(name).toBe("fz-spin");
+    await expect(spinner).toHaveCSS("border-radius", "999px"); // --fz-radius-full
+    await expect(spinner).toHaveCSS("border-top-color", "rgb(26, 26, 26)"); // --fz-primary (light)
+
+    // Sizes: default 1.5rem, lg tracks the control height token.
+    await expect(spinner).toHaveCSS("width", "24px");
+    const lg = page.locator('#spinner [data-spinner][data-size="lg"]');
+    await expect(lg).toHaveCSS("width", "40px"); // --fz-control-height
+  });
+
+  test("divider draws hairlines around real text", async ({ page }) => {
+    await page.goto("/demo/");
+    const divider = page.locator("#demo-divider");
+    await expect(divider).toHaveCSS("display", "flex");
+
+    // Both rules render at the stroke token's width…
+    const rules = await divider.evaluate((el) => [
+      getComputedStyle(el, "::before").borderTopWidth,
+      getComputedStyle(el, "::after").borderTopWidth,
+    ]);
+    expect(rules).toEqual(["1px", "1px"]); // --fz-border-width
+
+    // …and the label is muted secondary text, not a heading look.
+    await expect(divider).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
+    await expect(divider).toHaveCSS("font-weight", "400");
+  });
+});
+
+test.describe("mobile viewport (375px)", () => {
+  test.use({ viewport: { width: 375, height: 667 } });
+
+  test("page never overflows horizontally", async ({ page }) => {
+    await page.goto("/demo/");
+    const overflow = await page.evaluate(() => ({
+      scroll: document.scrollingElement.scrollWidth,
+      inner: window.innerWidth,
+    }));
+    expect(overflow.scroll).toBeLessThanOrEqual(overflow.inner);
+  });
+
+  test("fluid type steps down and tap targets keep their height", async ({ page }) => {
+    await page.goto("/demo/");
+
+    // Headings shrink below their wide-viewport cap but never collapse.
+    const h1 = parseFloat(await page
+      .locator("#typography h1")
+      .evaluate((el) => getComputedStyle(el).fontSize));
+    expect(h1).toBeLessThan(40); // below the 2.5rem cap
+    expect(h1).toBeGreaterThan(20);
+
+    // Controls hold --fz-control-height so touch targets stay usable.
+    const btn = page.getByRole("button", { name: "Open dialog" });
+    const height = await btn.evaluate((el) => el.getBoundingClientRect().height);
+    expect(height).toBeGreaterThanOrEqual(40);
+  });
+});

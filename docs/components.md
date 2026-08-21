@@ -406,6 +406,28 @@ support, carousel controls + autoplay) and their markup.
 - **A11y:** decorative only — it must be replaced by (or paired with)
   real content before a screen reader would ever announce it.
 
+## Spinner
+
+```html
+<div data-spinner role="status">
+  <span class="fz-visually-hidden">Loading…</span>
+</div>
+
+<div data-spinner data-size="sm"></div>
+<div data-spinner data-size="lg"></div>
+```
+
+- **`[data-spinner]`** — an indeterminate loading indicator, pure CSS:
+  a rotating arc drawn from the accent tokens (`--fz-primary` on a
+  `--fz-primary-muted` track). Default 1.5rem; `data-size="sm"` → 1rem,
+  `data-size="lg"` → `--fz-control-height`.
+- **`prefers-reduced-motion`** — the rotation stops; a static arc
+  remains.
+- **JS:** none.
+- **A11y:** the motion is decorative. Announce progress with text and
+  a live role from your markup (`role="status"` + visually hidden text,
+  as above) — Barefoot never invents roles for you.
+
 ## Toast
 
 ```html
@@ -458,6 +480,13 @@ support, carousel controls + autoplay) and their markup.
 <!-- data-size="sm" (1.75rem) or "lg" (4rem) -->
 <img class="fz-avatar" data-size="lg" alt="Ada">
 
+<!-- Avatar group: overlapping stack -->
+<div class="fz-avatar-group">
+  <img class="fz-avatar" alt="Ada">
+  <img class="fz-avatar" alt="Grace">
+  <img class="fz-avatar" alt="Linus">
+</div>
+
 <!-- Responsive image: shrinks to container, keeps ratio -->
 <img src="wide-banner.svg" alt="…">
 
@@ -480,6 +509,10 @@ support, carousel controls + autoplay) and their markup.
 - **`.fz-avatar`** — circular image; size from `--fz-avatar-size`
   (2.5rem, matches `--fz-control-height`). `data-size="sm"` → 1.75rem,
   `data-size="lg"` → 4rem. Always include `alt` text.
+- **`.fz-avatar-group`** — an overlapping stack of avatars: each pulls
+  back over the previous one by a third of its size, and a surface ring
+  keeps the faces distinct. Purely visual — reading order, tab order,
+  and image semantics are untouched.
 - **`[data-media]`** — locks a ratio box on an `img`, `video`,
   `iframe`, or any element (a bare `div` becomes a placeholder box).
   Width follows the container; height follows the ratio. Default 16:9;
@@ -527,6 +560,28 @@ support, carousel controls + autoplay) and their markup.
   default; `data-lifted` opts into a shadow. Badge variants:
   `data-variant="primary|danger|success|info|warning"` — each filled
   from its token pair.
+
+## Divider
+
+```html
+<!-- Labelled divider: any element that can hold text -->
+<p data-divider>Section two</p>
+<h2 data-divider>Chapter 3</h2>
+
+<!-- A bare <hr> stays the plain base rule (an <hr> is void — it
+     cannot contain text, so the label lives on a real element) -->
+<hr>
+```
+
+- **`[data-divider]`** — a separator with a centered label: muted,
+  small text between two hairlines drawn by pseudo-elements. The label
+  is real content, announced like any other text; the rules are
+  decorative.
+- Colors and stroke come from `--fz-muted` / `--fz-border` /
+  `--fz-border-width`; spacing matches the base `<hr>` rhythm.
+- **JS:** none.
+- **A11y:** nothing hidden — text stays text, decoration stays in
+  pseudo-elements.
 
 ## View transitions
 

@@ -157,7 +157,11 @@ palettes.** The `[data-theme]` attribute simply overrides `color-scheme`:
 
 ## Making your own theme
 
-Copy `src/themes/custom.css`, rename it, override only what you want:
+New to theming? Follow **[theming-tutorial.md](theming-tutorial.md)** —
+a step-by-step "build your first theme" walkthrough.
+
+In short: copy `src/themes/custom.css`, rename it, override only what
+you want:
 
 ```css
 @layer tokens {

@@ -93,6 +93,9 @@
           <tr><td>Toast</td><td class="wcag">AA</td><td><code>role="status"</code> announces politely; <kbd>Esc</kbd> or click-away closes.</td></tr>
           <tr><td>Prose</td><td class="wcag">AA</td><td>Heading rhythm and section spacing for long-form content via <code>.fz-prose</code>; nothing hidden, no ordering.</td></tr>
           <tr><td>Media &amp; avatars</td><td class="wcag">AA</td><td>Images carry <code>alt</code>; <code>[data-media]</code> keeps a locked ratio; <code>.fz-avatar</code> is an image, announced like any other.</td></tr>
+          <tr><td>Avatar group</td><td class="wcag">AA</td><td>The overlap is decorative — reading order and announcements are unchanged; every avatar keeps its <code>alt</code>.</td></tr>
+          <tr><td>Spinner</td><td class="wcag">AA</td><td>Decorative motion stops under <code>prefers-reduced-motion</code>; announce progress with <code>role="status"</code> from your markup.</td></tr>
+          <tr><td>Divider</td><td class="wcag">AA</td><td>The label is real text between decorative hairlines — announced like any other content.</td></tr>
         </tbody>
       </table>
     </section>
@@ -113,6 +116,14 @@
 @layer tokens {
   --fz-primary: #1a1a1a;
 }</code></pre>
+    </section>
+
+    <!-- Divider -->
+    <section id="divider" aria-labelledby="divider-title">
+      <h2 id="divider-title">Divider</h2>
+      <p>A separator with a centered label: add <code>data-divider</code> to any element that can hold text (an <code>&lt;hr&gt;</code> can't — it's void). The label stays real content; the hairlines are decorative pseudo-elements.</p>
+      <p data-divider id="demo-divider">Section two</p>
+      <p>Content continues below the divider, exactly where you'd expect it.</p>
     </section>
 
     <!-- Prose -->
@@ -155,6 +166,15 @@
         <img class="fz-avatar" data-size="sm" id="demo-avatar-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
         <img class="fz-avatar" id="demo-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
         <img class="fz-avatar" data-size="lg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
+      </div>
+
+      <h3>Avatar group</h3>
+      <p>Wrap avatars in <code>.fz-avatar-group</code> to overlap them; a surface ring keeps each face distinct. Purely visual — semantics and reading order are untouched.</p>
+      <div class="fz-avatar-group" id="demo-avatar-group">
+        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
+        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
+        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
+        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239a6700'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Radia">
       </div>
 
       <h3>Responsive images</h3>
@@ -720,6 +740,20 @@
           </div>
         </div>
       </form>
+    </section>
+
+    <!-- Spinner -->
+    <section id="spinner" aria-labelledby="spinner-title">
+      <h2 id="spinner-title">Spinner</h2>
+      <p>An indeterminate loading indicator, pure CSS: mark any element with <code>data-spinner</code> (<code>data-size="sm|lg"</code> for other sizes). The motion is decorative — it freezes under <code>prefers-reduced-motion</code>, so pair it with text that announces progress; <code>role</code> comes from your markup.</p>
+      <div class="fz-row fz-gap-5">
+        <div data-spinner id="demo-spinner" role="status">
+          <span class="fz-visually-hidden">Loading…</span>
+        </div>
+        <div data-spinner data-size="sm" aria-hidden="true"></div>
+        <div data-spinner data-size="lg" aria-hidden="true"></div>
+        <span class="fz-muted">Fetching results…</span>
+      </div>
     </section>
 
     <!-- Skeleton -->

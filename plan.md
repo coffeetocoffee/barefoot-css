@@ -1,22 +1,22 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-21 — v2.2.0_
+_Last updated: 2026-08-21 — v2.4.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.2.0` (2026-08-21) — token & test gaps:
-  alpha ramps completed (`--fz-info-muted`, `--fz-warning-muted`),
-  `--fz-border-width` / `--fz-radius-full`, z-index scale wired into
-  components, contrast-mode + reduced-motion + print tests, stepper &
-  view-transition docs, per-PR axe-core CI job. Release notes:
-  `CHANGELOG.md`.
-- **Next:** v2.4.0 — component gaps (avatar group, spinner, divider
-  with text, form-validation a11y test, theming tutorial).
-- **Tests:** Chromium 91 (15 a11y / 15 JS / 58 CSS / 3 visual) · Firefox
-  73 (1 skipped) · WebKit 73 (1 skipped) — all green.
-- **Build:** `index.css` 2.12KB gzip · `full.css` 7.56KB gzip (10KB
+- **Current:** `barefoot-css@2.4.0` (2026-08-21) — component gaps:
+  avatar group (`.fz-avatar-group`), loading spinner
+  (`[data-spinner]`), labelled divider (`[data-divider]`),
+  form-validation axe test, mobile viewport tests (which caught and
+  fixed a real `[data-grid]` overflow), theming tutorial. Release
+  notes: `CHANGELOG.md`.
+- **Next:** v2.6.0 — responsive nav + JS growth (nav hamburger,
+  chip/tag input, font-weight & letter-spacing tokens).
+- **Tests:** Chromium 97 (16 a11y / 15 JS / 63 CSS / 3 visual) ·
+  Firefox 77 (1 skipped) · WebKit 77 (1 skipped) — all green.
+- **Build:** `index.css` 2.12KB gzip · `full.css` 7.76KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 2.2. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 2.4. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -171,21 +171,16 @@ and `.fz-*` utilities.
   dialog, toast), contrast-mode axe test, reduced-motion + print tests,
   stepper & view-transition docs, dedicated per-PR axe-core CI job.
   Shipped as `barefoot-css@2.2.0` (2026-08-21).
+- [x] **2.4** — component gaps: avatar group (`.fz-avatar-group`),
+  loading spinner (`[data-spinner]`), labelled divider
+  (`[data-divider]`), form-validation a11y test, mobile/viewport tests
+  (caught + fixed a `[data-grid]` single-column overflow), theming
+  tutorial (`docs/theming-tutorial.md`). Shipped as
+  `barefoot-css@2.4.0` (2026-08-21).
 
-## Next — v2.4 through v3.0
+## Next — v2.6 through v3.0
 
-### v2.4.0 — Component gaps
-
-Expand the component set with missing pieces.
-
-- [ ] **Avatar group** (`.fz-avatar-group`) — overlapping avatars, CSS-only
-- [ ] **Loading spinner** (`[data-spinner]`) — indeterminate, CSS-only
-- [ ] **Divider with text** (`[data-divider]`) — `<hr>` with centered label
-- [ ] **Form validation a11y test** — invalid states with axe-core
-- [ ] **Mobile/viewport test** — narrow viewport behavior
-- [ ] **Docs: theming tutorial** — "build your first theme" step-by-step
-
-### v2.6.0 — Responsive nav + JS growth
+### v2.6.0 — Responsive nav + JS growth (next)
 
 The biggest user-facing improvement: mobile navigation.
 
@@ -251,6 +246,16 @@ The namespace cleanup. Specifics TBD based on what v2.x reveals.
   CI runs the visual job on `windows-latest` to match.
 - **The 10KB budget is a floor, not a ceiling** — CI fails if
   `dist/index.css` grows past it, so size can't creep back up.
+- **The divider label lives on a real element, not on `<hr>`.** `<hr>`
+  is void — it cannot contain text, and `attr()`-fed pseudo-content is
+  a worse contract than real text. `[data-divider]` therefore applies
+  to any element that can hold text (`<p data-divider>Section</p>`);
+  the hairlines are decorative pseudo-elements, the label stays
+  announced like any other content.
+- **Grid tracks never trust item min-content.** Every `[data-grid]`
+  track list uses `minmax(0, …)` — a bare `1fr` keeps each item's
+  min-content width and lets narrow containers overflow. Caught by the
+  v2.4 mobile viewport test on its first run.
 
 ## Non-goals
 

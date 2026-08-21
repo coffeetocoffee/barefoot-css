@@ -4,6 +4,64 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] — 2026-08-21
+
+Component gaps — three new components, the tests that prove them (and
+one real bug they caught), and a theming tutorial. No breaking changes:
+every default value is unchanged, so 2.2 apps render identically on
+2.4.
+
+### Added
+
+- **Avatar group** (`media.css`) — `.fz-avatar-group` overlaps a stack
+  of `.fz-avatar` images by a third of their size, separated by a
+  surface ring. Purely visual: reading order and image semantics are
+  untouched.
+- **Loading spinner** (`components/spinner.css`) — `[data-spinner]`
+  draws an indeterminate rotating arc from `--fz-primary` on a
+  `--fz-primary-muted` track; `data-size="sm|lg"` resizes (lg tracks
+  `--fz-control-height`). Frozen to a static arc under
+  `prefers-reduced-motion`; roles stay in the consumer's markup.
+- **Divider** (`components/divider.css`) — `[data-divider]` renders a
+  centered label between two hairlines. The label is real text on any
+  element that can hold it (`<hr>` is void, so it can't carry one);
+  decoration lives in pseudo-elements.
+- **Form-validation a11y test** — a touched-invalid field
+  (`:user-invalid` painting the danger border) runs the full axe-core
+  suite and stays violation-free.
+- **Mobile/viewport tests** — at 375px the demo must not overflow
+  horizontally, fluid type must step down without collapsing, and tap
+  targets keep `--fz-control-height`.
+- **Docs: theming tutorial** (`docs/theming-tutorial.md`) — "build your
+  first theme" step by step: accent → surfaces → shape → ramps → ship →
+  verify checklist. Linked from `theming.md` and the docs site.
+
+### Fixed
+
+- **`[data-grid]` single-column default is now `minmax(0, 1fr)`,**
+  matching the multi-column container variants. A bare `1fr` track kept
+  each item's min-content width, so narrow containers could overflow
+  past their box — caught by the new mobile viewport test on its first
+  run.
+
+### Docs
+
+- `docs/components.md`: avatar group in *Media & avatars*, new
+  *Spinner* and *Divider* sections.
+- `docs/api.md`: `data-spinner` / `data-divider` rows; `data-size`
+  covers the spinner.
+- Demo conformance matrix gains avatar-group, spinner, and divider rows;
+  three new demo sections (divider, spinner, avatar group).
+
+### Tests & size
+
+- Chromium suite 91 → 97 (16 a11y / 15 JS / 63 CSS / 3 visual); Firefox
+  and WebKit pick up the five new CSS tests (77 passed, 1 skipped each).
+  All green; visual baselines regenerated deliberately (the demo grew by
+  three sections).
+- No new tokens (69 unchanged). `index.css` 2.12KB gzip (unchanged) ·
+  `full.css` 7.56 → 7.76KB gzip (10KB budget → PASS).
+
 ## [2.2.0] — 2026-08-21
 
 Token & test gaps — filling foundational holes. No new components, no

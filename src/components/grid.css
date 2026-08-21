@@ -22,7 +22,11 @@
   [data-grid] {
     display: grid;
     gap: var(--fz-grid-gap, var(--fz-space-4));
-    grid-template-columns: 1fr;
+    /* minmax(0, 1fr), not bare 1fr: a bare fr track keeps each item's
+       min-content width, so long content can push the grid past its
+       container. The 0 minimum lets the single column shrink with the
+       box — same contract as the multi-column variants below. */
+    grid-template-columns: minmax(0, 1fr);
   }
 
   @container (min-width: 30rem) {

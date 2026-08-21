@@ -1,15 +1,18 @@
-/* Barefoot — media. Avatars, aspect-ratio embeds, thumbnail cards.
-   Classes/attributes only where there is no native element.
+/* Barefoot — media. Avatars, avatar groups, aspect-ratio embeds,
+   thumbnail cards. Classes/attributes only where there is no native
+   element.
 
    .fz-avatar                 → circular image, --fz-avatar-size (2.5rem)
    .fz-avatar[data-size="sm"] → 1.75rem
    .fz-avatar[data-size="lg"] → 4rem
 
+   .fz-avatar-group           → overlapping stack of .fz-avatar images
+
    [data-media]               → 16:9 box (img/video/iframe/div)
    [data-media][data-ratio]   → "4/3" | "1/1" | "21/9"
 
    .card[data-media]          → thumbnail card: media bleeds to the top
-                                edge, the rest gets card padding. */
+                                 edge, the rest gets card padding. */
 @layer components {
   /* ---- Avatars ---- */
   .fz-avatar {
@@ -29,6 +32,23 @@
   .fz-avatar[data-size="lg"] {
     width: 4rem;
     height: 4rem;
+  }
+
+  /* ---- Avatar group ----
+     Overlapping stack: each avatar pulls back over the previous one by
+     a third of its size, and a surface ring keeps the faces distinct.
+     Purely visual — reading order and image semantics are untouched. */
+  .fz-avatar-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .fz-avatar-group .fz-avatar {
+    box-shadow: 0 0 0 2px var(--fz-surface);
+  }
+
+  .fz-avatar-group .fz-avatar + .fz-avatar {
+    margin-inline-start: calc(var(--fz-avatar-size, 2.5rem) / -3);
   }
 
   /* ---- Aspect-ratio embeds ----
