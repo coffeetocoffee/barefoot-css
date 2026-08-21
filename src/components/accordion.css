@@ -37,7 +37,7 @@
     gap: var(--fz-space-2);
 
     padding: var(--fz-space-3) var(--fz-space-4);
-    font-weight: 500;
+    font-weight: var(--fz-font-weight-medium);
     list-style: none;
     cursor: pointer;
   }

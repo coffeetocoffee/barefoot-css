@@ -17,6 +17,21 @@
       "Segoe UI Mono", Menlo, Consolas, monospace;
     --fz-line-height: 1.6;
 
+    /* ---- Font weight (v2.6) ----
+       Named steps so a theme can re-map emphasis in one place —
+       components never hard-code a weight. */
+    --fz-font-weight-normal: 400;
+    --fz-font-weight-medium: 500;
+    --fz-font-weight-semibold: 600;
+    --fz-font-weight-bold: 700;
+
+    /* ---- Letter spacing (v2.6) ----
+       Tracking for display and uppercase-label contexts; body text
+       stays at the browser default. */
+    --fz-letter-spacing-tight: -0.01em;
+    --fz-letter-spacing-wide: 0.05em;
+    --fz-letter-spacing-wider: 0.08em;
+
     /* ---- Type scale (v1.8: fluid) ----
        Headings are clamp() across the viewport: the sizes above
        shrink on small screens instead of overflowing their measure,

@@ -55,6 +55,17 @@ test.describe("accessibility conformance (axe-core)", () => {
     expect(results.violations).toEqual([]);
   });
 
+  test("mobile hamburger nav open has no violations", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/demo/");
+    const toggle = page.locator("#demo-nav-burger .fz-nav-toggle");
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await expect(page.locator("#demo-nav-menu")).toBeVisible();
+    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    expect(results.violations).toEqual([]);
+  });
+
   test("invalid form state has no violations", async ({ page }) => {
     await page.goto("/demo/");
     // Touch the field with an invalid value so :user-invalid paints the

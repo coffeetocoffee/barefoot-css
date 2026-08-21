@@ -21,11 +21,11 @@
   }
 
   thead th {
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     border-block-end-width: 2px;
     font-size: 0.8125rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--fz-letter-spacing-wide);
     color: var(--fz-muted);
   }
 

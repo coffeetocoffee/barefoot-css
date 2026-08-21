@@ -33,7 +33,7 @@
      tokens.css): they shrink on small screens and cap on large ones.
      Override --fz-type-* (or set a fixed rem here) to opt out. */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     line-height: 1.2;
     text-wrap: balance;
   }

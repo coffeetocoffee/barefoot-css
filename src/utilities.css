@@ -111,9 +111,9 @@
   .fz-center { text-align: center; }
   .fz-overline {
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--fz-letter-spacing-wider);
     color: var(--fz-muted);
   }
 

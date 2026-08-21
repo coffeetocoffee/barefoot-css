@@ -9,7 +9,7 @@
   }
 
   .card > :where(header) {
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     font-size: 1.125rem;
     margin-block-end: var(--fz-space-3);
   }

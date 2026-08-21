@@ -83,6 +83,21 @@ the ramps follow — no duplicate palettes.
 | `--fz-font-mono` | ui-monospace stack | code font |
 | `--fz-line-height` | `1.6` | body leading |
 
+### Font weight & letter spacing (v2.6)
+
+Named steps so a theme can re-map emphasis in one place — components
+never hard-code a weight or a tracking value.
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--fz-font-weight-normal` | `400` | body, divider labels |
+| `--fz-font-weight-medium` | `500` | buttons, labels, summaries, tabs |
+| `--fz-font-weight-semibold` | `600` | headings, card/dialog headers, th, current states |
+| `--fz-font-weight-bold` | `700` | `.fz-brand` |
+| `--fz-letter-spacing-tight` | `-0.01em` | display/brand tracking |
+| `--fz-letter-spacing-wide` | `0.05em` | uppercase labels (badge, th) |
+| `--fz-letter-spacing-wider` | `0.08em` | overlines |
+
 ### Fluid type scale (v1.8)
 
 | Token | Default | Purpose |

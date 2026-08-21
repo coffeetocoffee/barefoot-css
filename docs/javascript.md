@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-seven small opt-in modules add the missing behavior. Each is a single
+nine small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Size (raw) | Adds |
@@ -13,12 +13,14 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/popover-anchor.js` | ~2.3KB | Closes anchored popovers whose trigger is off-screen |
 | `js/carousel.js` | ~4.8KB | Carousel autoplay + prev/next controls |
 | `js/alert-dismiss.js` | ~0.8KB | Dismisses `[data-alert]` notices on click |
-| `js/barefoot.js` | — | All seven in one import |
+| `js/chips.js` | ~0.6KB | Removes `[data-chip]` tags on × click |
+| `js/nav.js` | ~1.9KB | Responsive header nav: hamburger toggle, Esc-close |
+| `js/barefoot.js` | — | All nine in one import |
 
 ## Loading
 
 ```html
-<!-- all seven -->
+<!-- all nine -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -168,6 +170,50 @@ zero JS). This module adds optional autoplay and prev/next buttons.
   keyboard-scrollable and keyboard users never lose the slides. Nothing
   is hidden from a JS-less user; they just don't get auto-advance or
   buttons.
+
+## 7. Removable chips (`js/chips.js`)
+
+Styles live in `components/chip.css`; the module drives removal.
+
+```html
+<span data-chip>
+  css
+  <button type="button" data-chip-remove aria-label="Remove css">×</button>
+</span>
+```
+
+Clicking the remove button removes the closest `[data-chip]`. The
+control is a real `<button>` — give it an `aria-label` naming what it
+removes. **No-JS first:** without the module nothing hides; the × just
+does nothing.
+
+## 8. Responsive header nav (`js/nav.js`)
+
+Styles live in `components/nav.css`; the module drives the collapse.
+
+```html
+<nav data-nav="header" aria-label="Primary">
+  <a class="fz-brand" href="/">Acme</a>
+  <button type="button" class="fz-nav-toggle"
+          aria-expanded="false" aria-controls="site-menu">Menu</button>
+  <ul id="site-menu">
+    <li><a href="/" aria-current="page">Home</a></li>
+    …
+  </ul>
+</nav>
+```
+
+- When the nav is narrower than 40rem (container query, not a viewport
+  media query), the list collapses behind `.fz-nav-toggle` and opens as
+  a full-width column.
+- The toggle is author markup with `aria-expanded`/`aria-controls`; the
+  module flips states, marks the nav `data-nav-js`, and mirrors the open
+  state to `[data-open]`.
+- `Esc` closes an open menu and restores focus to the toggle; activating
+  a link closes it too.
+- **No-JS first:** without the module nothing ever hides — the button
+  never renders and the list wraps like the plain topbar. A header nav
+  without a complete contract (toggle + id'd list) is never armed.
 
 ## Why no bundle
 

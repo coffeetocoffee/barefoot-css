@@ -1,22 +1,23 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-21 — v2.4.0_
+_Last updated: 2026-08-21 — v2.6.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.4.0` (2026-08-21) — component gaps:
-  avatar group (`.fz-avatar-group`), loading spinner
-  (`[data-spinner]`), labelled divider (`[data-divider]`),
-  form-validation axe test, mobile viewport tests (which caught and
-  fixed a real `[data-grid]` overflow), theming tutorial. Release
-  notes: `CHANGELOG.md`.
-- **Next:** v2.6.0 — responsive nav + JS growth (nav hamburger,
-  chip/tag input, font-weight & letter-spacing tokens).
-- **Tests:** Chromium 97 (16 a11y / 15 JS / 63 CSS / 3 visual) ·
-  Firefox 77 (1 skipped) · WebKit 77 (1 skipped) — all green.
-- **Build:** `index.css` 2.12KB gzip · `full.css` 7.76KB gzip (10KB
+- **Current:** `barefoot-css@2.6.0` (2026-08-21) — responsive nav +
+  JS growth: nav hamburger (`js/nav.js`, container-query collapse with
+  a no-JS fallback), removable chips (`[data-chip]` + `js/chips.js`),
+  font-weight & letter-spacing tokens (weights/tracking now fully
+  tokenized), hamburger axe + keyboard tests, chip interaction tests.
+  Release notes: `CHANGELOG.md`.
+- **Next:** v2.8.0 — polish & docs (theme gallery page, performance
+  budget docs, API reference audit, token reference auto-gen,
+  contrast-mode full suite, cross-browser visual refresh).
+- **Tests:** Chromium 109 (17 a11y / 24 JS / 65 CSS / 3 visual) ·
+  Firefox 89 run, 1 skipped · WebKit 89 run, 1 skipped — all green.
+- **Build:** `index.css` 2.18KB gzip · `full.css` 8.00KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 2.4. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 2.6. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -177,22 +178,16 @@ and `.fz-*` utilities.
   (caught + fixed a `[data-grid]` single-column overflow), theming
   tutorial (`docs/theming-tutorial.md`). Shipped as
   `barefoot-css@2.4.0` (2026-08-21).
+- [x] **2.6** — responsive nav + JS growth: nav hamburger
+  (`js/nav.js`, container-query collapse, no-JS fallback), removable
+  chips (`[data-chip]` + `js/chips.js`), font-weight &
+  letter-spacing tokens (all weights/tracking now tokenized),
+  hamburger axe + keyboard tests, chip interaction tests. Shipped as
+  `barefoot-css@2.6.0` (2026-08-21).
 
-## Next — v2.6 through v3.0
+## Next — v2.8 through v3.0
 
-### v2.6.0 — Responsive nav + JS growth (next)
-
-The biggest user-facing improvement: mobile navigation.
-
-- [ ] **Nav hamburger** (`src/js/nav.js`) — toggle for `data-nav="header"`,
-      CSS-only fallback (menu stays visible without JS)
-- [ ] **Chip/tag input** (`[data-chip]`) — removable inline badges
-- [ ] **`--fz-font-weight-*`** tokens (replace hardcoded 500/600)
-- [ ] **`--fz-letter-spacing`** tokens
-- [ ] **Nav hamburger a11y + keyboard test**
-- [ ] **Chip/tag interaction test**
-
-### v2.8.0 — Polish & documentation
+### v2.8.0 — Polish & documentation (next)
 
 Make the project presentation-ready before the v3 breaking wave.
 
@@ -256,6 +251,16 @@ The namespace cleanup. Specifics TBD based on what v2.x reveals.
   track list uses `minmax(0, …)` — a bare `1fr` keeps each item's
   min-content width and lets narrow containers overflow. Caught by the
   v2.4 mobile viewport test on its first run.
+- **The hamburger collapse point is the nav's own width, not the
+  viewport.** `[data-nav="header"]` is an inline-size container and the
+  collapse is a `@container (max-width: 40rem)` rule — a nav inside a
+  sidebar or grid cell collapses at the right moment, not just at a
+  magic viewport number.
+- **`data-nav-js` only arms complete contracts.** The module marks a
+  header nav only when it has both the toggle and an id'd list; the CSS
+  hides nothing without that marker. A plain topbar under the module,
+  or markup missing the module, always stays fully visible — the
+  no-JS-first contract holds in both directions.
 
 ## Non-goals
 

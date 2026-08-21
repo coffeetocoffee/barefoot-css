@@ -107,6 +107,8 @@ All component attributes and their valid values:
 | `data-ratio` | `[data-media]` | `4/3`, `1/1`, `21/9` | 1.8 |
 | `data-spinner` | any element | (boolean) | 2.4 |
 | `data-divider` | any text-holding element | (boolean) | 2.4 |
+| `data-chip` | any text-holding element | (boolean) | 2.6 |
+| `data-chip-remove` | child of `[data-chip]` | (boolean) | 2.6 |
 | `data-fz-tabs` | tabs container | (boolean) | 0.1 |
 | `data-autoplay` | carousel scroller | `ms` value (default 3000) | 1.4 |
 | `data-carousel-prev` | button | (boolean) | 1.4 |

@@ -7,10 +7,10 @@
 
     padding: 0.1em 0.6em;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     line-height: 1.4;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: var(--fz-letter-spacing-wide);
 
     color: var(--fz-muted);
     background: var(--fz-surface-alt);

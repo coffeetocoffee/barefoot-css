@@ -908,4 +908,46 @@ test.describe("mobile viewport (375px)", () => {
     const height = await btn.evaluate((el) => el.getBoundingClientRect().height);
     expect(height).toBeGreaterThanOrEqual(40);
   });
+
+  test("hamburger nav: list collapses behind the toggle, links stay full-width", async ({ page }) => {
+    await page.goto("/demo/");
+    const nav = page.locator("#demo-nav-burger");
+    const toggle = nav.locator(".fz-nav-toggle");
+    const firstLink = nav.locator("#demo-nav-menu a").first();
+
+    await toggle.click();
+    await expect(firstLink).toBeVisible();
+
+    // The open menu is a column: each link spans the nav's content box,
+    // so the whole row is a tap target.
+    const [navWidth, linkWidth] = await page.evaluate(() => {
+      const n = document.querySelector("#demo-nav-burger");
+      const a = n.querySelector("#demo-nav-menu a");
+      return [n.clientWidth, a.getBoundingClientRect().width];
+    });
+    expect(linkWidth).toBeGreaterThan(navWidth * 0.9);
+  });
+});
+
+test.describe("chips", () => {
+  const markup = `
+    <link rel="stylesheet" href="/dist/index.css">
+    <link rel="stylesheet" href="/dist/components/chip.css">
+    <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>`;
+
+  test("chip is an inline-flex pill; remove control is bare with its own ring", async ({ page }) => {
+    // Standalone fixture: inside a .fz-row the chip is a flex item and
+    // its computed display blockifies to "flex" — the fixture shows the
+    // component's own value.
+    await page.goto("/demo/");
+    await page.setContent(markup);
+    const chip = page.locator("[data-chip]");
+    await expect(chip).toHaveCSS("display", "inline-flex");
+    await expect(chip).toHaveCSS("border-radius", "999px"); // --fz-radius-full
+
+    const btn = chip.locator("[data-chip-remove]");
+    await expect(btn).toHaveCSS("border-style", "none"); // global button skin reset
+    await btn.focus();
+    await expect(btn).toHaveCSS("outline-style", "solid");
+  });
 });

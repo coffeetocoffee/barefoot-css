@@ -17,7 +17,7 @@
     margin-block: var(--fz-space-6);
     color: var(--fz-muted);
     font-size: var(--fz-type-sm);
-    font-weight: 400;
+    font-weight: var(--fz-font-weight-normal);
     white-space: nowrap;
   }
 

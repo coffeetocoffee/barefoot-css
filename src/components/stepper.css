@@ -53,7 +53,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     font-size: 0.875rem;
     transition:
       border-color var(--fz-transition),
@@ -93,7 +93,7 @@
 
   [data-stepper] [aria-current="step"] [data-step-label] {
     color: var(--fz-text);
-    font-weight: 500;
+    font-weight: var(--fz-font-weight-medium);
   }
 
   /* Connector before current step (steps before current are complete) */

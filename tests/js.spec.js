@@ -305,3 +305,131 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
     await expect.poll(() => page.$eval("#auto-c", (el) => el.scrollLeft)).toBe(0);
   });
 });
+
+test.describe("opt-in JS: removable chips", () => {
+  test("clicking the remove button removes its chip", async ({ page }) => {
+    await page.goto("/demo/");
+    const chips = page.locator("#demo-chips [data-chip]");
+    await expect(chips).toHaveCount(4);
+
+    await page.locator('[data-chip-remove][aria-label="Remove css"]').click();
+
+    await expect(chips).toHaveCount(3);
+    await expect(page.locator("#demo-chips [data-chip]", { hasText: "css" })).toHaveCount(0);
+  });
+
+  test("remove controls are real buttons with a name each", async ({ page }) => {
+    await page.goto("/demo/");
+    const buttons = page.locator("#demo-chips [data-chip-remove]");
+    for (const btn of await buttons.all()) {
+      const label = await btn.getAttribute("aria-label");
+      expect(label).toMatch(/^Remove .+/);
+    }
+  });
+});
+
+test.describe("opt-in JS: chips no-JS-first contract", () => {
+  const markup = `
+    <link rel="stylesheet" href="/dist/components/chip.css">
+    <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>`;
+
+  test("without the module the chip stays (nothing hides)", async ({ page }) => {
+    // Navigate first so the fixture's /dist/ stylesheet resolves against
+    // the served origin (setContent alone bases URLs at about:blank).
+    await page.goto("/demo/");
+    await page.setContent(markup);
+    await page.locator("[data-chip-remove]").click();
+    await expect(page.locator("[data-chip]")).toBeVisible();
+  });
+});
+
+test.describe("opt-in JS: header nav hamburger", () => {
+  test("narrow: toggle opens and closes, aria-expanded tracks state", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/demo/");
+    const nav = page.locator("#demo-nav-burger");
+    const toggle = nav.locator(".fz-nav-toggle");
+    const list = nav.locator("#demo-nav-menu");
+
+    await expect(nav).toHaveAttribute("data-nav-js", "");
+    await expect(toggle).toBeVisible();
+    await expect(list).toBeHidden();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await toggle.click();
+    await expect(nav).toHaveAttribute("data-open", "");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(list).toBeVisible();
+
+    await toggle.click();
+    await expect(nav).not.toHaveAttribute("data-open");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(list).toBeHidden();
+  });
+
+  test("narrow: Esc closes an open menu and restores focus to the toggle", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/demo/");
+    const nav = page.locator("#demo-nav-burger");
+    const toggle = nav.locator(".fz-nav-toggle");
+
+    await toggle.click();
+    const link = nav.locator("#demo-nav-menu a").first();
+    await link.focus();
+    await page.keyboard.press("Escape");
+
+    await expect(nav).not.toHaveAttribute("data-open");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toBeFocused();
+  });
+
+  test("narrow: activating a link closes the menu", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/demo/");
+    const nav = page.locator("#demo-nav-burger");
+    const toggle = nav.locator(".fz-nav-toggle");
+
+    await toggle.click();
+    await nav.locator('#demo-nav-menu a[href="#typography"]').click();
+
+    await expect(nav).not.toHaveAttribute("data-open");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("wide: list always visible, toggle hidden", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/demo/");
+    const nav = page.locator("#demo-nav-burger");
+    await expect(nav.locator("#demo-nav-menu")).toBeVisible();
+    await expect(nav.locator(".fz-nav-toggle")).toBeHidden();
+  });
+});
+
+test.describe("opt-in JS: nav no-JS-first contract", () => {
+  const markup = `
+    <link rel="stylesheet" href="/dist/components/nav.css">
+    <nav data-nav="header" aria-label="fixture">
+      <a class="fz-brand" href="/">Acme</a>
+      <button type="button" class="fz-nav-toggle" aria-expanded="false" aria-controls="m">Menu</button>
+      <ul id="m"><li><a href="/">Home</a></li></ul>
+    </nav>`;
+
+  test("without the module nothing hides even on a narrow container", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    // Navigate first so the fixture's /dist/ stylesheet resolves against
+    // the served origin (setContent alone bases URLs at about:blank).
+    await page.goto("/demo/");
+    await page.setContent(markup);
+    await expect(page.locator("nav ul")).toBeVisible();
+    await expect(page.locator(".fz-nav-toggle")).toBeHidden(); // never rendered without JS
+    await expect(page.locator("nav")).not.toHaveAttribute("data-nav-js", /.*/);
+  });
+
+  test("a plain header nav (no toggle) is never armed for collapse", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/demo/");
+    // #demo-nav has no .fz-nav-toggle — the module must leave it alone.
+    await expect(page.locator("#demo-nav")).not.toHaveAttribute("data-nav-js", /.*/);
+    await expect(page.locator("#demo-nav > ul")).toBeVisible();
+  });
+});

@@ -4,6 +4,79 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] — 2026-08-21
+
+Responsive nav + JS growth — the biggest user-facing improvement is
+mobile navigation, plus removable chips and typography tokens that
+finish the "no hard-coded values" audit for weights and tracking. No
+breaking changes: every default value is unchanged (the new weight and
+letter-spacing tokens resolve to exactly the numbers they replace), so
+2.4 apps render identically on 2.6.
+
+### Added
+
+- **Nav hamburger** (`js/nav.js` + `nav.css`) — opt-in responsive
+  collapse for `data-nav="header"`: give the list an `id`, add a real
+  `<button class="fz-nav-toggle">` with `aria-expanded`/`aria-controls`,
+  load the module. Below **40rem of the nav's own width** (a container
+  query — no viewport media queries, so it also collapses correctly
+  inside a sidebar or grid cell) the list collapses behind the toggle
+  and opens as a full-width column of tap targets. The module marks the
+  nav `data-nav-js`, mirrors open state to `[data-open]`, closes on
+  `Esc` (restoring focus to the toggle) and on link activation.
+  **No-JS first:** without the module nothing ever hides — the button
+  never renders and the list wraps like the plain topbar; a header nav
+  without a complete contract (toggle + id'd list) is never armed.
+- **Chip / tag** (`components/chip.css` + `js/chips.js`) —
+  `[data-chip]` is a removable inline badge: pill surface, sentence
+  case (badges shout, chips don't). The remove control is a real
+  `<button data-chip-remove>` re-skinned to a bare glyph — danger tint
+  on hover, visible ring on keyboard focus; give it an `aria-label`
+  naming what it removes. Removal is opt-in JS: without the module
+  nothing hides, the × just does nothing.
+- **Font-weight tokens** (`tokens.css`) — `--fz-font-weight-normal`
+  (400), `-medium` (500), `-semibold` (600), `-bold` (700). Every
+  component now reads a named step; a theme can re-map emphasis in one
+  place instead of overriding per-selector rules.
+- **Letter-spacing tokens** (`tokens.css`) —
+  `--fz-letter-spacing-tight` (-0.01em, brand/display), `-wide`
+  (0.05em, uppercase labels), `-wider` (0.08em, overlines).
+- **Nav hamburger a11y + keyboard tests** — axe-core at a mobile
+  viewport with the menu open stays violation-free; toggle/`aria-expanded`
+  sync, Esc-close with focus restore, link-click close, wide-viewport
+  no-op, and both no-JS contracts (fixture without module; plain header
+  nav never armed) are all proven.
+- **Chip interaction test** — × click removes its chip; remove controls
+  are named buttons; the pill/bare-glyph rendering is asserted against
+  the standalone component file.
+
+### Changed
+
+- **`thead` tracking normalized** from `0.04em` to
+  `--fz-letter-spacing-wide` (`0.05em`) — the one place the token
+  values differ from the hard-coded ones they replace; imperceptible on
+  uppercase small text.
+
+### Docs
+
+- `docs/components.md`: Navigation gains a *Hamburger* subsection;
+  new *Chip* section after *Card & badge*.
+- `docs/api.md`: `data-chip` / `data-chip-remove` rows.
+- `docs/javascript.md`: nine modules — `chips.js` and `nav.js`
+  sections, updated table and barrel description.
+- `docs/theming.md`: font-weight & letter-spacing token reference.
+- Demo conformance matrix gains a chip row and an expanded navigation
+  row; two new demo sections (hamburger nav, chips).
+
+### Tests & size
+
+- Chromium suite 97 → 109 (17 a11y / 24 JS / 65 CSS / 3 visual);
+  Firefox and WebKit pick up the twelve new tests (89 run, 1 skipped
+  each). All green; visual baselines regenerated deliberately (the demo
+  grew by two sections).
+- Tokens 69 → 76. `index.css` 2.12 → 2.18KB gzip · `full.css` 7.76 →
+  8.00KB gzip (10KB budget → PASS).
+
 ## [2.4.0] — 2026-08-21
 
 Component gaps — three new components, the tests that prove them (and

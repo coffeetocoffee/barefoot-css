@@ -366,6 +366,35 @@ support, carousel controls + autoplay) and their markup.
   with `.fz-skip-link` as the first element in `<body>` so the first Tab
   stop skips past the nav to `<main>`.
 
+### Hamburger (opt-in JS)
+
+```html
+<nav data-nav="header" aria-label="Primary">
+  <a class="fz-brand" href="/">Acme</a>
+  <button type="button" class="fz-nav-toggle"
+          aria-expanded="false" aria-controls="site-menu">Menu</button>
+  <ul id="site-menu">
+    <li><a href="/" aria-current="page">Home</a></li>
+    …
+  </ul>
+</nav>
+```
+
+- Load `js/nav.js`: when the **nav itself** is narrower than 40rem (a
+  container query — no viewport media queries, so it also collapses
+  correctly inside a sidebar or grid cell), the list collapses behind
+  the toggle and opens as a full-width column. Above that width the
+  toggle never renders and the row wraps as usual.
+- The toggle is author markup — a real `<button>` with
+  `aria-expanded`/`aria-controls`; the module only flips states and
+  marks the nav `data-nav-js`. Open state is `[data-open]` on the nav.
+- `Esc` (focus anywhere inside an open menu) closes it and returns
+  focus to the toggle; activating a link closes it too.
+- **No-JS first:** without the module nothing ever hides — the button
+  never renders and the list stays visible exactly like the plain
+  wrapped topbar. A header nav without a complete contract (toggle +
+  id'd list) is never armed for collapse.
+
 ## Alert
 
 ```html
@@ -560,6 +589,26 @@ support, carousel controls + autoplay) and their markup.
   default; `data-lifted` opts into a shadow. Badge variants:
   `data-variant="primary|danger|success|info|warning"` — each filled
   from its token pair.
+
+## Chip (removable tag)
+
+```html
+<span data-chip>
+  css
+  <button type="button" data-chip-remove aria-label="Remove css">×</button>
+</span>
+```
+
+- **`[data-chip]`** — an inline badge for user-entered tags: pill
+  surface, sentence case (badges shout, chips don't). The remove
+  control is a **real `<button>`** re-skinned to a bare glyph — danger
+  tint on hover, visible ring on keyboard focus.
+- Give each remove button an `aria-label` naming what it removes; the
+  chip label itself stays announced like any other text.
+- **JS:** opt-in — `js/chips.js` removes the closest `[data-chip]` on
+  click. No-JS first: without the module nothing hides, the × just
+  does nothing.
+- **A11y:** native button semantics do the work; nothing is invented.
 
 ## Divider
 

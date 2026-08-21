@@ -16,6 +16,23 @@
      data-nav="header"  → topbar with a bottom hairline
      data-nav="footer"  → footer row: muted, small, top hairline
 
+   Hamburger (v2.6, opt-in): on a header nav, give the list an id and
+   add a toggle button, then load js/nav.js:
+
+     <nav data-nav="header" aria-label="Primary">
+       <a class="fz-brand" href="/">Acme</a>
+       <button type="button" class="fz-nav-toggle"
+               aria-expanded="false" aria-controls="site-menu">Menu</button>
+       <ul id="site-menu"> … </ul>
+     </nav>
+
+   When the *nav* is narrower than 40rem (container query — no viewport
+   media queries, so it also collapses correctly inside a sidebar or
+   grid cell), the module's [data-nav-js] marker hides the list behind
+   the toggle; [data-open] on the nav opens it as a column. No-JS
+   first: without the module the toggle never renders and the list
+   always stays visible, exactly like the plain wrapped topbar.
+
    Pairs with .fz-skip-link (put that FIRST in <body>): the first Tab
    stop jumps past this nav to <main>. Mark the active link with
    aria-current="page" — it gets the accent + semibold. */
@@ -52,10 +69,12 @@
 
   [data-nav] [aria-current="page"] {
     color: var(--fz-primary);
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
   }
 
   [data-nav="header"] {
+    /* Size container for the hamburger collapse point below. */
+    container-type: inline-size;
     border-block-end: var(--fz-border-width) solid var(--fz-border);
   }
 
@@ -71,8 +90,8 @@
   }
 
   .fz-brand {
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-weight: var(--fz-font-weight-bold);
+    letter-spacing: var(--fz-letter-spacing-tight);
     color: var(--fz-text);
     text-decoration: none;
   }
@@ -81,5 +100,35 @@
     /* Flush at the row start and push the link list to the end. */
     margin-inline-end: auto;
     padding: 0;
+  }
+
+  /* ---- Hamburger (v2.6) ----
+     Everything here is gated on [data-nav-js], set by js/nav.js:
+     no module, no hiding, ever. The toggle is author markup (a real
+     <button> with aria-expanded/aria-controls); the module only flips
+     states. */
+  .fz-nav-toggle {
+    display: none;
+  }
+
+  @container (max-width: 40rem) {
+    [data-nav-js] .fz-nav-toggle {
+      display: inline-flex;
+    }
+
+    [data-nav-js]:not([data-open]) > ul {
+      display: none;
+    }
+
+    [data-nav-js][data-open] > ul {
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* Links fill their row so the whole line is a tap target. */
+    [data-nav-js][data-open] > ul a {
+      display: block;
+    }
   }
 }

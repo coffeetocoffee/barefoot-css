@@ -20,7 +20,7 @@
     min-height: var(--fz-control-height);
     padding-inline: var(--fz-space-4);
 
-    font-weight: 500;
+    font-weight: var(--fz-font-weight-medium);
     font-size: 0.9375rem;
     color: var(--fz-text);
     background: var(--fz-surface);

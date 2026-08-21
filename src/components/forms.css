@@ -7,7 +7,7 @@
     display: block;
     margin-block-end: var(--fz-space-1);
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: var(--fz-font-weight-medium);
     color: var(--fz-text);
   }
 
@@ -98,7 +98,7 @@
     padding-inline: var(--fz-space-3);
 
     font: inherit;
-    font-weight: 500;
+    font-weight: var(--fz-font-weight-medium);
     color: var(--fz-text);
     background: var(--fz-surface-alt);
     border: var(--fz-border-width) solid var(--fz-border);
@@ -141,7 +141,7 @@
   /* ---- Output (live region) ---- */
   output {
     display: inline-block;
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     color: var(--fz-text);
   }
 
@@ -375,7 +375,7 @@
   }
 
   legend {
-    font-weight: 600;
+    font-weight: var(--fz-font-weight-semibold);
     margin-block-end: var(--fz-space-2);
   }
 

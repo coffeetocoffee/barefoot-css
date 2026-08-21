@@ -86,7 +86,7 @@
           <tr><td>Table</td><td class="wcag">AA</td><td>Screen reader: headers announced via <code>&lt;th&gt;</code>. Hover affordance only.</td></tr>
           <tr><td>Breadcrumbs</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; current page announced via <code>aria-current="page"</code>.</td></tr>
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
-          <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>.</td></tr>
+          <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>. Hamburger: toggle carries <code>aria-expanded</code>; <kbd>Esc</kbd> closes and restores focus.</td></tr>
           <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.fz-sticky</code> pins while scrolling.</td></tr>
           <tr><td>Alerts</td><td class="wcag">AA</td><td><code>role="alert"</code> announces errors; <code>aria-live="polite"</code> announces updates; dismiss button is a focusable <code>button</code>.</td></tr>
           <tr><td>Skeleton</td><td class="wcag">AA</td><td>Decorative placeholder — real content must follow; no motion under <code>prefers-reduced-motion</code>.</td></tr>
@@ -96,6 +96,7 @@
           <tr><td>Avatar group</td><td class="wcag">AA</td><td>The overlap is decorative — reading order and announcements are unchanged; every avatar keeps its <code>alt</code>.</td></tr>
           <tr><td>Spinner</td><td class="wcag">AA</td><td>Decorative motion stops under <code>prefers-reduced-motion</code>; announce progress with <code>role="status"</code> from your markup.</td></tr>
           <tr><td>Divider</td><td class="wcag">AA</td><td>The label is real text between decorative hairlines — announced like any other content.</td></tr>
+          <tr><td>Chip / tag</td><td class="wcag">AA</td><td>The remove control is a real <code>&lt;button&gt;</code> with an <code>aria-label</code> naming what it removes; <kbd>Tab</kbd> to it → <kbd>Enter</kbd>/<kbd>Space</kbd> removes. Without JS nothing hides.</td></tr>
         </tbody>
       </table>
     </section>
@@ -594,6 +595,18 @@
       </div>
     </section>
 
+    <!-- Chips -->
+    <section id="chips" aria-labelledby="chips-title">
+      <h2 id="chips-title">Chips (removable tags)</h2>
+      <p>An inline badge with a real <code>&lt;button&gt;</code> inside. Removal is opt-in JS (<code>js/chips.js</code>) — without the module nothing hides, the × just does nothing. Give each remove button an <code>aria-label</code> naming what it removes.</p>
+      <div class="fz-row fz-gap-2" id="demo-chips">
+        <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
+        <span data-chip>html<button type="button" data-chip-remove aria-label="Remove html">×</button></span>
+        <span data-chip>accessibility<button type="button" data-chip-remove aria-label="Remove accessibility">×</button></span>
+        <span data-chip>zero-dependencies<button type="button" data-chip-remove aria-label="Remove zero-dependencies">×</button></span>
+      </div>
+    </section>
+
     <!-- Breadcrumbs -->
     <section id="breadcrumbs" aria-labelledby="breadcrumbs-title">
       <h2 id="breadcrumbs-title">Breadcrumbs</h2>
@@ -630,6 +643,17 @@
       <nav data-nav="header" aria-label="Primary" id="demo-nav">
         <a class="fz-brand" href="#nav">Barefoot</a>
         <ul>
+          <li><a href="#nav" aria-current="page">Home</a></li>
+          <li><a href="#typography">Docs</a></li>
+          <li><a href="#forms">Forms</a></li>
+          <li><a href="#cards">Components</a></li>
+        </ul>
+      </nav>
+      <p class="fz-mt-4"><strong>Hamburger (opt-in JS).</strong> Add a real toggle button and an <code>id</code> on the list, then load <code>js/nav.js</code>: below 40rem of nav width the list collapses behind the button (<code>aria-expanded</code> tracks it, <kbd>Esc</kbd> closes and restores focus). No-JS first — without the module the button never renders and the list always stays visible. Resize the window under 40rem to try it.</p>
+      <nav data-nav="header" aria-label="Primary (hamburger)" id="demo-nav-burger">
+        <a class="fz-brand" href="#nav">Acme</a>
+        <button type="button" class="fz-nav-toggle" aria-expanded="false" aria-controls="demo-nav-menu">Menu</button>
+        <ul id="demo-nav-menu">
           <li><a href="#nav" aria-current="page">Home</a></li>
           <li><a href="#typography">Docs</a></li>
           <li><a href="#forms">Forms</a></li>
