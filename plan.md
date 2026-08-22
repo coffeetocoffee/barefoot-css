@@ -1,14 +1,17 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-22 — v2.6.0_
+_Last updated: 2026-08-22 — v2.7.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.6.0` (2026-08-21) — responsive nav +
-  JS growth: nav hamburger (`js/nav.js`, container-query collapse with
-  a no-JS fallback), removable chips (`[data-chip]` + `js/chips.js`),
-  font-weight & letter-spacing tokens (weights/tracking now fully
-  tokenized), hamburger axe + keyboard tests, chip interaction tests.
+- **Current:** `barefoot-css@2.7.0` (2026-08-22) — architecture
+  deepening across all seven upkeep candidates (details in the Upkeep
+  bullet): one lifecycle seam for opt-in JS, shared keyboard and
+  removal seams behind the interactive components, shared menu-item
+  recipe + disabled-opacity token in CSS, dead `@property`
+  registrations dropped, contrast-palette parity guard, test fixture
+  harness. Public surfaces unchanged except the documented range-focus
+  halo and the à-la-carte import now needed for `menu-items.css`.
   Release notes: `CHANGELOG.md`.
 - **Next:** v2.8.0 — polish & docs (theme gallery page, performance
   budget docs, API reference audit, token reference auto-gen,
