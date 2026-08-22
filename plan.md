@@ -27,7 +27,10 @@ _Last updated: 2026-08-22 — v2.8.0_
 - **Tests:** Chromium 133 (19 a11y / 31 JS / 80 CSS / 3 visual) ·
   Firefox 114 run, 1 skipped · WebKit 114 run, 1 skipped — all
   green, and every engine now runs its own visual baselines. Specs
-  address the demo only through `tests/helpers.js`.
+  address the demo only through `tests/helpers.js`. In CI the visual
+  specs are Windows-only (win32 baselines): Chromium in `visual`,
+  Firefox+WebKit in `visual-cross`; the ubuntu/macos jobs stay
+  behavior-only.
 - **Build:** `index.css` 2.07KB gzip · `full.css` 7.79KB gzip (10KB
   budget → PASS).
 - **Done:** milestones 0.1 → 2.8. Full history: `CHANGELOG.md`.

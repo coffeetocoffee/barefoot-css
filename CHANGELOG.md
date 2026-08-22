@@ -4,6 +4,19 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **CI: cross-engine visual specs ran on the wrong OS.** The Firefox
+  (ubuntu) and WebKit (macOS) behavior jobs also executed
+  `tests/visual.spec.js`, where Playwright demands `*-linux.png` /
+  `*-darwin.png` baselines that were never committed — every run
+  failed with "A snapshot doesn't exist". Baselines are `*-win32.png`
+  by design, so those jobs now run behavior specs only, and a new
+  Windows `visual-cross` job exercises the committed Firefox/WebKit
+  baselines alongside the existing Chromium `visual` job.
+
 ## [2.8.0] - 2026-08-22
 
 Presentation-ready polish: docs that generate themselves, an API

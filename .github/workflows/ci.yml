@@ -102,7 +102,11 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps firefox
-      - run: npm run test:ff
+        # Behavior only — no visual.spec.js here. Baselines are
+        # *-win32.png; on Linux Playwright would demand *-linux.png
+        # snapshots that don't exist. Cross-engine visuals run in the
+        # "visual-cross" Windows job below.
+      - run: npx playwright test --project=firefox tests/css.spec.js tests/js.spec.js
 
   webkit:
     name: Behavior (JS + CSS, WebKit)
@@ -116,8 +120,10 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install webkit
-      - run: npm run test:webkit
-        # WebKit = Safari's engine; run on macOS to match CI/OS real usage.
+        # WebKit = Safari's engine; run on macOS to match real usage.
+        # Behavior only — no visual.spec.js (baselines are *-win32.png;
+        # see the firefox job note).
+      - run: npx playwright test --project=webkit tests/css.spec.js tests/js.spec.js
 
   visual:
     name: Visual regression
@@ -135,3 +141,21 @@ jobs:
         # Baselines are font/OS-sensitive and committed as
         # *-win32.png. Run on Windows to match. Regenerate
         # deliberately with: npm run test:visual:update
+
+  visual-cross:
+    name: Visual regression (Firefox + WebKit)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install firefox webkit
+        # The committed light/dark-firefox-win32.png and
+        # light/dark-webkit-win32.png baselines must stay honest, so
+        # cross-engine visuals need Windows too (workers=1 in CI keeps
+        # the two suites from colliding on localhost:4173).
+      - run: npx playwright test --project=firefox --project=webkit tests/visual.spec.js
