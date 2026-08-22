@@ -71,19 +71,6 @@
     box-shadow: var(--fz-shadow-lifted);
   }
 
-  details[data-menu] a,
-  details[data-menu] button {
-    display: block;
-    width: 100%;
-    text-align: start;
-    padding: var(--fz-space-2) var(--fz-space-3);
-    border-radius: var(--fz-radius-sm);
-    text-decoration: none;
-    color: var(--fz-text);
-  }
-
-  details[data-menu] a:hover,
-  details[data-menu] button:hover {
-    background: var(--fz-surface-alt);
-  }
+  /* Item rows live in menu-items.css — shared verbatim with
+     [popover][data-kind="menu"] (ADR-0007). */
 }

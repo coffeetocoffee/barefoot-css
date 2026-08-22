@@ -121,6 +121,7 @@ Headings use these tokens automatically. Override any step with a fixed `rem` to
 | `--fz-shadow-lifted` | soft drop | popovers, dialogs, `data-lifted` |
 | `--fz-transition` | `150ms ease` | default motion |
 | `--fz-transition-slow` | `250ms ease` | slower motion |
+| `--fz-disabled-opacity` | `0.5` | dimming for disabled buttons/inputs |
 
 ### Layout
 
@@ -223,11 +224,25 @@ so choosing a theme (explicit intent) beats OS preference. The manual
 `[data-theme="contrast"]` preset sets the same values as the
 `prefers-contrast` block, so the two never fight.
 
-## Typed properties (progressive enhancement)
+## Typed properties
 
-`@property` registers variables as typed colors, so they validate and can
-transition. Browsers without `@property` ignore the block and use the plain
-custom properties — safe to ship everywhere we ship Barefoot.
+Tokens ship as **plain custom properties** — Barefoot registers nothing
+with `@property`. Nothing in the framework animates a token (they only
+ever serve as transition *durations*), and registration would force ten
+`initial-value` literals to mirror the palette by hand.
+
+If *your* UI animates a token — say a smooth accent morph on theme
+change — register your own copy in userland CSS; the last registration
+wins:
+
+```css
+@property --fz-primary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #yourcolor;
+}
+html { transition: --fz-primary 300ms; }
+```
 
 ## Using your own accent in one line
 

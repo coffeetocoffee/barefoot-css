@@ -20,12 +20,12 @@
    - Without this module nothing changes: the scroller is still
      keyboard-scrollable and keyboard users never lose the slides.
 
-   import "barefoot/js/carousel.js"
+    import "barefoot/js/carousel.js"
 */
 
-const carousels = new WeakSet();
+import { onDomReady, bindOnce } from "./lifecycle.js";
+
 const timers = new WeakMap();
-const wired = new WeakSet();
 
 function step(el, delta, behavior) {
   const slides = [...el.children];
@@ -82,8 +82,7 @@ function resume(el, ms) {
 }
 
 function initCarousel(el) {
-  if (carousels.has(el)) return;
-  carousels.add(el);
+  if (!bindOnce(el, "carousel")) return;
 
   const auto = el.dataset.autoplay;
   if (auto !== undefined) {
@@ -117,12 +116,13 @@ function initCarousel(el) {
 function initControls() {
   const wire = (attr, delta) => {
     for (const btn of document.querySelectorAll(`[${attr}]`)) {
-      if (wired.has(btn)) continue;
       const sel = btn.getAttribute(attr);
       if (!sel) continue;
       const carousel = document.querySelector(sel);
       if (!carousel) continue;
-      wired.add(btn);
+      // Contract first, guard last — a control pointing nowhere can be
+      // re-inited once its target exists.
+      if (!bindOnce(btn, attr)) continue;
       btn.addEventListener("click", () => step(carousel, delta, behavior()));
     }
   };
@@ -142,14 +142,5 @@ export function initCarousels(root = document) {
   initControls();
 }
 
-function autoInit() {
-  const whenReady = () => initCarousels();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
+onDomReady(() => initCarousels());
 
-export default autoInit;
-autoInit();

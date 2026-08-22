@@ -7,81 +7,85 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { DEMOS, gotoDemo, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
-    await page.goto("/demo/");
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    await gotoDemo(page);
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dark theme has no violations", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.getByRole("button", { name: "Dark" }).click();
     await page.waitForTimeout(400);
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("contrast theme has no violations", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.getByRole("button", { name: "Contrast" }).click();
     await page.waitForTimeout(400);
     // data-theme="contrast" forces black-on-white (and white-on-black in
     // dark) — the palette must stay axe-clean end to end.
     await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dialog open has no violations", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.getByRole("button", { name: "Open dialog" }).click();
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("dropdown open has no violations", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.locator('details[data-menu] summary').click();
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("toast open has no violations", async ({ page }) => {
-    await page.goto("/demo/");
-    await page.locator("#toast-trigger").click();
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    await gotoDemo(page);
+    await page.locator(DEMOS.toastTrigger).click();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("mobile hamburger nav open has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/demo/");
-    const toggle = page.locator("#demo-nav-burger .fz-nav-toggle");
+    await gotoDemo(page);
+    const toggle = page.locator(`${DEMOS.demoNavBurger} .fz-nav-toggle`);
     await expect(toggle).toBeVisible();
     await toggle.click();
-    await expect(page.locator("#demo-nav-menu")).toBeVisible();
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    await expect(page.locator(DEMOS.demoNavMenu)).toBeVisible();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 
   test("invalid form state has no violations", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // Touch the field with an invalid value so :user-invalid paints the
     // danger border and the whole form draws its invalid ring.
-    const email = page.locator("#demo-email");
+    const email = page.locator(DEMOS.demoEmail);
     await email.fill("not-an-email");
     await email.blur();
-    await expect(email).toHaveCSS("border-color", "rgb(179, 38, 30)"); // --fz-danger
-    const results = await new AxeBuilder({ page }).exclude("#stepper").analyze();
+    await expect(email).toHaveCSS(
+      "border-color",
+      await tokenColor(page, "--fz-danger")
+    );
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
 });
 
 test.describe("visible focus + keyboard contract", () => {
   test("focused button always shows a focus ring", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const btn = page.getByRole("button", { name: "Open dialog" });
     await btn.focus();
     const outlineWidth = await btn.evaluate((el) =>
@@ -91,7 +95,7 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("details dropdown: Enter toggles, items focusable", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const summary = page.locator('details[data-menu] summary');
     const panel = page.locator('details[data-menu] > :not(summary)');
 
@@ -111,8 +115,8 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("popover menu: opens declaratively, Esc closes", async ({ page }) => {
-    await page.goto("/demo/");
-    const pop = page.locator("#help-pop");
+    await gotoDemo(page);
+    const pop = page.locator(DEMOS.helpPop);
     await page.getByRole("button", { name: "Popover menu" }).click();
     await expect(pop).toBeVisible();
     await page.keyboard.press("Escape");
@@ -120,11 +124,11 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("dialog: Esc closes and focus returns to trigger", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const trigger = page.getByRole("button", { name: "Open dialog" });
     await trigger.click();
 
-    const dialog = page.locator("#demo-dialog");
+    const dialog = page.locator(DEMOS.demoDialog);
     await expect(dialog).toBeVisible();
 
     await page.keyboard.press("Escape");
@@ -133,7 +137,7 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("skip link is clipped until keyboard focus, then revealed", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const skip = page.locator(".fz-skip-link");
     // First tab stop on the page (it's first in <body>).
     await expect(skip).toHaveCSS("clip-path", "inset(50%)");
@@ -143,8 +147,8 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("nav: links are focusable in order, current page carries aria-current", async ({ page }) => {
-    await page.goto("/demo/");
-    const links = page.locator("#demo-nav a");
+    await gotoDemo(page);
+    const links = page.locator(`${DEMOS.demoNav} a`);
     await expect(links.first()).toHaveText("Barefoot"); // brand is a link
     await links.nth(0).focus();
     await expect(links.nth(0)).toBeFocused();
@@ -154,8 +158,8 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("stepper: native ol semantics with aria-current on current step", async ({ page }) => {
-    await page.goto("/demo/");
-    const stepper = page.locator("#demo-stepper-h");
+    await gotoDemo(page);
+    const stepper = page.locator(DEMOS.demoStepperH);
     await expect(stepper.locator("ol")).toHaveCount(1);
     await expect(stepper.locator('[aria-current="step"]')).toHaveCount(1);
     await expect(stepper.locator('[aria-current="step"] [data-step-label]')).toHaveText("Profile");
@@ -163,21 +167,21 @@ test.describe("visible focus + keyboard contract", () => {
   });
 
   test("input groups: leading affix is decorative (aria-hidden)", async ({ page }) => {
-    await page.goto("/demo/");
-    const affixes = page.locator("#demo-input-group-form [data-input-group] > :first-child");
+    await gotoDemo(page);
+    const affixes = page.locator(`${DEMOS.demoInputGroupForm} [data-input-group] > :first-child`);
     for (const affix of await affixes.all()) {
       await expect(affix).toHaveAttribute("aria-hidden", "true");
     }
   });
 
   test("date/number/email inputs: native validation announced by browser", async ({ page }) => {
-    await page.goto("/demo/");
-    const email = page.locator("#polish-email");
+    await gotoDemo(page);
+    const email = page.locator(DEMOS.polishEmail);
     await expect(email).toHaveAttribute("type", "email");
     await expect(email).toHaveAttribute("required", "");
-    const number = page.locator("#polish-number");
+    const number = page.locator(DEMOS.polishNumber);
     await expect(number).toHaveAttribute("type", "number");
-    const date = page.locator("#polish-date");
+    const date = page.locator(DEMOS.polishDate);
     await expect(date).toHaveAttribute("type", "date");
   });
 });

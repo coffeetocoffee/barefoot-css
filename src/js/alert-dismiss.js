@@ -10,22 +10,11 @@
    import "barefoot/js/alert-dismiss.js"
 */
 
+import { onDomReady } from "./lifecycle.js";
+import { removeOnClick } from "./remove-on-click.js";
+
 export function initAlertDismiss(root = document) {
-  root.addEventListener("click", (e) => {
-    const button = e.target.closest?.("[data-alert-dismiss]");
-    if (!button) return;
-    button.closest("[data-alert]")?.remove();
-  });
+  removeOnClick(root, "alert-dismiss", "[data-alert]", "[data-alert-dismiss]");
 }
 
-function autoInit() {
-  const whenReady = () => initAlertDismiss();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initAlertDismiss());

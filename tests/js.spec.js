@@ -1,13 +1,19 @@
 /* Barefoot — opt-in JS modules.
-   Tests the three enhancements shipped in dist/js/ (loaded by the demo):
-   WAI-ARIA tabs, details Esc-close, and popover-menu keyboard support.
+   Tests every enhancement shipped in dist/js/ (loaded by the demo):
+   WAI-ARIA tabs, details Esc-close + tab order, popover-menu keyboard,
+   carousel autoplay + controls, chips, nav hamburger — plus the
+   lifecycle seam itself and barrel completeness.
 
    npm run test:js */
 import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { DEMOS, gotoDemo, mountFixture } from "./helpers.js";
 
 test.describe("opt-in JS: tabs", () => {
   test("click switches panels and aria-selected", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const tabs = page.locator('[data-fz-tabs] [role="tab"]');
     const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
 
@@ -23,7 +29,7 @@ test.describe("opt-in JS: tabs", () => {
   });
 
   test("arrow keys rove focus and activate; Home/End jump", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const tabs = page.locator('[data-fz-tabs] [role="tab"]');
     const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
 
@@ -57,7 +63,7 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
     </div>`;
 
   test("without the module, every panel stays visible (content never lost)", async ({ page }) => {
-    await page.setContent(markup);
+    await mountFixture(page, markup);
     const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
     await expect(panels.nth(0)).toBeVisible();
     await expect(panels.nth(1)).toBeVisible();
@@ -65,7 +71,7 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
   });
 
   test("with the module, the group is marked and inactive panels hide at init", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const group = page.locator("[data-fz-tabs]");
     await expect(group).toHaveAttribute("data-fz-tabs-js", "");
     await expect(group.locator('[role="tabpanel"]').nth(0)).toBeVisible();
@@ -76,7 +82,7 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
 
 test.describe("opt-in JS: details Esc-close", () => {
   test("Esc from inside a details menu closes it and returns focus to summary", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const summary = page.locator('details[data-menu] summary');
     const panel = page.locator('details[data-menu] > :not(summary)');
 
@@ -95,7 +101,7 @@ test.describe("opt-in JS: details Esc-close", () => {
 
 test.describe("opt-in JS: details tab order (WebKit shim)", () => {
   test("open panel descendants get tabindex=0 and are reachable by Tab in every engine", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const summary = page.locator('details[data-menu] summary');
     const link = page.locator('details[data-menu] a').first();
 
@@ -121,8 +127,13 @@ test.describe("opt-in JS: details tab order (WebKit shim)", () => {
         <summary>Closed</summary>
         <a href="#">inside two</a>
       </details>`;
-    await page.setContent(markup);
-    await page.addScriptTag({ path: "./dist/js/details-tabindex.js", type: "module" });
+    await mountFixture(page, markup);
+    // The demo's autoload already cached the module — invoke the named
+    // export to initialize this fresh fixture.
+    await page.evaluate(async () => {
+      const m = await import("/dist/js/details-tabindex.js");
+      m.initDetailsTabIndex();
+    });
 
     await expect(page.locator('details[open] a')).toHaveAttribute("tabindex", "0");
     await expect(page.locator("details:not([open]) a")).not.toHaveAttribute("tabindex", /.*/);
@@ -135,8 +146,11 @@ test.describe("opt-in JS: details tab order (WebKit shim)", () => {
         <a href="#">normal</a>
         <a href="#" tabindex="-1">removed</a>
       </details>`;
-    await page.setContent(markup);
-    await page.addScriptTag({ path: "./dist/js/details-tabindex.js", type: "module" });
+    await mountFixture(page, markup);
+    await page.evaluate(async () => {
+      const m = await import("/dist/js/details-tabindex.js");
+      m.initDetailsTabIndex();
+    });
 
     await expect(page.locator('a:has-text("normal")')).toHaveAttribute("tabindex", "0");
     await expect(page.locator('a:has-text("removed")')).toHaveAttribute("tabindex", "-1");
@@ -145,9 +159,9 @@ test.describe("opt-in JS: details tab order (WebKit shim)", () => {
 
 test.describe("opt-in JS: popover menu keyboard support", () => {
   test("opens focus-first, arrows move, Esc closes and focus returns to trigger", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const trigger = page.getByRole("button", { name: "Popover menu" });
-    const pop = page.locator("#help-pop");
+    const pop = page.locator(DEMOS.helpPop);
     const items = pop.locator("a");
 
     await trigger.click();
@@ -170,13 +184,42 @@ test.describe("opt-in JS: popover menu keyboard support", () => {
     await expect(pop).toBeHidden();
     await expect(trigger).toBeFocused();
   });
+
+  test("Tab closes even with an empty roster (declared in ADR-0006)", async ({
+    page,
+  }) => {
+    // A menu whose only focusable content is not a roster item (a
+    // filter input): the old inline math no-op'd Tab here as a side
+    // effect of its empty-list guard; close-on-Tab is the contract.
+    await mountFixture(
+      page,
+      `<button popovertarget="empty-pop">Menu</button>
+       <div popover data-kind="menu" id="empty-pop">
+         <input aria-label="Filter items">
+       </div>`
+    );
+    await page.evaluate(async () => {
+      const { initPopoverMenus } = await import("/dist/js/popover-menu.js");
+      initPopoverMenus();
+    });
+    const pop = page.locator("#empty-pop");
+    const trigger = page.getByRole("button", { name: "Menu" });
+
+    await trigger.click();
+    await expect(pop).toBeVisible();
+    await page.locator("#empty-pop input").focus();
+
+    await page.keyboard.press("Tab");
+    await expect(pop).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
 });
 
 test.describe("opt-in JS: anchored popover off-screen guard", () => {
   test("script-open with the trigger off-screen closes the popover (no viewport-edge clamp)", async ({ page }) => {
-    await page.goto("/demo/");
-    const trigger = page.locator("#help-trigger");
-    const pop = page.locator("#help-pop");
+    await gotoDemo(page);
+    const trigger = page.locator(DEMOS.helpTrigger);
+    const pop = page.locator(DEMOS.helpPop);
 
     // Scroll the trigger fully below the viewport (its top edge just past
     // the bottom). `behavior: "instant"` matters — the page scrolls smooth.
@@ -188,22 +231,22 @@ test.describe("opt-in JS: anchored popover off-screen guard", () => {
       });
     });
 
-    await page.evaluate(() => document.querySelector("#help-pop").showPopover());
+    await page.evaluate((pop) => document.querySelector(pop).showPopover(), DEMOS.helpPop);
 
     // The guard closes it immediately, so it can't be clamped to the
     // viewport edge (Firefox 153) or pinned off-screen (Chromium/WebKit).
     await expect(pop).not.toBeVisible();
     await expect
       .poll(() =>
-        page.evaluate(() => document.querySelector("#help-pop").matches(":popover-open"))
+        page.evaluate((pop) => document.querySelector(pop).matches(":popover-open"), DEMOS.helpPop)
       )
       .toBe(false);
   });
 
   test("a trigger in view still opens its popover (guard doesn't over-hide)", async ({ page }) => {
-    await page.goto("/demo/");
-    const trigger = page.locator("#help-trigger");
-    const pop = page.locator("#help-pop");
+    await gotoDemo(page);
+    const trigger = page.locator(DEMOS.helpTrigger);
+    const pop = page.locator(DEMOS.helpPop);
 
     // Normal click-to-open, trigger in view — untouched by the guard.
     await trigger.click();
@@ -212,7 +255,7 @@ test.describe("opt-in JS: anchored popover off-screen guard", () => {
     // Programmatic open with the trigger scrolled into view — also kept.
     await pop.evaluate((el) => el.hidePopover());
     await trigger.evaluate((el) => el.scrollIntoView({ block: "center" }));
-    await page.evaluate(() => document.querySelector("#help-pop").showPopover());
+    await page.evaluate((pop) => document.querySelector(pop).showPopover(), DEMOS.helpPop);
     await expect(pop).toBeVisible();
   });
 });
@@ -237,16 +280,16 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
     });
 
   test("module marks the scroller role=group + aria-roledescription", async ({ page }) => {
-    await page.goto("/demo/");
-    const carousel = page.locator("#demo-carousel");
+    await gotoDemo(page);
+    const carousel = page.locator(DEMOS.demoCarousel);
     await expect(carousel).toHaveAttribute("role", "group");
     await expect(carousel).toHaveAttribute("aria-roledescription", "carousel");
   });
 
   test("prev/next controls scroll and wrap (instant under reduced motion)", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/demo/");
-    const carousel = page.locator("#demo-carousel");
+    await gotoDemo(page);
+    const carousel = page.locator(DEMOS.demoCarousel);
     const left = () => carousel.evaluate((el) => el.scrollLeft);
 
     await expect.poll(left).toBe(0);
@@ -263,7 +306,7 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
   });
 
   test("autoplay advances the scroller", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.evaluate((markup) => {
       const wrap = document.createElement("div");
       wrap.innerHTML = markup;
@@ -291,7 +334,7 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
 
   test("autoplay stays off under prefers-reduced-motion", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.evaluate((markup) => {
       const wrap = document.createElement("div");
       wrap.innerHTML = markup;
@@ -308,19 +351,19 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
 
 test.describe("opt-in JS: removable chips", () => {
   test("clicking the remove button removes its chip", async ({ page }) => {
-    await page.goto("/demo/");
-    const chips = page.locator("#demo-chips [data-chip]");
+    await gotoDemo(page);
+    const chips = page.locator(`${DEMOS.demoChips} [data-chip]`);
     await expect(chips).toHaveCount(4);
 
     await page.locator('[data-chip-remove][aria-label="Remove css"]').click();
 
     await expect(chips).toHaveCount(3);
-    await expect(page.locator("#demo-chips [data-chip]", { hasText: "css" })).toHaveCount(0);
+    await expect(page.locator(`${DEMOS.demoChips} [data-chip]`, { hasText: "css" })).toHaveCount(0);
   });
 
   test("remove controls are real buttons with a name each", async ({ page }) => {
-    await page.goto("/demo/");
-    const buttons = page.locator("#demo-chips [data-chip-remove]");
+    await gotoDemo(page);
+    const buttons = page.locator(`${DEMOS.demoChips} [data-chip-remove]`);
     for (const btn of await buttons.all()) {
       const label = await btn.getAttribute("aria-label");
       expect(label).toMatch(/^Remove .+/);
@@ -334,10 +377,7 @@ test.describe("opt-in JS: chips no-JS-first contract", () => {
     <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>`;
 
   test("without the module the chip stays (nothing hides)", async ({ page }) => {
-    // Navigate first so the fixture's /dist/ stylesheet resolves against
-    // the served origin (setContent alone bases URLs at about:blank).
-    await page.goto("/demo/");
-    await page.setContent(markup);
+    await mountFixture(page, markup);
     await page.locator("[data-chip-remove]").click();
     await expect(page.locator("[data-chip]")).toBeVisible();
   });
@@ -346,10 +386,10 @@ test.describe("opt-in JS: chips no-JS-first contract", () => {
 test.describe("opt-in JS: header nav hamburger", () => {
   test("narrow: toggle opens and closes, aria-expanded tracks state", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/demo/");
-    const nav = page.locator("#demo-nav-burger");
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavBurger);
     const toggle = nav.locator(".fz-nav-toggle");
-    const list = nav.locator("#demo-nav-menu");
+    const list = nav.locator(DEMOS.demoNavMenu);
 
     await expect(nav).toHaveAttribute("data-nav-js", "");
     await expect(toggle).toBeVisible();
@@ -369,12 +409,12 @@ test.describe("opt-in JS: header nav hamburger", () => {
 
   test("narrow: Esc closes an open menu and restores focus to the toggle", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/demo/");
-    const nav = page.locator("#demo-nav-burger");
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavBurger);
     const toggle = nav.locator(".fz-nav-toggle");
 
     await toggle.click();
-    const link = nav.locator("#demo-nav-menu a").first();
+    const link = nav.locator(`${DEMOS.demoNavMenu} a`).first();
     await link.focus();
     await page.keyboard.press("Escape");
 
@@ -385,12 +425,12 @@ test.describe("opt-in JS: header nav hamburger", () => {
 
   test("narrow: activating a link closes the menu", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/demo/");
-    const nav = page.locator("#demo-nav-burger");
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavBurger);
     const toggle = nav.locator(".fz-nav-toggle");
 
     await toggle.click();
-    await nav.locator('#demo-nav-menu a[href="#typography"]').click();
+    await nav.locator(`${DEMOS.demoNavMenu} a[href="${DEMOS.typography}"]`).click();
 
     await expect(nav).not.toHaveAttribute("data-open");
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
@@ -398,9 +438,9 @@ test.describe("opt-in JS: header nav hamburger", () => {
 
   test("wide: list always visible, toggle hidden", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto("/demo/");
-    const nav = page.locator("#demo-nav-burger");
-    await expect(nav.locator("#demo-nav-menu")).toBeVisible();
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavBurger);
+    await expect(nav.locator(DEMOS.demoNavMenu)).toBeVisible();
     await expect(nav.locator(".fz-nav-toggle")).toBeHidden();
   });
 });
@@ -416,10 +456,7 @@ test.describe("opt-in JS: nav no-JS-first contract", () => {
 
   test("without the module nothing hides even on a narrow container", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    // Navigate first so the fixture's /dist/ stylesheet resolves against
-    // the served origin (setContent alone bases URLs at about:blank).
-    await page.goto("/demo/");
-    await page.setContent(markup);
+    await mountFixture(page, markup);
     await expect(page.locator("nav ul")).toBeVisible();
     await expect(page.locator(".fz-nav-toggle")).toBeHidden(); // never rendered without JS
     await expect(page.locator("nav")).not.toHaveAttribute("data-nav-js", /.*/);
@@ -427,9 +464,154 @@ test.describe("opt-in JS: nav no-JS-first contract", () => {
 
   test("a plain header nav (no toggle) is never armed for collapse", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // #demo-nav has no .fz-nav-toggle — the module must leave it alone.
-    await expect(page.locator("#demo-nav")).not.toHaveAttribute("data-nav-js", /.*/);
-    await expect(page.locator("#demo-nav > ul")).toBeVisible();
+    await expect(page.locator(DEMOS.demoNav)).not.toHaveAttribute("data-nav-js", /.*/);
+    await expect(page.locator(`${DEMOS.demoNav} > ul`)).toBeVisible();
+  });
+});
+
+test.describe("opt-in JS: lifecycle seam", () => {
+  test("bindOnce is a per element+name guard; onDomReady runs when ready", async ({ page }) => {
+    await gotoDemo(page);
+    const result = await page.evaluate(async () => {
+      const m = await import("/dist/js/lifecycle.js");
+      const el = document.createElement("div");
+      return {
+        first: m.bindOnce(el, "x"),
+        second: m.bindOnce(el, "x"),
+        otherName: m.bindOnce(el, "y"),
+        ready: document.readyState !== "loading",
+      };
+    });
+    expect(result).toEqual({ first: true, second: false, otherName: true, ready: true });
+  });
+
+  test("manual re-init after autoload changes nothing and breaks nothing", async ({ page }) => {
+    await gotoDemo(page);
+    const warnings = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "warning") warnings.push(msg.text());
+    });
+
+    // Every behavior module re-inits itself against already-wired markup;
+    // bindOnce guards must make each call a no-op (no stacked listeners,
+    // no double state flips). Demo markup is complete — no warnings.
+    await page.evaluate(async () => {
+      for (const name of [
+        "tabs",
+        "details-close",
+        "details-tabindex",
+        "popover-menu",
+        "popover-anchor",
+        "carousel",
+        "alert-dismiss",
+        "chips",
+        "nav",
+      ]) {
+        const m = await import(`/dist/js/${name}.js`);
+        for (const fn of Object.values(m)) {
+          if (typeof fn === "function") fn();
+        }
+      }
+    });
+
+    // A wired tab still behaves exactly once.
+    const tabs = page.locator('[data-fz-tabs] [role="tab"]');
+    await tabs.nth(2).click();
+    await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
+    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "false");
+
+    expect(warnings).toEqual([]);
+  });
+});
+
+test.describe("opt-in JS barrel completeness", () => {
+  test("barefoot.js imports every shipped behavior module (and only those)", () => {
+    const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+    const files = fs
+      .readdirSync(path.join(rootDir, "src/js"))
+      .filter((f) => f.endsWith(".js"));
+    const behaviors = files
+      .filter(
+        (f) =>
+          f !== "barefoot.js" &&
+          !["lifecycle.js", "remove-on-click.js", "roving-index.js", "return-focus.js"].includes(f)
+      )
+      .sort();
+    const barrel = fs.readFileSync(path.join(rootDir, "src/js/barefoot.js"), "utf8");
+    const imported = [...barrel.matchAll(/import\s+"\.\/([\w-]+\.js)";/g)]
+      .map((m) => m[1])
+      .sort();
+
+    expect(imported.length).toBeGreaterThan(0);
+    expect(imported).toEqual(behaviors);
+  });
+});
+
+test.describe("opt-in JS: removal factory", () => {
+  test("chips and alert-dismiss are thin adapters over one shared behavior", () => {
+    const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+    for (const name of ["chips", "alert-dismiss"]) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
+      expect(src, `${name}.js delegates to the shared factory`).toContain(
+        'from "./remove-on-click.js"'
+      );
+      expect(src, `${name}.js binds nothing itself`).not.toContain("addEventListener");
+    }
+    // The factory stays the one place that binds: dropping its
+    // delegated listener would strand both adapters as no-ops.
+    const factory = fs.readFileSync(
+      path.join(rootDir, "src/js/remove-on-click.js"),
+      "utf8"
+    );
+    expect(factory).toContain("addEventListener");
+  });
+});
+
+test.describe("opt-in JS: keyboard seams", () => {
+  const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+  test("Arrow/Home/End math lives only in roving-index.js (ADR-0006)", () => {
+    const rover = fs.readFileSync(
+      path.join(rootDir, "src/js/roving-index.js"),
+      "utf8"
+    );
+    expect(rover).toContain("export function createRover");
+    // The whole point of the seam: the wrap/clamp math cannot drift
+    // apart again if the arrow-key names exist in exactly one file —
+    // so every OTHER module is scanned, not just today's consumers.
+    const files = fs
+      .readdirSync(path.join(rootDir, "src/js"))
+      .filter((f) => f.endsWith(".js") && f !== "roving-index.js");
+    for (const f of files) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", f), "utf8");
+      expect(src, `${f} re-implements arrow-key math`).not.toMatch(
+        /Arrow(Left|Right|Up|Down)/
+      );
+    }
+    for (const name of ["tabs", "popover-menu"]) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
+      expect(src, `${name}.js delegates to the shared rover`).toContain(
+        'from "./roving-index.js"'
+      );
+    }
+  });
+
+  test("close-and-refocus lives only in return-focus.js (ADR-0006)", () => {
+    const rf = fs.readFileSync(
+      path.join(rootDir, "src/js/return-focus.js"),
+      "utf8"
+    );
+    expect(rf).toContain("export function refocusOpener");
+    // The containment guard is the semantic core: never steal focus
+    // from wherever the user went after closing.
+    expect(rf).toContain("contains(document.activeElement)");
+    for (const name of ["nav", "details-close", "popover-menu"]) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
+      expect(src, `${name}.js delegates close-refocus`).toContain(
+        'from "./return-focus.js"'
+      );
+    }
   });
 });

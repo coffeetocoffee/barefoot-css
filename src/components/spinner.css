@@ -40,6 +40,10 @@
     }
   }
 
+  /* Explicitly removed, not just frozen: the global kill switch in
+     base.css clamps duration/iteration but keeps the animation name.
+     An infinite decorative animation goes away entirely under
+     reduced motion — belt-and-suspenders on purpose (ADR-0007). */
   @media (prefers-reduced-motion: reduce) {
     [data-spinner] {
       animation: none;

@@ -13,22 +13,11 @@
    import "barefoot/js/chips.js"
 */
 
+import { onDomReady } from "./lifecycle.js";
+import { removeOnClick } from "./remove-on-click.js";
+
 export function initChips(root = document) {
-  root.addEventListener("click", (e) => {
-    const button = e.target.closest?.("[data-chip-remove]");
-    if (!button) return;
-    button.closest("[data-chip]")?.remove();
-  });
+  removeOnClick(root, "chips", "[data-chip]", "[data-chip-remove]");
 }
 
-function autoInit() {
-  const whenReady = () => initChips();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initChips());

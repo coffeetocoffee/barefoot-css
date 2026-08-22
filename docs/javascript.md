@@ -4,18 +4,21 @@ Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
 nine small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
-| Module | Size (raw) | Adds |
-|---|---|---|
-| `js/tabs.js` | ~2.7KB | WAI-ARIA tabs: roving tabindex, arrow-key nav |
-| `js/details-close.js` | ~0.9KB | Reliable Esc-close for `details[data-menu]` |
-| `js/details-tabindex.js` | ~1.9KB | WebKit tab-order fix for open `<details>` panels |
-| `js/popover-menu.js` | ~2.2KB | Arrow-key nav + focus restore for popover menus |
-| `js/popover-anchor.js` | ~2.3KB | Closes anchored popovers whose trigger is off-screen |
-| `js/carousel.js` | ~4.8KB | Carousel autoplay + prev/next controls |
-| `js/alert-dismiss.js` | ~0.8KB | Dismisses `[data-alert]` notices on click |
-| `js/chips.js` | ~0.6KB | Removes `[data-chip]` tags on × click |
-| `js/nav.js` | ~1.9KB | Responsive header nav: hamburger toggle, Esc-close |
-| `js/barefoot.js` | — | All nine in one import |
+| Module | Adds |
+|---|---|
+| `js/tabs.js` | WAI-ARIA tabs: roving tabindex, arrow-key nav |
+| `js/details-close.js` | Reliable Esc-close for `details[data-menu]` |
+| `js/details-tabindex.js` | WebKit tab-order fix for open `<details>` panels |
+| `js/popover-menu.js` | Arrow-key nav + focus restore for popover menus |
+| `js/popover-anchor.js` | Closes anchored popovers whose trigger is off-screen |
+| `js/carousel.js` | Carousel autoplay + prev/next controls |
+| `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
+| `js/chips.js` | Removes `[data-chip]` tags on × click |
+| `js/nav.js` | Responsive header nav: hamburger toggle, Esc-close |
+| `js/barefoot.js` | All nine in one import |
+
+Sizes live in the README table (regenerated from every build) — never
+here, so this page can't drift from the bytes.
 
 ## Loading
 
@@ -40,6 +43,18 @@ For dynamic content, import the named functions:
 import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
+
+All nine share two internal primitives from `js/lifecycle.js`
+(`onDomReady`, `bindOnce`) — not public API, just plumbing that makes
+every `init*` call idempotent: re-running an init on markup that was
+already wired changes nothing. The two removal behaviors (chips,
+alert dismiss) additionally share one delegated click handler from
+`js/remove-on-click.js`, and the keyboard behaviors share two more
+seams: `js/roving-index.js` owns all Arrow/Home/End list math
+(tabs and popover menus parameterize wrap vs clamp), and
+`js/return-focus.js` owns "a disclosure closed → focus returns to its
+opener, but only if focus never left" (header nav, details menus,
+popover menus). See `docs/adr/0006`.
 
 ## 1. Tabs (`js/tabs.js`)
 
@@ -171,21 +186,32 @@ zero JS). This module adds optional autoplay and prev/next buttons.
   is hidden from a JS-less user; they just don't get auto-advance or
   buttons.
 
-## 7. Removable chips (`js/chips.js`)
+## 7. Removal behaviors (`js/chips.js`, `js/alert-dismiss.js`)
 
-Styles live in `components/chip.css`; the module drives removal.
+Two components share one removal behavior — clicking a small × button
+removes its closest container:
 
 ```html
 <span data-chip>
   css
   <button type="button" data-chip-remove aria-label="Remove css">×</button>
 </span>
+
+<div data-alert="danger" role="alert">
+  <p>Deploy failed.</p>
+  <button data-alert-dismiss aria-label="Dismiss">×</button>
+</div>
 ```
 
-Clicking the remove button removes the closest `[data-chip]`. The
-control is a real `<button>` — give it an `aria-label` naming what it
-removes. **No-JS first:** without the module nothing hides; the × just
-does nothing.
+- `[data-chip-remove]` removes its closest `[data-chip]`; styles live
+  in `components/chip.css`.
+- `[data-alert-dismiss]` removes its closest `[data-alert]`; styles
+  live in `components/alert.css`.
+- Both controls are real `<button>`s — give each an `aria-label`
+  naming what it removes. Removal is delegated at the root, so chips
+  and alerts injected after load are covered too.
+- **No-JS first:** without the module nothing hides; the × just does
+  nothing.
 
 ## 8. Responsive header nav (`js/nav.js`)
 

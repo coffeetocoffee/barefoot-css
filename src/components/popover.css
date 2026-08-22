@@ -100,19 +100,8 @@
     border-inline-start-color: var(--fz-danger);
   }
 
-  [popover][data-kind="menu"] a,
-  [popover][data-kind="menu"] button {
-    display: block;
-    width: 100%;
-    text-align: start;
-    padding: var(--fz-space-2) var(--fz-space-3);
-    border-radius: var(--fz-radius-sm);
-  }
-
-  [popover][data-kind="menu"] a:hover,
-  [popover][data-kind="menu"] button:hover {
-    background: var(--fz-surface-alt);
-  }
+  /* Item rows live in menu-items.css — shared verbatim with
+     details[data-menu] (ADR-0007). */
 
   /* ---- Opt-in anchoring ----
      Browsers with anchor positioning (Chromium 125+, Firefox 147+,

@@ -4,6 +4,128 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Contrast-palette parity guard** — source-parse tests lock the manual
+  `[data-theme="contrast"]` palette and its OS-settings mirror
+  (`prefers-contrast: more`) together: a token changed in one fails CI
+  until the other matches. The print palette is pinned by *name set*
+  only, since its values intentionally differ. Decision recorded in
+  `docs/adr/0001` (mirrors stay hand-written; build-time generation
+  rejected); glossary seeded in `CONTEXT.md`. Chromium CSS suite
+  65 → 68 tests.
+- **JS lifecycle seam** — all nine behavior modules now share one tiny
+  plumbing module, `js/lifecycle.js`: `onDomReady()` (ready-aware init)
+  and `bindOnce()` (per element+name idempotency guard) replace every
+  module's hand-rolled boot code. Each module keeps a single named
+  `init*(root = document)` export; re-running any init is safe —
+   guards make stacked listeners impossible, and delegated listeners
+   cover markup injected later. Internal only: same files, same import
+   surface, no consumer change. Decision recorded in `docs/adr/0002`;
+   pinned by lifecycle-seam + barrel-parity tests in `tests/js.spec.js`
+   (Chromium JS suite 24 → 27 tests). Note: the modules' undocumented
+   `export default autoInit` tail is gone — import the named `init*`
+   or rely on the side-effect load, as `docs/javascript.md` always
+   showed. Modules also gained "say so instead of failing silently"
+   warnings for broken markup contracts: tabs with mismatched
+   tab/panel counts now skip with a console warning instead of
+   silently doing nothing, as does a popover menu initialized before
+   its `[popovertarget]` trigger exists.
+- **Test fixture harness** — all four suites now speak through
+  `tests/helpers.js` instead of raw literals: `gotoDemo()` owns the
+  `/demo/` URL, the frozen `DEMOS` map names every demo id, and
+  `tokenColor()` resolves a `--fz-*` token to its live computed color
+  via a throwaway probe element — so color assertions read "this element
+  uses token X" truthfully under any theme or `light-dark()` flip
+  instead of freezing light-theme rgb() values. Value freezes remain
+  only where they pin contracts (theme/print palettes, ADR-0001 guards,
+  visual baselines). Pure refactor: same 115 tests / 313 expectations.
+  Decision recorded in `docs/adr/0003`.
+- **Shared removal factory** — the twin removal behaviors (`chips.js`,
+  `alert-dismiss.js`) were line-for-line copies; both are now thin
+  adapters over one internal `js/remove-on-click.js` delegated click
+  handler. Public surface unchanged: same files, same `initChips` /
+  `initAlertDismiss` exports, same self-init on load, same per-root
+  idempotency guarantees. A source-parse test pins that both adapters
+  delegate to the shared factory (and that the factory keeps its own
+  delegated listener), so the copy-paste shape cannot quietly grow
+  back; `docs/javascript.md` gains the alert-dismiss section it was
+   missing. Decision recorded in `docs/adr/0004`. Chromium JS suite
+   27 → 28 tests.
+- **Shared keyboard seams** — the four keyboard-driven behavior modules
+  hand-rolled two interactions with visible drift: tabs clamped at the
+  ends while popover menus wrapped modulo, and "a disclosure closed →
+  give focus back to its opener" existed three times in three shapes
+  (only one guarded against stealing focus from wherever the user had
+  gone next). Two internal modules now own the semantics:
+  `js/roving-index.js` (`createRover` — all Arrow/Home/End math,
+  parameterized by axis / wrap-vs-clamp / activate hook) and
+  `js/return-focus.js` (`refocusOpener` — the containment guard).
+  `tabs.js`, `popover-menu.js`, `nav.js`, and `details-close.js`
+  delegate to them; public surfaces are untouched — same files, same
+  `init*(root)` exports, every pre-existing behavior test passes
+  unchanged (source-parse pins keep the math single-sourced across
+  every module in `src/js/`; barrel test learns the new plumbing
+  convention). One declared semantic change: popover menus close on
+  Tab even with an empty roster (only a non-item like a filter input
+  inside) — the old inline math skipped that case as a guard-placement
+  side effect; pinned by its own test. details-close also skips
+  already-closed menus instead of redundantly re-focusing their
+  summary. Decision recorded in `docs/adr/0006`. Chromium JS suite
+  28 → 31 tests.
+- **Disabled-dimming token** — the disabled dimming is now themable
+  like every other visual: `--fz-disabled-opacity` (default `0.5`)
+  replaces two hard-coded `opacity: 0.5` literals in buttons.css and
+  forms.css. Not mirrored in the contrast/print palettes (they
+  override colors only; disabled controls are WCAG-exempt).
+
+### Changed
+
+- **Shared menu-item recipe** — dropdown and popover menus styled their
+  item rows with copy-pasted rules that had already drifted: popover
+  links rendered underlined and accent-colored while dropdown links
+  were clean, because base.css styles `a` without resetting it. One
+  recipe now lives in `components/menu-items.css` (union selectors for
+  both containers); each component file keeps only its panel chrome
+  plus a pointer. À-la-carte consumers who import `dropdown.css` or
+  `popover.css` on their own must add the new file — it is not pulled
+  in transitively. Source-parse tests pin the recipe to a single file;
+  a behavior test pins what menu items paint. Decision recorded in
+  `docs/adr/0007`. Chromium CSS suite 69 → 74 tests.
+- **forms.css de-duplication** — eight input/select/textarea state
+  chains compress to `:is(input, select, textarea)` single selectors
+  (`:is()` takes its arguments' max specificity), the redundant
+  checkbox/radio arms fold into `input:disabled` (a dedicated switch
+  arm keeps the disabled switch's not-allowed cursor winning its
+  specificity tiebreak), a comment-only input-type selector list
+  becomes an actual comment, and the range-focus rule is deleted.
+  One deliberate visual delta: focused range sliders lose their
+  duplicated rectangular outline and share the standard halo-only
+  input treatment; everything else is cascade-identical.
+- **Striped-table hover precedence** — striping out-specified row
+  hover, working only because both happen to use the same token;
+  targeted `:where()` wraps make hover win structurally. Found by the
+  `:where()` audit (ADR-0007); stepper's attribute-state triples were
+  audited and left alone deliberately.
+
+### Removed
+
+- **`@property` token registrations** — all ten typed-color blocks were
+  dead weight: nothing in Barefoot animates or transitions a `--fz-*`
+  variable (tokens serve only as transition durations), and each block
+  hand-copied the palette's light half as its `initial-value` — silent
+  drift waiting for the next accent change. Tokens ship as plain
+  custom properties; consumers who animate a token register their own
+  copy (`docs/theming.md` shows how). One observable change: JS reads
+  of a token via `getPropertyValue()` now return the unresolved
+  `light-dark(...)` string — resolve through a consumer property
+  instead (three tests that pinned the registration-era serialization
+  now probe what tokens paint). Not an API break by api.md's own
+  contract. Decision recorded in `docs/adr/0005`. Chromium CSS suite
+  68 → 69 tests (the decision is pinned by a source-parse guard).
+
 ## [2.6.0] — 2026-08-21
 
 Responsive nav + JS growth — the biggest user-facing improvement is

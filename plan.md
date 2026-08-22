@@ -1,6 +1,6 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-21 — v2.6.0_
+_Last updated: 2026-08-22 — v2.6.0_
 
 ## Snapshot
 
@@ -13,9 +13,32 @@ _Last updated: 2026-08-21 — v2.6.0_
 - **Next:** v2.8.0 — polish & docs (theme gallery page, performance
   budget docs, API reference audit, token reference auto-gen,
   contrast-mode full suite, cross-browser visual refresh).
-- **Tests:** Chromium 109 (17 a11y / 24 JS / 65 CSS / 3 visual) ·
-  Firefox 89 run, 1 skipped · WebKit 89 run, 1 skipped — all green.
-- **Build:** `index.css` 2.18KB gzip · `full.css` 8.00KB gzip (10KB
+- **Upkeep:** architecture scan 2026-08-21 produced seven deepening
+  candidates (C1–C7, local scratch `GRILL PLAN.txt`). Shipped early:
+  C1 contrast-palette parity guard (`docs/adr/0001`), C3 one lifecycle
+  seam for all opt-in JS (`js/lifecycle.js`, `docs/adr/0002`), C2
+  test fixture harness (`tests/helpers.js`: gotoDemo/DEMOS/tokenColor,
+  `docs/adr/0003`), C4 shared removal factory behind the chips /
+  alert-dismiss adapters (`js/remove-on-click.js`, `docs/adr/0004`),
+  C5 dropped the ten dead `@property` registrations
+  (`docs/adr/0005`), C6 shared keyboard seams behind tabs /
+  popover-menu / nav / details-close (`js/roving-index.js`,
+  `js/return-focus.js`, `docs/adr/0006`) — public surfaces untouched,
+  all pre-existing behavior tests pass unchanged — and C7 de-duplicated
+  the component-CSS recipes (shared menu-item file, disabled-opacity
+  token, `:is()` chain compression, `:where()` audit with one real
+  fix; motion guards kept after the suite pinned name-level removal;
+  `docs/adr/0007`). Scan complete: all seven candidates processed.
+- **Tests:** Chromium 125 (17 a11y / 31 JS / 74 CSS / 3 visual) ·
+  WebKit 104 run, 1 skipped · Firefox — see caveat — all green.
+  Caveat: the Playwright Firefox binary broke mid-session (launch
+  access-violation; CDN download refused, no system install), so its
+  last full-ladder green (103 + 1 skipped) predates two review fixes
+  of C7 — a disabled-switch cursor arm and a test serialization fix,
+  both engine-agnostic and covered by the other engines. Re-run
+  `npm run test:ff` once Firefox reinstalls. Specs address the demo
+  only through `tests/helpers.js`.
+- **Build:** `index.css` 2.06KB gzip · `full.css` 7.88KB gzip (10KB
   budget → PASS).
 - **Done:** milestones 0.1 → 2.6. Full history: `CHANGELOG.md`.
 
@@ -60,8 +83,8 @@ tree-shaking.
 - Starter themes that change ~6 variables and look completely different:
   `editorial`, `dashboard`, `playful` — this is the marketing demo.
 - `themes/custom.css` is a commented template for users' own themes.
-- `@property` registers typed variables (progressive enhancement: animatable,
-  validated) — ignored by older browsers, safe to ship.
+- Color tokens are plain custom properties — no `@property` shipped
+  (ADR-0005); register your own copy to animate a token.
 
 ### 3. JS-free interactivity
 

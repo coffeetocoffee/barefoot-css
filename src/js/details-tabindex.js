@@ -10,8 +10,10 @@
    via click, keyboard, or script, and Chromium doesn't fire the "toggle"
    event on a summary click, so the attribute is the reliable signal.
 
-   import "barefoot/js/details-tabindex.js"
+    import "barefoot/js/details-tabindex.js"
 */
+
+import { onDomReady, bindOnce } from "./lifecycle.js";
 
 const FOCUSABLE =
   "a[href], button:not([disabled]), input:not([disabled]):not([type='hidden']), select:not([disabled]), textarea:not([disabled]), [tabindex]";
@@ -24,6 +26,14 @@ function makeTabbable(details) {
 }
 
 export function initDetailsTabIndex(root = document) {
+  // Scan on every call: cheap, idempotent, and covers markup that
+  // arrived after a previous init (late-injected content).
+  for (const details of root.querySelectorAll("details[open]")) {
+    makeTabbable(details);
+  }
+
+  // The observer is process-wide wiring: bind it exactly once per root.
+  if (!bindOnce(root, "details-tabindex")) return;
   const observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
       if (m.target.tagName === "DETAILS" && m.target.open) {
@@ -37,22 +47,8 @@ export function initDetailsTabIndex(root = document) {
     attributeFilter: ["open"],
   });
 
-  // Details already open before this module loaded.
-  for (const details of root.querySelectorAll("details[open]")) {
-    makeTabbable(details);
-  }
-
   return observer;
 }
 
-function autoInit() {
-  const whenReady = () => initDetailsTabIndex();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
+onDomReady(() => initDetailsTabIndex());
 
-export default autoInit;
-autoInit();

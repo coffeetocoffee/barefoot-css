@@ -25,18 +25,22 @@
      focus to the toggle; activating a link closes it too, so a
      same-page anchor never lands under an open menu.
 
-   import "barefoot/js/nav.js"
+    import "barefoot/js/nav.js"
 */
 
-function initNav(nav) {
-  if (nav.dataset.navJs !== undefined) return;
+import { onDomReady, bindOnce } from "./lifecycle.js";
+import { refocusOpener } from "./return-focus.js";
 
+function initNav(nav) {
   const toggle = nav.querySelector(".fz-nav-toggle");
   const list = nav.querySelector(":scope > ul");
   // Only navs with the full contract get marked: [data-nav-js] arms the
   // CSS collapse, so a plain header nav (no toggle) must never carry it
-  // — its list would hide with nothing to reopen it.
+  // — its list would hide with nothing to reopen it. The contract check
+  // comes first so an incomplete nav can be re-inited later; bindOnce
+  // only stops double-wiring a complete one.
   if (!toggle || !list) return;
+  if (!bindOnce(nav, "nav")) return;
   nav.setAttribute("data-nav-js", "");
 
   const setOpen = (open) => {
@@ -49,10 +53,9 @@ function initNav(nav) {
   );
 
   nav.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && nav.hasAttribute("data-open")) {
-      setOpen(false);
-      toggle.focus();
-    }
+    if (e.key !== "Escape" || !nav.hasAttribute("data-open")) return;
+    setOpen(false);
+    refocusOpener(nav, toggle);
   });
 
   list.addEventListener("click", (e) => {
@@ -71,14 +74,4 @@ export function initNavs(root = document) {
   }
 }
 
-function autoInit() {
-  const whenReady = () => initNavs();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initNavs());

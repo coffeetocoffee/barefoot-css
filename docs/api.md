@@ -39,8 +39,8 @@ These are the contracts consumers build on:
 - **`dist/` file paths within entries.** The build output structure
   (e.g. individual component file names) may change. Always import
   via the export map, never via direct `dist/` paths.
-- **`@property` registrations.** These are progressive enhancement.
-  Their presence or absence does not affect the API.
+- **`@property` registrations.** None are shipped (`docs/adr/0005`);
+  their presence or absence does not affect the API.
 
 ## Deprecation policy
 

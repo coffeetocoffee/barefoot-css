@@ -13,7 +13,10 @@
    import "barefoot/js/popover-anchor.js"
 */
 
+import { onDomReady, bindOnce } from "./lifecycle.js";
+
 export function initPopoverAnchors(root = document) {
+  if (!bindOnce(root, "popover-anchor")) return;
   root.addEventListener(
     "toggle",
     (e) => {
@@ -59,14 +62,5 @@ export function initPopoverAnchors(root = document) {
   );
 }
 
-function autoInit() {
-  const whenReady = () => initPopoverAnchors();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
+onDomReady(() => initPopoverAnchors());
 
-export default autoInit;
-autoInit();

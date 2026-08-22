@@ -122,6 +122,9 @@
     --fz-transition: 150ms ease;
     --fz-transition-slow: 250ms ease;
 
+    /* Disabled controls (buttons, inputs) dim by this much. */
+    --fz-disabled-opacity: 0.5;
+
     /* ---- Layout ---- */
     --fz-content-width: 64ch;
     --fz-max-width: 72rem;
@@ -144,60 +147,6 @@
 
     /* ---- Layout (v1.8: content & media) ---- */
     --fz-avatar-size: 2.5rem;  /* edge of .fz-avatar (matches control height) */
-  }
-
-  /* ---- Typed properties (progressive enhancement) ----
-     Registered variables can transition/animate and are validated.
-     Browsers without @property support ignore these — safe to ship. */
-  @property --fz-primary {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #1a1a1a;
-  }
-  @property --fz-surface {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #ffffff;
-  }
-  @property --fz-text {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #1a1a1a;
-  }
-  @property --fz-border {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #d8d8d8;
-  }
-  @property --fz-focus-ring {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #1a1a1a;
-  }
-  @property --fz-danger {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #b3261e;
-  }
-  @property --fz-success {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #1a7f37;
-  }
-  @property --fz-info {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #0969da;
-  }
-  @property --fz-warning {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: #9a6700;
-  }
-  @property --fz-backdrop {
-    syntax: "<color>";
-    inherits: true;
-    initial-value: rgb(0 0 0 / 0.5);
   }
 }
 

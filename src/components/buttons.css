@@ -117,7 +117,7 @@
   button[aria-disabled="true"],
   input:disabled,
   [role="button"][aria-disabled="true"] {
-    opacity: 0.5;
+    opacity: var(--fz-disabled-opacity);
     cursor: not-allowed;
     transform: none;
   }

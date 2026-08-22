@@ -16,13 +16,26 @@
    import { initTabs } from "…"     → manual init for dynamic content
 */
 
+import { onDomReady, bindOnce } from "./lifecycle.js";
+import { createRover } from "./roving-index.js";
+
 export function initTabs(root = document) {
   const groups = root.querySelectorAll("[data-fz-tabs]");
 
   for (const group of groups) {
     const tabs = [...group.querySelectorAll('[role="tab"]')];
     const panels = [...group.querySelectorAll('[role="tabpanel"]')];
-    if (tabs.length === 0 || tabs.length !== panels.length) continue;
+
+    // A mismatch means the markup can't work — say so instead of
+    // silently skipping.
+    if (tabs.length > 0 && tabs.length !== panels.length) {
+      console.warn(
+        `[barefoot] tabs: ${tabs.length} tab(s) vs ${panels.length} panel(s) — group skipped`
+      );
+      continue;
+    }
+    if (tabs.length === 0) continue;
+    if (!bindOnce(group, "tabs")) continue;
 
     // Mark the group as JS-driven so CSS hooks (data-fz-tabs-js) can react
     // and so the no-JS default (every panel visible, nothing lost) is
@@ -38,31 +51,21 @@ export function initTabs(root = document) {
       });
     };
 
-    const selectIndex = (i) => {
-      const next = tabs[Math.max(0, Math.min(tabs.length - 1, i))];
-      select(next);
-      next.focus();
-    };
+    const rove = createRover(
+      () => tabs,
+      {
+        axis: "horizontal",
+        activate(tab) {
+          select(tab);
+          tab.focus();
+        },
+      }
+    );
 
     for (const tab of tabs) {
       tab.addEventListener("click", () => select(tab));
 
-      tab.addEventListener("keydown", (e) => {
-        const idx = tabs.indexOf(tab);
-        if (e.key === "ArrowRight") {
-          e.preventDefault();
-          selectIndex(idx + 1);
-        } else if (e.key === "ArrowLeft") {
-          e.preventDefault();
-          selectIndex(idx - 1);
-        } else if (e.key === "Home") {
-          e.preventDefault();
-          selectIndex(0);
-        } else if (e.key === "End") {
-          e.preventDefault();
-          selectIndex(tabs.length - 1);
-        }
-      });
+      tab.addEventListener("keydown", rove);
     }
 
     // Normalize initial state from the markup's aria-selected.
@@ -71,13 +74,4 @@ export function initTabs(root = document) {
   }
 }
 
-function autoInit() {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => initTabs());
-  } else {
-    initTabs();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initTabs());

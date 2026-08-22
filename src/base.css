@@ -177,7 +177,16 @@
     }
   }
 
-  /* ---- Motion safety ---- */
+  /* ---- Motion safety ----
+     One kill switch for everything * / ::before / ::after can reach:
+     durations clamp, so ordinary transitions/animations freeze in
+     place. Two deliberate exceptions live in component files —
+     don't "simplify" them away (ADR-0007):
+       - ::view-transition-* pseudo-elements are NOT reachable by *,
+         so components/view-transition.css carries its own guard.
+       - Infinite decorative animations (spinner, skeleton shimmer)
+         set animation: none explicitly — removal beats clamping, and
+         the CSS suite pins name-level removal for them. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

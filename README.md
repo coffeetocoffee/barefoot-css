@@ -47,29 +47,33 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 42.14KB | **8.00KB** | 7.02KB |
-| `index.css` | 8.07KB | **2.18KB** | 1.89KB |
-| `js/carousel.js` | 4.78KB | **1.92KB** | 1.63KB |
-| `components/forms.css` | 8.57KB | **1.89KB** | 1.62KB |
-| `js/nav.js` | 2.75KB | **1.27KB** | 1.04KB |
-| `js/tabs.js` | 2.70KB | **1.10KB** | 0.89KB |
-| `js/popover-anchor.js` | 2.26KB | **1.04KB** | 0.84KB |
-| `js/details-tabindex.js` | 1.86KB | **0.91KB** | 0.73KB |
-| `js/popover-menu.js` | 2.17KB | **0.89KB** | 0.75KB |
+| `full.css` | 40.60KB | **7.79KB** | 6.85KB |
+| `index.css` | 7.35KB | **2.07KB** | 1.78KB |
+| `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
+| `components/forms.css` | 7.92KB | **1.80KB** | 1.54KB |
+| `js/nav.js` | 2.78KB | **1.29KB** | 1.06KB |
+| `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
+| `js/popover-menu.js` | 2.25KB | **1.12KB** | 0.95KB |
+| `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
+| `js/popover-anchor.js` | 2.17KB | **1.02KB** | 0.83KB |
+| `js/details-tabindex.js` | 1.91KB | **0.97KB** | 0.79KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.64KB |
 | `components/stepper.css` | 2.62KB | **0.69KB** | 0.56KB |
-| `components/popover.css` | 2.01KB | **0.62KB** | 0.54KB |
-| `components/buttons.css` | 2.00KB | **0.59KB** | 0.47KB |
-| `components/dropdown.css` | 1.53KB | **0.56KB** | 0.43KB |
-| `js/details-close.js` | 0.90KB | **0.51KB** | 0.39KB |
+| `js/lifecycle.js` | 1.13KB | **0.64KB** | 0.50KB |
+| `components/buttons.css` | 2.02KB | **0.60KB** | 0.47KB |
+| `components/popover.css` | 1.73KB | **0.57KB** | 0.48KB |
+| `js/details-close.js` | 0.96KB | **0.53KB** | 0.43KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
+| `components/dropdown.css` | 1.23KB | **0.50KB** | 0.39KB |
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.41KB |
-| `js/chips.js` | 0.87KB | **0.49KB** | 0.38KB |
+| `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
 | `components/accordion.css` | 1.42KB | **0.48KB** | 0.38KB |
-| `js/alert-dismiss.js` | 0.81KB | **0.45KB** | 0.35KB |
-| `components/table.css` | 0.96KB | **0.41KB** | 0.33KB |
+| `components/table.css` | 0.97KB | **0.42KB** | 0.34KB |
+| `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
+| `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
+| `js/alert-dismiss.js` | 0.61KB | **0.35KB** | 0.28KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.29KB |
@@ -87,6 +91,7 @@ npm install barefoot-css
 | `components/code.css` | 0.48KB | **0.25KB** | 0.20KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/divider.css` | 0.35KB | **0.22KB** | 0.16KB |
+| `components/menu-items.css` | 0.36KB | **0.21KB** | 0.14KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
 | `components/view-transition.css` | 0.28KB | **0.16KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
@@ -94,9 +99,10 @@ npm install barefoot-css
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.
 
-Opt-in JS (`dist/js/`, ~9KB total raw): `tabs.js`, `details-close.js`,
-`details-tabindex.js`, `popover-menu.js`, `carousel.js`, plus `barefoot.js`
-(all five). See [docs/javascript.md](docs/javascript.md).
+Opt-in JS (`dist/js/`): nine zero-dependency behavior modules, imported
+one by one or all together via `barefoot.js`. Internal plumbing
+(`lifecycle.js`, `remove-on-click.js`) ships alongside but is not
+public API. See [docs/javascript.md](docs/javascript.md).
 
 ## Browser baseline
 

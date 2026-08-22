@@ -7,26 +7,21 @@
    import "barefoot/js/details-close.js"
 */
 
+import { onDomReady, bindOnce } from "./lifecycle.js";
+import { refocusOpener } from "./return-focus.js";
+
 export function initDetailsClose(root = document) {
+  if (!bindOnce(root, "details-close")) return;
   root.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
 
+    // Delegated at root so details added after init are covered too.
     const details = e.target.closest?.("details[data-menu]");
-    if (!details) return;
+    if (!details || !details.open) return;
 
     details.open = false;
-    details.querySelector("summary")?.focus();
+    refocusOpener(details, () => details.querySelector("summary"));
   });
 }
 
-function autoInit() {
-  const whenReady = () => initDetailsClose();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initDetailsClose());

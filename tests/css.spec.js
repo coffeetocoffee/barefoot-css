@@ -4,10 +4,16 @@
 
    npm run test:css */
 import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { DEMOS, gotoDemo, tokenColor } from "./helpers.js";
+
+const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 test.describe("tests have real CSS (smoke)", () => {
   test("demo page loads the built Barefoot stylesheet", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const styled = await page.evaluate(() => {
       const root = getComputedStyle(document.documentElement);
       const contain = getComputedStyle(document.querySelector(".fz-contain"));
@@ -22,7 +28,7 @@ test.describe("tests have real CSS (smoke)", () => {
 
 test.describe("container queries", () => {
   test("same [data-grid] markup: 1 column when narrow, 3 when wide", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
 
     // Pin the container widths explicitly so the test asserts the *markup*
     // behavior, not the demo's incidental flex sizing (which OS font
@@ -43,7 +49,7 @@ test.describe("container queries", () => {
   });
 
   test("carousel slides are sized in container units (60cqi)", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const carousel = page.locator("[data-carousel]");
     const slide = page.locator("[data-carousel] > *").first();
 
@@ -56,7 +62,7 @@ test.describe("container queries", () => {
 
 test.describe("stackable tables", () => {
   test("table[data-table='stack']: header row hidden when its container is narrow, table when wide", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const table = page.locator('table[data-table="stack"]');
     const firstCell = table.locator("tbody tr").first().locator("td").first();
 
@@ -78,10 +84,10 @@ test.describe("stackable tables", () => {
 
 test.describe("anchored popovers (anchor positioning)", () => {
   test("menu popover pins below its own trigger (not the other popover's)", async ({ page }) => {
-    await page.goto("/demo/");
-    const trigger = page.locator('#help-trigger');
-    const otherTrigger = page.locator("#tip-trigger");
-    const pop = page.locator("#help-pop");
+    await gotoDemo(page);
+    const trigger = page.locator(DEMOS.helpTrigger);
+    const otherTrigger = page.locator(DEMOS.tipTrigger);
+    const pop = page.locator(DEMOS.helpPop);
 
     await trigger.click();
     await expect(pop).toBeVisible();
@@ -100,9 +106,9 @@ test.describe("anchored popovers (anchor positioning)", () => {
   });
 
   test("menu flips above its trigger when the trigger sits near the viewport bottom", async ({ page }) => {
-    await page.goto("/demo/");
-    const trigger = page.locator("#help-trigger");
-    const pop = page.locator("#help-pop");
+    await gotoDemo(page);
+    const trigger = page.locator(DEMOS.helpTrigger);
+    const pop = page.locator(DEMOS.helpPop);
 
     // Nudge the trigger to just above the bottom edge (in-view) so the
     // preferred below-the-trigger placement would overflow the viewport.
@@ -130,7 +136,7 @@ test.describe("anchored popovers (anchor positioning)", () => {
 
 test.describe("theme switching through view transitions", () => {
   test("theme buttons work with startViewTransition", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const hasApi = await page.evaluate(
       () => typeof document.startViewTransition === "function"
     );
@@ -145,8 +151,8 @@ test.describe("theme switching through view transitions", () => {
 
 test.describe("range, progress & meter skins", () => {
   test("range slider is fully skinned (appearance none + themed height)", async ({ page }) => {
-    await page.goto("/demo/");
-    const range = page.locator("#amount");
+    await gotoDemo(page);
+    const range = page.locator(DEMOS.amount);
     // Chromium's getComputedStyle doesn't reflect author styles on the
     // ::-webkit-slider-* shadow pseudos, so assert the element-level skin:
     // native chrome stripped, height from --fz-control-height, no surface.
@@ -157,20 +163,20 @@ test.describe("range, progress & meter skins", () => {
   });
 
   test("progress and meter are themed bars (accent fill, alt track)", async ({ page }) => {
-    await page.goto("/demo/");
-    for (const id of ["#prog", "#storage"]) {
+    await gotoDemo(page);
+    for (const id of [DEMOS.prog, DEMOS.storage]) {
       const bar = page.locator(id);
       await expect(bar).toHaveCSS("height", "12px");
-      await expect(bar).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt (light)
+      await expect(bar).toHaveCSS("background-color", await tokenColor(page, "--fz-surface-alt")); // --fz-surface-alt (light)
       await expect(bar).toHaveCSS("overflow", "hidden");
-      await expect(bar).toHaveCSS("accent-color", "rgb(26, 26, 26)"); // --fz-primary (light)
+      await expect(bar).toHaveCSS("accent-color", await tokenColor(page, "--fz-primary")); // --fz-primary (light)
     }
   });
 });
 
 test.describe("breadcrumbs & pagination", () => {
   test("breadcrumbs: slash separator between items, current is muted text", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const second = page.locator('[data-breadcrumbs] li').nth(1);
     const sep = await second.evaluate((el) =>
       getComputedStyle(el, "::before").content
@@ -180,47 +186,42 @@ test.describe("breadcrumbs & pagination", () => {
   });
 
   test("pagination: current page is a filled span, never a link", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const current = page.locator('[data-pagination] [aria-current="page"]');
     await expect(current).toHaveText("2");
     const bg = await current.evaluate((el) => getComputedStyle(el).backgroundColor);
-    expect(bg).toBe("rgb(26, 26, 26)"); // --fz-primary (light)
+    expect(bg).toBe(await tokenColor(page, "--fz-primary")); // --fz-primary
     await expect(page.locator('[data-pagination] a[aria-current]')).toHaveCount(0);
   });
 });
 
 test.describe("themes & OS accessibility settings", () => {
   test("forest theme flips the accent to green", async ({ page }) => {
-    await page.goto("/demo/");
-    const root = page.locator("html");
-    const before = await root.evaluate((el) =>
-      getComputedStyle(el).getPropertyValue("--fz-primary").trim()
-    );
-    await root.evaluate((el) => {
+    await gotoDemo(page);
+    // Probe what the accent paints — getPropertyValue would return the
+    // unresolved light-dark() string on a plain custom property.
+    const before = await tokenColor(page, "--fz-primary");
+    await page.locator("html").evaluate((el) => {
       el.dataset.theme = "forest";
     });
-    const after = await root.evaluate((el) =>
-      getComputedStyle(el).getPropertyValue("--fz-primary").trim()
-    );
+    const after = await tokenColor(page, "--fz-primary");
     expect(before).not.toBe(after);
     expect(after).toBe("rgb(47, 107, 79)");
   });
 
   test("prefers-contrast: more forces black-on-white tokens", async ({ page }) => {
     await page.emulateMedia({ contrast: "more" });
-    await page.goto("/demo/");
-    const root = page.locator("html");
-    const text = await root.evaluate((el) =>
-      getComputedStyle(el).getPropertyValue("--fz-text").trim()
-    );
-    expect(text).toBe("rgb(0, 0, 0)");
+    await gotoDemo(page);
+    // Read what the token PAINTS, not its serialized form — plain
+    // custom properties resolve light-dark() at the consumer property.
+    expect(await tokenColor(page, "--fz-text")).toBe("rgb(0, 0, 0)");
   });
 });
 
 test.describe("v1.5 form completion", () => {
   test("select gets a themed chevron (appearance none + reserved padding)", async ({ page }) => {
-    await page.goto("/demo/");
-    const sel = page.locator("#country");
+    await gotoDemo(page);
+    const sel = page.locator(DEMOS.country);
     await expect(sel).toHaveCSS("appearance", "none");
     const arrow = await sel.evaluate((el) => getComputedStyle(el).backgroundImage);
     expect(arrow).toContain("svg");
@@ -228,26 +229,26 @@ test.describe("v1.5 form completion", () => {
   });
 
   test("file input button is skinned via ::file-selector-button", async ({ page }) => {
-    await page.goto("/demo/");
-    const btn = await page.evaluate(() => {
-      const el = document.querySelector("#file");
+    await gotoDemo(page);
+    const btn = await page.evaluate((file) => {
+      const el = document.querySelector(file);
       const s = getComputedStyle(el, "::file-selector-button");
       return { bg: s.backgroundColor, h: s.height };
-    });
-    expect(btn.bg).toBe("rgb(244, 244, 244)"); // --fz-surface-alt (light)
+    }, DEMOS.file);
+    expect(btn.bg).toBe(await tokenColor(page, "--fz-surface-alt")); // --fz-surface-alt
     expect(btn.h).toBe("40px"); // --fz-control-height
   });
 
   test("color input renders as a themed swatch", async ({ page }) => {
-    await page.goto("/demo/");
-    const c = page.locator("#favcolor");
+    await gotoDemo(page);
+    const c = page.locator(DEMOS.favcolor);
     await expect(c).toHaveCSS("height", "40px");
     await expect(c).toHaveCSS("width", "40px");
     await expect(c).toHaveCSS("border-radius", "4px"); // --fz-radius-sm
   });
 
   test("required controls get a danger asterisk on their wrapped label", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const marker = await page.evaluate(() => {
       const label = document.querySelector("label:has(> input[required])");
       return getComputedStyle(label, "::after").content;
@@ -256,28 +257,28 @@ test.describe("v1.5 form completion", () => {
   });
 
   test("autogrow textarea opts into field-sizing: content", async ({ page }) => {
-    await page.goto("/demo/");
-    await expect(page.locator("#bio")).toHaveCSS("field-sizing", "content");
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.bio)).toHaveCSS("field-sizing", "content");
   });
 
   test("form:has(:user-invalid) marks the whole form after user interaction", async ({ page }) => {
-    await page.goto("/demo/");
-    const email = page.locator("#email");
+    await gotoDemo(page);
+    const email = page.locator(DEMOS.email);
     await email.fill("not-an-email");
     await email.blur();
-    await expect(page.locator("#demo-form")).toHaveCSS("outline-style", "solid");
+    await expect(page.locator(DEMOS.demoForm)).toHaveCSS("outline-style", "solid");
   });
 
   test("output is a styled live region", async ({ page }) => {
-    await page.goto("/demo/");
-    await expect(page.locator("#amount-out")).toHaveCSS("font-weight", "600");
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.amountOut)).toHaveCSS("font-weight", "600");
   });
 });
 
 test.describe("v1.6 layout & navigation", () => {
   test("spacing scale: mt/p/px/py map to the token scale (axis shorthands win)", async ({ page }) => {
-    await page.goto("/demo/");
-    const cs = await page.locator("#spacing-probe").evaluate((el) => {
+    await gotoDemo(page);
+    const cs = await page.locator(DEMOS.spacingProbe).evaluate((el) => {
       const s = getComputedStyle(el);
       return {
         mt: s.marginBlockStart,
@@ -295,8 +296,8 @@ test.describe("v1.6 layout & navigation", () => {
   });
 
   test("grid auto-fit: as many columns as fit, each ≥ --fz-grid-min", async ({ page }) => {
-    await page.goto("/demo/");
-    const cards = page.locator("#demo-grid-auto .card");
+    await gotoDemo(page);
+    const cards = page.locator(`${DEMOS.demoGridAuto} .card`);
     // All three cards on one row → the grid fit ≥3 columns.
     const tops = await cards.evaluateAll((els) =>
       els.map((el) => Math.round(el.getBoundingClientRect().top))
@@ -311,32 +312,32 @@ test.describe("v1.6 layout & navigation", () => {
   });
 
   test("grid gap follows data-gap from the spacing scale", async ({ page }) => {
-    await page.goto("/demo/");
-    await expect(page.locator("#demo-grid-gap")).toHaveCSS("gap", "8px"); // --fz-space-2
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.demoGridGap)).toHaveCSS("gap", "8px"); // --fz-space-2
   });
 
   test("nav: current page is accent + semibold, links are padded pills", async ({ page }) => {
-    await page.goto("/demo/");
-    const current = page.locator('#demo-nav [aria-current="page"]');
+    await gotoDemo(page);
+    const current = page.locator(`${DEMOS.demoNav} [aria-current="page"]`);
     await expect(current).toHaveText("Home");
     await expect(current).toHaveCSS("font-weight", "600");
     const color = await current.evaluate((el) => getComputedStyle(el).color);
-    expect(color).toBe("rgb(26, 26, 26)"); // --fz-primary (light)
-    await expect(page.locator("#demo-nav a").nth(1)).toHaveCSS("padding-left", "12px"); // space-3 pill
+    expect(color).toBe(await tokenColor(page, "--fz-primary")); // --fz-primary
+    await expect(page.locator(`${DEMOS.demoNav} a`).nth(1)).toHaveCSS("padding-left", "12px"); // space-3 pill
   });
 
   test("nav footer variant is muted with a top hairline", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await expect(page.locator('[data-nav="footer"]')).toHaveCSS("border-top-style", "solid");
     const fg = await page.locator('[data-nav="footer"] > span').evaluate(
       (el) => getComputedStyle(el.parentElement).color
     );
-    expect(fg).toBe("rgb(90, 90, 90)"); // --fz-muted (light)
+    expect(fg).toBe(await tokenColor(page, "--fz-muted")); // --fz-muted
   });
 
   test("sidebar splits aside from main and stacks when narrow", async ({ page }) => {
-    await page.goto("/demo/");
-    const sidebar = page.locator("#demo-sidebar");
+    await gotoDemo(page);
+    const sidebar = page.locator(DEMOS.demoSidebar);
     await expect(sidebar).toHaveCSS("display", "flex");
     const basis = await sidebar
       .locator(":scope > :first-child")
@@ -352,102 +353,108 @@ test.describe("v1.6 layout & navigation", () => {
   });
 
   test("sticky utility pins to --fz-sticky-top", async ({ page }) => {
-    await page.goto("/demo/");
-    await expect(page.locator("#demo-sticky")).toHaveCSS("position", "sticky");
-    await expect(page.locator("#demo-sticky")).toHaveCSS("top", "0px");
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.demoSticky)).toHaveCSS("position", "sticky");
+    await expect(page.locator(DEMOS.demoSticky)).toHaveCSS("top", "0px");
   });
 });
 
 test.describe("v1.7 feedback & status", () => {
   test("status tokens resolve as light-dark pairs (flip with color-scheme)", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
+    // Probe what each token paints under both schemes — getPropertyValue
+    // would return the unresolved light-dark() string now that tokens
+    // are plain custom properties (ADR-0005).
     const t = await page.evaluate(() => {
       const root = document.documentElement;
-      const read = () => {
-        const s = getComputedStyle(root);
-        return {
-          success: s.getPropertyValue("--fz-success").trim(),
-          info: s.getPropertyValue("--fz-info").trim(),
-          warning: s.getPropertyValue("--fz-warning").trim(),
-        };
-      };
+      const probe = document.createElement("span");
+      document.body.append(probe);
+      const names = ["--fz-success", "--fz-info", "--fz-warning"];
+      const read = () =>
+        names.map((name) => {
+          probe.style.color = `var(${name})`;
+          return getComputedStyle(probe).color;
+        });
       root.style.colorScheme = "light";
       const light = read();
       root.style.colorScheme = "dark";
       const dark = read();
       root.style.colorScheme = "";
+      probe.remove();
       return { light, dark };
     });
-    expect(t.light.success).toBe("rgb(26, 127, 55)");
-    expect(t.light.info).toBe("rgb(9, 105, 218)");
-    expect(t.light.warning).toBe("rgb(154, 103, 0)");
-    expect(t.dark.success).not.toBe(t.light.success);
-    expect(t.dark.info).not.toBe(t.light.info);
-    expect(t.dark.warning).not.toBe(t.light.warning);
+    const [successL, infoL, warningL] = t.light;
+    const [successD, infoD, warningD] = t.dark;
+    expect(successL).toBe("rgb(26, 127, 55)");
+    expect(infoL).toBe("rgb(9, 105, 218)");
+    expect(warningL).toBe("rgb(154, 103, 0)");
+    expect(successD).not.toBe(successL);
+    expect(infoD).not.toBe(infoL);
+    expect(warningD).not.toBe(warningL);
   });
 
   test("alert: data-alert variants paint the status edge from the tokens", async ({ page }) => {
-    await page.goto("/demo/");
-    // light() → light value of --fz-danger (#b3261e → rgb(179, 38, 30)).
-    await expect(page.locator("#demo-alert-danger")).toHaveCSS("border-inline-start-color", "rgb(179, 38, 30)");
-    await expect(page.locator("#demo-alert-success")).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)");
-    await expect(page.locator("#demo-alert-info")).toHaveCSS("border-inline-start-color", "rgb(9, 105, 218)");
-    await expect(page.locator("#demo-alert-warning")).toHaveCSS("border-inline-start-color", "rgb(154, 103, 0)");
+    await gotoDemo(page);
+    // Status edges read the tokens — tokenColor resolves whatever theme is active.
+    await expect(page.locator(DEMOS.demoAlertDanger)).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-danger"));
+    await expect(page.locator(DEMOS.demoAlertSuccess)).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-success"));
+    await expect(page.locator(DEMOS.demoAlertInfo)).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-info"));
+    await expect(page.locator(DEMOS.demoAlertWarning)).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-warning"));
   });
 
   test("alert dismiss button removes its alert (opt-in js/alert-dismiss.js)", async ({ page }) => {
-    await page.goto("/demo/");
-    const alert = page.locator("#demo-alert-danger");
+    await gotoDemo(page);
+    const alert = page.locator(DEMOS.demoAlertDanger);
     await alert.getByRole("button", { name: "Dismiss" }).click();
     await expect(alert).toHaveCount(0);
   });
 
   test("field validation: touched invalid fields get the danger border, valid get success", async ({ page }) => {
-    await page.goto("/demo/");
-    const email = page.locator("#demo-email");
+    await gotoDemo(page);
+    const email = page.locator(DEMOS.demoEmail);
     await email.fill("nope");
     await email.blur();
-    await expect(email).toHaveCSS("border-color", "rgb(179, 38, 30)"); // --fz-danger (light)
+    await expect(email).toHaveCSS("border-color", await tokenColor(page, "--fz-danger")); // --fz-danger (light)
 
     await email.fill("you@example.com");
     await email.blur();
-    await expect(email).toHaveCSS("border-color", "rgb(26, 127, 55)"); // --fz-success (light)
+    await expect(email).toHaveCSS("border-color", await tokenColor(page, "--fz-success")); // --fz-success (light)
   });
 
   test("field validation: [aria-invalid] mirrors the state for script-driven forms", async ({ page }) => {
-    await page.goto("/demo/");
-    const input = page.locator("#demo-user");
+    await gotoDemo(page);
+    const input = page.locator(DEMOS.demoUser);
     await input.evaluate((el) => {
       el.setAttribute("aria-invalid", "true");
       el.setAttribute("aria-describedby", "user-msg");
     });
-    await expect(input).toHaveCSS("border-color", "rgb(179, 38, 30)");
+    await expect(input).toHaveCSS("border-color", await tokenColor(page, "--fz-danger"));
     await input.evaluate((el) => el.setAttribute("aria-invalid", "false"));
-    await expect(input).toHaveCSS("border-color", "rgb(26, 127, 55)");
+    await expect(input).toHaveCSS("border-color", await tokenColor(page, "--fz-success"));
   });
 
   test("skeleton: shimmering placeholder with a surface-alt base", async ({ page }) => {
-    await page.goto("/demo/");
-    const sk = page.locator("#demo-skeleton-line");
-    await expect(sk).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt (light)
+    await gotoDemo(page);
+    const sk = page.locator(DEMOS.demoSkeletonLine);
+    await expect(sk).toHaveCSS("background-color", await tokenColor(page, "--fz-surface-alt")); // --fz-surface-alt (light)
     const anim = await sk.evaluate((el) => getComputedStyle(el, "::after").animationName);
     expect(anim).toBe("fz-skeleton-shimmer");
   });
 
   test("skeleton: shimmer disabled under prefers-reduced-motion", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const anim = await page
-      .locator("#demo-skeleton-line")
+      .locator(DEMOS.demoSkeletonLine)
       .evaluate((el) => getComputedStyle(el, "::after").animationName);
     expect(anim).toBe("none");
   });
 
   test("toast: popover opens declaratively, Esc closes, pinned to bottom edge", async ({ page }) => {
-    await page.goto("/demo/");
-    const toast = page.locator("#demo-toast");
+    await gotoDemo(page);
+    const toast = page.locator(DEMOS.demoToast);
     await expect(toast).toBeHidden();
-    await page.locator("#toast-trigger").click();
+    await page.locator(DEMOS.toastTrigger).click();
     await expect(toast).toBeVisible();
     await expect(toast).toHaveAttribute("role", "status");
     const pos = await toast.evaluate((el) => {
@@ -461,13 +468,13 @@ test.describe("v1.7 feedback & status", () => {
   });
 
   test("toast: data-variant tints the edge from the status tokens", async ({ page }) => {
-    await page.goto("/demo/");
-    await page.locator("#toast-trigger").click();
-    await expect(page.locator("#demo-toast")).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)");
+    await gotoDemo(page);
+    await page.locator(DEMOS.toastTrigger).click();
+    await expect(page.locator(DEMOS.demoToast)).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-success"));
   });
 
   test("badge: status variants map to the status tokens", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // Reuse the alert section badges? None there — check token-backed styles
     // via the conformance demo by injecting a badge in a temp container.
     const colors = await page.evaluate(() => {
@@ -481,23 +488,23 @@ test.describe("v1.7 feedback & status", () => {
       host.remove();
       return { s, i, w };
     });
-    expect(colors.s).toBe("rgb(26, 127, 55)");
-    expect(colors.i).toBe("rgb(9, 105, 218)");
-    expect(colors.w).toBe("rgb(154, 103, 0)");
+    expect(colors.s).toBe(await tokenColor(page, "--fz-success"));
+    expect(colors.i).toBe(await tokenColor(page, "--fz-info"));
+    expect(colors.w).toBe(await tokenColor(page, "--fz-warning"));
   });
 });
 
 test.describe("v1.8 content & media", () => {
   test("fluid type: headings clamp — smaller on a narrow viewport, capped on a wide one", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const wide = await page
-      .locator("#typography h1")
+      .locator(`${DEMOS.typography} h1`)
       .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
 
     await page.setViewportSize({ width: 360, height: 800 });
     const narrow = await page
-      .locator("#typography h1")
+      .locator(`${DEMOS.typography} h1`)
       .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
 
     expect(wide).toBe(40);   // --fz-type-2xl caps at 2.5rem
@@ -506,8 +513,8 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("fluid type: headings read the --fz-type-* tokens", async ({ page }) => {
-    await page.goto("/demo/");
-    const sizes = await page.locator("#typography h1, #typography h2, #typography h3, #typography h4").evaluateAll((els) => {
+    await gotoDemo(page);
+    const sizes = await page.locator(`${DEMOS.typography} h1, ${DEMOS.typography} h2, ${DEMOS.typography} h3, ${DEMOS.typography} h4`).evaluateAll((els) => {
       const root = getComputedStyle(document.documentElement);
       // Resolve a token to its used px (same viewport) so the heading's
       // computed size can be compared with the token it should read.
@@ -533,10 +540,10 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("prose: headings open a section (big gap above, tight gap below)", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // The first h3 is :first-child → margin-block-start: 0 (by design).
     // Test the second h3 to assert the section rhythm.
-    const heading = page.locator("#demo-prose h3").nth(1);
+    const heading = page.locator(`${DEMOS.demoProse} h3`).nth(1);
     const mt = parseFloat(await heading.evaluate((el) => getComputedStyle(el).marginTop));
     const mb = parseFloat(await heading.evaluate((el) => getComputedStyle(el).marginBottom));
     expect(mt).toBe(48); // --fz-space-7 (3rem)
@@ -545,8 +552,8 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("prose: tables get their own vertical room inside the wrapper", async ({ page }) => {
-    await page.goto("/demo/");
-    const table = page.locator("#demo-prose table");
+    await gotoDemo(page);
+    const table = page.locator(`${DEMOS.demoProse} table`);
     const mt = parseFloat(await table.evaluate((el) => getComputedStyle(el).marginTop));
     expect(mt).toBe(24); // --fz-space-5 (1.5rem)
     // Table is width: 100% (computed = parent width in px). Assert it fills the prose container.
@@ -557,8 +564,8 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("avatar: circular, token-sized, object-fit cover", async ({ page }) => {
-    await page.goto("/demo/");
-    const av = page.locator("#demo-avatar");
+    await gotoDemo(page);
+    const av = page.locator(DEMOS.demoAvatar);
     await expect(av).toHaveCSS("border-radius", "50%");
     await expect(av).toHaveCSS("width", "40px"); // --fz-avatar-size (2.5rem)
     await expect(av).toHaveCSS("height", "40px");
@@ -566,26 +573,26 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("avatar: data-size sm/lg resize from the token edge", async ({ page }) => {
-    await page.goto("/demo/");
-    await expect(page.locator("#demo-avatar-sm")).toHaveCSS("width", "28px"); // 1.75rem
-    const lg = page.locator('#media .fz-avatar[data-size="lg"]');
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.demoAvatarSm)).toHaveCSS("width", "28px"); // 1.75rem
+    const lg = page.locator(`${DEMOS.media} .fz-avatar[data-size="lg"]`);
     await expect(lg).toHaveCSS("width", "64px"); // 4rem
   });
 
   test("media: [data-media] locks a 16:9 box, data-ratio overrides", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const ratio = async (sel) => {
       const box = await page.locator(sel).boundingBox();
       return box.height / box.width;
     };
-    expect(await ratio("#demo-media-16")).toBeCloseTo(9 / 16, 2);
-    expect(await ratio('#media [data-media][data-ratio="1/1"]')).toBeCloseTo(1, 2);
-    expect(await ratio('#media [data-media][data-ratio="21/9"]')).toBeCloseTo(9 / 21, 2);
+    expect(await ratio(DEMOS.demoMedia16)).toBeCloseTo(9 / 16, 2);
+    expect(await ratio(`${DEMOS.media} [data-media][data-ratio="1/1"]`)).toBeCloseTo(1, 2);
+    expect(await ratio(`${DEMOS.media} [data-media][data-ratio="21/9"]`)).toBeCloseTo(9 / 21, 2);
   });
 
   test("media: images are responsive — capped width, kept ratio", async ({ page }) => {
-    await page.goto("/demo/");
-    const img = page.locator("#demo-responsive-img");
+    await gotoDemo(page);
+    const img = page.locator(DEMOS.demoResponsiveImg);
     await expect(img).toHaveCSS("max-width", "100%");
     const fits = await img.evaluate((el) => {
       const imgBox = el.getBoundingClientRect();
@@ -598,8 +605,8 @@ test.describe("v1.8 content & media", () => {
   });
 
   test("media card: card[data-media] bleeds media to the top, body keeps padding", async ({ page }) => {
-    await page.goto("/demo/");
-    const card = page.locator("#demo-media-card");
+    await gotoDemo(page);
+    const card = page.locator(DEMOS.demoMediaCard);
     await expect(card).toHaveCSS("padding", "0px");
     await expect(card.locator(":scope > img")).toHaveCSS("border-radius", "0px");
     await expect(card.locator(":scope > header")).toHaveCSS("padding", "24px"); // --fz-space-5
@@ -608,108 +615,108 @@ test.describe("v1.8 content & media", () => {
 
 test.describe("v1.9 stepper & input groups", () => {
   test("stepper horizontal: completed steps use success token, current uses primary", async ({ page }) => {
-    await page.goto("/demo/");
-    const stepper = page.locator("#demo-stepper-h");
+    await gotoDemo(page);
+    const stepper = page.locator(DEMOS.demoStepperH);
     const circles = stepper.locator("[data-step-circle]");
 
     // First step (completed) — success colors
-    await expect(circles.nth(0)).toHaveCSS("border-color", "rgb(26, 127, 55)"); // --fz-success
-    await expect(circles.nth(0)).toHaveCSS("background-color", "rgb(26, 127, 55)");
-    await expect(circles.nth(0)).toHaveCSS("color", "rgb(255, 255, 255)"); // --fz-success-fg
+    await expect(circles.nth(0)).toHaveCSS("border-color", await tokenColor(page, "--fz-success")); // --fz-success
+    await expect(circles.nth(0)).toHaveCSS("background-color", await tokenColor(page, "--fz-success"));
+    await expect(circles.nth(0)).toHaveCSS("color", await tokenColor(page, "--fz-success-fg")); // --fz-success-fg
 
     // Second step (current) — primary colors
-    await expect(circles.nth(1)).toHaveCSS("border-color", "rgb(26, 26, 26)"); // --fz-primary
-    await expect(circles.nth(1)).toHaveCSS("background-color", "rgb(26, 26, 26)");
-    await expect(circles.nth(1)).toHaveCSS("color", "rgb(255, 255, 255)"); // --fz-primary-fg
+    await expect(circles.nth(1)).toHaveCSS("border-color", await tokenColor(page, "--fz-primary")); // --fz-primary
+    await expect(circles.nth(1)).toHaveCSS("background-color", await tokenColor(page, "--fz-primary"));
+    await expect(circles.nth(1)).toHaveCSS("color", await tokenColor(page, "--fz-primary-fg")); // --fz-primary-fg
 
     // Third step (pending) — muted/border colors
-    await expect(circles.nth(2)).toHaveCSS("border-color", "rgb(216, 216, 216)"); // --fz-border
-    await expect(circles.nth(2)).toHaveCSS("background-color", "rgb(255, 255, 255)"); // --fz-surface
-    await expect(circles.nth(2)).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
+    await expect(circles.nth(2)).toHaveCSS("border-color", await tokenColor(page, "--fz-border")); // --fz-border
+    await expect(circles.nth(2)).toHaveCSS("background-color", await tokenColor(page, "--fz-surface")); // --fz-surface
+    await expect(circles.nth(2)).toHaveCSS("color", await tokenColor(page, "--fz-muted")); // --fz-muted
   });
 
   test("stepper vertical: same token mapping, vertical layout", async ({ page }) => {
-    await page.goto("/demo/");
-    const stepper = page.locator("#demo-stepper-v");
+    await gotoDemo(page);
+    const stepper = page.locator(DEMOS.demoStepperV);
     const circles = stepper.locator("[data-step-circle]");
 
     // First step (completed)
-    await expect(circles.nth(0)).toHaveCSS("border-color", "rgb(26, 127, 55)");
-    await expect(circles.nth(0)).toHaveCSS("background-color", "rgb(26, 127, 55)");
+    await expect(circles.nth(0)).toHaveCSS("border-color", await tokenColor(page, "--fz-success"));
+    await expect(circles.nth(0)).toHaveCSS("background-color", await tokenColor(page, "--fz-success"));
 
     // Second step (current)
-    await expect(circles.nth(1)).toHaveCSS("border-color", "rgb(26, 26, 26)");
-    await expect(circles.nth(1)).toHaveCSS("background-color", "rgb(26, 26, 26)");
+    await expect(circles.nth(1)).toHaveCSS("border-color", await tokenColor(page, "--fz-primary"));
+    await expect(circles.nth(1)).toHaveCSS("background-color", await tokenColor(page, "--fz-primary"));
 
     // Third step (pending)
-    await expect(circles.nth(2)).toHaveCSS("border-color", "rgb(216, 216, 216)");
-    await expect(circles.nth(2)).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(circles.nth(2)).toHaveCSS("border-color", await tokenColor(page, "--fz-border"));
+    await expect(circles.nth(2)).toHaveCSS("background-color", await tokenColor(page, "--fz-surface"));
   });
 
   test("input group: leading affix shares input focus state", async ({ page }) => {
-    await page.goto("/demo/");
-    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    await gotoDemo(page);
+    const group = page.locator(`${DEMOS.demoInputGroupForm} [data-input-group]`).first();
     const affix = group.locator(":scope > :first-child");
     const input = group.locator("input");
 
     // Default state — check border-inline-start-color to avoid shorthand
-    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(216, 216, 216)"); // --fz-border
-    await expect(affix).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
-    await expect(affix).toHaveCSS("background-color", "rgb(244, 244, 244)"); // --fz-surface-alt
+    await expect(affix).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-border")); // --fz-border
+    await expect(affix).toHaveCSS("color", await tokenColor(page, "--fz-muted")); // --fz-muted
+    await expect(affix).toHaveCSS("background-color", await tokenColor(page, "--fz-surface-alt")); // --fz-surface-alt
 
     // Focus state
     await input.focus();
-    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(26, 26, 26)"); // --fz-focus-ring
-    await expect(affix).toHaveCSS("color", "rgb(26, 26, 26)");
+    await expect(affix).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-focus-ring")); // --fz-focus-ring
+    await expect(affix).toHaveCSS("color", await tokenColor(page, "--fz-focus-ring"));
   });
 
   test("input group: leading affix shares input validation state (invalid)", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // Use the username input (text type) for invalid test
-    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    const group = page.locator(`${DEMOS.demoInputGroupForm} [data-input-group]`).first();
     const affix = group.locator(":scope > :first-child");
     const input = group.locator("input");
 
     // Trigger invalid state — fill with invalid email-like text then blur
     // Actually, let's use the required attribute approach
     await input.evaluate((el) => el.setAttribute("aria-invalid", "true"));
-    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(179, 38, 30)"); // --fz-danger
-    await expect(affix).toHaveCSS("color", "rgb(179, 38, 30)");
+    await expect(affix).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-danger")); // --fz-danger
+    await expect(affix).toHaveCSS("color", await tokenColor(page, "--fz-danger"));
   });
 
   test("input group: leading affix shares input validation state (valid)", async ({ page }) => {
-    await page.goto("/demo/");
-    const group = page.locator("#demo-input-group-form [data-input-group]").first();
+    await gotoDemo(page);
+    const group = page.locator(`${DEMOS.demoInputGroupForm} [data-input-group]`).first();
     const affix = group.locator(":scope > :first-child");
     const input = group.locator("input");
 
     // Trigger valid state
     await input.evaluate((el) => el.setAttribute("aria-invalid", "false"));
-    await expect(affix).toHaveCSS("border-inline-start-color", "rgb(26, 127, 55)"); // --fz-success
-    await expect(affix).toHaveCSS("color", "rgb(26, 127, 55)");
+    await expect(affix).toHaveCSS("border-inline-start-color", await tokenColor(page, "--fz-success")); // --fz-success
+    await expect(affix).toHaveCSS("color", await tokenColor(page, "--fz-success"));
   });
 
   test("date/number/email inputs get themed surface and validation", async ({ page }) => {
-    await page.goto("/demo/");
-    const email = page.locator("#polish-email");
-    const number = page.locator("#polish-number");
-    const date = page.locator("#polish-date");
+    await gotoDemo(page);
+    const email = page.locator(DEMOS.polishEmail);
+    const number = page.locator(DEMOS.polishNumber);
+    const date = page.locator(DEMOS.polishDate);
 
     // All should have the shared input styles — height may be 42px due to line-height
-    await expect(email).toHaveCSS("background-color", "rgb(255, 255, 255)"); // --fz-surface
-    await expect(email).toHaveCSS("border-color", "rgb(216, 216, 216)"); // --fz-border
+    await expect(email).toHaveCSS("background-color", await tokenColor(page, "--fz-surface")); // --fz-surface
+    await expect(email).toHaveCSS("border-color", await tokenColor(page, "--fz-border")); // --fz-border
     await expect(email).toHaveCSS("min-height", "40px"); // --fz-control-height
 
-    await expect(number).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(number).toHaveCSS("background-color", await tokenColor(page, "--fz-surface"));
     await expect(number).toHaveCSS("min-height", "40px");
 
-    await expect(date).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(date).toHaveCSS("background-color", await tokenColor(page, "--fz-surface"));
     await expect(date).toHaveCSS("min-height", "40px");
   });
 
   test("number input hides spinner by default (appearance: textfield)", async ({ page }) => {
-    await page.goto("/demo/");
-    const number = page.locator("#polish-number");
+    await gotoDemo(page);
+    const number = page.locator(DEMOS.polishNumber);
 
     // Should have appearance: textfield (hiding native spinner)
     await expect(number).toHaveCSS("appearance", "textfield");
@@ -717,8 +724,8 @@ test.describe("v1.9 stepper & input groups", () => {
 
   test("date input has themed calendar picker indicator", async ({ page, browserName }) => {
     test.skip(browserName !== "chromium", "WebKit/Blink pseudo-element");
-    await page.goto("/demo/");
-    const date = page.locator("#polish-date");
+    await gotoDemo(page);
+    const date = page.locator(DEMOS.polishDate);
 
     // The calendar picker indicator should have opacity transition (default 1, 0.6 on hover)
     const indicatorOpacity = await date.evaluate((el) =>
@@ -731,7 +738,7 @@ test.describe("v1.9 stepper & input groups", () => {
 
 test.describe("v2.2 tokens, motion & print safety", () => {
   test("stroke and pill tokens resolve and drive components", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const root = page.locator("html");
     const borderWidth = await root.evaluate((el) =>
       getComputedStyle(el).getPropertyValue("--fz-border-width").trim()
@@ -753,7 +760,7 @@ test.describe("v2.2 tokens, motion & print safety", () => {
   });
 
   test("z-index scale orders dropdown < sticky < dialog < toast", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const root = page.locator("html");
     const z = async (name) =>
       parseInt(
@@ -776,7 +783,7 @@ test.describe("v2.2 tokens, motion & print safety", () => {
 
   test("prefers-reduced-motion: reduce neutralizes motion", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/demo/");
+    await gotoDemo(page);
 
     // Smooth scrolling is switched off…
     const scrollBehavior = await page
@@ -792,7 +799,7 @@ test.describe("v2.2 tokens, motion & print safety", () => {
     for (const d of durations) expect(d).toBeLessThan(1);
 
     // The skeleton shimmer stops too (animation runs once, ~no time).
-    const skeleton = page.locator("#demo-skeleton-line");
+    const skeleton = page.locator(DEMOS.demoSkeletonLine);
     const iteration = await skeleton.evaluate(
       (el) => getComputedStyle(el, "::after").animationIterationCount
     );
@@ -800,7 +807,7 @@ test.describe("v2.2 tokens, motion & print safety", () => {
   });
 
   test("print stylesheet forces light-on-white, no shadows", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     // Even with a dark theme active, paper gets ink on white.
     await page.locator("html").evaluate((el) => { el.dataset.theme = "dark"; });
     await page.emulateMedia({ media: "print" });
@@ -827,8 +834,8 @@ test.describe("v2.2 tokens, motion & print safety", () => {
 
 test.describe("v2.4 components", () => {
   test("avatar group overlaps avatars behind a surface ring", async ({ page }) => {
-    await page.goto("/demo/");
-    const avatars = page.locator("#demo-avatar-group .fz-avatar");
+    await gotoDemo(page);
+    const avatars = page.locator(`${DEMOS.demoAvatarGroup} .fz-avatar`);
     await expect(avatars).toHaveCount(4);
 
     // The second avatar starts before the first one ends — a real
@@ -844,28 +851,28 @@ test.describe("v2.4 components", () => {
     const shadow = await avatars.nth(1).evaluate(
       (el) => getComputedStyle(el).boxShadow
     );
-    expect(shadow).toContain("rgb(255, 255, 255)"); // --fz-surface (light)
+    expect(shadow).toContain(await tokenColor(page, "--fz-surface")); // --fz-surface
   });
 
   test("spinner rotates via fz-spin and reads the accent tokens", async ({ page }) => {
-    await page.goto("/demo/");
-    const spinner = page.locator("#demo-spinner");
+    await gotoDemo(page);
+    const spinner = page.locator(DEMOS.demoSpinner);
     const name = await spinner.evaluate(
       (el) => getComputedStyle(el).animationName
     );
     expect(name).toBe("fz-spin");
     await expect(spinner).toHaveCSS("border-radius", "999px"); // --fz-radius-full
-    await expect(spinner).toHaveCSS("border-top-color", "rgb(26, 26, 26)"); // --fz-primary (light)
+    await expect(spinner).toHaveCSS("border-top-color", await tokenColor(page, "--fz-primary")); // --fz-primary (light)
 
     // Sizes: default 1.5rem, lg tracks the control height token.
     await expect(spinner).toHaveCSS("width", "24px");
-    const lg = page.locator('#spinner [data-spinner][data-size="lg"]');
+    const lg = page.locator(`${DEMOS.spinner} [data-spinner][data-size="lg"]`);
     await expect(lg).toHaveCSS("width", "40px"); // --fz-control-height
   });
 
   test("divider draws hairlines around real text", async ({ page }) => {
-    await page.goto("/demo/");
-    const divider = page.locator("#demo-divider");
+    await gotoDemo(page);
+    const divider = page.locator(DEMOS.demoDivider);
     await expect(divider).toHaveCSS("display", "flex");
 
     // Both rules render at the stroke token's width…
@@ -876,7 +883,7 @@ test.describe("v2.4 components", () => {
     expect(rules).toEqual(["1px", "1px"]); // --fz-border-width
 
     // …and the label is muted secondary text, not a heading look.
-    await expect(divider).toHaveCSS("color", "rgb(90, 90, 90)"); // --fz-muted
+    await expect(divider).toHaveCSS("color", await tokenColor(page, "--fz-muted")); // --fz-muted
     await expect(divider).toHaveCSS("font-weight", "400");
   });
 });
@@ -885,7 +892,7 @@ test.describe("mobile viewport (375px)", () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test("page never overflows horizontally", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const overflow = await page.evaluate(() => ({
       scroll: document.scrollingElement.scrollWidth,
       inner: window.innerWidth,
@@ -894,11 +901,11 @@ test.describe("mobile viewport (375px)", () => {
   });
 
   test("fluid type steps down and tap targets keep their height", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
 
     // Headings shrink below their wide-viewport cap but never collapse.
     const h1 = parseFloat(await page
-      .locator("#typography h1")
+      .locator(`${DEMOS.typography} h1`)
       .evaluate((el) => getComputedStyle(el).fontSize));
     expect(h1).toBeLessThan(40); // below the 2.5rem cap
     expect(h1).toBeGreaterThan(20);
@@ -910,21 +917,21 @@ test.describe("mobile viewport (375px)", () => {
   });
 
   test("hamburger nav: list collapses behind the toggle, links stay full-width", async ({ page }) => {
-    await page.goto("/demo/");
-    const nav = page.locator("#demo-nav-burger");
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavBurger);
     const toggle = nav.locator(".fz-nav-toggle");
-    const firstLink = nav.locator("#demo-nav-menu a").first();
+    const firstLink = nav.locator(`${DEMOS.demoNavMenu} a`).first();
 
     await toggle.click();
     await expect(firstLink).toBeVisible();
 
     // The open menu is a column: each link spans the nav's content box,
     // so the whole row is a tap target.
-    const [navWidth, linkWidth] = await page.evaluate(() => {
-      const n = document.querySelector("#demo-nav-burger");
-      const a = n.querySelector("#demo-nav-menu a");
+    const [navWidth, linkWidth] = await page.evaluate(([navSel, menuSel]) => {
+      const n = document.querySelector(navSel);
+      const a = n.querySelector(`${menuSel} a`);
       return [n.clientWidth, a.getBoundingClientRect().width];
-    });
+    }, [DEMOS.demoNavBurger, DEMOS.demoNavMenu]);
     expect(linkWidth).toBeGreaterThan(navWidth * 0.9);
   });
 });
@@ -939,7 +946,7 @@ test.describe("chips", () => {
     // Standalone fixture: inside a .fz-row the chip is a flex item and
     // its computed display blockifies to "flex" — the fixture shows the
     // component's own value.
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.setContent(markup);
     const chip = page.locator("[data-chip]");
     await expect(chip).toHaveCSS("display", "inline-flex");
@@ -949,5 +956,189 @@ test.describe("chips", () => {
     await expect(btn).toHaveCSS("border-style", "none"); // global button skin reset
     await btn.focus();
     await expect(btn).toHaveCSS("outline-style", "solid");
+  });
+});
+
+test.describe("contrast palette mirrors (ADR-0001)", () => {
+  // Source-parse guards: the manual [data-theme="contrast"] palette and
+  // its OS-settings mirror must stay value-identical (CSS cannot OR a
+  // media query with an attribute selector, so the duplication is
+  // structural — see docs/adr/0001). The print palette may differ in
+  // values on purpose but must cover the same token names.
+
+  // Extracts the balanced { ... } block following a rule anchored at
+  // line start (^ + m flag), so prose mentions in comments can't
+  // hijack the match and reformatting can't strand the literal.
+  function extractCssBlock(css, anchor) {
+    const start = css.search(anchor);
+    if (start === -1) return null;
+    const open = css.indexOf("{", start);
+    let depth = 0;
+    for (let i = open; i < css.length; i++) {
+      if (css[i] === "{") depth++;
+      else if (css[i] === "}") {
+        depth--;
+        if (depth === 0) return css.slice(open + 1, i);
+      }
+    }
+    return null;
+  }
+
+  function parseCustomProps(fragment) {
+    if (fragment == null) return null;
+    return Object.fromEntries(
+      [...fragment.matchAll(/(--fz-[a-z0-9-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()])
+    );
+  }
+
+  let canonical, mirror, printPalette;
+
+  test.beforeAll(() => {
+    const tokensCss = fs.readFileSync(path.join(rootDir, "src/tokens.css"), "utf8");
+    const baseCss = fs.readFileSync(path.join(rootDir, "src/base.css"), "utf8");
+    canonical = parseCustomProps(extractCssBlock(tokensCss, /^\[data-theme="contrast"\]/m));
+    mirror = parseCustomProps(
+      extractCssBlock(extractCssBlock(tokensCss, /^@media\s*\(prefers-contrast:\s*more\)/m), /^[ \t]*:root/m)
+    );
+    printPalette = parseCustomProps(
+      extractCssBlock(extractCssBlock(baseCss, /^[ \t]*@media\s+print/m), /^[ \t]*:root/m)
+    );
+  });
+
+  test("mirror block is found and parses", () => {
+    expect(canonical, "canonical [data-theme=contrast] block").toBeTruthy();
+    expect(mirror, "prefers-contrast mirror block").toBeTruthy();
+    expect(printPalette, "print palette block").toBeTruthy();
+  });
+
+  test("manual contrast and prefers-contrast are value-identical", () => {
+    expect(mirror).toEqual(canonical);
+  });
+
+  test("print palette covers the same token names (values may differ)", () => {
+    expect(Object.keys(printPalette).sort()).toEqual(Object.keys(canonical).sort());
+  });
+});
+
+test.describe("tokens: no typed-property registrations (ADR-0005)", () => {
+  // The ten @property blocks were dead weight: nothing animates a
+  // --fz-* token, and each initial-value duplicated the palette's
+  // light half by hand. Consumers who animate a token register their
+  // own copy (docs/theming.md). This pins the decision so the block
+  // cannot quietly grow back with its drift-prone mirrors.
+  test("tokens.css ships plain custom properties only", () => {
+    const tokensCss = fs.readFileSync(path.join(rootDir, "src/tokens.css"), "utf8");
+    expect(tokensCss, "@property blocks were removed (see ADR-0005)").not.toContain(
+      "@property"
+    );
+  });
+});
+
+test.describe("menu items (shared recipe, ADR-0007)", () => {
+  test("popover and dropdown menu items render identically", async ({ page }) => {
+    await gotoDemo(page);
+
+    await page.locator(DEMOS.helpTrigger).click();
+    const popLink = page.locator(`${DEMOS.helpPop} a`).first();
+    await expect(popLink).toBeVisible();
+
+    await page.locator("[data-menu] > summary").click();
+    const ddLink = page.locator("[data-menu] a").first();
+    await expect(ddLink).toBeVisible();
+
+    // The copies had drifted: popover links kept base.css's underline
+    // and accent color while dropdown links were clean. One recipe
+    // now styles both — assert what it paints.
+    const expectedColor = await tokenColor(page, "--fz-text");
+    for (const link of [popLink, ddLink]) {
+      const s = await link.evaluate((el) => {
+        const cs = getComputedStyle(el);
+        return { deco: cs.textDecorationLine, color: cs.color };
+      });
+      expect(s.deco).toBe("none");
+      expect(s.color).toBe(expectedColor);
+    }
+  });
+});
+
+test.describe("disabled controls (ADR-0007)", () => {
+  test("a disabled switch dims and shows not-allowed, not its pointer", async ({
+    page,
+  }) => {
+    await gotoDemo(page);
+    const sw = page.locator("input[data-switch]").first();
+    await sw.evaluate((el) => {
+      el.disabled = true;
+    });
+    const s = await sw.evaluate((el) => {
+      // Extract primitives here — a live CSSStyleDeclaration does not
+      // survive serialization identically across engines.
+      const cs = getComputedStyle(el);
+      return { cursor: cs.cursor, opacity: cs.opacity };
+    });
+    // The :is()-compressed disabled rule alone is (0,1,1) and would
+    // lose the cursor tiebreak against [data-switch] (0,2,1); the
+    // dedicated arm keeps the original outcome.
+    expect(s.cursor).toBe("not-allowed");
+    expect(s.opacity).toBe("0.5");
+  });
+});
+
+test.describe("shared component recipes (ADR-0007)", () => {
+  test("menu items are styled once, not per-container", () => {
+    const shared = fs.readFileSync(
+      path.join(rootDir, "src/components/menu-items.css"),
+      "utf8"
+    );
+    expect(shared).toContain("details[data-menu]");
+    expect(shared).toContain('[popover][data-kind="menu"]');
+    expect(shared).toContain("text-decoration: none");
+    for (const f of ["dropdown.css", "popover.css"]) {
+      const src = fs.readFileSync(path.join(rootDir, "src/components", f), "utf8");
+      expect(src, `${f} re-implements the shared item recipe`).not.toContain(
+        "text-align: start"
+      );
+      expect(src, `${f} should point at the shared recipe`).toContain(
+        "menu-items.css"
+      );
+    }
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    expect(full).toContain("./components/menu-items.css");
+  });
+
+  test("disabled dimming comes from --fz-disabled-opacity", () => {
+    // Pins the dimming literal only — non-disabled opacity
+    // affordances (e.g. the calendar-picker indicator's 0.6 hover
+    // state) are deliberately out of scope. Known blind spots: `.5`
+    // and `0.55`-style spellings.
+    const files = fs
+      .readdirSync(path.join(rootDir, "src/components"))
+      .filter((f) => f.endsWith(".css"));
+    for (const f of files) {
+      const src = fs.readFileSync(path.join(rootDir, "src/components", f), "utf8");
+      expect(src, `${f} hard-codes the disabled dimming`).not.toMatch(
+        /opacity:\s*0\.5\b/
+      );
+      if (f === "buttons.css" || f === "forms.css") {
+        expect(src, `${f} should consume the shared token`).toContain(
+          "var(--fz-disabled-opacity)"
+        );
+      }
+    }
+  });
+
+  test("no comment-only rules ship in components", () => {
+    // forms.css carried an empty input[type=…] list "for documentation";
+    // comments document, selector lists don't.
+    for (const f of fs
+      .readdirSync(path.join(rootDir, "src/components"))
+      .filter((f) => f.endsWith(".css"))) {
+      const src = fs.readFileSync(path.join(rootDir, "src/components", f), "utf8");
+      const stripped = src.replace(/\/\*[\s\S]*?\*\//g, "");
+      const empties = [...stripped.matchAll(/[^{}]*\{\s*\}/g)];
+      expect(empties.map((m) => m[0].trim()), `${f} ships an empty rule`).toEqual(
+        []
+      );
+    }
   });
 });

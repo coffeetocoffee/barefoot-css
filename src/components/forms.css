@@ -45,15 +45,15 @@
     opacity: 1;
   }
 
-  input:hover:not(:disabled),
-  select:hover:not(:disabled),
-  textarea:hover:not(:disabled) {
+  /* State rules address the same three elements as the shared base
+     rule above; :is() keeps each a single selector. :is() takes the
+     highest specificity of its arguments — plain elements here, so it
+     stays as low as the old lists were. */
+  :is(input, select, textarea):hover:not(:disabled) {
     border-color: var(--fz-border-strong);
   }
 
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible {
+  :is(input, select, textarea):focus-visible {
     border-color: var(--fz-focus-ring);
     outline: none;
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-focus-ring), transparent 75%);
@@ -192,12 +192,12 @@
     background-position: center center;
   }
 
-  input[type="checkbox"]:disabled,
-  input[type="radio"]:disabled,
-  input:disabled,
-  select:disabled,
-  textarea:disabled {
-    opacity: 0.5;
+  :is(input, select, textarea):disabled,
+  /* The switch arm keeps (0,2,1) so not-allowed still beats the
+     switch's cursor: pointer above — the :is() arm alone is
+     (0,1,1) and would lose that tiebreak (ADR-0007). */
+  input[type="checkbox"][data-switch]:disabled {
+    opacity: var(--fz-disabled-opacity);
     cursor: not-allowed;
   }
 
@@ -251,10 +251,12 @@
     background: transparent;
   }
 
-  input[type="range"]:focus-visible {
-    outline: 2px solid var(--fz-focus-ring);
-    outline-offset: 2px;
-  }
+  /* No :focus-visible rule here — range follows the shared input
+     focus treatment above: border-color + box-shadow halo. The rule
+     this comment replaced stacked a duplicate rectangular outline on
+     top of that halo; dropping it makes range match every other
+     input (the base-layer ring never reaches inputs either way — the
+     shared rule's outline: none outranks it by layer order). */
 
   /* ---- Progress & meter ----
      Themed bar in Chromium/WebKit; Firefox renders the native meter and
@@ -302,35 +304,27 @@
     background: var(--fz-danger);
   }
 
-  /* Validation without JS.
+  /* ---- Validation without JS. ----
      :user-invalid / :user-valid fire only after the user has interacted
      with the control (not on page load), so nothing flashes red before
      it's touched. [aria-invalid] covers script-driven forms; pairing
      aria-invalid="false" with a filled field reads as valid. */
-  input:user-invalid,
-  select:user-invalid,
-  textarea:user-invalid,
+  :is(input, select, textarea):user-invalid,
   [aria-invalid="true"] {
     border-color: var(--fz-danger);
   }
 
-  input:user-invalid:focus-visible,
-  select:user-invalid:focus-visible,
-  textarea:user-invalid:focus-visible,
+  :is(input, select, textarea):user-invalid:focus-visible,
   [aria-invalid="true"]:focus-visible {
     box-shadow: 0 0 0 3px var(--fz-danger-muted);
   }
 
-  input:user-valid,
-  select:user-valid,
-  textarea:user-valid,
+  :is(input, select, textarea):user-valid,
   [aria-invalid="false"] {
     border-color: var(--fz-success);
   }
 
-  input:user-valid:focus-visible,
-  select:user-valid:focus-visible,
-  textarea:user-valid:focus-visible,
+  :is(input, select, textarea):user-valid:focus-visible,
   [aria-invalid="false"]:focus-visible {
     box-shadow: 0 0 0 3px var(--fz-success-muted);
   }
@@ -338,9 +332,7 @@
   /* Required marker — only when the control is wrapped in its label
      (the accessible pattern). Screen readers already announce the
      `required` attribute; the asterisk is a visual affordance. */
-  label:has(> input[required])::after,
-  label:has(> select[required])::after,
-  label:has(> textarea[required])::after {
+  label:has(> :is(input, select, textarea)[required])::after {
     content: " *";
     color: var(--fz-danger);
   }
@@ -400,54 +392,35 @@
     font-size: 0.9375rem;
   }
 
-  [data-input-group] > input,
-  [data-input-group] > select,
-  [data-input-group] > textarea {
+  [data-input-group] > :is(input, select, textarea) {
     flex: 1;
     border-radius: 0 var(--fz-radius) var(--fz-radius) 0;
   }
 
-  [data-input-group]:has(> input:focus-visible) > :first-child,
-  [data-input-group]:has(> select:focus-visible) > :first-child,
-  [data-input-group]:has(> textarea:focus-visible) > :first-child {
+  [data-input-group]:has(> :is(input, select, textarea):focus-visible) > :first-child {
     border-color: var(--fz-focus-ring);
     color: var(--fz-focus-ring);
   }
 
-  [data-input-group]:has(> input:user-invalid) > :first-child,
-  [data-input-group]:has(> select:user-invalid) > :first-child,
-  [data-input-group]:has(> textarea:user-invalid) > :first-child,
+  [data-input-group]:has(> :is(input, select, textarea):user-invalid) > :first-child,
   [data-input-group]:has(> [aria-invalid="true"]) > :first-child {
     border-color: var(--fz-danger);
     color: var(--fz-danger);
   }
 
-  [data-input-group]:has(> input:user-valid) > :first-child,
-  [data-input-group]:has(> select:user-valid) > :first-child,
-  [data-input-group]:has(> textarea:user-valid) > :first-child,
+  [data-input-group]:has(> :is(input, select, textarea):user-valid) > :first-child,
   [data-input-group]:has(> [aria-invalid="false"]) > :first-child {
     border-color: var(--fz-success);
     color: var(--fz-success);
   }
 
   /* ---- Date / number / email polish ----
-     The native pickers/spinners stay; we only theme the surface
-     and ensure the shared validation states apply. */
-  input[type="date"],
-  input[type="datetime-local"],
-  input[type="time"],
-  input[type="month"],
-  input[type="week"],
-  input[type="number"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="search"],
-  input[type="password"] {
-    /* Inherit the shared input rule — nothing extra needed,
-       but keeping these listed documents the supported types
-       and makes it easy to add type-specific tweaks later. */
-  }
+     The native pickers/spinners stay; we only theme the surface and
+     ensure the shared validation states apply. Every textual input
+     type (date, datetime-local, time, month, week, number, email,
+     tel, url, search, password) inherits the shared rule at the top
+     of this file — no type-specific overrides needed today, so no
+     empty selector list is kept "for documentation". */
 
   /* Number input — hide the native spinner on hover/focus for a cleaner look;
      the arrows reappear on active interaction (keyboard/mouse). */

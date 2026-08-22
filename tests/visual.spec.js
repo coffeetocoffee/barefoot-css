@@ -9,10 +9,11 @@
 
    npm run test:visual */
 import { test, expect } from "@playwright/test";
+import { gotoDemo } from "./helpers.js";
 
 test.describe("visual regression", () => {
   test("bundled webfonts load (keeps baselines deterministic)", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     const loaded = await page.evaluate(() => ({
       inter: document.fonts.check('16px "Inter"'),
       mono: document.fonts.check('16px "JetBrains Mono"'),
@@ -22,7 +23,7 @@ test.describe("visual regression", () => {
   });
 
   test("light theme", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.getByRole("button", { name: "Light" }).click();
     await page.waitForTimeout(350); // let entrance transitions settle
     // The theme swap runs inside startViewTransition(); force-finish it
@@ -50,7 +51,7 @@ test.describe("visual regression", () => {
   });
 
   test("dark theme", async ({ page }) => {
-    await page.goto("/demo/");
+    await gotoDemo(page);
     await page.getByRole("button", { name: "Dark" }).click();
     await page.waitForTimeout(350);
     await page.evaluate(() => {

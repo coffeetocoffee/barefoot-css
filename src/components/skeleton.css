@@ -39,6 +39,10 @@
     }
   }
 
+  /* Explicitly removed, not just frozen: the global kill switch in
+     base.css clamps duration/iteration but keeps the animation name,
+     and the CSS suite pins name-level removal for this shimmer
+     (ADR-0007). */
   @media (prefers-reduced-motion: reduce) {
     .skeleton::after {
       animation: none;

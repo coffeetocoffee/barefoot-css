@@ -5,8 +5,12 @@
    roving focus, not a modal trap — popovers stay non-modal by design.
    Zero dependencies, <1KB.
 
-   import "barefoot/js/popover-menu.js"
+    import "barefoot/js/popover-menu.js"
 */
+
+import { onDomReady, bindOnce } from "./lifecycle.js";
+import { createRover } from "./roving-index.js";
+import { refocusOpener } from "./return-focus.js";
 
 export function initPopoverMenus(root = document) {
   const menus = root.querySelectorAll('[popover][data-kind="menu"]');
@@ -17,54 +21,46 @@ export function initPopoverMenus(root = document) {
         (el) => !el.disabled
       );
 
-    const trigger = document.querySelector(`[popovertarget="${menu.id}"]`);
+    const trigger = menu.id
+      ? document.querySelector(`[popovertarget="${menu.id}"]`)
+      : null;
+    if (!trigger) {
+      // Focus-return on close is dead without an opener to return to —
+      // say so instead of failing silently.
+      console.warn(
+        `[barefoot] popover-menu: no [popovertarget] trigger for #${menu.id || "(un-id'd menu)"}`
+      );
+    }
+
+    // Guard last: a menu initialized before its [popovertarget] exists
+    // can be re-inited once the trigger arrives.
+    if (!bindOnce(menu, "popover-menu")) continue;
+
+    const rove = createRover(items, { axis: "vertical", wrap: true });
 
     menu.addEventListener("toggle", (e) => {
       if (e.newState === "open") {
         items()[0]?.focus();
-      } else if (menu.contains(document.activeElement) && trigger) {
-        // Esc/item-activation close → hand focus back to the opener.
-        trigger.focus();
+      } else {
+        // Esc/item-activation/light-dismiss close → hand focus back to
+        // the opener (only if focus never left the menu).
+        refocusOpener(menu, trigger);
       }
     });
 
     menu.addEventListener("keydown", (e) => {
-      const list = items();
-      if (list.length === 0) return;
-
-      const idx = list.indexOf(document.activeElement);
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        // From outside the list (idx -1) ArrowDown should land on the
-        // first item, not the second-to-last.
-        list[(idx + 1) % list.length]?.focus();
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        // From outside the list, ArrowUp wraps to the last item.
-        list[idx > 0 ? idx - 1 : list.length - 1]?.focus();
-      } else if (e.key === "Home") {
-        e.preventDefault();
-        list[0]?.focus();
-      } else if (e.key === "End") {
-        e.preventDefault();
-        list[list.length - 1]?.focus();
-      } else if (e.key === "Tab") {
+      // Close-on-Tab is unconditional — even when the roster is empty
+      // (e.g. a search input inside the menu): Tab always means "done
+      // with this menu". Declared deliberately in ADR-0006; the old
+      // inline math skipped it as a guard-placement side effect.
+      if (e.key === "Tab") {
         e.preventDefault();
         menu.hidePopover();
+        return;
       }
+      rove(e);
     });
   }
 }
 
-function autoInit() {
-  const whenReady = () => initPopoverMenus();
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", whenReady);
-  } else {
-    whenReady();
-  }
-}
-
-export default autoInit;
-autoInit();
+onDomReady(() => initPopoverMenus());

@@ -33,7 +33,11 @@
     background: var(--fz-surface-alt);
   }
 
-  table[data-striped] tbody tr:nth-child(odd) {
+  /* Striping must not out-specify hover (:where() drops the attribute
+     and nth-child counts so tr:hover always wins). Values coincide
+     today — both use --fz-surface-alt — but the precedence should not
+     depend on that coincidence. */
+  table:where([data-striped]) tbody tr:where(:nth-child(odd)) {
     background: var(--fz-surface-alt);
   }
 
