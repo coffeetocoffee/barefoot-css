@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-bf-theme="auto">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,41 +30,41 @@
       src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
     }
     :root {
-      --fz-font: "Inter", system-ui, sans-serif;
-      --fz-font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --bf-font: "Inter", system-ui, sans-serif;
+      --bf-font-mono: "JetBrains Mono", ui-monospace, monospace;
     }
-    .hero { padding-block: var(--fz-space-8); }
+    .hero { padding-block: var(--bf-space-8); }
     .hero p { max-width: 60ch; }
-    section { margin-block-start: var(--fz-space-8); }
-    .conformance-table { margin-block-start: var(--fz-space-4); }
+    section { margin-block-start: var(--bf-space-8); }
+    .conformance-table { margin-block-start: var(--bf-space-4); }
     .wcag { white-space: nowrap; }
-    .try { margin-block-start: var(--fz-space-3); }
-    .fz-demo-narrow { flex: 0 0 14rem; }
-    .fz-demo-wide { flex: 1 1 0; min-width: 0; }
+    .try { margin-block-start: var(--bf-space-3); }
+    .bf-demo-narrow { flex: 0 0 14rem; }
+    .bf-demo-wide { flex: 1 1 0; min-width: 0; }
   </style>
 </head>
 <body>
-  <a class="fz-skip-link" href="#main">Skip to content</a>
-  <header class="fz-container hero">
-    <p class="fz-overline">Barefoot CSS</p>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+  <header class="bf-container hero">
+    <p class="bf-overline">Barefoot CSS</p>
     <h1>Conformance demo</h1>
     <p>Every component below is <strong>native HTML</strong>, works <strong>without JavaScript</strong>, and is keyboard-only walkable. Run each walkthrough with nothing but <kbd>Tab</kbd>, <kbd>Enter</kbd>, <kbd>Space</kbd>, <kbd>Esc</kbd>.</p>
 
-    <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
-      <span class="fz-muted">Theme:</span>
-      <button type="button" data-theme-btn="auto">Auto</button>
-      <button type="button" data-theme-btn="light">Light</button>
-      <button type="button" data-theme-btn="dark">Dark</button>
-      <button type="button" data-theme-btn="contrast">Contrast</button>
-      <button type="button" data-theme-btn="editorial">Editorial</button>
-      <button type="button" data-theme-btn="dashboard">Dashboard</button>
-      <button type="button" data-theme-btn="playful">Playful</button>
-      <button type="button" data-theme-btn="forest">Forest</button>
+    <div class="bf-row bf-gap-2" role="group" aria-label="Theme switcher">
+      <span class="bf-muted">Theme:</span>
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="contrast">Contrast</button>
+      <button type="button" data-bf-theme-btn="editorial">Editorial</button>
+      <button type="button" data-bf-theme-btn="dashboard">Dashboard</button>
+      <button type="button" data-bf-theme-btn="playful">Playful</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
     </div>
-    <p class="fz-muted fz-mt-3">Comparing themes? Every starter renders live, side by side, on the <a href="gallery.html">theme gallery</a>.</p>
+    <p class="bf-muted bf-mt-3">Comparing themes? Every starter renders live, side by side, on the <a href="gallery.html">theme gallery</a>.</p>
   </header>
 
-    <main class="fz-container" id="main">
+    <main class="bf-container" id="main">
 
     <!-- Conformance matrix -->
     <section id="conformance" aria-labelledby="conformance-title">
@@ -88,12 +88,12 @@
           <tr><td>Breadcrumbs</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; current page announced via <code>aria-current="page"</code>.</td></tr>
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
           <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>. Hamburger: toggle carries <code>aria-expanded</code>; <kbd>Esc</kbd> closes and restores focus.</td></tr>
-          <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.fz-sticky</code> pins while scrolling.</td></tr>
+          <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.bf-sticky</code> pins while scrolling.</td></tr>
           <tr><td>Alerts</td><td class="wcag">AA</td><td><code>role="alert"</code> announces errors; <code>aria-live="polite"</code> announces updates; dismiss button is a focusable <code>button</code>.</td></tr>
           <tr><td>Skeleton</td><td class="wcag">AA</td><td>Decorative placeholder — real content must follow; no motion under <code>prefers-reduced-motion</code>.</td></tr>
           <tr><td>Toast</td><td class="wcag">AA</td><td><code>role="status"</code> announces politely; <kbd>Esc</kbd> or click-away closes.</td></tr>
-          <tr><td>Prose</td><td class="wcag">AA</td><td>Heading rhythm and section spacing for long-form content via <code>.fz-prose</code>; nothing hidden, no ordering.</td></tr>
-          <tr><td>Media &amp; avatars</td><td class="wcag">AA</td><td>Images carry <code>alt</code>; <code>[data-media]</code> keeps a locked ratio; <code>.fz-avatar</code> is an image, announced like any other.</td></tr>
+          <tr><td>Prose</td><td class="wcag">AA</td><td>Heading rhythm and section spacing for long-form content via <code>.bf-prose</code>; nothing hidden, no ordering.</td></tr>
+          <tr><td>Media &amp; avatars</td><td class="wcag">AA</td><td>Images carry <code>alt</code>; <code>[data-media]</code> keeps a locked ratio; <code>.bf-avatar</code> is an image, announced like any other.</td></tr>
           <tr><td>Avatar group</td><td class="wcag">AA</td><td>The overlap is decorative — reading order and announcements are unchanged; every avatar keeps its <code>alt</code>.</td></tr>
           <tr><td>Spinner</td><td class="wcag">AA</td><td>Decorative motion stops under <code>prefers-reduced-motion</code>; announce progress with <code>role="status"</code> from your markup.</td></tr>
           <tr><td>Divider</td><td class="wcag">AA</td><td>The label is real text between decorative hairlines — announced like any other content.</td></tr>
@@ -109,14 +109,14 @@
       <h2>Heading two</h2>
       <h3>Heading three</h3>
       <h4>Heading four</h4>
-      <p>A paragraph. The measure is capped at <code>--fz-content-width</code> (64ch by default) so long text stays readable. Links like <a href="#">this one</a> get a visible underline and offset.</p>
+      <p>A paragraph. The measure is capped at <code>--bf-content-width</code> (64ch by default) so long text stays readable. Links like <a href="#">this one</a> get a visible underline and offset.</p>
       <blockquote>“Barefoot: no boots, no baggage.”</blockquote>
       <ul><li>Unordered list item</li><li>Another item</li></ul>
       <ol><li>Ordered item</li><li>Another item</li></ol>
       <p><kbd>Ctrl</kbd> + <kbd>K</kbd> for the kbd style, <code>inline code</code> next to it.</p>
       <pre><code>/* pre + code */
 @layer tokens {
-  --fz-primary: #1a1a1a;
+  --bf-primary: #1a1a1a;
 }</code></pre>
     </section>
 
@@ -131,8 +131,8 @@
     <!-- Prose -->
     <section id="prose" aria-labelledby="prose-title">
       <h2 id="prose-title">Prose</h2>
-      <p><code>.fz-prose</code> wraps long-form content and adds heading rhythm and section spacing. The element look — blockquote border, <code>pre</code>, table rows — comes from the base and component layers; the wrapper only imposes the pace. The measure is still capped at <code>--fz-content-width</code> (64ch) so lines stay readable.</p>
-      <article class="fz-prose" id="demo-prose">
+      <p><code>.bf-prose</code> wraps long-form content and adds heading rhythm and section spacing. The element look — blockquote border, <code>pre</code>, table rows — comes from the base and component layers; the wrapper only imposes the pace. The measure is still capped at <code>--bf-content-width</code> (64ch) so lines stay readable.</p>
+      <article class="bf-prose" id="demo-prose">
         <h3>Section heading</h3>
         <p>A paragraph of long-form copy. Prose puts one beat between siblings and a full section gap before headings — each heading opens a new section and sits close to what it introduces.</p>
         <blockquote>“No boots, no baggage — but the words still need room to breathe.”</blockquote>
@@ -147,10 +147,10 @@
           <caption>Fluid type steps</caption>
           <thead><tr><th>Token</th><th>Heading</th></tr></thead>
           <tbody>
-            <tr><td><code>--fz-type-md</code></td><td>h4</td></tr>
-            <tr><td><code>--fz-type-lg</code></td><td>h3</td></tr>
-            <tr><td><code>--fz-type-xl</code></td><td>h2</td></tr>
-            <tr><td><code>--fz-type-2xl</code></td><td>h1</td></tr>
+            <tr><td><code>--bf-type-md</code></td><td>h4</td></tr>
+            <tr><td><code>--bf-type-lg</code></td><td>h3</td></tr>
+            <tr><td><code>--bf-type-xl</code></td><td>h2</td></tr>
+            <tr><td><code>--bf-type-2xl</code></td><td>h1</td></tr>
           </tbody>
         </table>
         <p>A closing paragraph so the block doesn't end on the table.</p>
@@ -160,23 +160,23 @@
     <!-- Media -->
     <section id="media" aria-labelledby="media-title">
       <h2 id="media-title">Media &amp; avatars</h2>
-      <p>Responsive images scale down to their container (<code>max-width: 100%</code> + <code>height: auto</code> in the base layer). <code>.fz-avatar</code> is a circular image; <code>[data-media]</code> locks a ratio box (16:9 by default, <code>data-ratio</code> for others); <code>.card[data-media]</code> is a thumbnail card whose media bleeds to the top edge.</p>
+      <p>Responsive images scale down to their container (<code>max-width: 100%</code> + <code>height: auto</code> in the base layer). <code>.bf-avatar</code> is a circular image; <code>[data-media]</code> locks a ratio box (16:9 by default, <code>data-ratio</code> for others); <code>.card[data-media]</code> is a thumbnail card whose media bleeds to the top edge.</p>
 
       <h3>Avatars</h3>
-      <p>Circular, sized from <code>--fz-avatar-size</code> (2.5rem); <code>data-size="sm|lg"</code> for other sizes. Always <code>alt</code> — an avatar is an image like any other.</p>
-      <div class="fz-row fz-gap-3">
-        <img class="fz-avatar" data-size="sm" id="demo-avatar-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
-        <img class="fz-avatar" id="demo-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
-        <img class="fz-avatar" data-size="lg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
+      <p>Circular, sized from <code>--bf-avatar-size</code> (2.5rem); <code>data-size="sm|lg"</code> for other sizes. Always <code>alt</code> — an avatar is an image like any other.</p>
+      <div class="bf-row bf-gap-3">
+        <img class="bf-avatar" data-size="sm" id="demo-avatar-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
+        <img class="bf-avatar" id="demo-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
+        <img class="bf-avatar" data-size="lg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
       </div>
 
       <h3>Avatar group</h3>
-      <p>Wrap avatars in <code>.fz-avatar-group</code> to overlap them; a surface ring keeps each face distinct. Purely visual — semantics and reading order are untouched.</p>
-      <div class="fz-avatar-group" id="demo-avatar-group">
-        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
-        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
-        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
-        <img class="fz-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239a6700'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Radia">
+      <p>Wrap avatars in <code>.bf-avatar-group</code> to overlap them; a surface ring keeps each face distinct. Purely visual — semantics and reading order are untouched.</p>
+      <div class="bf-avatar-group" id="demo-avatar-group">
+        <img class="bf-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230969da'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Ada">
+        <img class="bf-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a7f37'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Grace">
+        <img class="bf-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b3261e'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Linus">
+        <img class="bf-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239a6700'/%3E%3Ccircle cx='50' cy='40' r='22' fill='%23fff'/%3E%3Cpath d='M22 96a30 30 0 0 1 56 0z' fill='%23fff'/%3E%3C/svg%3E" alt="Radia">
       </div>
 
       <h3>Responsive images</h3>
@@ -185,21 +185,21 @@
 
       <h3>Aspect-ratio embeds</h3>
       <p><code>[data-media]</code> locks a ratio box on an <code>img</code>, <code>video</code>, <code>iframe</code>, or any element; the width follows the container and the height follows the ratio.</p>
-      <div class="fz-row fz-gap-4">
+      <div class="bf-row bf-gap-4">
         <div style="flex: 1 1 10rem; min-width: 0">
-          <div data-media id="demo-media-16" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">16:9</div>
+          <div data-media id="demo-media-16" style="background: var(--bf-surface-alt); color: var(--bf-muted); display: grid; place-items: center">16:9</div>
         </div>
         <div style="flex: 1 1 10rem; min-width: 0">
-          <div data-media data-ratio="1/1" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">1:1</div>
+          <div data-media data-ratio="1/1" style="background: var(--bf-surface-alt); color: var(--bf-muted); display: grid; place-items: center">1:1</div>
         </div>
         <div style="flex: 1 1 10rem; min-width: 0">
-          <div data-media data-ratio="21/9" style="background: var(--fz-surface-alt); color: var(--fz-muted); display: grid; place-items: center">21:9</div>
+          <div data-media data-ratio="21/9" style="background: var(--bf-surface-alt); color: var(--bf-muted); display: grid; place-items: center">21:9</div>
         </div>
       </div>
 
       <h3>Thumbnail cards</h3>
       <p><code>.card[data-media]</code> leads with media that bleeds to the card's top edge; the body below keeps the card padding.</p>
-      <div class="fz-row">
+      <div class="bf-row">
         <article class="card" data-media id="demo-media-card" style="max-width: 24rem">
           <img data-media src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Crect width='1600' height='900' fill='%231a7f37'/%3E%3Ccircle cx='800' cy='450' r='240' fill='%237ee2a8'/%3E%3C/svg%3E" alt="Green field with a lighter circle">
           <header>Featured story</header>
@@ -211,7 +211,7 @@
     <!-- Buttons -->
     <section id="buttons" aria-labelledby="buttons-title">
       <h2 id="buttons-title">Buttons</h2>
-      <div class="fz-row fz-gap-2">
+      <div class="bf-row bf-gap-2">
         <button type="button">Neutral</button>
         <button type="button" data-variant="primary">Primary</button>
         <button type="button" data-variant="ghost">Ghost</button>
@@ -230,7 +230,7 @@
     <section id="forms" aria-labelledby="forms-title">
       <h2 id="forms-title">Forms</h2>
       <form id="demo-form" onsubmit="return false">
-        <div class="fz-stack">
+        <div class="bf-stack">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" placeholder="Ada Lovelace" autocomplete="name">
 
@@ -276,7 +276,7 @@
           <label for="storage">Storage</label>
           <meter id="storage" min="0" max="100" low="25" high="75" optimum="100" value="40">40% of 100GB</meter>
 
-          <div class="fz-row">
+          <div class="bf-row">
             <button type="submit">Submit (primary)</button>
             <button type="reset">Reset</button>
           </div>
@@ -343,7 +343,7 @@
       <h2 id="input-groups-title">Input groups</h2>
       <p>Wrap an input with a leading icon, currency, or unit in <code>[data-input-group]</code>. The affix shares the input's focus and validation states. Works with <code>input</code>, <code>select</code>, and <code>textarea</code>.</p>
 
-      <form id="demo-input-group-form" class="fz-stack">
+      <form id="demo-input-group-form" class="bf-stack">
         <div>
           <label for="ig-username">Username</label>
           <div data-input-group>
@@ -383,11 +383,11 @@
       <h2 id="form-polish-title">Date, number & email polish</h2>
       <p>Native pickers and spinners stay; Barefoot themes the surface and ensures validation states apply. Number inputs hide the spinner until hovered/focused; date inputs get a themed calendar button.</p>
 
-      <form id="demo-polish-form" class="fz-stack">
+      <form id="demo-polish-form" class="bf-stack">
         <div>
           <label for="polish-email">Email</label>
           <input id="polish-email" name="email" type="email" placeholder="you@example.com" required>
-          <small class="fz-field-hint">Validated on blur — try an invalid address.</small>
+          <small class="bf-field-hint">Validated on blur — try an invalid address.</small>
         </div>
 
         <div>
@@ -450,7 +450,7 @@
     <section id="popover" aria-labelledby="popover-title">
       <h2 id="popover-title">Popover (zero JS)</h2>
       <p>The Popover API: a button + <code>popovertarget</code> + a <code>[popover]</code> element. No JavaScript anywhere. Each popover pins to its own trigger via anchor positioning (<code>position-area</code>): the trigger declares an <code>anchor-name</code> and the popover points <code>position-anchor</code> at it — one inline style on each element.</p>
-      <div class="fz-row fz-gap-3">
+      <div class="bf-row bf-gap-3">
         <button id="help-trigger" type="button" style="anchor-name: --help-pop" popovertarget="help-pop">Popover menu</button>
         <div popover id="help-pop" data-kind="menu" style="position-anchor: --help-pop">
           <a href="#">Rename</a>
@@ -492,7 +492,7 @@
         </details>
         <details data-accordion name="faq">
           <summary>How do I make it mine?</summary>
-          <p>Override a few <code>--fz-*</code> variables. That's it.</p>
+          <p>Override a few <code>--bf-*</code> variables. That's it.</p>
         </details>
       </div>
     </section>
@@ -501,7 +501,7 @@
     <section id="tabs" aria-labelledby="tabs-title">
       <h2 id="tabs-title">Tabs (opt-in JS)</h2>
       <p>WAI-ARIA tabs with roving tabindex and arrow-key navigation, driven by the opt-in <code>js/tabs.js</code> module (zero dependencies, size in the README table). Try <kbd>←</kbd>/<kbd>→</kbd>, <kbd>Home</kbd>, <kbd>End</kbd>.</p>
-      <div data-fz-tabs>
+      <div data-bf-tabs>
         <div role="tablist" aria-label="Barefoot tabs demo">
           <button id="tab-overview" role="tab" aria-controls="panel-overview" aria-selected="true">Overview</button>
           <button id="tab-details" role="tab" aria-controls="panel-details" aria-selected="false">Details</button>
@@ -529,7 +529,7 @@
         <div class="card">Slide 3 — no JS anywhere</div>
         <div class="card">Slide 4 — controls wired by carousel.js</div>
       </div>
-      <div class="fz-row fz-mt-3">
+      <div class="bf-row bf-mt-3">
         <button type="button" data-carousel-prev="#demo-carousel" aria-label="Previous slide">&larr;</button>
         <button type="button" data-carousel-next="#demo-carousel" aria-label="Next slide">&rarr;</button>
       </div>
@@ -538,10 +538,10 @@
     <!-- Container queries -->
     <section id="container" aria-labelledby="container-title">
       <h2 id="container-title">Container queries</h2>
-      <p>The same <code>[data-grid]</code> markup adapts to its <em>container</em>, not the viewport — wrap it in <code>.fz-contain</code> to make the container. Narrow box below (14rem) → 1 column; full-width → 3 columns. Zero media queries.</p>
-      <div class="fz-row fz-gap-4">
-        <div class="fz-demo-narrow">
-          <div class="fz-contain">
+      <p>The same <code>[data-grid]</code> markup adapts to its <em>container</em>, not the viewport — wrap it in <code>.bf-contain</code> to make the container. Narrow box below (14rem) → 1 column; full-width → 3 columns. Zero media queries.</p>
+      <div class="bf-row bf-gap-4">
+        <div class="bf-demo-narrow">
+          <div class="bf-contain">
             <div data-grid>
               <article class="card"><header>Card A</header><p>In a 14rem container this grid stays a single column.</p></article>
               <article class="card"><header>Card B</header><p>Same markup as the wide one.</p></article>
@@ -549,8 +549,8 @@
             </div>
           </div>
         </div>
-        <div class="fz-demo-wide">
-          <div class="fz-contain">
+        <div class="bf-demo-wide">
+          <div class="bf-contain">
             <div data-grid>
               <article class="card"><header>Card A</header><p>Wide container → three columns.</p></article>
               <article class="card"><header>Card B</header><p>Container queries, not media queries.</p></article>
@@ -564,8 +564,8 @@
     <!-- Responsive table -->
     <section id="table" aria-labelledby="table-title">
       <h2 id="table-title">Responsive table</h2>
-      <p>Add <code>data-table="stack"</code> and wrap the table in a query container (here <code>.fz-contain</code>, same as the grid above): below ~40rem (640px) rows stack as cards and the header row hides. Purely presentational — the <code>&lt;th&gt;</code> headers stay in the DOM, so screen readers still announce them.</p>
-      <div class="fz-contain">
+      <p>Add <code>data-table="stack"</code> and wrap the table in a query container (here <code>.bf-contain</code>, same as the grid above): below ~40rem (640px) rows stack as cards and the header row hides. Purely presentational — the <code>&lt;th&gt;</code> headers stay in the DOM, so screen readers still announce them.</p>
+      <div class="bf-contain">
         <table data-table="stack" data-striped>
           <caption>Project status</caption>
           <thead>
@@ -583,11 +583,11 @@
     <!-- Cards + badges -->
     <section id="cards" aria-labelledby="cards-title">
       <h2 id="cards-title">Cards &amp; badges</h2>
-      <div class="fz-row">
+      <div class="bf-row">
         <article class="card">
           <header>Neutral card</header>
           <p>A flat card with a thin border and no shadow by default.</p>
-          <div class="fz-row fz-gap-2"><span class="badge">New</span><span class="badge" data-variant="primary">Primary</span><span class="badge" data-variant="danger">Danger</span></div>
+          <div class="bf-row bf-gap-2"><span class="badge">New</span><span class="badge" data-variant="primary">Primary</span><span class="badge" data-variant="danger">Danger</span></div>
         </article>
         <article class="card" data-lifted>
           <header>Lifted card</header>
@@ -600,7 +600,7 @@
     <section id="chips" aria-labelledby="chips-title">
       <h2 id="chips-title">Chips (removable tags)</h2>
       <p>An inline badge with a real <code>&lt;button&gt;</code> inside. Removal is opt-in JS (<code>js/chips.js</code>) — without the module nothing hides, the × just does nothing. Give each remove button an <code>aria-label</code> naming what it removes.</p>
-      <div class="fz-row fz-gap-2" id="demo-chips">
+      <div class="bf-row bf-gap-2" id="demo-chips">
         <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
         <span data-chip>html<button type="button" data-chip-remove aria-label="Remove html">×</button></span>
         <span data-chip>accessibility<button type="button" data-chip-remove aria-label="Remove accessibility">×</button></span>
@@ -640,9 +640,9 @@
     <!-- Navigation -->
     <section id="nav" aria-labelledby="nav-title">
       <h2 id="nav-title">Navigation</h2>
-      <p>A topbar <code>&lt;nav&gt;</code> landmark: a <code>.fz-brand</code>, a link list, and the current page marked with <code>aria-current="page"</code>. The row wraps on narrow screens — nothing toggles, nothing hides. Pair with <code>.fz-skip-link</code> as the first element in <code>&lt;body&gt;</code>.</p>
+      <p>A topbar <code>&lt;nav&gt;</code> landmark: a <code>.bf-brand</code>, a link list, and the current page marked with <code>aria-current="page"</code>. The row wraps on narrow screens — nothing toggles, nothing hides. Pair with <code>.bf-skip-link</code> as the first element in <code>&lt;body&gt;</code>.</p>
       <nav data-nav="header" aria-label="Primary" id="demo-nav">
-        <a class="fz-brand" href="#nav">Barefoot</a>
+        <a class="bf-brand" href="#nav">Barefoot</a>
         <ul>
           <li><a href="#nav" aria-current="page">Home</a></li>
           <li><a href="#typography">Docs</a></li>
@@ -650,10 +650,10 @@
           <li><a href="#cards">Components</a></li>
         </ul>
       </nav>
-      <p class="fz-mt-4"><strong>Hamburger (opt-in JS).</strong> Add a real toggle button and an <code>id</code> on the list, then load <code>js/nav.js</code>: below 40rem of nav width the list collapses behind the button (<code>aria-expanded</code> tracks it, <kbd>Esc</kbd> closes and restores focus). No-JS first — without the module the button never renders and the list always stays visible. Resize the window under 40rem to try it.</p>
+      <p class="bf-mt-4"><strong>Hamburger (opt-in JS).</strong> Add a real toggle button and an <code>id</code> on the list, then load <code>js/nav.js</code>: below 40rem of nav width the list collapses behind the button (<code>aria-expanded</code> tracks it, <kbd>Esc</kbd> closes and restores focus). No-JS first — without the module the button never renders and the list always stays visible. Resize the window under 40rem to try it.</p>
       <nav data-nav="header" aria-label="Primary (hamburger)" id="demo-nav-burger">
-        <a class="fz-brand" href="#nav">Acme</a>
-        <button type="button" class="fz-nav-toggle" aria-expanded="false" aria-controls="demo-nav-menu">Menu</button>
+        <a class="bf-brand" href="#nav">Acme</a>
+        <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="demo-nav-menu">Menu</button>
         <ul id="demo-nav-menu">
           <li><a href="#nav" aria-current="page">Home</a></li>
           <li><a href="#typography">Docs</a></li>
@@ -661,7 +661,7 @@
           <li><a href="#cards">Components</a></li>
         </ul>
       </nav>
-      <nav data-nav="footer" aria-label="Footer" class="fz-mt-5">
+      <nav data-nav="footer" aria-label="Footer" class="bf-mt-5">
         <span>&copy; 2026 Barefoot</span>
         <ul>
           <li><a href="#nav">Privacy</a></li>
@@ -673,17 +673,17 @@
     <!-- Layout: sidebar + sticky -->
     <section id="layout" aria-labelledby="layout-title">
       <h2 id="layout-title">Layout</h2>
-      <p><code>.fz-sidebar</code> splits a fixed-ish aside (first child, <code>--fz-sidebar-width</code> = 16rem) from fluid content; when the row can't fit the aside plus at least 60% main it stacks to one column. <code>.fz-sticky</code> pins an element to <code>--fz-sticky-top</code> while its scrolling ancestor moves.</p>
-      <div class="fz-sidebar" id="demo-sidebar">
+      <p><code>.bf-sidebar</code> splits a fixed-ish aside (first child, <code>--bf-sidebar-width</code> = 16rem) from fluid content; when the row can't fit the aside plus at least 60% main it stacks to one column. <code>.bf-sticky</code> pins an element to <code>--bf-sticky-top</code> while its scrolling ancestor moves.</p>
+      <div class="bf-sidebar" id="demo-sidebar">
         <aside class="card">
           <header>Aside</header>
           <p>The first child is the sidebar. In a narrow row it stacks above the main content.</p>
-          <p class="fz-mt-4 fz-sticky" id="demo-sticky"><span class="badge">sticky</span> I stay pinned while the page scrolls.</p>
+          <p class="bf-mt-4 bf-sticky" id="demo-sticky"><span class="badge">sticky</span> I stay pinned while the page scrolls.</p>
         </aside>
         <div>
           <h3>Main content</h3>
           <p>Everything after the first child flows beside it. The main column grows to fill the row; when the row can't fit the sidebar plus at least 60% main, the whole split wraps to a single column — the classic sidebar pattern, zero media queries.</p>
-          <p>There is no dedicated sticky section to try; the pinned badge above only demonstrates the utility's <code>position: sticky</code> + <code>--fz-sticky-top</code> contract.</p>
+          <p>There is no dedicated sticky section to try; the pinned badge above only demonstrates the utility's <code>position: sticky</code> + <code>--bf-sticky-top</code> contract.</p>
         </div>
       </div>
     </section>
@@ -691,13 +691,13 @@
     <!-- Grid variants -->
     <section id="grid-variants" aria-labelledby="grid-variants-title">
       <h2 id="grid-variants-title">Grid variants</h2>
-      <p><code>[data-grid="auto-fit"]</code> flows as many columns as fit, each at least <code>--fz-grid-min</code> (14rem) — no container query needed, the tracks size against the row itself. <code>data-gap="0|1…8"</code> tunes the gap from the spacing scale.</p>
+      <p><code>[data-grid="auto-fit"]</code> flows as many columns as fit, each at least <code>--bf-grid-min</code> (14rem) — no container query needed, the tracks size against the row itself. <code>data-gap="0|1…8"</code> tunes the gap from the spacing scale.</p>
       <div data-grid="auto-fit" id="demo-grid-auto">
         <article class="card"><header>Auto-fit</header><p>As many columns as fit, each ≥ 14rem.</p></article>
         <article class="card"><header>Auto-fit</header><p>Resize the row and the flow follows.</p></article>
         <article class="card"><header>Auto-fit</header><p>No container queries involved.</p></article>
       </div>
-      <div data-grid="auto-fit" data-gap="2" id="demo-grid-gap" class="fz-mt-5">
+      <div data-grid="auto-fit" data-gap="2" id="demo-grid-gap" class="bf-mt-5">
         <article class="card"><header>Tight</header><p>data-gap="2" → 0.5rem gaps.</p></article>
         <article class="card"><header>Tight</header><p>Any 1…8 from the spacing scale.</p></article>
         <article class="card"><header>Tight</header><p>Same auto-fit flow, tighter rhythm.</p></article>
@@ -707,15 +707,15 @@
     <!-- Spacing utilities -->
     <section id="spacing" aria-labelledby="spacing-title">
       <h2 id="spacing-title">Spacing utilities</h2>
-      <p>The full token scale as layout-only helpers: <code>.fz-mt-*</code> / <code>.fz-mb-*</code> (block-start/end margins), <code>.fz-p-*</code> (all-sides padding), <code>.fz-px-*</code> / <code>.fz-py-*</code> (inline/block padding), each mapped to <code>--fz-space-1…8</code>.</p>
-      <div class="fz-row fz-gap-2">
+      <p>The full token scale as layout-only helpers: <code>.bf-mt-*</code> / <code>.bf-mb-*</code> (block-start/end margins), <code>.bf-p-*</code> (all-sides padding), <code>.bf-px-*</code> / <code>.bf-py-*</code> (inline/block padding), each mapped to <code>--bf-space-1…8</code>.</p>
+      <div class="bf-row bf-gap-2">
         <span class="badge" data-variant="primary">mt-6</span>
         <span class="badge">p-5</span>
         <span class="badge">px-3</span>
         <span class="badge">py-2</span>
       </div>
-      <div class="fz-mt-6 fz-p-5 fz-px-3 fz-py-2" id="spacing-probe">
-        <p class="fz-muted" style="margin-block: 0">This box uses <code>fz-mt-6 fz-p-5 fz-px-3 fz-py-2</code>: 2rem of margin above, 0.5rem padding on the block axis and 0.75rem on the inline axis (the axis shorthands win over the all-sides padding).</p>
+      <div class="bf-mt-6 bf-p-5 bf-px-3 bf-py-2" id="spacing-probe">
+        <p class="bf-muted" style="margin-block: 0">This box uses <code>bf-mt-6 bf-p-5 bf-px-3 bf-py-2</code>: 2rem of margin above, 0.5rem padding on the block axis and 0.75rem on the inline axis (the axis shorthands win over the all-sides padding).</p>
       </div>
     </section>
 
@@ -723,7 +723,7 @@
     <section id="alerts" aria-labelledby="alerts-title">
       <h2 id="alerts-title">Alerts &amp; status tokens</h2>
       <p>Role-aware notices styled from the status tokens. Pick the ARIA role for the semantics — <code>role="alert"</code> for errors, <code>aria-live="polite"</code> for updates — and Barefoot paints it. Dismissible alerts pair a <code>[data-alert-dismiss]</code> button with the opt-in <code>js/alert-dismiss.js</code> module.</p>
-      <div class="fz-stack">
+      <div class="bf-stack">
         <div data-alert="danger" role="alert" id="demo-alert-danger">
           <p>Deploy failed — the build timed out after 10 minutes.</p>
           <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
@@ -745,23 +745,23 @@
       <h2 id="validation-title">Field validation</h2>
       <p><code>:user-invalid</code> / <code>:user-valid</code> fire only after a control is touched — nothing flashes before it. Pair with <code>aria-invalid</code> for script-driven forms and <code>aria-describedby</code> for the message.</p>
       <form id="demo-validation-form">
-        <div class="fz-stack">
+        <div class="bf-stack">
           <div>
             <label for="demo-email">Email</label>
             <input id="demo-email" name="email" type="email" required
                    aria-describedby="email-msg">
-            <small id="email-msg" class="fz-field-hint">e.g. you@example.com</small>
+            <small id="email-msg" class="bf-field-hint">e.g. you@example.com</small>
           </div>
           <div>
             <label for="demo-phone">Phone</label>
             <input id="demo-phone" name="phone" type="tel" pattern="[0-9+ ]+"
                    aria-describedby="phone-msg">
-            <small id="phone-msg" class="fz-field-hint">Digits and <code>+</code> only.</small>
+            <small id="phone-msg" class="bf-field-hint">Digits and <code>+</code> only.</small>
           </div>
           <div>
             <label for="demo-user">Username</label>
             <input id="demo-user" name="username" type="text" minlength="3">
-            <small id="user-msg" class="fz-field-hint">At least 3 characters.</small>
+            <small id="user-msg" class="bf-field-hint">At least 3 characters.</small>
           </div>
         </div>
       </form>
@@ -771,13 +771,13 @@
     <section id="spinner" aria-labelledby="spinner-title">
       <h2 id="spinner-title">Spinner</h2>
       <p>An indeterminate loading indicator, pure CSS: mark any element with <code>data-spinner</code> (<code>data-size="sm|lg"</code> for other sizes). The motion is decorative — it freezes under <code>prefers-reduced-motion</code>, so pair it with text that announces progress; <code>role</code> comes from your markup.</p>
-      <div class="fz-row fz-gap-5">
+      <div class="bf-row bf-gap-5">
         <div data-spinner id="demo-spinner" role="status">
-          <span class="fz-visually-hidden">Loading…</span>
+          <span class="bf-visually-hidden">Loading…</span>
         </div>
         <div data-spinner data-size="sm" aria-hidden="true"></div>
         <div data-spinner data-size="lg" aria-hidden="true"></div>
-        <span class="fz-muted">Fetching results…</span>
+        <span class="bf-muted">Fetching results…</span>
       </div>
     </section>
 
@@ -787,9 +787,9 @@
       <p>Pure-CSS loading placeholders. Add <code>.skeleton</code> to any element; the shimmer is decorative and static under <code>prefers-reduced-motion</code>. Always replace with real content — the placeholder is never announced.</p>
       <div class="card">
         <div class="skeleton" id="demo-skeleton-line" style="height: 1rem; width: 60%"></div>
-        <div class="skeleton fz-mt-3" style="height: 1rem"></div>
-        <div class="skeleton fz-mt-2" style="height: 1rem; width: 80%"></div>
-        <div class="skeleton fz-mt-5" style="height: 8rem; border-radius: var(--fz-radius)"></div>
+        <div class="skeleton bf-mt-3" style="height: 1rem"></div>
+        <div class="skeleton bf-mt-2" style="height: 1rem; width: 80%"></div>
+        <div class="skeleton bf-mt-5" style="height: 8rem; border-radius: var(--bf-radius)"></div>
       </div>
     </section>
 
@@ -805,8 +805,8 @@
 
     </main>
 
-    <footer class="fz-container fz-mt-8">
-      <p class="fz-muted">Barefoot — every visual is a variable. Make it yours.</p>
+    <footer class="bf-container bf-mt-8">
+      <p class="bf-muted">Barefoot — every visual is a variable. Make it yours.</p>
     </footer>
 
   <script>
@@ -815,15 +815,15 @@
     // changes crossfade instead of flashing.
     const root = document.documentElement;
     const applyTheme = (t) => {
-      const set = () => { root.dataset.theme = t; };
+      const set = () => { root.dataset.bfTheme = t; };
       if (document.startViewTransition) {
         document.startViewTransition(set);
       } else {
         set();
       }
     };
-    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
-      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.bfThemeBtn));
     }
 
     // Dialog — the ONE place the framework needs JS, and it's the

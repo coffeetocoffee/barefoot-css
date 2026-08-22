@@ -5,7 +5,7 @@
   [data-stepper] {
     display: flex;
     flex-direction: column;
-    gap: var(--fz-space-4);
+    gap: var(--bf-space-4);
   }
 
   [data-stepper] ol {
@@ -26,11 +26,11 @@
   [data-stepper] li:not(:last-child)::after {
     content: "";
     position: absolute;
-    top: calc(var(--fz-space-3) + 0.5rem);
+    top: calc(var(--bf-space-3) + 0.5rem);
     left: 50%;
     width: 100%;
     height: 2px;
-    background: var(--fz-border);
+    background: var(--bf-border);
     z-index: 0;
   }
 
@@ -38,7 +38,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
     position: relative;
     z-index: 1;
   }
@@ -47,58 +47,58 @@
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
-    border: 2px solid var(--fz-border);
-    background: var(--fz-surface);
-    color: var(--fz-muted);
+    border: 2px solid var(--bf-border);
+    background: var(--bf-surface);
+    color: var(--bf-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     font-size: 0.875rem;
     transition:
-      border-color var(--fz-transition),
-      background-color var(--fz-transition),
-      color var(--fz-transition);
+      border-color var(--bf-transition),
+      background-color var(--bf-transition),
+      color var(--bf-transition);
   }
 
   [data-stepper] [data-step-label] {
     font-size: 0.8125rem;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     text-align: center;
     max-width: 8ch;
   }
 
   /* Completed step — explicit [data-complete] */
   [data-stepper] [data-complete] [data-step-circle] {
-    border-color: var(--fz-success);
-    background: var(--fz-success);
-    color: var(--fz-success-fg);
+    border-color: var(--bf-success);
+    background: var(--bf-success);
+    color: var(--bf-success-fg);
   }
 
   [data-stepper] [data-complete] [data-step-label] {
-    color: var(--fz-success);
+    color: var(--bf-success);
   }
 
   [data-stepper] [data-complete]:not(:last-child)::after {
-    background: var(--fz-success);
+    background: var(--bf-success);
   }
 
   /* Current step */
   [data-stepper] [aria-current="step"] [data-step-circle] {
-    border-color: var(--fz-primary);
-    background: var(--fz-primary);
-    color: var(--fz-primary-fg);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-primary), transparent 80%);
+    border-color: var(--bf-primary);
+    background: var(--bf-primary);
+    color: var(--bf-primary-fg);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--bf-primary), transparent 80%);
   }
 
   [data-stepper] [aria-current="step"] [data-step-label] {
-    color: var(--fz-text);
-    font-weight: var(--fz-font-weight-medium);
+    color: var(--bf-text);
+    font-weight: var(--bf-font-weight-medium);
   }
 
   /* Connector before current step (steps before current are complete) */
   [data-stepper] [aria-current="step"]::after {
-    background: var(--fz-success);
+    background: var(--bf-success);
   }
 
   /* Horizontal variant for tight spaces */
@@ -117,7 +117,7 @@
   }
 
   [data-stepper][data-orientation="horizontal"] li:not(:last-child)::after {
-    top: var(--fz-space-3);
+    top: var(--bf-space-3);
     left: 50%;
     width: 100%;
     height: 2px;
@@ -132,12 +132,12 @@
   [data-stepper][data-orientation="vertical"] li {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--fz-space-4);
+    gap: var(--bf-space-4);
     width: 100%;
   }
 
   [data-stepper][data-orientation="vertical"] li:not(:last-child)::after {
-    top: calc(var(--fz-space-3) + 1rem);
+    top: calc(var(--bf-space-3) + 1rem);
     left: 1rem;
     width: 2px;
     height: 100%;
@@ -146,7 +146,7 @@
   [data-stepper][data-orientation="vertical"] [data-step] {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--fz-space-3);
+    gap: var(--bf-space-3);
     text-align: left;
     width: 100%;
   }

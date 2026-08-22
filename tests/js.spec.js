@@ -14,8 +14,8 @@ import { DEMOS, gotoDemo, mountFixture } from "./helpers.js";
 test.describe("opt-in JS: tabs", () => {
   test("click switches panels and aria-selected", async ({ page }) => {
     await gotoDemo(page);
-    const tabs = page.locator('[data-fz-tabs] [role="tab"]');
-    const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
+    const tabs = page.locator('[data-bf-tabs] [role="tab"]');
+    const panels = page.locator('[data-bf-tabs] [role="tabpanel"]');
 
     await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "true");
     await expect(panels.nth(0)).toBeVisible();
@@ -30,8 +30,8 @@ test.describe("opt-in JS: tabs", () => {
 
   test("arrow keys rove focus and activate; Home/End jump", async ({ page }) => {
     await gotoDemo(page);
-    const tabs = page.locator('[data-fz-tabs] [role="tab"]');
-    const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
+    const tabs = page.locator('[data-bf-tabs] [role="tab"]');
+    const panels = page.locator('[data-bf-tabs] [role="tabpanel"]');
 
     await tabs.nth(1).focus();
     await page.keyboard.press("ArrowRight");
@@ -53,7 +53,7 @@ test.describe("opt-in JS: tabs", () => {
 test.describe("opt-in JS: tabs no-JS-first contract", () => {
   const markup = `
     <link rel="stylesheet" href="/dist/components/tabs.css">
-    <div data-fz-tabs>
+    <div data-bf-tabs>
       <div role="tablist" aria-label="fixture">
         <button role="tab" aria-selected="true">One</button>
         <button role="tab" aria-selected="false">Two</button>
@@ -64,16 +64,16 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
 
   test("without the module, every panel stays visible (content never lost)", async ({ page }) => {
     await mountFixture(page, markup);
-    const panels = page.locator('[data-fz-tabs] [role="tabpanel"]');
+    const panels = page.locator('[data-bf-tabs] [role="tabpanel"]');
     await expect(panels.nth(0)).toBeVisible();
     await expect(panels.nth(1)).toBeVisible();
-    await expect(page.locator("[data-fz-tabs]")).not.toHaveAttribute("data-fz-tabs-js", /.*/);
+    await expect(page.locator("[data-bf-tabs]")).not.toHaveAttribute("data-bf-tabs-js", /.*/);
   });
 
   test("with the module, the group is marked and inactive panels hide at init", async ({ page }) => {
     await gotoDemo(page);
-    const group = page.locator("[data-fz-tabs]");
-    await expect(group).toHaveAttribute("data-fz-tabs-js", "");
+    const group = page.locator("[data-bf-tabs]");
+    await expect(group).toHaveAttribute("data-bf-tabs-js", "");
     await expect(group.locator('[role="tabpanel"]').nth(0)).toBeVisible();
     await expect(group.locator('[role="tabpanel"]').nth(1)).toBeHidden();
     await expect(group.locator('[role="tabpanel"]').nth(2)).toBeHidden();
@@ -388,7 +388,7 @@ test.describe("opt-in JS: header nav hamburger", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);
     const nav = page.locator(DEMOS.demoNavBurger);
-    const toggle = nav.locator(".fz-nav-toggle");
+    const toggle = nav.locator(".bf-nav-toggle");
     const list = nav.locator(DEMOS.demoNavMenu);
 
     await expect(nav).toHaveAttribute("data-nav-js", "");
@@ -411,7 +411,7 @@ test.describe("opt-in JS: header nav hamburger", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);
     const nav = page.locator(DEMOS.demoNavBurger);
-    const toggle = nav.locator(".fz-nav-toggle");
+    const toggle = nav.locator(".bf-nav-toggle");
 
     await toggle.click();
     const link = nav.locator(`${DEMOS.demoNavMenu} a`).first();
@@ -427,7 +427,7 @@ test.describe("opt-in JS: header nav hamburger", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);
     const nav = page.locator(DEMOS.demoNavBurger);
-    const toggle = nav.locator(".fz-nav-toggle");
+    const toggle = nav.locator(".bf-nav-toggle");
 
     await toggle.click();
     await nav.locator(`${DEMOS.demoNavMenu} a[href="${DEMOS.typography}"]`).click();
@@ -441,7 +441,7 @@ test.describe("opt-in JS: header nav hamburger", () => {
     await gotoDemo(page);
     const nav = page.locator(DEMOS.demoNavBurger);
     await expect(nav.locator(DEMOS.demoNavMenu)).toBeVisible();
-    await expect(nav.locator(".fz-nav-toggle")).toBeHidden();
+    await expect(nav.locator(".bf-nav-toggle")).toBeHidden();
   });
 });
 
@@ -449,8 +449,8 @@ test.describe("opt-in JS: nav no-JS-first contract", () => {
   const markup = `
     <link rel="stylesheet" href="/dist/components/nav.css">
     <nav data-nav="header" aria-label="fixture">
-      <a class="fz-brand" href="/">Acme</a>
-      <button type="button" class="fz-nav-toggle" aria-expanded="false" aria-controls="m">Menu</button>
+      <a class="bf-brand" href="/">Acme</a>
+      <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="m">Menu</button>
       <ul id="m"><li><a href="/">Home</a></li></ul>
     </nav>`;
 
@@ -458,14 +458,14 @@ test.describe("opt-in JS: nav no-JS-first contract", () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await mountFixture(page, markup);
     await expect(page.locator("nav ul")).toBeVisible();
-    await expect(page.locator(".fz-nav-toggle")).toBeHidden(); // never rendered without JS
+    await expect(page.locator(".bf-nav-toggle")).toBeHidden(); // never rendered without JS
     await expect(page.locator("nav")).not.toHaveAttribute("data-nav-js", /.*/);
   });
 
   test("a plain header nav (no toggle) is never armed for collapse", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);
-    // #demo-nav has no .fz-nav-toggle — the module must leave it alone.
+    // #demo-nav has no .bf-nav-toggle — the module must leave it alone.
     await expect(page.locator(DEMOS.demoNav)).not.toHaveAttribute("data-nav-js", /.*/);
     await expect(page.locator(`${DEMOS.demoNav} > ul`)).toBeVisible();
   });
@@ -517,7 +517,7 @@ test.describe("opt-in JS: lifecycle seam", () => {
     });
 
     // A wired tab still behaves exactly once.
-    const tabs = page.locator('[data-fz-tabs] [role="tab"]');
+    const tabs = page.locator('[data-bf-tabs] [role="tab"]');
     await tabs.nth(2).click();
     await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
     await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "false");

@@ -1,124 +1,124 @@
 /* Barefoot — utilities. Small, opt-in helpers. */
 @layer utilities {
   /* Layout */
-  .fz-container {
+  .bf-container {
     width: 100%;
-    max-width: var(--fz-max-width);
+    max-width: var(--bf-max-width);
     margin-inline: auto;
-    padding-inline: var(--fz-space-4);
+    padding-inline: var(--bf-space-4);
   }
 
-  .fz-stack {
+  .bf-stack {
     display: flex;
     flex-direction: column;
-    gap: var(--fz-space-4);
+    gap: var(--bf-space-4);
   }
 
-  .fz-row {
+  .bf-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--fz-space-3);
+    gap: var(--bf-space-3);
   }
 
-  .fz-gap-1 { gap: var(--fz-space-1); }
-  .fz-gap-2 { gap: var(--fz-space-2); }
-  .fz-gap-3 { gap: var(--fz-space-3); }
-  .fz-gap-4 { gap: var(--fz-space-4); }
-  .fz-gap-5 { gap: var(--fz-space-5); }
+  .bf-gap-1 { gap: var(--bf-space-1); }
+  .bf-gap-2 { gap: var(--bf-space-2); }
+  .bf-gap-3 { gap: var(--bf-space-3); }
+  .bf-gap-4 { gap: var(--bf-space-4); }
+  .bf-gap-5 { gap: var(--bf-space-5); }
 
-  /* Spacing scale — layout-only helpers, each mapped to a --fz-space-*
+  /* Spacing scale — layout-only helpers, each mapped to a --bf-space-*
      token (1…8). Logical properties: mt/mb are margin-block-start/end,
      px/py are padding-inline/block. Order matters: the axis shorthands
      (px/py) come AFTER the all-sides shorthand (p), so they win on
      their axis when both classes are present. */
-  .fz-mt-1 { margin-block-start: var(--fz-space-1); }
-  .fz-mt-2 { margin-block-start: var(--fz-space-2); }
-  .fz-mt-3 { margin-block-start: var(--fz-space-3); }
-  .fz-mt-4 { margin-block-start: var(--fz-space-4); }
-  .fz-mt-5 { margin-block-start: var(--fz-space-5); }
-  .fz-mt-6 { margin-block-start: var(--fz-space-6); }
-  .fz-mt-7 { margin-block-start: var(--fz-space-7); }
-  .fz-mt-8 { margin-block-start: var(--fz-space-8); }
+  .bf-mt-1 { margin-block-start: var(--bf-space-1); }
+  .bf-mt-2 { margin-block-start: var(--bf-space-2); }
+  .bf-mt-3 { margin-block-start: var(--bf-space-3); }
+  .bf-mt-4 { margin-block-start: var(--bf-space-4); }
+  .bf-mt-5 { margin-block-start: var(--bf-space-5); }
+  .bf-mt-6 { margin-block-start: var(--bf-space-6); }
+  .bf-mt-7 { margin-block-start: var(--bf-space-7); }
+  .bf-mt-8 { margin-block-start: var(--bf-space-8); }
 
-  .fz-mb-1 { margin-block-end: var(--fz-space-1); }
-  .fz-mb-2 { margin-block-end: var(--fz-space-2); }
-  .fz-mb-3 { margin-block-end: var(--fz-space-3); }
-  .fz-mb-4 { margin-block-end: var(--fz-space-4); }
-  .fz-mb-5 { margin-block-end: var(--fz-space-5); }
-  .fz-mb-6 { margin-block-end: var(--fz-space-6); }
-  .fz-mb-7 { margin-block-end: var(--fz-space-7); }
-  .fz-mb-8 { margin-block-end: var(--fz-space-8); }
+  .bf-mb-1 { margin-block-end: var(--bf-space-1); }
+  .bf-mb-2 { margin-block-end: var(--bf-space-2); }
+  .bf-mb-3 { margin-block-end: var(--bf-space-3); }
+  .bf-mb-4 { margin-block-end: var(--bf-space-4); }
+  .bf-mb-5 { margin-block-end: var(--bf-space-5); }
+  .bf-mb-6 { margin-block-end: var(--bf-space-6); }
+  .bf-mb-7 { margin-block-end: var(--bf-space-7); }
+  .bf-mb-8 { margin-block-end: var(--bf-space-8); }
 
-  .fz-p-1 { padding: var(--fz-space-1); }
-  .fz-p-2 { padding: var(--fz-space-2); }
-  .fz-p-3 { padding: var(--fz-space-3); }
-  .fz-p-4 { padding: var(--fz-space-4); }
-  .fz-p-5 { padding: var(--fz-space-5); }
-  .fz-p-6 { padding: var(--fz-space-6); }
-  .fz-p-7 { padding: var(--fz-space-7); }
-  .fz-p-8 { padding: var(--fz-space-8); }
+  .bf-p-1 { padding: var(--bf-space-1); }
+  .bf-p-2 { padding: var(--bf-space-2); }
+  .bf-p-3 { padding: var(--bf-space-3); }
+  .bf-p-4 { padding: var(--bf-space-4); }
+  .bf-p-5 { padding: var(--bf-space-5); }
+  .bf-p-6 { padding: var(--bf-space-6); }
+  .bf-p-7 { padding: var(--bf-space-7); }
+  .bf-p-8 { padding: var(--bf-space-8); }
 
-  .fz-px-1 { padding-inline: var(--fz-space-1); }
-  .fz-px-2 { padding-inline: var(--fz-space-2); }
-  .fz-px-3 { padding-inline: var(--fz-space-3); }
-  .fz-px-4 { padding-inline: var(--fz-space-4); }
-  .fz-px-5 { padding-inline: var(--fz-space-5); }
-  .fz-px-6 { padding-inline: var(--fz-space-6); }
-  .fz-px-7 { padding-inline: var(--fz-space-7); }
-  .fz-px-8 { padding-inline: var(--fz-space-8); }
+  .bf-px-1 { padding-inline: var(--bf-space-1); }
+  .bf-px-2 { padding-inline: var(--bf-space-2); }
+  .bf-px-3 { padding-inline: var(--bf-space-3); }
+  .bf-px-4 { padding-inline: var(--bf-space-4); }
+  .bf-px-5 { padding-inline: var(--bf-space-5); }
+  .bf-px-6 { padding-inline: var(--bf-space-6); }
+  .bf-px-7 { padding-inline: var(--bf-space-7); }
+  .bf-px-8 { padding-inline: var(--bf-space-8); }
 
-  .fz-py-1 { padding-block: var(--fz-space-1); }
-  .fz-py-2 { padding-block: var(--fz-space-2); }
-  .fz-py-3 { padding-block: var(--fz-space-3); }
-  .fz-py-4 { padding-block: var(--fz-space-4); }
-  .fz-py-5 { padding-block: var(--fz-space-5); }
-  .fz-py-6 { padding-block: var(--fz-space-6); }
-  .fz-py-7 { padding-block: var(--fz-space-7); }
-  .fz-py-8 { padding-block: var(--fz-space-8); }
+  .bf-py-1 { padding-block: var(--bf-space-1); }
+  .bf-py-2 { padding-block: var(--bf-space-2); }
+  .bf-py-3 { padding-block: var(--bf-space-3); }
+  .bf-py-4 { padding-block: var(--bf-space-4); }
+  .bf-py-5 { padding-block: var(--bf-space-5); }
+  .bf-py-6 { padding-block: var(--bf-space-6); }
+  .bf-py-7 { padding-block: var(--bf-space-7); }
+  .bf-py-8 { padding-block: var(--bf-space-8); }
 
   /* Sidebar split — a fixed-ish aside plus fluid main, wrapping to a
      single column when the row can't fit the aside plus at least 60%
      main. The first child is the sidebar; everything else flows beside
      it. Zero media queries. */
-  .fz-sidebar {
+  .bf-sidebar {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--fz-space-6);
+    gap: var(--bf-space-6);
   }
 
-  .fz-sidebar > :first-child {
-    flex: 1 1 var(--fz-sidebar-width, 16rem);
+  .bf-sidebar > :first-child {
+    flex: 1 1 var(--bf-sidebar-width, 16rem);
     min-width: 0;
   }
 
-  .fz-sidebar > :not(:first-child) {
+  .bf-sidebar > :not(:first-child) {
     flex: 999 1 0;
     min-width: 60%;
   }
 
   /* Sticky — pin an element while its scrolling ancestor moves.
-     Override the offset with --fz-sticky-top. */
-  .fz-sticky {
+     Override the offset with --bf-sticky-top. */
+  .bf-sticky {
     position: sticky;
-    top: var(--fz-sticky-top, 0);
-    z-index: var(--fz-z-sticky);
+    top: var(--bf-sticky-top, 0);
+    z-index: var(--bf-z-sticky);
   }
 
   /* Text */
-  .fz-muted { color: var(--fz-muted); }
-  .fz-center { text-align: center; }
-  .fz-overline {
+  .bf-muted { color: var(--bf-muted); }
+  .bf-center { text-align: center; }
+  .bf-overline {
     font-size: 0.75rem;
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: var(--fz-letter-spacing-wider);
-    color: var(--fz-muted);
+    letter-spacing: var(--bf-letter-spacing-wider);
+    color: var(--bf-muted);
   }
 
   /* Accessibility helper */
-  .fz-visually-hidden {
+  .bf-visually-hidden {
     position: absolute !important;
     width: 1px;
     height: 1px;
@@ -133,30 +133,30 @@
   /* Skip link — put it as the first element in <body>. Hidden (clipped)
      until keyboard focus, then revealed top-left so Tab order lands
      straight on "Skip to content". */
-  .fz-skip-link {
+  .bf-skip-link {
     position: absolute;
-    inset-block-start: var(--fz-space-3);
-    inset-inline-start: var(--fz-space-3);
+    inset-block-start: var(--bf-space-3);
+    inset-inline-start: var(--bf-space-3);
     z-index: 999;
-    padding: var(--fz-space-2) var(--fz-space-3);
-    background: var(--fz-surface);
-    color: var(--fz-primary);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
+    padding: var(--bf-space-2) var(--bf-space-3);
+    background: var(--bf-surface);
+    color: var(--bf-primary);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
     text-decoration: none;
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
   }
 
-  .fz-skip-link:focus-visible {
+  .bf-skip-link:focus-visible {
     clip: auto;
     clip-path: none;
     white-space: normal;
   }
 
   /* Container query scopes */
-  .fz-contain {
+  .bf-contain {
     container-type: inline-size;
   }
 }

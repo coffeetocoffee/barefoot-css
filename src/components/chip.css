@@ -15,17 +15,17 @@
   [data-chip] {
     display: inline-flex;
     align-items: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
 
     padding-block: 0.2em;
     padding-inline: 0.75em;
 
     font-size: 0.875rem;
 
-    color: var(--fz-text);
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-full);
+    color: var(--bf-text);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-full);
   }
 
   /* The remove control re-skins the global button down to a bare
@@ -45,24 +45,24 @@
     font-size: inherit;
     line-height: 1;
 
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     background: none;
     border: 0;
-    border-radius: var(--fz-radius-full);
+    border-radius: var(--bf-radius-full);
 
     cursor: pointer;
     transition:
-      color var(--fz-transition),
-      background-color var(--fz-transition);
+      color var(--bf-transition),
+      background-color var(--bf-transition);
   }
 
   [data-chip-remove]:hover {
-    color: var(--fz-danger);
-    background: var(--fz-danger-muted);
+    color: var(--bf-danger);
+    background: var(--bf-danger-muted);
   }
 
   [data-chip-remove]:focus-visible {
-    outline: 2px solid var(--fz-focus-ring);
+    outline: 2px solid var(--bf-focus-ring);
     outline-offset: 1px;
   }
 }

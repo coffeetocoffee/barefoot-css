@@ -89,7 +89,7 @@ export async function mountFixture(page, html) {
   await page.setContent(html);
 }
 
-/* Resolve a --fz-* custom property to its used color under the theme
+/* Resolve a --bf-* custom property to its used color under the theme
    currently active in the page: append a throwaway probe whose
    style.color is var(<name>), read the computed color, remove it.
    light-dark() and scheme selection are resolved by the engine, so

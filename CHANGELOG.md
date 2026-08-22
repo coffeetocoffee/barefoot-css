@@ -4,7 +4,46 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2026-08-22
+
+The namespace cleanup — one prefix, `bf`, across every public surface.
+This is a **breaking release** for anyone upgrading from 2.x: token
+names, the theme attribute, and the utility-class prefix all change.
+`npm run migrate:v3` rewrites consumer markup/CSS/JS for you;
+[docs/migration-3.md](docs/migration-3.md) has the manual map. No
+other behavior, palette, or layout value changed.
+
+### Breaking
+
+- **Tokens renamed** `--fz-*` → `--bf-*` (~130 custom properties,
+  names otherwise identical). Every `var(--fz-…)` override in
+  consumer CSS must become `var(--bf-…)`.
+- **Theme attribute renamed** `data-theme` → `data-bf-theme`
+  (`auto` / `light` / `dark` / `contrast` values unchanged). The
+  demo's switcher-button pattern follows: `data-theme-btn` →
+  `data-bf-theme-btn`.
+- **Utility classes renamed** `.fz-*` → `.bf-*` — the `utilities.css`
+  set (`.bf-row`, `.bf-stack`, `.bf-visually-hidden`, …) plus the
+  component helpers (`.bf-brand`, `.bf-nav-toggle`, `.bf-avatar`,
+  `.bf-prose`, …). Class names otherwise identical.
+- **Internal marker renamed** `data-fz-tabs-js` → `data-bf-tabs-js`
+  (set by `js/tabs.js`; module-set, never hand-authored).
+- **Internal keyframes renamed** `fz-dialog-in`, `fz-skeleton-shimmer`,
+  `fz-spin` → `bf-dialog-in`, `bf-skeleton-shimmer`, `bf-spin`
+  (invisible unless you reference them by name).
+- **Nothing dropped.** Audited for deprecated-in-2.x items per the
+  plan; v2 shipped zero deprecations, so nothing was removed beyond
+  the renames above.
+
+### Added
+
+- **Migration guide** — [docs/migration-3.md](docs/migration-3.md):
+  old → new mapping tables, a manual checklist, and the edge cases
+  (OS dark-mode hooks untouched, starter/custom theme overrides,
+  `@property` copies of animated tokens).
+- **Codemod script** — `build/codemod-3.mjs` via `npm run migrate:v3`:
+  walks your files, applies exactly the four rename rules, prints
+  per-file change counts; dry-run by default, `--write` to apply.
 
 ### Fixed
 
@@ -16,6 +55,14 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   by design, so those jobs now run behavior specs only, and a new
   Windows `visual-cross` job exercises the committed Firefox/WebKit
   baselines alongside the existing Chromium `visual` job.
+
+### Tests
+
+- Counts unchanged from v2.8 — Chromium **133** (a11y 19 · JS 31 ·
+  CSS 80 · visual 3), Firefox and WebKit **114** each (1 engine-gated
+  skip) — all green, every committed visual baseline intact: the
+  rename moves names, not pixels. The API audit and token-parity
+  tests now pin the `--bf-*` / `data-bf-theme` spellings instead.
 
 ## [2.8.0] - 2026-08-22
 

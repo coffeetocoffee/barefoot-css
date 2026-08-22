@@ -11,7 +11,7 @@ You need two files to start:
 1. Copy `src/themes/custom.css` to `my-theme.css`. It's a template
    with every knob commented.
 2. Load it **after** `index.css`/`full.css` (later import wins), and
-   activate it with `<html data-theme="my-theme">`.
+   activate it with `<html data-bf-theme="my-theme">`.
 
 That's the whole mechanism. Everything below fills in *what to change*
 and *in what order*.
@@ -24,7 +24,7 @@ and *in what order*.
 Every color token is a `light-dark()` pair:
 
 ```css
---fz-surface: light-dark(#ffffff, #161616);
+--bf-surface: light-dark(#ffffff, #161616);
 ```
 
 The browser resolves that function from `color-scheme`, which already
@@ -38,13 +38,13 @@ One variable drives everything "brand": links, primary buttons, focus
 rings, selection, form accents, slider thumbs, progress bars.
 
 ```css
-[data-theme="ocean"] {
-  --fz-primary: light-dark(#0e7490, #67e8f9);
+[data-bf-theme="ocean"] {
+  --bf-primary: light-dark(#0e7490, #67e8f9);
 }
 ```
 
 Rule of thumb: the light value should be dark enough to carry white
-text (`--fz-primary-fg` defaults to white-on-accent); the dark value
+text (`--bf-primary-fg` defaults to white-on-accent); the dark value
 should be light enough to carry black text. Check both against
 [WCAG contrast ≥ 4.5:1](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
 — or just run the demo page under axe-core like our CI does.
@@ -54,9 +54,9 @@ should be light enough to carry black text. Check both against
 Three tokens control almost the whole canvas:
 
 ```css
---fz-surface:      light-dark(#f8fafc, #0f172a);  /* page + components */
---fz-surface-alt:  light-dark(#eef2f7, #1e293b);  /* code, hover chips */
---fz-text:         light-dark(#0f172a, #e2e8f0);
+--bf-surface:      light-dark(#f8fafc, #0f172a);  /* page + components */
+--bf-surface-alt:  light-dark(#eef2f7, #1e293b);  /* code, hover chips */
+--bf-text:         light-dark(#0f172a, #e2e8f0);
 ```
 
 Keep `surface-alt` close to `surface` — it's a whisper, not a shout.
@@ -67,24 +67,24 @@ If you stop here you already have a coherent, dark-mode-capable skin.
 Non-color personality comes from four variables:
 
 ```css
---fz-radius: 0.75rem;        /* roomier corners than the 0.375rem default */
---fz-border-width: 1px;      /* strokes everywhere at once */
---fz-control-height: 2.75rem; /* buttons/inputs grow together */
---fz-font: "Sora", system-ui, sans-serif;
+--bf-radius: 0.75rem;        /* roomier corners than the 0.375rem default */
+--bf-border-width: 1px;      /* strokes everywhere at once */
+--bf-control-height: 2.75rem; /* buttons/inputs grow together */
+--bf-font: "Sora", system-ui, sans-serif;
 ```
 
-Change `--fz-radius` alone and cards, inputs, dialogs, menus all
+Change `--bf-radius` alone and cards, inputs, dialogs, menus all
 follow. That's the point of the token layer: small cause, visible
 effect.
 
 ## Step 4 — Let the ramps follow
 
 You generally should **not** override derived tokens like
-`--fz-primary-muted` or `--fz-surface-2`. They're computed from the
+`--bf-primary-muted` or `--bf-surface-2`. They're computed from the
 base tokens with `color-mix()`:
 
 ```css
---fz-primary-muted: color-mix(in oklab, var(--fz-primary), transparent 75%);
+--bf-primary-muted: color-mix(in oklab, var(--bf-primary), transparent 75%);
 ```
 
 Override the base, the ramp follows. Only touch a derived token when
@@ -96,20 +96,20 @@ Your file now looks roughly like this:
 
 ```css
 @layer tokens {
-  [data-theme="ocean"] {
+  [data-bf-theme="ocean"] {
     color-scheme: light dark;
 
     /* accent */
-    --fz-primary: light-dark(#0e7490, #67e8f9);
+    --bf-primary: light-dark(#0e7490, #67e8f9);
 
     /* surfaces */
-    --fz-surface: light-dark(#f8fafc, #0f172a);
-    --fz-surface-alt: light-dark(#eef2f7, #1e293b);
-    --fz-text: light-dark(#0f172a, #e2e8f0);
+    --bf-surface: light-dark(#f8fafc, #0f172a);
+    --bf-surface-alt: light-dark(#eef2f7, #1e293b);
+    --bf-text: light-dark(#0f172a, #e2e8f0);
 
     /* shape & rhythm */
-    --fz-radius: 0.75rem;
-    --fz-font: "Sora", system-ui, sans-serif;
+    --bf-radius: 0.75rem;
+    --bf-font: "Sora", system-ui, sans-serif;
   }
 }
 ```
@@ -119,7 +119,7 @@ Wire it up:
 ```html
 <link rel="stylesheet" href="barefoot/full.css">
 <link rel="stylesheet" href="themes/ocean.css">
-<html data-theme="ocean">
+<html data-bf-theme="ocean">
 ```
 
 Unset variables inherit from the base tokens — you never "reset"
@@ -129,17 +129,17 @@ anything, you only override.
 
 Before shipping, walk the checklist:
 
-- **Both modes:** force each with `data-theme="light"` /
-  `data-theme="dark"` — every `light-dark()` pair should look
+- **Both modes:** force each with `data-bf-theme="light"` /
+  `data-bf-theme="dark"` — every `light-dark()` pair should look
   deliberate, not just "not broken".
 - **Contrast:** text, muted text, and accent-on-surface pairs ≥ 4.5:1.
 - **Focus:** tab through the page; the ring must be visible on every
-  surface (it reads `--fz-focus-ring`, which defaults to your ink —
+  surface (it reads `--bf-focus-ring`, which defaults to your ink —
   check it survives your palette).
 - **Motion:** `prefers-reduced-motion` still holds — themes change
   colors, never motion safety.
 - **Status colors:** if your accent is green/blue/amber-ish, consider
-  nudging `--fz-success` / `--fz-info` / `--fz-warning` so alerts stay
+  nudging `--bf-success` / `--bf-info` / `--bf-warning` so alerts stay
   distinguishable from the brand.
 
 ## Where to go next

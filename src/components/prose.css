@@ -2,7 +2,7 @@
    table/blockquote/code spacing inside an article. A class, because
    styling every <article> globally would fight the card pattern.
 
-   <article class="fz-prose">
+   <article class="bf-prose">
      <h3>Section</h3>
      <p>…</p>
      <blockquote>…</blockquote>
@@ -12,30 +12,30 @@
    The element look (blockquote borders, code/keycaps, table rows)
    comes from the base and component layers; prose only adds rhythm. */
 @layer components {
-  .fz-prose {
-    color: var(--fz-text);
+  .bf-prose {
+    color: var(--bf-text);
   }
 
   /* Top-level flow: one beat between siblings… */
-  .fz-prose > * + * {
-    margin-block-start: var(--fz-space-4);
+  .bf-prose > * + * {
+    margin-block-start: var(--bf-space-4);
   }
 
   /* …headings open a new section: a big gap above, a small one below
      so the heading sits close to what it introduces. */
-  .fz-prose h2,
-  .fz-prose h3,
-  .fz-prose h4,
-  .fz-prose h5,
-  .fz-prose h6 {
-    margin-block: var(--fz-space-7) var(--fz-space-3);
+  .bf-prose h2,
+  .bf-prose h3,
+  .bf-prose h4,
+  .bf-prose h5,
+  .bf-prose h6 {
+    margin-block: var(--bf-space-7) var(--bf-space-3);
   }
 
-  .fz-prose > :first-child {
+  .bf-prose > :first-child {
     margin-block-start: 0;
   }
 
-  .fz-prose table {
-    margin-block: var(--fz-space-5);
+  .bf-prose table {
+    margin-block: var(--bf-space-5);
   }
 }

@@ -20,14 +20,14 @@
     display: block;
     width: 100%;
     text-align: start;
-    padding: var(--fz-space-2) var(--fz-space-3);
-    border-radius: var(--fz-radius-sm);
+    padding: var(--bf-space-2) var(--bf-space-3);
+    border-radius: var(--bf-radius-sm);
     text-decoration: none;
-    color: var(--fz-text);
+    color: var(--bf-text);
   }
 
   details[data-menu] :is(a, button):hover,
   [popover][data-kind="menu"] :is(a, button):hover {
-    background: var(--fz-surface-alt);
+    background: var(--bf-surface-alt);
   }
 }

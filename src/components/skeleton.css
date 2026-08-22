@@ -14,8 +14,8 @@
     overflow: hidden;
 
     min-height: 1rem;
-    border-radius: var(--fz-radius-sm);
-    background: var(--fz-surface-alt);
+    border-radius: var(--bf-radius-sm);
+    background: var(--bf-surface-alt);
   }
 
   .skeleton::after {
@@ -27,13 +27,13 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in oklab, var(--fz-surface), transparent 55%),
+      color-mix(in oklab, var(--bf-surface), transparent 55%),
       transparent
     );
-    animation: fz-skeleton-shimmer 1.6s infinite;
+    animation: bf-skeleton-shimmer 1.6s infinite;
   }
 
-  @keyframes fz-skeleton-shimmer {
+  @keyframes bf-skeleton-shimmer {
     to {
       transform: translateX(100%);
     }

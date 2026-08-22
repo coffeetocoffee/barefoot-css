@@ -61,7 +61,7 @@ popover menus). See `docs/adr/0006`.
 Styles live in `components/tabs.css`; the module drives behavior.
 
 ```html
-<div data-fz-tabs>
+<div data-bf-tabs>
   <div role="tablist" aria-label="Sections">
     <button id="tab-1" role="tab" aria-controls="panel-1" aria-selected="true">One</button>
     <button id="tab-2" role="tab" aria-controls="panel-2" aria-selected="false">Two</button>
@@ -77,7 +77,7 @@ jump, `Tab` leaves the tablist into the active panel. `aria-selected` and
 
 **No-JS first:** without the module every panel stays visible — content
 is never hidden from a user without JS, it just loses the tab chrome.
-On init the module marks the group `data-fz-tabs-js` (a hook for CSS or
+On init the module marks the group `data-bf-tabs-js` (a hook for CSS or
 other code) and hides inactive panels synchronously. Load the module in
 `<head>` (or before your content) so it runs before first paint and
 there's no flash of all panels.
@@ -219,8 +219,8 @@ Styles live in `components/nav.css`; the module drives the collapse.
 
 ```html
 <nav data-nav="header" aria-label="Primary">
-  <a class="fz-brand" href="/">Acme</a>
-  <button type="button" class="fz-nav-toggle"
+  <a class="bf-brand" href="/">Acme</a>
+  <button type="button" class="bf-nav-toggle"
           aria-expanded="false" aria-controls="site-menu">Menu</button>
   <ul id="site-menu">
     <li><a href="/" aria-current="page">Home</a></li>
@@ -230,7 +230,7 @@ Styles live in `components/nav.css`; the module drives the collapse.
 ```
 
 - When the nav is narrower than 40rem (container query, not a viewport
-  media query), the list collapses behind `.fz-nav-toggle` and opens as
+  media query), the list collapses behind `.bf-nav-toggle` and opens as
   a full-width column.
 - The toggle is author markup with `aria-expanded`/`aria-controls`; the
   module flips states, marks the nav `data-nav-js`, and mirrors the open

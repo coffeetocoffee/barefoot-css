@@ -12,12 +12,12 @@
   [data-divider] {
     display: flex;
     align-items: center;
-    gap: var(--fz-space-4);
+    gap: var(--bf-space-4);
     border: 0;
-    margin-block: var(--fz-space-6);
-    color: var(--fz-muted);
-    font-size: var(--fz-type-sm);
-    font-weight: var(--fz-font-weight-normal);
+    margin-block: var(--bf-space-6);
+    color: var(--bf-muted);
+    font-size: var(--bf-type-sm);
+    font-weight: var(--bf-font-weight-normal);
     white-space: nowrap;
   }
 
@@ -25,6 +25,6 @@
   [data-divider]::after {
     content: "";
     flex: 1 1 0;
-    border-top: var(--fz-border-width) solid var(--fz-border);
+    border-top: var(--bf-border-width) solid var(--bf-border);
   }
 }

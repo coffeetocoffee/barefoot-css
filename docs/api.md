@@ -9,12 +9,12 @@ what is stable, what may change, and the deprecation policy.
 
 These are the contracts consumers build on:
 
-- **`--fz-*` tokens.** Every token listed in [theming.md](theming.md)
+- **`--bf-*` tokens.** Every token listed in [theming.md](theming.md)
   is part of the public API. New tokens may be added in minor releases;
   existing tokens will not be renamed or removed in 2.x.
 - **`data-*` component attributes.** The attribute names and their
   enumerated values (e.g. `[data-variant]`, `[data-grid]`,
-  `[data-theme]`, `[data-switch]`, `[data-menu]`) are frozen.
+  `[data-bf-theme]`, `[data-switch]`, `[data-menu]`) are frozen.
 - **CSS export map.** The entry points in `package.json` `exports` are
   stable: `barefoot-css` (core), `barefoot-css/full.css`,
   `barefoot-css/utilities.css`, `barefoot-css/components/*`,
@@ -30,7 +30,7 @@ These are the contracts consumers build on:
   source for inspection and forking. Source structure may shift between
   minor versions.
 - **Internal `color-mix()` derivations.** Alpha ramp tokens
-  (`--fz-primary-muted`, etc.) are computed from base tokens. Their
+  (`--bf-primary-muted`, etc.) are computed from base tokens. Their
   exact values may be tweaked for visual quality; the derivation
   pattern (base token → mix) will not change.
 
@@ -85,9 +85,9 @@ All component attributes and their valid values:
 
 | Attribute | Element(s) | Values | Since |
 |---|---|---|---|
-| `data-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `custom` | 0.1 |
+| `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `custom` | 0.1 |
 | `data-variant` | `<button>` | `primary`, `danger`, `ghost` | 0.1 |
-| `data-size` | `<button>`, `.fz-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
+| `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
 | `data-table` | `<table>` | `stack` | 1.1 |
@@ -109,7 +109,7 @@ All component attributes and their valid values:
 | `data-divider` | any text-holding element | (boolean) | 2.4 |
 | `data-chip` | any text-holding element | (boolean) | 2.6 |
 | `data-chip-remove` | child of `[data-chip]` | (boolean) | 2.6 |
-| `data-fz-tabs` | tabs container | (boolean) | 0.1 |
+| `data-bf-tabs` | tabs container | (boolean) | 0.1 |
 | `data-carousel` | scroll container | (boolean) | 1.4 |
 | `data-autoplay` | `[data-carousel]` | `ms` value (default 3000) | 1.4 |
 | `data-carousel-prev` | button | (boolean) | 1.4 |
@@ -123,7 +123,7 @@ All component attributes and their valid values:
 | `data-complete` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
-| `data-theme-btn` | theme switcher buttons | theme name | — |
+| `data-bf-theme-btn` | theme switcher buttons | theme name | — |
 
 ### Internal markers (not consumer API)
 
@@ -131,7 +131,7 @@ Three attributes are seams between an opt-in JS module and its CSS —
 the module sets them, the stylesheet keys off them. They appear in
 `src/` but are not part of the public API; never author them by hand:
 
-- `data-fz-tabs-js` — set on `[data-fz-tabs]` by `js/tabs.js`
+- `data-bf-tabs-js` — set on `[data-bf-tabs]` by `js/tabs.js`
 - `data-nav-js` / `data-open` — set on `[data-nav="header"]` by `js/nav.js`
 
 The API reference audit (`tests/css.spec.js`) enforces this table
@@ -146,11 +146,11 @@ A parity test also pins the generated token tables in
 release. If your app works on 1.9, it works on 2.0 with zero changes.
 
 What's new:
-- **Alpha ramp tokens** (`--fz-primary-muted`, `--fz-surface-2`, etc.)
+- **Alpha ramp tokens** (`--bf-primary-muted`, `--bf-surface-2`, etc.)
   are available for custom components. They derive from base tokens, so
-  overriding `--fz-primary` still recolors everything.
-- **`--fz-backdrop`** replaces the hardcoded dialog backdrop color.
-- **`--fz-shadow-sm`** replaces hardcoded small shadows.
+  overriding `--bf-primary` still recolors everything.
+- **`--bf-backdrop`** replaces the hardcoded dialog backdrop color.
+- **`--bf-shadow-sm`** replaces hardcoded small shadows.
 - **API stability** is now a formal contract (this document).
 
 Upgrade:

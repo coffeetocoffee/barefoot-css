@@ -6,22 +6,22 @@
 @layer components {
   [popover] {
     margin: 0;
-    padding: var(--fz-space-3);
+    padding: var(--bf-space-3);
 
-    color: var(--fz-text);
-    background: var(--fz-surface);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
-    box-shadow: var(--fz-shadow-lifted);
+    color: var(--bf-text);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    box-shadow: var(--bf-shadow-lifted);
 
     width: max-content;
     max-width: min(24rem, 90vw);
 
     transition:
-      opacity var(--fz-transition),
-      transform var(--fz-transition),
-      display var(--fz-transition) allow-discrete,
-      overlay var(--fz-transition) allow-discrete;
+      opacity var(--bf-transition),
+      transform var(--bf-transition),
+      display var(--bf-transition) allow-discrete,
+      overlay var(--bf-transition) allow-discrete;
   }
 
   @starting-style {
@@ -38,8 +38,8 @@
   /* Tooltip affordance: small, muted, no shadow. */
   [popover][data-kind="tooltip"] {
     font-size: 0.8125rem;
-    padding-block: var(--fz-space-1);
-    border-radius: var(--fz-radius-sm);
+    padding-block: var(--bf-space-1);
+    border-radius: var(--bf-radius-sm);
     box-shadow: none;
   }
 
@@ -57,7 +57,7 @@
   /* Menu panel affordance: same visual language as dropdown.css. */
   [popover][data-kind="menu"] {
     min-width: 12rem;
-    padding: var(--fz-space-1);
+    padding: var(--bf-space-1);
   }
 
   /* Toast — a status notice pinned to the bottom edge. Declarative and
@@ -69,15 +69,15 @@
   [popover][data-kind="toast"] {
     position: fixed;
     inset: auto;
-    inset-block-end: var(--fz-space-5);
+    inset-block-end: var(--bf-space-5);
     inset-inline: 0;
     margin-inline: auto;
     width: max-content;
     max-width: min(24rem, 90vw);
-    padding: var(--fz-space-3) var(--fz-space-4);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-inline-start: 3px solid var(--fz-border);
-    z-index: var(--fz-z-toast);
+    padding: var(--bf-space-3) var(--bf-space-4);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-inline-start: 3px solid var(--bf-border);
+    z-index: var(--bf-z-toast);
   }
 
   [popover][data-kind="toast"]:popover-open {
@@ -85,19 +85,19 @@
   }
 
   [popover][data-kind="toast"][data-variant="success"] {
-    border-inline-start-color: var(--fz-success);
+    border-inline-start-color: var(--bf-success);
   }
 
   [popover][data-kind="toast"][data-variant="info"] {
-    border-inline-start-color: var(--fz-info);
+    border-inline-start-color: var(--bf-info);
   }
 
   [popover][data-kind="toast"][data-variant="warning"] {
-    border-inline-start-color: var(--fz-warning);
+    border-inline-start-color: var(--bf-warning);
   }
 
   [popover][data-kind="toast"][data-variant="danger"] {
-    border-inline-start-color: var(--fz-danger);
+    border-inline-start-color: var(--bf-danger);
   }
 
   /* Item rows live in menu-items.css — shared verbatim with

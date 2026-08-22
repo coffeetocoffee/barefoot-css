@@ -5,10 +5,10 @@
 @layer components {
   label {
     display: block;
-    margin-block-end: var(--fz-space-1);
+    margin-block-end: var(--bf-space-1);
     font-size: 0.875rem;
-    font-weight: var(--fz-font-weight-medium);
-    color: var(--fz-text);
+    font-weight: var(--bf-font-weight-medium);
+    color: var(--bf-text);
   }
 
   /* :where() zeroes the specificity of this shared rule. The type
@@ -24,24 +24,24 @@
     textarea
   ) {
     width: 100%;
-    min-height: var(--fz-control-height);
-    padding: var(--fz-space-2) var(--fz-space-3);
+    min-height: var(--bf-control-height);
+    padding: var(--bf-space-2) var(--bf-space-3);
 
     font-size: 0.9375rem;
-    color: var(--fz-text);
-    background: var(--fz-surface);
+    color: var(--bf-text);
+    background: var(--bf-surface);
 
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
 
     transition:
-      border-color var(--fz-transition),
-      box-shadow var(--fz-transition);
+      border-color var(--bf-transition),
+      box-shadow var(--bf-transition);
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     opacity: 1;
   }
 
@@ -50,17 +50,17 @@
      highest specificity of its arguments — plain elements here, so it
      stays as low as the old lists were. */
   :is(input, select, textarea):hover:not(:disabled) {
-    border-color: var(--fz-border-strong);
+    border-color: var(--bf-border-strong);
   }
 
   :is(input, select, textarea):focus-visible {
-    border-color: var(--fz-focus-ring);
+    border-color: var(--bf-focus-ring);
     outline: none;
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--fz-focus-ring), transparent 75%);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--bf-focus-ring), transparent 75%);
   }
 
   textarea {
-    min-height: calc(var(--fz-control-height) * 2);
+    min-height: calc(var(--bf-control-height) * 2);
     resize: vertical;
   }
 
@@ -77,10 +77,10 @@
      Multiple/size selects keep the browser's own control. */
   select:not([multiple]):not([size]) {
     appearance: none;
-    padding-inline-end: var(--fz-space-6);
+    padding-inline-end: var(--bf-space-6);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right var(--fz-space-3) center;
+    background-position: right var(--bf-space-3) center;
     background-size: 1rem;
   }
 
@@ -89,42 +89,42 @@
      ::file-selector-button; the control stays a native file input. */
   input[type="file"] {
     font-size: 0.875rem;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
   input[type="file"]::file-selector-button {
-    margin-inline-end: var(--fz-space-3);
-    height: var(--fz-control-height);
-    padding-inline: var(--fz-space-3);
+    margin-inline-end: var(--bf-space-3);
+    height: var(--bf-control-height);
+    padding-inline: var(--bf-space-3);
 
     font: inherit;
-    font-weight: var(--fz-font-weight-medium);
-    color: var(--fz-text);
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-sm);
+    font-weight: var(--bf-font-weight-medium);
+    color: var(--bf-text);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-sm);
 
     cursor: pointer;
     transition:
-      background var(--fz-transition),
-      border-color var(--fz-transition);
+      background var(--bf-transition),
+      border-color var(--bf-transition);
   }
 
   input[type="file"]::file-selector-button:hover {
-    background: var(--fz-surface);
-    border-color: var(--fz-border-strong);
+    background: var(--bf-surface);
+    border-color: var(--bf-border-strong);
   }
 
   /* ---- Color input ----
      A themed swatch: fixed control-sized box, radius, focus ring (the
      shared input focus rule). */
   input[type="color"] {
-    width: var(--fz-control-height);
-    height: var(--fz-control-height);
+    width: var(--bf-control-height);
+    height: var(--bf-control-height);
     padding: 0;
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-sm);
-    background: var(--fz-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-sm);
+    background: var(--bf-surface);
     cursor: pointer;
   }
 
@@ -135,24 +135,24 @@
   input[type="color"]::-webkit-color-swatch,
   input[type="color"]::-moz-color-swatch {
     border: none;
-    border-radius: calc(var(--fz-radius-sm) - 1px);
+    border-radius: calc(var(--bf-radius-sm) - 1px);
   }
 
   /* ---- Output (live region) ---- */
   output {
     display: inline-block;
-    font-weight: var(--fz-font-weight-semibold);
-    color: var(--fz-text);
+    font-weight: var(--bf-font-weight-semibold);
+    color: var(--bf-text);
   }
 
   /* Checkboxes & radios — native look, themed color. Keeps focus
      behavior free and keyboard-friendly for free. */
   input[type="checkbox"],
   input[type="radio"] {
-    accent-color: var(--fz-primary);
+    accent-color: var(--bf-primary);
     width: 1.1em;
     height: 1.1em;
-    margin-inline-end: var(--fz-space-2);
+    margin-inline-end: var(--bf-space-2);
     vertical-align: middle;
   }
 
@@ -165,26 +165,26 @@
     appearance: none;
     width: 2.5em;
     height: 1.5em;
-    margin-inline-end: var(--fz-space-2);
+    margin-inline-end: var(--bf-space-2);
     vertical-align: middle;
     cursor: pointer;
 
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-full);
-    background-color: var(--fz-surface-alt);
-    background-image: radial-gradient(circle, var(--fz-text) 42%, transparent 43%);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-full);
+    background-color: var(--bf-surface-alt);
+    background-image: radial-gradient(circle, var(--bf-text) 42%, transparent 43%);
     background-size: 1.05em 1.05em;
     background-position: 0.3em center;
     background-repeat: no-repeat;
 
     transition:
-      background-color var(--fz-transition),
-      background-position var(--fz-transition);
+      background-color var(--bf-transition),
+      background-position var(--bf-transition);
   }
 
   input[type="checkbox"][data-switch]:checked {
-    background-color: var(--fz-primary);
-    background-image: radial-gradient(circle, var(--fz-primary-fg) 42%, transparent 43%);
+    background-color: var(--bf-primary);
+    background-image: radial-gradient(circle, var(--bf-primary-fg) 42%, transparent 43%);
     background-position: calc(100% - 0.3em) center;
   }
 
@@ -197,7 +197,7 @@
      switch's cursor: pointer above — the :is() arm alone is
      (0,1,1) and would lose that tiebreak (ADR-0007). */
   input[type="checkbox"][data-switch]:disabled {
-    opacity: var(--fz-disabled-opacity);
+    opacity: var(--bf-disabled-opacity);
     cursor: not-allowed;
   }
 
@@ -208,23 +208,23 @@
   input[type="range"] {
     appearance: none;
     width: 100%;
-    height: var(--fz-control-height);
+    height: var(--bf-control-height);
     background: transparent;
     cursor: pointer;
   }
 
   input[type="range"]::-webkit-slider-runnable-track {
     height: 0.375rem;
-    border-radius: var(--fz-radius-full);
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
   }
 
   input[type="range"]::-moz-range-track {
     height: 0.375rem;
-    border-radius: var(--fz-radius-full);
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
   }
 
   input[type="range"]::-webkit-slider-thumb {
@@ -233,18 +233,18 @@
     height: 1.25rem;
     margin-top: -0.4375rem; /* (track height − thumb height) / 2 */
     border-radius: 50%;
-    border: 2px solid var(--fz-surface);
-    background: var(--fz-primary);
-    box-shadow: var(--fz-shadow-sm);
+    border: 2px solid var(--bf-surface);
+    background: var(--bf-primary);
+    box-shadow: var(--bf-shadow-sm);
   }
 
   input[type="range"]::-moz-range-thumb {
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 50%;
-    border: 2px solid var(--fz-surface);
-    background: var(--fz-primary);
-    box-shadow: var(--fz-shadow-sm);
+    border: 2px solid var(--bf-surface);
+    background: var(--bf-primary);
+    box-shadow: var(--bf-shadow-sm);
   }
 
   input[type="range"]:hover:not(:disabled) {
@@ -266,10 +266,10 @@
   meter {
     width: 100%;
     height: 0.75rem;
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-full);
-    background: var(--fz-surface-alt);
-    accent-color: var(--fz-primary);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    accent-color: var(--bf-primary);
     overflow: hidden;
   }
 
@@ -278,13 +278,13 @@
   }
 
   progress::-webkit-progress-value {
-    background: var(--fz-primary);
-    border-radius: var(--fz-radius-full);
+    background: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
   }
 
   progress::-moz-progress-bar {
-    background: var(--fz-primary);
-    border-radius: var(--fz-radius-full);
+    background: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
   }
 
   meter::-webkit-meter-bar {
@@ -293,15 +293,15 @@
   }
 
   meter::-webkit-meter-optimum-value {
-    background: var(--fz-primary);
+    background: var(--bf-primary);
   }
 
   meter::-webkit-meter-suboptimum-value {
-    background: color-mix(in oklab, var(--fz-primary), var(--fz-danger) 35%);
+    background: color-mix(in oklab, var(--bf-primary), var(--bf-danger) 35%);
   }
 
   meter::-webkit-meter-even-less-good-value {
-    background: var(--fz-danger);
+    background: var(--bf-danger);
   }
 
   /* ---- Validation without JS. ----
@@ -311,22 +311,22 @@
      aria-invalid="false" with a filled field reads as valid. */
   :is(input, select, textarea):user-invalid,
   [aria-invalid="true"] {
-    border-color: var(--fz-danger);
+    border-color: var(--bf-danger);
   }
 
   :is(input, select, textarea):user-invalid:focus-visible,
   [aria-invalid="true"]:focus-visible {
-    box-shadow: 0 0 0 3px var(--fz-danger-muted);
+    box-shadow: 0 0 0 3px var(--bf-danger-muted);
   }
 
   :is(input, select, textarea):user-valid,
   [aria-invalid="false"] {
-    border-color: var(--fz-success);
+    border-color: var(--bf-success);
   }
 
   :is(input, select, textarea):user-valid:focus-visible,
   [aria-invalid="false"]:focus-visible {
-    box-shadow: 0 0 0 3px var(--fz-success-muted);
+    box-shadow: 0 0 0 3px var(--bf-success-muted);
   }
 
   /* Required marker — only when the control is wrapped in its label
@@ -334,41 +334,41 @@
      `required` attribute; the asterisk is a visual affordance. */
   label:has(> :is(input, select, textarea)[required])::after {
     content: " *";
-    color: var(--fz-danger);
+    color: var(--bf-danger);
   }
 
   /* The whole form signals once any field has been touched and is
      invalid. A subtle ring — pair fields with aria-describedby error
      text for the full picture. */
   form:has(:user-invalid) {
-    outline: var(--fz-border-width) solid color-mix(in oklab, var(--fz-danger), transparent 65%);
-    outline-offset: var(--fz-space-2);
-    border-radius: var(--fz-radius);
+    outline: var(--bf-border-width) solid color-mix(in oklab, var(--bf-danger), transparent 65%);
+    outline-offset: var(--bf-space-2);
+    border-radius: var(--bf-radius);
   }
 
   /* Help / error text. */
   small,
-  .fz-field-hint {
-    color: var(--fz-muted);
+  .bf-field-hint {
+    color: var(--bf-muted);
     font-size: 0.8125rem;
   }
 
-  .fz-field-error {
-    color: var(--fz-danger);
+  .bf-field-error {
+    color: var(--bf-danger);
   }
 
-  .fz-field-success {
-    color: var(--fz-success);
+  .bf-field-success {
+    color: var(--bf-success);
   }
 
   fieldset {
     display: grid;
-    gap: var(--fz-space-3);
+    gap: var(--bf-space-3);
   }
 
   legend {
-    font-weight: var(--fz-font-weight-semibold);
-    margin-block-end: var(--fz-space-2);
+    font-weight: var(--bf-font-weight-semibold);
+    margin-block-end: var(--bf-space-2);
   }
 
   /* ---- Input groups (leading icon / affix) ----
@@ -383,35 +383,35 @@
   [data-input-group] > :first-child:not(input):not(select):not(textarea) {
     display: grid;
     place-items: center;
-    padding-inline: var(--fz-space-3);
-    color: var(--fz-muted);
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
+    padding-inline: var(--bf-space-3);
+    color: var(--bf-muted);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
     border-inline-end: none;
-    border-radius: var(--fz-radius) 0 0 var(--fz-radius);
+    border-radius: var(--bf-radius) 0 0 var(--bf-radius);
     font-size: 0.9375rem;
   }
 
   [data-input-group] > :is(input, select, textarea) {
     flex: 1;
-    border-radius: 0 var(--fz-radius) var(--fz-radius) 0;
+    border-radius: 0 var(--bf-radius) var(--bf-radius) 0;
   }
 
   [data-input-group]:has(> :is(input, select, textarea):focus-visible) > :first-child {
-    border-color: var(--fz-focus-ring);
-    color: var(--fz-focus-ring);
+    border-color: var(--bf-focus-ring);
+    color: var(--bf-focus-ring);
   }
 
   [data-input-group]:has(> :is(input, select, textarea):user-invalid) > :first-child,
   [data-input-group]:has(> [aria-invalid="true"]) > :first-child {
-    border-color: var(--fz-danger);
-    color: var(--fz-danger);
+    border-color: var(--bf-danger);
+    color: var(--bf-danger);
   }
 
   [data-input-group]:has(> :is(input, select, textarea):user-valid) > :first-child,
   [data-input-group]:has(> [aria-invalid="false"]) > :first-child {
-    border-color: var(--fz-success);
-    color: var(--fz-success);
+    border-color: var(--bf-success);
+    color: var(--bf-success);
   }
 
   /* ---- Date / number / email polish ----
@@ -442,7 +442,7 @@
   input[type="week"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     opacity: 0.6;
-    transition: opacity var(--fz-transition);
+    transition: opacity var(--bf-transition);
   }
 
   input[type="date"]:hover::-webkit-calendar-picker-indicator,

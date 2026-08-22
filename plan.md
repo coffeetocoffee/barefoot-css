@@ -1,24 +1,19 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-22 — v2.8.0_
+_Last updated: 2026-08-22 — v3.0.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.8.0` (2026-08-22) — polish & docs,
-  presentation-ready before the v3 wave: self-generating token
-  reference (`npm run docs:tokens`, parity-tested), machine-checked
-  API reference (two-way audit against `src/`; first run found eight
-  undocumented attributes), theme gallery with live preview cards —
-  which immediately caught four sub-AA starter-theme pairs (fixed),
-  per-component-section contrast sweep, cross-engine visual baselines
-  (Firefox/WebKit now pin their own rendering; v2.7's Firefox caveat
-  retired), performance budget docs. Public surfaces unchanged except
-  the starter-theme muted/primary values listed under Fixed in
-  `CHANGELOG.md`.
-- **Next:** v3.0.0 — the breaking cleanup: token rename (`--fz-*` →
-  `--barefoot-*`, or similar), `data-theme` → `data-fz-theme`,
-  migration guide + codemod script, drop anything deprecated in 2.x.
-  Specifics TBD as 2.x usage reveals them.
+- **Current:** `barefoot-css@3.0.0` (2026-08-22) — the breaking
+  cleanup: one namespace, `bf`. Tokens `--fz-*` → `--bf-*`, theme
+  attribute `data-theme` → `data-bf-theme`, utility classes
+  `.fz-*` → `.bf-*`, internal marker `data-fz-tabs-js` →
+  `data-bf-tabs-js` (plus the internal `fz-*` keyframe names).
+  Consumers migrate with `npm run migrate:v3` (codemod) or by hand
+  via `docs/migration-3.md`. Nothing deprecated in 2.x existed to
+  drop; no other public surface changed.
+- **Next:** TBD — first post-v3 arc. Candidates live in the
+  watch-list or a fresh architecture scan; no commitments yet.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -31,7 +26,7 @@ _Last updated: 2026-08-22 — v2.8.0_
   specs are Windows-only (win32 baselines): Chromium in `visual`,
   Firefox+WebKit in `visual-cross`; the ubuntu/macos jobs stay
   behavior-only.
-- **Build:** `index.css` 2.07KB gzip · `full.css` 7.79KB gzip (10KB
+- **Build:** `index.css` 2.08KB gzip · `full.css` 7.79KB gzip (10KB
   budget → PASS).
 - **Done:** milestones 0.1 → 2.8. Full history: `CHANGELOG.md`.
 
@@ -68,9 +63,9 @@ tree-shaking.
 
 ### 2. Theming by default
 
-- Every design decision is a `--fz-*` custom property on `:root`.
+- Every design decision is a `--bf-*` custom property on `:root`.
 - Color tokens use **`light-dark()`** so dark mode follows the OS with zero
-  attributes. `[data-theme]` just flips `color-scheme` — no duplicate
+  attributes. `[data-bf-theme]` just flips `color-scheme` — no duplicate
   palettes to maintain.
 - Theme presets: `auto` / `light` / `dark` / `contrast`.
 - Starter themes that change ~6 variables and look completely different:
@@ -128,7 +123,7 @@ Trade-off accepted: element-first CSS can't be safely purged by class.
 Mitigated by per-component entry points.
 
 Classes exist only where there is no native element: `.card`, `.badge`,
-and `.fz-*` utilities.
+and `.bf-*` utilities.
 
 ## Browser baseline
 
@@ -210,17 +205,17 @@ and `.fz-*` utilities.
   (Firefox/WebKit projects join the visual suite), performance
   budget docs (`docs/performance.md`). Shipped as
   `barefoot-css@2.8.0` (2026-08-22).
+- [x] **3.0** — the namespace cleanup: tokens `--fz-*` → `--bf-*`,
+  theme attribute `data-theme` → `data-bf-theme`, utility classes
+  `.fz-*` → `.bf-*`, internal marker `data-fz-tabs-js` →
+  `data-bf-tabs-js`; migration guide (`docs/migration-3.md`) +
+  codemod (`npm run migrate:v3`). Nothing deprecated in 2.x existed
+  to drop. Shipped as `barefoot-css@3.0.0` (2026-08-22).
 
-## Next — v3.0
+## Next
 
-### v3.0.0 — Breaking changes (next)
-
-The namespace cleanup. Specifics TBD based on what v2.x reveals.
-
-- [ ] **Token rename** — `--fz-*` → `--barefoot-*` (or similar, TBD)
-- [ ] **Attribute cleanup** — `data-theme` → `data-fz-theme` (avoid collisions)
-- [ ] **Migration guide + codemod script**
-- [ ] **Drop any deprecated items from v2.x**
+No arc committed yet — the first post-3.0 session picks one from the
+watch-list or a fresh scan.
 
 ## Watch-list (no action until browsers fix it)
 
@@ -287,12 +282,17 @@ The namespace cleanup. Specifics TBD based on what v2.x reveals.
   renders every starter at once under axe — which is how four
   light-scheme muted/primary pairs shipped sub-4.5:1 unnoticed.
   Fixed by darkening tokens in place (hue kept); any new starter
-  gets its card on the gallery page, so this class of bug cannot
-  ship quietly again.
+   gets its card on the gallery page, so this class of bug cannot
+   ship quietly again.
+- **v3 picked `bf`, not `barefoot`, as the namespace.** Every token,
+  class, and attribute a consumer types gets the short prefix
+  (`var(--bf-primary)`, `.bf-row`, `data-bf-theme`) while staying
+  collision-proof against framework CSS; the package keeps its full
+  name, only the prefix shortens.
 
 ## Non-goals
 
-- No utility framework. The `.fz-*` set stays tiny and layout-only.
+- No utility framework. The `.bf-*` set stays tiny and layout-only.
 - No JS framework integration (no React/Vue wrappers).
 - No IE/legacy support. Modern CSS is the point.
 - No component classes for everything — elements first, always.

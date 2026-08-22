@@ -5,9 +5,9 @@
    exclusivity, no JS. */
 @layer components {
   details[data-accordion] {
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
-    background: var(--fz-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    background: var(--bf-surface);
   }
 
   details[data-accordion] + details[data-accordion] {
@@ -24,20 +24,20 @@
   }
 
   details[data-accordion] + details[data-accordion]:not([open]) {
-    border-block-start: var(--fz-border-width) solid var(--fz-border);
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
   }
 
   details[data-accordion][open] + details[data-accordion] {
-    border-block-start-width: var(--fz-border-width);
+    border-block-start-width: var(--bf-border-width);
   }
 
   details[data-accordion] > summary {
     display: flex;
     align-items: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
 
-    padding: var(--fz-space-3) var(--fz-space-4);
-    font-weight: var(--fz-font-weight-medium);
+    padding: var(--bf-space-3) var(--bf-space-4);
+    font-weight: var(--bf-font-weight-medium);
     list-style: none;
     cursor: pointer;
   }
@@ -51,8 +51,8 @@
     margin-inline-start: auto;
     font-size: 1.25rem;
     line-height: 1;
-    color: var(--fz-muted);
-    transition: transform var(--fz-transition);
+    color: var(--bf-muted);
+    transition: transform var(--bf-transition);
   }
 
   details[data-accordion][open] > summary::after {
@@ -60,7 +60,7 @@
   }
 
   details[data-accordion] > :not(summary) {
-    padding: 0 var(--fz-space-4) var(--fz-space-4);
+    padding: 0 var(--bf-space-4) var(--bf-space-4);
   }
 
   /* ---- Open/close motion ----
@@ -76,7 +76,7 @@
     details[data-accordion] > :not(summary) {
       height: 0;
       overflow: hidden;
-      transition: height var(--fz-transition-slow);
+      transition: height var(--bf-transition-slow);
     }
 
     details[data-accordion][open] > :not(summary) {

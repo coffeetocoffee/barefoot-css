@@ -28,9 +28,9 @@ test.describe("accessibility conformance (axe-core)", () => {
     await gotoDemo(page);
     await page.getByRole("button", { name: "Contrast" }).click();
     await page.waitForTimeout(400);
-    // data-theme="contrast" forces black-on-white (and white-on-black in
+    // data-bf-theme="contrast" forces black-on-white (and white-on-black in
     // dark) — the palette must stay axe-clean end to end.
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "contrast");
     const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
@@ -38,7 +38,7 @@ test.describe("accessibility conformance (axe-core)", () => {
   test("contrast theme: every component section is individually clean", async ({ page }) => {
     await gotoDemo(page);
     await page.getByRole("button", { name: "Contrast" }).click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "contrast");
     await page.waitForTimeout(400);
 
     // The page-wide scan above proves the palette; this sweep proves it
@@ -63,7 +63,7 @@ test.describe("accessibility conformance (axe-core)", () => {
   test("theme gallery has no violations (six themes rendered at once)", async ({ page }) => {
     await gotoGallery(page);
     // Every starter theme renders live on one page — each card scopes
-    // its own data-theme, so this single scan axe-checks all of them.
+    // its own data-bf-theme, so this single scan axe-checks all of them.
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
@@ -92,7 +92,7 @@ test.describe("accessibility conformance (axe-core)", () => {
   test("mobile hamburger nav open has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);
-    const toggle = page.locator(`${DEMOS.demoNavBurger} .fz-nav-toggle`);
+    const toggle = page.locator(`${DEMOS.demoNavBurger} .bf-nav-toggle`);
     await expect(toggle).toBeVisible();
     await toggle.click();
     await expect(page.locator(DEMOS.demoNavMenu)).toBeVisible();
@@ -109,7 +109,7 @@ test.describe("accessibility conformance (axe-core)", () => {
     await email.blur();
     await expect(email).toHaveCSS(
       "border-color",
-      await tokenColor(page, "--fz-danger")
+      await tokenColor(page, "--bf-danger")
     );
     const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
@@ -171,7 +171,7 @@ test.describe("visible focus + keyboard contract", () => {
 
   test("skip link is clipped until keyboard focus, then revealed", async ({ page }) => {
     await gotoDemo(page);
-    const skip = page.locator(".fz-skip-link");
+    const skip = page.locator(".bf-skip-link");
     // First tab stop on the page (it's first in <body>).
     await expect(skip).toHaveCSS("clip-path", "inset(50%)");
     await page.keyboard.press("Tab");

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-bf-theme="auto">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,19 +30,19 @@
       src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
     }
     :root {
-      --fz-font: "Inter", system-ui, sans-serif;
-      --fz-font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --bf-font: "Inter", system-ui, sans-serif;
+      --bf-font-mono: "JetBrains Mono", ui-monospace, monospace;
     }
-    .gallery-hero { padding-block: var(--fz-space-8) var(--fz-space-6); }
+    .gallery-hero { padding-block: var(--bf-space-8) var(--bf-space-6); }
     .gallery-hero p { max-width: 60ch; }
     .gallery-card {
       display: flex;
       flex-direction: column;
-      gap: var(--fz-space-3);
-      padding: var(--fz-space-5);
-      background: var(--fz-surface);
-      border: var(--fz-border-width) solid var(--fz-border);
-      border-radius: var(--fz-radius-lg);
+      gap: var(--bf-space-3);
+      padding: var(--bf-space-5);
+      background: var(--bf-surface);
+      border: var(--bf-border-width) solid var(--bf-border);
+      border-radius: var(--bf-radius-lg);
     }
     .gallery-card h2 { margin: 0; }
     .gallery-card > p { margin: 0; min-height: 3lh; }
@@ -50,44 +50,44 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--fz-space-2);
-      padding-block-start: var(--fz-space-2);
-      border-block-start: var(--fz-border-width) solid var(--fz-border);
+      gap: var(--bf-space-2);
+      padding-block-start: var(--bf-space-2);
+      border-block-start: var(--bf-border-width) solid var(--bf-border);
     }
     .gallery-strip input { max-width: 11rem; }
   </style>
 </head>
 <body>
-  <a class="fz-skip-link" href="#main">Skip to content</a>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
 
-  <header class="fz-container gallery-hero">
-    <p class="fz-overline">Barefoot CSS</p>
+  <header class="bf-container gallery-hero">
+    <p class="bf-overline">Barefoot CSS</p>
     <h1>Theme gallery</h1>
     <p>Five starter themes and the neutral default, each rendered
        <strong>live</strong> below — every card carries its own
-       <code>data-theme</code>, so what you see is what you ship. No
+       <code>data-bf-theme</code>, so what you see is what you ship. No
        screenshots: each preview is real components reading the same
        tokens your app would.</p>
 
-    <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
-      <span class="fz-muted">Re-theme the whole page:</span>
-      <button type="button" data-theme-btn="auto">Auto</button>
-      <button type="button" data-theme-btn="light">Light</button>
-      <button type="button" data-theme-btn="dark">Dark</button>
-      <button type="button" data-theme-btn="contrast">Contrast</button>
-      <button type="button" data-theme-btn="editorial">Editorial</button>
-      <button type="button" data-theme-btn="dashboard">Dashboard</button>
-      <button type="button" data-theme-btn="playful">Playful</button>
-      <button type="button" data-theme-btn="forest">Forest</button>
+    <div class="bf-row bf-gap-2" role="group" aria-label="Theme switcher">
+      <span class="bf-muted">Re-theme the whole page:</span>
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="contrast">Contrast</button>
+      <button type="button" data-bf-theme-btn="editorial">Editorial</button>
+      <button type="button" data-bf-theme-btn="dashboard">Dashboard</button>
+      <button type="button" data-bf-theme-btn="playful">Playful</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
     </div>
   </header>
 
-  <main class="fz-container" id="main">
+  <main class="bf-container" id="main">
     <section data-grid aria-label="Theme previews">
-      <!-- The default: no data-theme at all. -->
+      <!-- The default: no data-bf-theme at all. -->
       <article class="gallery-card" id="gallery-barefoot" aria-labelledby="gallery-barefoot-title">
         <h2 id="gallery-barefoot-title">Barefoot (default)</h2>
-        <p class="fz-muted">Ink on paper, hairline borders, no shadows,
+        <p class="bf-muted">Ink on paper, hairline borders, no shadows,
            small neutral radii. Zero overrides — this is the framework.</p>
         <div class="gallery-strip">
           <button type="button" data-variant="primary">Primary</button>
@@ -97,9 +97,9 @@
         </div>
       </article>
 
-      <article class="gallery-card" id="gallery-editorial" data-theme="editorial" aria-labelledby="gallery-editorial-title">
+      <article class="gallery-card" id="gallery-editorial" data-bf-theme="editorial" aria-labelledby="gallery-editorial-title">
         <h2 id="gallery-editorial-title">Editorial</h2>
-        <p class="fz-muted">Serif voice, warm paper tones, square corners.
+        <p class="bf-muted">Serif voice, warm paper tones, square corners.
            Overrides the fonts, eight color tokens, and the radii.</p>
         <div class="gallery-strip">
           <button type="button" data-variant="primary">Primary</button>
@@ -109,9 +109,9 @@
         </div>
       </article>
 
-      <article class="gallery-card" id="gallery-dashboard" data-theme="dashboard" aria-labelledby="gallery-dashboard-title">
+      <article class="gallery-card" id="gallery-dashboard" data-bf-theme="dashboard" aria-labelledby="gallery-dashboard-title">
         <h2 id="gallery-dashboard-title">Dashboard</h2>
-        <p class="fz-muted">Blue accent, denser controls, tighter radii.
+        <p class="bf-muted">Blue accent, denser controls, tighter radii.
            One accent change plus control height and spacing.</p>
         <div class="gallery-strip">
           <button type="button" data-variant="primary">Primary</button>
@@ -121,9 +121,9 @@
         </div>
       </article>
 
-      <article class="gallery-card" id="gallery-playful" data-theme="playful" aria-labelledby="gallery-playful-title">
+      <article class="gallery-card" id="gallery-playful" data-bf-theme="playful" aria-labelledby="gallery-playful-title">
         <h2 id="gallery-playful-title">Playful</h2>
-        <p class="fz-muted">Rounded, saturated, bouncier transitions.
+        <p class="bf-muted">Rounded, saturated, bouncier transitions.
            Proof that personality is six variables away.</p>
         <div class="gallery-strip">
           <button type="button" data-variant="primary">Primary</button>
@@ -133,9 +133,9 @@
         </div>
       </article>
 
-      <article class="gallery-card" id="gallery-forest" data-theme="forest" aria-labelledby="gallery-forest-title">
+      <article class="gallery-card" id="gallery-forest" data-bf-theme="forest" aria-labelledby="gallery-forest-title">
         <h2 id="gallery-forest-title">Forest</h2>
-        <p class="fz-muted">Deep greens on warm paper, soft green shadow.
+        <p class="bf-muted">Deep greens on warm paper, soft green shadow.
            The quiet one of the set.</p>
         <div class="gallery-strip">
           <button type="button" data-variant="primary">Primary</button>
@@ -145,9 +145,9 @@
         </div>
       </article>
 
-      <article class="gallery-card" id="gallery-contrast" data-theme="contrast" aria-labelledby="gallery-contrast-title">
+      <article class="gallery-card" id="gallery-contrast" data-bf-theme="contrast" aria-labelledby="gallery-contrast-title">
         <h2 id="gallery-contrast-title">Contrast</h2>
-        <p class="fz-muted">Pure black on pure white (and mirrored in
+        <p class="bf-muted">Pure black on pure white (and mirrored in
            dark). Also available as the OS-driven
            <code>prefers-contrast</code> mode.</p>
         <div class="gallery-strip">
@@ -167,12 +167,12 @@
          through building your own from scratch, and
          <a href="../docs/theming.md">theming.md</a> lists every token the
          cards above are reading.</p>
-      <pre><code>&lt;html <strong>data-theme="forest"</strong>&gt;</code></pre>
+      <pre><code>&lt;html <strong>data-bf-theme="forest"</strong>&gt;</code></pre>
     </section>
   </main>
 
-  <footer class="fz-container fz-mt-8">
-    <p class="fz-muted">
+  <footer class="bf-container bf-mt-8">
+    <p class="bf-muted">
       <a href="index.html">Conformance demo</a> ·
       <a href="../docs/index.html">Docs</a> — every visual is a variable. Make it yours.
     </p>
@@ -182,15 +182,15 @@
     // Same tiny switcher as the conformance demo — not framework code.
     const root = document.documentElement;
     const applyTheme = (t) => {
-      const set = () => { root.dataset.theme = t; };
+      const set = () => { root.dataset.bfTheme = t; };
       if (document.startViewTransition) {
         document.startViewTransition(set);
       } else {
         set();
       }
     };
-    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
-      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.bfThemeBtn));
     }
   </script>
 </body>

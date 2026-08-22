@@ -64,15 +64,15 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
   readers already announce the `required` attribute.
 - **Form-level invalid signal** — `form:has(:user-invalid)` draws a
   subtle ring around the whole form once any touched field is invalid.
-  Pair each field with `.fz-field-error` text wired up via
+  Pair each field with `.bf-field-error` text wired up via
   `aria-describedby`.
 - **Field-level states** — `:user-invalid` / `:user-valid` fire only
   *after* a control is touched (nothing flashes on page load): invalid
   fields get the danger border, valid fields get the success border.
   Script-driven forms can mirror the state with
   `aria-invalid="true"` / `"false"` — same painting, no interaction
-  heuristic. Message helpers: `.fz-field-hint` (muted guidance),
-  `.fz-field-error` (danger), `.fz-field-success` (success).
+  heuristic. Message helpers: `.bf-field-hint` (muted guidance),
+  `.bf-field-error` (danger), `.bf-field-success` (success).
 - **JS:** none.
 - **A11y:** native controls + browser validation UX.
 
@@ -181,7 +181,7 @@ document.querySelector("dialog").showModal();
 ## Tabs (opt-in JS)
 
 ```html
-<div data-fz-tabs>
+<div data-bf-tabs>
   <div role="tablist" aria-label="Sections">
     <button role="tab" aria-controls="panel-1" aria-selected="true">One</button>
     <button role="tab" aria-controls="panel-2" aria-selected="false">Two</button>
@@ -199,7 +199,7 @@ document.querySelector("dialog").showModal();
 
 - **JS:** opt-in `js/tabs.js` (~2.7KB, zero deps) — WAI-ARIA tabs with
   arrow-key navigation, `Home`/`End`, automatic activation. On init the
-  module marks the group `data-fz-tabs-js` (a CSS hook) and hides inactive
+  module marks the group `data-bf-tabs-js` (a CSS hook) and hides inactive
   panels.
 - **A11y:** full APG tabs pattern (roving tabindex, `aria-selected`,
   `aria-controls`). **No-JS first:** without the module every panel stays
@@ -217,7 +217,7 @@ support, carousel controls + autoplay) and their markup.
 ## Grid
 
 ```html
-<div class="fz-contain">                 <!-- makes the query container -->
+<div class="bf-contain">                 <!-- makes the query container -->
   <div data-grid>                        <!-- 1 / 2 / 3 columns -->
     <article class="card">…</article>
   </div>
@@ -233,14 +233,14 @@ support, carousel controls + autoplay) and their markup.
 ```
 
 - **Base `[data-grid]`** — the column count responds to the *container's*
-  width (wrap it in `.fz-contain`): 1 column below 30rem, 2 up to 48rem,
+  width (wrap it in `.bf-contain`): 1 column below 30rem, 2 up to 48rem,
   3 after. Same markup, zero media queries.
 - **`[data-grid="auto-fit"]` / `[data-grid="auto-fill"]`** — flows as
-  many columns as fit, each at least `--fz-grid-min` (14rem by default).
+  many columns as fit, each at least `--bf-grid-min` (14rem by default).
   Tracks size against the row itself, so no container query is needed.
   (`auto-fill` keeps empty tracks; `auto-fit` collapses them.)
 - **`data-gap="0|1…8"`** — tunes the gap from the spacing scale
-  (default `4` → `--fz-space-4`). Override `--fz-grid-gap` for a global
+  (default `4` → `--bf-space-4`). Override `--bf-grid-gap` for a global
   default.
 - **JS:** none.
 - **A11y:** document order is visual order; cards are `<article>`s.
@@ -329,7 +329,7 @@ support, carousel controls + autoplay) and their markup.
 - A progress tracker for multi-step flows. The state lives in plain
   attributes the consumer controls: `data-complete` on finished steps,
   `aria-current="step"` on the active one. Completed circles fill from
-  `--fz-success`, current from `--fz-primary`, pending stay muted — and
+  `--bf-success`, current from `--bf-primary`, pending stay muted — and
   the connecting lines follow completion.
 - **`data-orientation="vertical"`** stacks the steps (default is
   horizontal).
@@ -341,7 +341,7 @@ support, carousel controls + autoplay) and their markup.
 
 ```html
 <nav data-nav aria-label="Primary">
-  <a class="fz-brand" href="/">Acme</a>
+  <a class="bf-brand" href="/">Acme</a>
   <ul>
     <li><a href="/" aria-current="page">Home</a></li>
     <li><a href="/docs">Docs</a></li>
@@ -354,7 +354,7 @@ support, carousel controls + autoplay) and their markup.
 </nav>
 ```
 
-- **`[data-nav]`** — a topbar row: an optional `.fz-brand` (a class,
+- **`[data-nav]`** — a topbar row: an optional `.bf-brand` (a class,
   because there is no native element for a site name) plus a link list.
   The row wraps on narrow screens — nothing toggles, nothing hides.
 - **`data-nav="header"`** — topbar with a bottom hairline.
@@ -363,15 +363,15 @@ support, carousel controls + autoplay) and their markup.
 - **`aria-current="page"`** — marks the active link (accent + semibold).
 - **JS:** none.
 - **A11y:** a `<nav aria-label>` is a named landmark for free. Pair it
-  with `.fz-skip-link` as the first element in `<body>` so the first Tab
+  with `.bf-skip-link` as the first element in `<body>` so the first Tab
   stop skips past the nav to `<main>`.
 
 ### Hamburger (opt-in JS)
 
 ```html
 <nav data-nav="header" aria-label="Primary">
-  <a class="fz-brand" href="/">Acme</a>
-  <button type="button" class="fz-nav-toggle"
+  <a class="bf-brand" href="/">Acme</a>
+  <button type="button" class="bf-nav-toggle"
           aria-expanded="false" aria-controls="site-menu">Menu</button>
   <ul id="site-menu">
     <li><a href="/" aria-current="page">Home</a></li>
@@ -439,7 +439,7 @@ support, carousel controls + autoplay) and their markup.
 
 ```html
 <div data-spinner role="status">
-  <span class="fz-visually-hidden">Loading…</span>
+  <span class="bf-visually-hidden">Loading…</span>
 </div>
 
 <div data-spinner data-size="sm"></div>
@@ -447,9 +447,9 @@ support, carousel controls + autoplay) and their markup.
 ```
 
 - **`[data-spinner]`** — an indeterminate loading indicator, pure CSS:
-  a rotating arc drawn from the accent tokens (`--fz-primary` on a
-  `--fz-primary-muted` track). Default 1.5rem; `data-size="sm"` → 1rem,
-  `data-size="lg"` → `--fz-control-height`.
+  a rotating arc drawn from the accent tokens (`--bf-primary` on a
+  `--bf-primary-muted` track). Default 1.5rem; `data-size="sm"` → 1rem,
+  `data-size="lg"` → `--bf-control-height`.
 - **`prefers-reduced-motion`** — the rotation stops; a static arc
   remains.
 - **JS:** none.
@@ -481,7 +481,7 @@ support, carousel controls + autoplay) and their markup.
 ## Prose
 
 ```html
-<article class="fz-prose">
+<article class="bf-prose">
   <h3>Section heading</h3>
   <p>A paragraph of long-form copy…</p>
   <blockquote>“No boots, no baggage.”</blockquote>
@@ -490,12 +490,12 @@ support, carousel controls + autoplay) and their markup.
 </article>
 ```
 
-- **`.fz-prose`** — an opt-in wrapper that imposes heading rhythm and
+- **`.bf-prose`** — an opt-in wrapper that imposes heading rhythm and
   section spacing on long-form content. One beat between siblings; a
   full section gap before headings; tight gap below. The element look
   (blockquote border, code/keycaps, table rows) comes from the base and
   component layers — the wrapper only adds the pace.
-- The measure stays capped at `--fz-content-width` (64ch) so lines
+- The measure stays capped at `--bf-content-width` (64ch) so lines
   remain readable.
 - **JS:** none.
 - **A11y:** plain semantic HTML; no hidden ordering or live regions.
@@ -503,27 +503,27 @@ support, carousel controls + autoplay) and their markup.
 ## Media & avatars
 
 ```html
-<!-- Circular avatar, token-sized (--fz-avatar-size = 2.5rem) -->
-<img class="fz-avatar" alt="Ada">
+<!-- Circular avatar, token-sized (--bf-avatar-size = 2.5rem) -->
+<img class="bf-avatar" alt="Ada">
 
 <!-- data-size="sm" (1.75rem) or "lg" (4rem) -->
-<img class="fz-avatar" data-size="lg" alt="Ada">
+<img class="bf-avatar" data-size="lg" alt="Ada">
 
 <!-- Avatar group: overlapping stack -->
-<div class="fz-avatar-group">
-  <img class="fz-avatar" alt="Ada">
-  <img class="fz-avatar" alt="Grace">
-  <img class="fz-avatar" alt="Linus">
+<div class="bf-avatar-group">
+  <img class="bf-avatar" alt="Ada">
+  <img class="bf-avatar" alt="Grace">
+  <img class="bf-avatar" alt="Linus">
 </div>
 
 <!-- Responsive image: shrinks to container, keeps ratio -->
 <img src="wide-banner.svg" alt="…">
 
 <!-- Aspect-ratio embed: 16:9 by default; data-ratio for 4/3, 1/1, 21/9 -->
-<div data-media style="background: var(--fz-surface-alt)">
+<div data-media style="background: var(--bf-surface-alt)">
   16:9 placeholder
 </div>
-<div data-media data-ratio="1/1" style="background: var(--fz-surface-alt)">
+<div data-media data-ratio="1/1" style="background: var(--bf-surface-alt)">
   1:1
 </div>
 
@@ -535,10 +535,10 @@ support, carousel controls + autoplay) and their markup.
 </article>
 ```
 
-- **`.fz-avatar`** — circular image; size from `--fz-avatar-size`
-  (2.5rem, matches `--fz-control-height`). `data-size="sm"` → 1.75rem,
+- **`.bf-avatar`** — circular image; size from `--bf-avatar-size`
+  (2.5rem, matches `--bf-control-height`). `data-size="sm"` → 1.75rem,
   `data-size="lg"` → 4rem. Always include `alt` text.
-- **`.fz-avatar-group`** — an overlapping stack of avatars: each pulls
+- **`.bf-avatar-group`** — an overlapping stack of avatars: each pulls
   back over the previous one by a third of its size, and a surface ring
   keeps the faces distinct. Purely visual — reading order, tab order,
   and image semantics are untouched.
@@ -626,8 +626,8 @@ support, carousel controls + autoplay) and their markup.
   small text between two hairlines drawn by pseudo-elements. The label
   is real content, announced like any other text; the rules are
   decorative.
-- Colors and stroke come from `--fz-muted` / `--fz-border` /
-  `--fz-border-width`; spacing matches the base `<hr>` rhythm.
+- Colors and stroke come from `--bf-muted` / `--bf-border` /
+  `--bf-border-width`; spacing matches the base `<hr>` rhythm.
 - **JS:** none.
 - **A11y:** nothing hidden — text stays text, decoration stays in
   pseudo-elements.
@@ -638,9 +638,9 @@ support, carousel controls + autoplay) and their markup.
 <link rel="stylesheet" href="barefoot-css/components/view-transition.css">
 <script>
   if (document.startViewTransition) {
-    document.startViewTransition(() => { root.dataset.theme = "dark"; });
+    document.startViewTransition(() => { root.dataset.bfTheme = "dark"; });
   } else {
-    root.dataset.theme = "dark";
+    root.dataset.bfTheme = "dark";
   }
 </script>
 ```
@@ -649,7 +649,7 @@ support, carousel controls + autoplay) and their markup.
   `components/view-transition.css` when you call
   `document.startViewTransition()` (theme switches, SPA-ish page swaps):
   the outgoing snapshot is dropped (`animation: none`) and the incoming
-  one fades in over `--fz-transition-slow`, instead of the default
+  one fades in over `--bf-transition-slow`, instead of the default
   cross-fade flash.
 - **Reduced motion:** under `prefers-reduced-motion: reduce` both
   snapshots render statically — no fade, no movement.
@@ -662,26 +662,26 @@ support, carousel controls + autoplay) and their markup.
 
 Layout-only, opt-in:
 
-- **Container & flow** — `.fz-container`, `.fz-stack`, `.fz-row`,
-  `.fz-gap-1…5`.
-- **Spacing scale** — `.fz-mt-1…8` / `.fz-mb-1…8`
-  (margin-block-start/end), `.fz-p-1…8` (all-sides padding),
-  `.fz-px-1…8` / `.fz-py-1…8` (padding-inline/block). Each maps to the
-  matching `--fz-space-*` token. When `.fz-p-*` and an axis shorthand are
+- **Container & flow** — `.bf-container`, `.bf-stack`, `.bf-row`,
+  `.bf-gap-1…5`.
+- **Spacing scale** — `.bf-mt-1…8` / `.bf-mb-1…8`
+  (margin-block-start/end), `.bf-p-1…8` (all-sides padding),
+  `.bf-px-1…8` / `.bf-py-1…8` (padding-inline/block). Each maps to the
+  matching `--bf-space-*` token. When `.bf-p-*` and an axis shorthand are
   both applied, the axis shorthand wins.
-- **Split layout** — `.fz-sidebar`: the first child is the aside
-  (`--fz-sidebar-width`, 16rem), everything else flows beside it; the
+- **Split layout** — `.bf-sidebar`: the first child is the aside
+  (`--bf-sidebar-width`, 16rem), everything else flows beside it; the
   split wraps to one column when the row can't fit the aside plus ≥60%
   main. Zero media queries.
-- **Sticky** — `.fz-sticky` pins an element to `--fz-sticky-top` (`0`)
+- **Sticky** — `.bf-sticky` pins an element to `--bf-sticky-top` (`0`)
   while its scrolling ancestor moves.
-- **Text & a11y** — `.fz-muted`, `.fz-center`, `.fz-overline`,
-  `.fz-visually-hidden`, `.fz-skip-link`.
+- **Text & a11y** — `.bf-muted`, `.bf-center`, `.bf-overline`,
+  `.bf-visually-hidden`, `.bf-skip-link`.
 
-`.fz-skip-link` is the one a11y helper worth reaching for: put it as the
+`.bf-skip-link` is the one a11y helper worth reaching for: put it as the
 **first element in `<body>`** and it's clipped out of view until keyboard
 focus, then revealed top-left so the first Tab stop is "Skip to content":
 
 ```html
-<a class="fz-skip-link" href="#main">Skip to content</a>
+<a class="bf-skip-link" href="#main">Skip to content</a>
 ```

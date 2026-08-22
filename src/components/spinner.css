@@ -2,7 +2,7 @@
    Mark any element (commonly a <div> or <span>) with data-spinner:
 
      <div data-spinner role="status">
-       <span class="fz-visually-hidden">Loading…</span>
+       <span class="bf-visually-hidden">Loading…</span>
      </div>
 
    A rotating arc drawn from the accent tokens; data-size="sm|lg" for
@@ -16,25 +16,25 @@
     flex: none;
     width: 1.5rem;
     height: 1.5rem;
-    border: calc(var(--fz-border-width) * 3) solid var(--fz-primary-muted);
-    border-top-color: var(--fz-primary);
-    border-radius: var(--fz-radius-full);
-    animation: fz-spin 0.8s linear infinite;
+    border: calc(var(--bf-border-width) * 3) solid var(--bf-primary-muted);
+    border-top-color: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
+    animation: bf-spin 0.8s linear infinite;
   }
 
   [data-spinner][data-size="sm"] {
     width: 1rem;
     height: 1rem;
-    border-width: calc(var(--fz-border-width) * 2);
+    border-width: calc(var(--bf-border-width) * 2);
   }
 
   [data-spinner][data-size="lg"] {
-    width: var(--fz-control-height);
-    height: var(--fz-control-height);
-    border-width: calc(var(--fz-border-width) * 4);
+    width: var(--bf-control-height);
+    height: var(--bf-control-height);
+    border-width: calc(var(--bf-border-width) * 4);
   }
 
-  @keyframes fz-spin {
+  @keyframes bf-spin {
     to {
       transform: rotate(1turn);
     }

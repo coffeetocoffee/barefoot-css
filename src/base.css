@@ -4,13 +4,13 @@
 @layer base {
   /* Visible focus everywhere. Non-negotiable. */
   :focus-visible {
-    outline: 2px solid var(--fz-focus-ring);
+    outline: 2px solid var(--bf-focus-ring);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: var(--fz-primary);
-    color: var(--fz-primary-fg);
+    background: var(--bf-primary);
+    color: var(--bf-primary-fg);
   }
 
   html {
@@ -20,41 +20,41 @@
   }
 
   body {
-    background: var(--fz-surface);
-    color: var(--fz-text);
-    font-family: var(--fz-font);
-    line-height: var(--fz-line-height);
+    background: var(--bf-surface);
+    color: var(--bf-text);
+    font-family: var(--bf-font);
+    line-height: var(--bf-line-height);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
   /* ---- Typography ----
-     Headings are fluid (clamp() steps from the --fz-type-* tokens in
+     Headings are fluid (clamp() steps from the --bf-type-* tokens in
      tokens.css): they shrink on small screens and cap on large ones.
-     Override --fz-type-* (or set a fixed rem here) to opt out. */
+     Override --bf-type-* (or set a fixed rem here) to opt out. */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     line-height: 1.2;
     text-wrap: balance;
   }
 
-  h1 { font-size: var(--fz-type-2xl); }
-  h2 { font-size: var(--fz-type-xl); }
-  h3 { font-size: var(--fz-type-lg); }
-  h4 { font-size: var(--fz-type-md); }
+  h1 { font-size: var(--bf-type-2xl); }
+  h2 { font-size: var(--bf-type-xl); }
+  h3 { font-size: var(--bf-type-lg); }
+  h4 { font-size: var(--bf-type-md); }
 
   p,
   li,
   dd,
   dt,
   blockquote {
-    max-width: var(--fz-content-width);
+    max-width: var(--bf-content-width);
   }
 
   p { text-wrap: pretty; }
 
   a {
-    color: var(--fz-primary);
+    color: var(--bf-primary);
     text-underline-offset: 0.15em;
     text-decoration-thickness: 0.06em;
   }
@@ -65,34 +65,34 @@
 
   hr {
     border: 0;
-    border-top: var(--fz-border-width) solid var(--fz-border);
-    margin-block: var(--fz-space-6);
+    border-top: var(--bf-border-width) solid var(--bf-border);
+    margin-block: var(--bf-space-6);
   }
 
   ul, ol {
-    padding-inline-start: var(--fz-space-5);
+    padding-inline-start: var(--bf-space-5);
   }
 
   li + li {
-    margin-top: var(--fz-space-1);
+    margin-top: var(--bf-space-1);
   }
 
   blockquote {
-    border-inline-start: 3px solid var(--fz-border);
-    padding-inline-start: var(--fz-space-4);
-    color: var(--fz-muted);
+    border-inline-start: 3px solid var(--bf-border);
+    padding-inline-start: var(--bf-space-4);
+    color: var(--bf-muted);
     font-style: italic;
   }
 
   mark {
-    background: color-mix(in oklab, var(--fz-primary), transparent 72%);
-    color: var(--fz-text);
-    border-radius: var(--fz-radius-sm);
+    background: color-mix(in oklab, var(--bf-primary), transparent 72%);
+    color: var(--bf-text);
+    border-radius: var(--bf-radius-sm);
     padding-inline: 0.15em;
   }
 
   figure {
-    margin-block: var(--fz-space-5);
+    margin-block: var(--bf-space-5);
   }
 
   /* Responsive media (v1.8): images and video scale down to their
@@ -104,55 +104,55 @@
   }
 
   figure img {
-    border-radius: var(--fz-radius);
+    border-radius: var(--bf-radius);
   }
 
   figcaption {
-    margin-block-start: var(--fz-space-2);
+    margin-block-start: var(--bf-space-2);
     font-size: 0.875rem;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
   address {
     font-style: normal;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
   del {
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
   ins {
     text-decoration: none;
-    background: color-mix(in oklab, var(--fz-primary), transparent 82%);
-    border-radius: var(--fz-radius-sm);
+    background: color-mix(in oklab, var(--bf-primary), transparent 82%);
+    border-radius: var(--bf-radius-sm);
     padding-inline: 0.1em;
   }
 
   /* ---- Print ---- */
   @media print {
-    /* Ink-first. Every component reads from the --fz-* tokens, so
+    /* Ink-first. Every component reads from the --bf-* tokens, so
        resetting them here (with !important to beat themes and the
        components layer) makes the whole page print light-on-white —
        a dark theme would otherwise print dark surfaces with black
        text. Plain hex, not light-dark(): print is always light. */
     :root {
-      --fz-surface: #ffffff !important;
-      --fz-surface-alt: #f4f4f4 !important;
-      --fz-text: #000000 !important;
-      --fz-muted: #333333 !important;
-      --fz-border: #cccccc !important;
-      --fz-primary: #000000 !important;
-      --fz-primary-fg: #ffffff !important;
-      --fz-focus-ring: #000000 !important;
-      --fz-danger: #000000 !important;
-      --fz-danger-fg: #ffffff !important;
-      --fz-success: #000000 !important;
-      --fz-success-fg: #ffffff !important;
-      --fz-info: #000000 !important;
-      --fz-info-fg: #ffffff !important;
-      --fz-warning: #000000 !important;
-      --fz-warning-fg: #ffffff !important;
+      --bf-surface: #ffffff !important;
+      --bf-surface-alt: #f4f4f4 !important;
+      --bf-text: #000000 !important;
+      --bf-muted: #333333 !important;
+      --bf-border: #cccccc !important;
+      --bf-primary: #000000 !important;
+      --bf-primary-fg: #ffffff !important;
+      --bf-focus-ring: #000000 !important;
+      --bf-danger: #000000 !important;
+      --bf-danger-fg: #ffffff !important;
+      --bf-success: #000000 !important;
+      --bf-success-fg: #ffffff !important;
+      --bf-info: #000000 !important;
+      --bf-info-fg: #ffffff !important;
+      --bf-warning: #000000 !important;
+      --bf-warning-fg: #ffffff !important;
     }
 
     body {

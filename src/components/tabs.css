@@ -4,24 +4,24 @@
    inactive panels via the hidden attribute, which must win over any
    default display.
    No-JS first: without the module, every panel stays visible — content
-   is never lost. The module marks the group [data-fz-tabs-js] on init;
+   is never lost. The module marks the group [data-bf-tabs-js] on init;
    use it as a hook if you want styles that only apply once tabs are
    interactive. */
 @layer components {
-  [data-fz-tabs] [role="tablist"] {
+  [data-bf-tabs] [role="tablist"] {
     display: flex;
-    gap: var(--fz-space-2);
-    border-block-end: var(--fz-border-width) solid var(--fz-border);
+    gap: var(--bf-space-2);
+    border-block-end: var(--bf-border-width) solid var(--bf-border);
   }
 
-  [data-fz-tabs] [role="tab"] {
+  [data-bf-tabs] [role="tab"] {
     appearance: none;
-    min-height: calc(var(--fz-control-height) * 0.85);
-    padding-inline: var(--fz-space-3);
+    min-height: calc(var(--bf-control-height) * 0.85);
+    padding-inline: var(--bf-space-3);
 
-    font-weight: var(--fz-font-weight-medium);
+    font-weight: var(--bf-font-weight-medium);
     font-size: 0.9375rem;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     background: none;
     border: 0;
     border-block-end: 2px solid transparent;
@@ -29,24 +29,24 @@
 
     cursor: pointer;
     transition:
-      color var(--fz-transition),
-      border-color var(--fz-transition);
+      color var(--bf-transition),
+      border-color var(--bf-transition);
   }
 
-  [data-fz-tabs] [role="tab"]:hover {
-    color: var(--fz-text);
+  [data-bf-tabs] [role="tab"]:hover {
+    color: var(--bf-text);
   }
 
-  [data-fz-tabs] [role="tab"][aria-selected="true"] {
-    color: var(--fz-text);
-    border-block-end-color: var(--fz-primary);
+  [data-bf-tabs] [role="tab"][aria-selected="true"] {
+    color: var(--bf-text);
+    border-block-end-color: var(--bf-primary);
   }
 
-  [data-fz-tabs] [role="tabpanel"] {
-    padding-block: var(--fz-space-4);
+  [data-bf-tabs] [role="tabpanel"] {
+    padding-block: var(--bf-space-4);
   }
 
-  [data-fz-tabs] [role="tabpanel"][hidden] {
+  [data-bf-tabs] [role="tabpanel"][hidden] {
     display: none;
   }
 }

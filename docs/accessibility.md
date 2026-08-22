@@ -20,7 +20,7 @@ ARIA to the divs" — there are no divs.
   `button`, `details/summary`, `dialog`, `th/caption`, `progress`.
 - **Focus trap + Esc**, **light dismiss**: inherited from `<dialog>` and
   the Popover API.
-- **Skip link.** The `.fz-skip-link` utility (first element in `<body>`)
+- **Skip link.** The `.bf-skip-link` utility (first element in `<body>`)
   is clipped out of view until keyboard focus, so the first Tab stop is
   "Skip to content" — the WCAG 2.4.1 bypass-block pattern, free.
 - **Validation without JS.** `:user-invalid` / `:user-valid` /
@@ -57,7 +57,7 @@ ARIA to the divs" — there are no divs.
    `<header>`), and open with `showModal()`, not `show()`.
 3. **Icons/link labels:** provide text; don't ship icon-only buttons
    without an accessible name.
-4. **Images:** `alt` text is yours, not ours — including `.fz-avatar`
+4. **Images:** `alt` text is yours, not ours — including `.bf-avatar`
    and any `img` inside `.card[data-media]` or `[data-media]`.
 5. **Embeds:** `iframe` with `[data-media]` should include a `title`
    attribute for screen readers.

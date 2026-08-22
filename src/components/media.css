@@ -2,11 +2,11 @@
    thumbnail cards. Classes/attributes only where there is no native
    element.
 
-   .fz-avatar                 → circular image, --fz-avatar-size (2.5rem)
-   .fz-avatar[data-size="sm"] → 1.75rem
-   .fz-avatar[data-size="lg"] → 4rem
+   .bf-avatar                 → circular image, --bf-avatar-size (2.5rem)
+   .bf-avatar[data-size="sm"] → 1.75rem
+   .bf-avatar[data-size="lg"] → 4rem
 
-   .fz-avatar-group           → overlapping stack of .fz-avatar images
+   .bf-avatar-group           → overlapping stack of .bf-avatar images
 
    [data-media]               → 16:9 box (img/video/iframe/div)
    [data-media][data-ratio]   → "4/3" | "1/1" | "21/9"
@@ -15,21 +15,21 @@
                                  edge, the rest gets card padding. */
 @layer components {
   /* ---- Avatars ---- */
-  .fz-avatar {
+  .bf-avatar {
     display: inline-block;
-    width: var(--fz-avatar-size, 2.5rem);
-    height: var(--fz-avatar-size, 2.5rem);
+    width: var(--bf-avatar-size, 2.5rem);
+    height: var(--bf-avatar-size, 2.5rem);
     border-radius: 50%;
     object-fit: cover;
     vertical-align: middle;
   }
 
-  .fz-avatar[data-size="sm"] {
+  .bf-avatar[data-size="sm"] {
     width: 1.75rem;
     height: 1.75rem;
   }
 
-  .fz-avatar[data-size="lg"] {
+  .bf-avatar[data-size="lg"] {
     width: 4rem;
     height: 4rem;
   }
@@ -38,17 +38,17 @@
      Overlapping stack: each avatar pulls back over the previous one by
      a third of its size, and a surface ring keeps the faces distinct.
      Purely visual — reading order and image semantics are untouched. */
-  .fz-avatar-group {
+  .bf-avatar-group {
     display: flex;
     align-items: center;
   }
 
-  .fz-avatar-group .fz-avatar {
-    box-shadow: 0 0 0 2px var(--fz-surface);
+  .bf-avatar-group .bf-avatar {
+    box-shadow: 0 0 0 2px var(--bf-surface);
   }
 
-  .fz-avatar-group .fz-avatar + .fz-avatar {
-    margin-inline-start: calc(var(--fz-avatar-size, 2.5rem) / -3);
+  .bf-avatar-group .bf-avatar + .bf-avatar {
+    margin-inline-start: calc(var(--bf-avatar-size, 2.5rem) / -3);
   }
 
   /* ---- Aspect-ratio embeds ----
@@ -60,7 +60,7 @@
     width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
-    border-radius: var(--fz-radius);
+    border-radius: var(--bf-radius);
     object-fit: cover;
   }
 
@@ -83,6 +83,6 @@
   }
 
   .card[data-media] > :not(:is([data-media], img)) {
-    padding: var(--fz-space-5);
+    padding: var(--bf-space-5);
   }
 }

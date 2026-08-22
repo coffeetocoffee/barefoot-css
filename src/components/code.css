@@ -3,23 +3,23 @@
   code,
   kbd,
   samp {
-    font-family: var(--fz-font-mono);
+    font-family: var(--bf-font-mono);
     font-size: 0.875em;
-    background: var(--fz-surface-alt);
-    border-radius: var(--fz-radius-sm);
+    background: var(--bf-surface-alt);
+    border-radius: var(--bf-radius-sm);
     padding: 0.15em 0.4em;
   }
 
   kbd {
-    border: var(--fz-border-width) solid var(--fz-border);
+    border: var(--bf-border-width) solid var(--bf-border);
     border-block-end-width: 2px;
   }
 
   pre {
-    background: var(--fz-surface-alt);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
-    padding: var(--fz-space-4);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    padding: var(--bf-space-4);
     overflow-x: auto;
     max-width: 100%;
   }

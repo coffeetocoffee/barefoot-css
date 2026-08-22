@@ -4,8 +4,8 @@
    — no viewport media queries). Zero dependencies.
 
    <nav data-nav="header" aria-label="Primary">
-     <a class="fz-brand" href="/">Acme</a>
-     <button type="button" class="fz-nav-toggle"
+     <a class="bf-brand" href="/">Acme</a>
+     <button type="button" class="bf-nav-toggle"
              aria-expanded="false" aria-controls="site-menu">Menu</button>
      <ul id="site-menu">
        <li><a href="/" aria-current="page">Home</a></li>
@@ -32,7 +32,7 @@ import { onDomReady, bindOnce } from "./lifecycle.js";
 import { refocusOpener } from "./return-focus.js";
 
 function initNav(nav) {
-  const toggle = nav.querySelector(".fz-nav-toggle");
+  const toggle = nav.querySelector(".bf-nav-toggle");
   const list = nav.querySelector(":scope > ul");
   // Only navs with the full contract get marked: [data-nav-js] arms the
   // CSS collapse, so a plain header nav (no toggle) must never carry it

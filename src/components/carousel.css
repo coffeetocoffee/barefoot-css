@@ -12,10 +12,10 @@
     container-type: inline-size; /* makes cqi units resolve to itself */
 
     display: flex;
-    gap: var(--fz-space-4);
+    gap: var(--bf-space-4);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--fz-space-4);
+    scroll-padding-inline: var(--bf-space-4);
     scrollbar-width: none; /* hides the bar but keeps scrolling */
     -webkit-overflow-scrolling: touch;
   }
@@ -33,7 +33,7 @@
   }
 
   [data-carousel] > :is(img, picture) {
-    border-radius: var(--fz-radius);
+    border-radius: var(--bf-radius);
     object-fit: cover;
   }
 }

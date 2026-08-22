@@ -6,9 +6,9 @@
 
    <script>
      if (document.startViewTransition) {
-       document.startViewTransition(() => { root.dataset.theme = "dark"; });
+       document.startViewTransition(() => { root.dataset.bfTheme = "dark"; });
      } else {
-       root.dataset.theme = "dark";
+       root.dataset.bfTheme = "dark";
      }
    </script> */
 @layer components {
@@ -17,10 +17,10 @@
   }
 
   ::view-transition-new(root) {
-    animation: fz-fade-in var(--fz-transition-slow);
+    animation: bf-fade-in var(--bf-transition-slow);
   }
 
-  @keyframes fz-fade-in {
+  @keyframes bf-fade-in {
     from {
       opacity: 0;
     }

@@ -6,21 +6,21 @@
 @layer components {
   dialog {
     margin: auto;
-    padding: var(--fz-space-6);
-    max-width: min(32rem, calc(100vw - 2 * var(--fz-space-5)));
+    padding: var(--bf-space-6);
+    max-width: min(32rem, calc(100vw - 2 * var(--bf-space-5)));
 
-    color: var(--fz-text);
-    background: var(--fz-surface);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-lg);
-    box-shadow: var(--fz-shadow-lifted);
-    z-index: var(--fz-z-dialog);
+    color: var(--bf-text);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+    box-shadow: var(--bf-shadow-lifted);
+    z-index: var(--bf-z-dialog);
 
     transition:
-      opacity var(--fz-transition-slow),
-      transform var(--fz-transition-slow),
-      display var(--fz-transition-slow) allow-discrete,
-      overlay var(--fz-transition-slow) allow-discrete;
+      opacity var(--bf-transition-slow),
+      transform var(--bf-transition-slow),
+      display var(--bf-transition-slow) allow-discrete,
+      overlay var(--bf-transition-slow) allow-discrete;
   }
 
   @starting-style {
@@ -40,10 +40,10 @@
      instead of snapping in. Reduced-motion is neutralized by base.css. */
   @supports not (transition-behavior: allow-discrete) {
     dialog[open] {
-      animation: fz-dialog-in var(--fz-transition-slow) ease-out;
+      animation: bf-dialog-in var(--bf-transition-slow) ease-out;
     }
 
-    @keyframes fz-dialog-in {
+    @keyframes bf-dialog-in {
       from {
         opacity: 0;
         transform: translateY(0.5rem);
@@ -52,7 +52,7 @@
   }
 
   dialog::backdrop {
-    background: var(--fz-backdrop);
+    background: var(--bf-backdrop);
     backdrop-filter: blur(2px);
   }
 
@@ -60,15 +60,15 @@
   dialog[data-width="lg"] { max-width: 48rem; }
 
   dialog > header {
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     font-size: 1.125rem;
-    margin-block-end: var(--fz-space-3);
+    margin-block-end: var(--bf-space-3);
   }
 
   dialog > footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--fz-space-3);
-    margin-block-start: var(--fz-space-5);
+    gap: var(--bf-space-3);
+    margin-block-start: var(--bf-space-5);
   }
 }

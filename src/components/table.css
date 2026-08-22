@@ -8,42 +8,42 @@
 
   caption {
     text-align: start;
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     font-size: 0.875rem;
-    padding-block-end: var(--fz-space-2);
+    padding-block-end: var(--bf-space-2);
   }
 
   th,
   td {
-    padding: var(--fz-space-2) var(--fz-space-3);
+    padding: var(--bf-space-2) var(--bf-space-3);
     text-align: start;
-    border-block-end: var(--fz-border-width) solid var(--fz-border);
+    border-block-end: var(--bf-border-width) solid var(--bf-border);
   }
 
   thead th {
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     border-block-end-width: 2px;
     font-size: 0.8125rem;
     text-transform: uppercase;
-    letter-spacing: var(--fz-letter-spacing-wide);
-    color: var(--fz-muted);
+    letter-spacing: var(--bf-letter-spacing-wide);
+    color: var(--bf-muted);
   }
 
   tbody tr:hover {
-    background: var(--fz-surface-alt);
+    background: var(--bf-surface-alt);
   }
 
   /* Striping must not out-specify hover (:where() drops the attribute
      and nth-child counts so tr:hover always wins). Values coincide
-     today — both use --fz-surface-alt — but the precedence should not
+     today — both use --bf-surface-alt — but the precedence should not
      depend on that coincidence. */
   table:where([data-striped]) tbody tr:where(:nth-child(odd)) {
-    background: var(--fz-surface-alt);
+    background: var(--bf-surface-alt);
   }
 
   /* Stackable tables — table[data-table="stack"].
      The table stacks into cards when its *nearest query container* is
-     narrow (<40rem). Wrap it in a container — e.g. .fz-contain, the
+     narrow (<40rem). Wrap it in a container — e.g. .bf-contain, the
      grid pattern — since a <table> element itself can't establish a
      size container (browser limitation). Purely presentational: the
      <th> headers stay in the DOM, so screen readers still announce
@@ -55,11 +55,11 @@
 
     table[data-table="stack"] tr {
       display: grid;
-      gap: var(--fz-space-1);
-      padding: var(--fz-space-3);
-      margin-block-end: var(--fz-space-3);
-      border: var(--fz-border-width) solid var(--fz-border);
-      border-radius: var(--fz-radius);
+      gap: var(--bf-space-1);
+      padding: var(--bf-space-3);
+      margin-block-end: var(--bf-space-3);
+      border: var(--bf-border-width) solid var(--bf-border);
+      border-radius: var(--bf-radius);
     }
 
     table[data-table="stack"] th,

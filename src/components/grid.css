@@ -1,9 +1,9 @@
 /* Barefoot — grid.
    A container-driven grid: column count responds to the *container's*
-   width, not the viewport's. Wrap any [data-grid] in .fz-contain
+   width, not the viewport's. Wrap any [data-grid] in .bf-contain
    (utilities.css) to make it the query container.
 
-   <div class="fz-contain">
+   <div class="bf-contain">
      <div data-grid>
        <article class="card">…</article>
      </div>
@@ -13,15 +13,15 @@
    Full-width page → 3 columns. Same CSS, zero media queries.
 
    Variants (v1.6):
-     [data-grid="auto-fit"]  → repeat(auto-fit,  minmax(--fz-grid-min, 1fr))
-     [data-grid="auto-fill"] → repeat(auto-fill, minmax(--fz-grid-min, 1fr))
+     [data-grid="auto-fit"]  → repeat(auto-fit,  minmax(--bf-grid-min, 1fr))
+     [data-grid="auto-fill"] → repeat(auto-fill, minmax(--bf-grid-min, 1fr))
        The track count flows with the row itself — no container query
-       needed; --fz-grid-min (14rem) is the minimum track size.
+       needed; --bf-grid-min (14rem) is the minimum track size.
      data-gap="0|1…8"        → gap from the spacing scale (default 4). */
 @layer components {
   [data-grid] {
     display: grid;
-    gap: var(--fz-grid-gap, var(--fz-space-4));
+    gap: var(--bf-grid-gap, var(--bf-space-4));
     /* minmax(0, 1fr), not bare 1fr: a bare fr track keeps each item's
        min-content width, so long content can push the grid past its
        container. The 0 minimum lets the single column shrink with the
@@ -44,21 +44,21 @@
   }
 
   [data-grid="auto-fit"] {
-    grid-template-columns: repeat(auto-fit, minmax(var(--fz-grid-min, 14rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(var(--bf-grid-min, 14rem), 1fr));
   }
 
   [data-grid="auto-fill"] {
-    grid-template-columns: repeat(auto-fill, minmax(var(--fz-grid-min, 14rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--bf-grid-min, 14rem), 1fr));
   }
 
   /* Gap options — any step of the spacing scale. */
   [data-grid][data-gap="0"] { gap: 0; }
-  [data-grid][data-gap="1"] { gap: var(--fz-space-1); }
-  [data-grid][data-gap="2"] { gap: var(--fz-space-2); }
-  [data-grid][data-gap="3"] { gap: var(--fz-space-3); }
-  [data-grid][data-gap="4"] { gap: var(--fz-space-4); }
-  [data-grid][data-gap="5"] { gap: var(--fz-space-5); }
-  [data-grid][data-gap="6"] { gap: var(--fz-space-6); }
-  [data-grid][data-gap="7"] { gap: var(--fz-space-7); }
-  [data-grid][data-gap="8"] { gap: var(--fz-space-8); }
+  [data-grid][data-gap="1"] { gap: var(--bf-space-1); }
+  [data-grid][data-gap="2"] { gap: var(--bf-space-2); }
+  [data-grid][data-gap="3"] { gap: var(--bf-space-3); }
+  [data-grid][data-gap="4"] { gap: var(--bf-space-4); }
+  [data-grid][data-gap="5"] { gap: var(--bf-space-5); }
+  [data-grid][data-gap="6"] { gap: var(--bf-space-6); }
+  [data-grid][data-gap="7"] { gap: var(--bf-space-7); }
+  [data-grid][data-gap="8"] { gap: var(--bf-space-8); }
 }

@@ -20,7 +20,7 @@ const START = "<!-- TOKENS:START -->";
 const END = "<!-- TOKENS:END -->";
 
 const SECTION = /^\s*\/\*\s*-+\s*(.+?)\s*-+\s*\*\/\s*$/;
-const CUSTOM_PROP = /^\s*(--fz-[a-z0-9-]+):/;
+const CUSTOM_PROP = /^\s*(--bf-[a-z0-9-]+):/;
 
 function parseGroups(source) {
   const rootStart = source.indexOf(":root {");
@@ -72,7 +72,7 @@ function renderTable({ title, rows }) {
 
 const groups = parseGroups(readFileSync(TOKENS, "utf8"));
 if (groups.length === 0) {
-  console.error("No --fz-* declarations parsed from src/tokens.css.");
+  console.error("No --bf-* declarations parsed from src/tokens.css.");
   process.exit(1);
 }
 

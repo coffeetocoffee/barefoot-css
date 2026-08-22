@@ -2,19 +2,19 @@
    Neutral by default: flat surface, thin border, no shadow. */
 @layer components {
   .card {
-    background: var(--fz-surface);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius-lg);
-    padding: var(--fz-space-5);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+    padding: var(--bf-space-5);
   }
 
   .card > :where(header) {
-    font-weight: var(--fz-font-weight-semibold);
+    font-weight: var(--bf-font-weight-semibold);
     font-size: 1.125rem;
-    margin-block-end: var(--fz-space-3);
+    margin-block-end: var(--bf-space-3);
   }
 
   .card[data-lifted] {
-    box-shadow: var(--fz-shadow-lifted);
+    box-shadow: var(--bf-shadow-lifted);
   }
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-bf-theme="auto">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,26 +16,26 @@
     .doc-nav {
       display: flex;
       align-items: center;
-      gap: var(--fz-space-4);
-      padding-block: var(--fz-space-4);
-      border-block-end: 1px solid var(--fz-border);
+      gap: var(--bf-space-4);
+      padding-block: var(--bf-space-4);
+      border-block-end: 1px solid var(--bf-border);
     }
-    .doc-nav nav { display: flex; gap: var(--fz-space-3); margin-inline-start: auto; flex-wrap: wrap; }
+    .doc-nav nav { display: flex; gap: var(--bf-space-3); margin-inline-start: auto; flex-wrap: wrap; }
     .doc-nav nav a { text-decoration: none; font-weight: 500; font-size: 0.9375rem; }
-    .doc-hero { padding-block: var(--fz-space-8) var(--fz-space-6); }
+    .doc-hero { padding-block: var(--bf-space-8) var(--bf-space-6); }
     .doc-hero h1 { font-size: clamp(2.25rem, 5vw, 4rem); }
     .doc-hero p { max-width: 56ch; }
-    .doc-stats { margin-block-end: var(--fz-space-6); }
+    .doc-stats { margin-block-end: var(--bf-space-6); }
     .doc-stats strong { font-size: 1.75rem; display: block; }
     .doc-stats .card { text-align: center; }
-    .doc-section { margin-block-start: var(--fz-space-8); }
-    .doc-muted { color: var(--fz-muted); }
+    .doc-section { margin-block-start: var(--bf-space-8); }
+    .doc-muted { color: var(--bf-muted); }
     .doc-table code { font-size: 0.8125rem; }
   </style>
 </head>
 <body>
-  <header class="doc-nav fz-container">
-    <a href="#top" class="fz-overline" style="text-decoration:none">Barefoot</a>
+  <header class="doc-nav bf-container">
+    <a href="#top" class="bf-overline" style="text-decoration:none">Barefoot</a>
     <nav aria-label="Site">
       <a href="#features">Features</a>
       <a href="#quick-start">Quick start</a>
@@ -48,28 +48,28 @@
     </nav>
   </header>
 
-  <main class="fz-container" id="top">
+  <main class="bf-container" id="top">
     <section class="doc-hero">
-      <p class="fz-overline">A modern CSS framework</p>
+      <p class="bf-overline">A modern CSS framework</p>
       <h1>No boots, no baggage.</h1>
       <p>Barefoot styles <strong>native HTML</strong>, needs <strong>zero JavaScript</strong>, and re-skins from a handful of variables. It ships a 2KB core — not 200KB. The design is yours; we just supply the muscle.</p>
-      <div class="fz-row fz-gap-3 fz-mt-4">
+      <div class="bf-row bf-gap-3 bf-mt-4">
         <a href="../demo/" role="button" data-variant="primary">View the demo</a>
         <a href="https://www.npmjs.com/package/barefoot-css" role="button" data-variant="ghost">npm install</a>
       </div>
-      <pre class="fz-mt-4"><code>npm install barefoot-css</code></pre>
+      <pre class="bf-mt-4"><code>npm install barefoot-css</code></pre>
     </section>
 
-    <section class="doc-stats fz-row" aria-label="Size and dependency stats">
-      <div class="card" style="flex:1 1 0"><strong>2.1KB</strong><span class="fz-muted">index.css gzipped</span></div>
-      <div class="card" style="flex:1 1 0"><strong>7.5KB</strong><span class="fz-muted">full.css gzipped</span></div>
-      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="fz-muted">JS in the CSS core</span></div>
-      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="fz-muted">dependencies</span></div>
+    <section class="doc-stats bf-row" aria-label="Size and dependency stats">
+      <div class="card" style="flex:1 1 0"><strong>2.1KB</strong><span class="bf-muted">index.css gzipped</span></div>
+      <div class="card" style="flex:1 1 0"><strong>7.5KB</strong><span class="bf-muted">full.css gzipped</span></div>
+      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="bf-muted">JS in the CSS core</span></div>
+      <div class="card" style="flex:1 1 0"><strong>0</strong><span class="bf-muted">dependencies</span></div>
     </section>
 
     <section id="quick-start" class="doc-section" aria-labelledby="quick-start-title">
       <h2 id="quick-start-title">Quick start</h2>
-      <div class="fz-row fz-gap-4">
+      <div class="bf-row bf-gap-4">
         <div style="flex:1 1 0; min-width:0">
           <h3>CSS — import what you need</h3>
           <pre><code>@import "barefoot";                            /* base   */
@@ -81,14 +81,14 @@
 &lt;input type="email" placeholder="you@example.com"&gt;</code></pre>
         </div>
       </div>
-      <p class="doc-muted fz-mt-4">Plain HTML is styled by Barefoot. No classes, no div soup, no ARIA to add.</p>
+      <p class="doc-muted bf-mt-4">Plain HTML is styled by Barefoot. No classes, no div soup, no ARIA to add.</p>
     </section>
 
     <section id="features" class="doc-section" aria-labelledby="features-title">
       <h2 id="features-title">Why Barefoot</h2>
       <div data-grid>
         <div class="card"><h3>~10KB or bust</h3><p>Per-component entry points + a size budget enforced in CI. You only pay for what you import.</p></div>
-        <div class="card"><h3>Theming by default</h3><p>Every visual is a <code>--fz-*</code> variable. Re-skin in six lines — no Sass, no recompile.</p></div>
+        <div class="card"><h3>Theming by default</h3><p>Every visual is a <code>--bf-*</code> variable. Re-skin in six lines — no Sass, no recompile.</p></div>
         <div class="card"><h3>JS-free</h3><p>Dialogs, dropdowns, tabs, tooltips, carousels from native elements and the Popover API.</p></div>
         <div class="card"><h3>Accessible out of the box</h3><p>Native semantics, focus traps, Esc-to-close — verified by an axe-core CI suite.</p></div>
         <div class="card"><h3>No Bootstrap look</h3><p>Neutral by default. Ink on paper, thin borders, no shadows. The design is yours.</p></div>
@@ -98,22 +98,22 @@
 
     <section id="theming" class="doc-section" aria-labelledby="theming-title">
       <h2 id="theming-title">Theming is just variables</h2>
-      <p>Color tokens are <code>light-dark()</code> pairs, so dark mode follows the OS for free. <code>data-theme</code> flips the palette — try it:</p>
-      <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
-        <span class="fz-muted">Theme:</span>
-        <button type="button" data-theme-btn="auto">Auto</button>
-        <button type="button" data-theme-btn="light">Light</button>
-        <button type="button" data-theme-btn="dark">Dark</button>
-        <button type="button" data-theme-btn="contrast">Contrast</button>
-        <button type="button" data-theme-btn="editorial">Editorial</button>
-        <button type="button" data-theme-btn="dashboard">Dashboard</button>
-        <button type="button" data-theme-btn="playful">Playful</button>
-        <button type="button" data-theme-btn="forest">Forest</button>
+      <p>Color tokens are <code>light-dark()</code> pairs, so dark mode follows the OS for free. <code>data-bf-theme</code> flips the palette — try it:</p>
+      <div class="bf-row bf-gap-2" role="group" aria-label="Theme switcher">
+        <span class="bf-muted">Theme:</span>
+        <button type="button" data-bf-theme-btn="auto">Auto</button>
+        <button type="button" data-bf-theme-btn="light">Light</button>
+        <button type="button" data-bf-theme-btn="dark">Dark</button>
+        <button type="button" data-bf-theme-btn="contrast">Contrast</button>
+        <button type="button" data-bf-theme-btn="editorial">Editorial</button>
+        <button type="button" data-bf-theme-btn="dashboard">Dashboard</button>
+        <button type="button" data-bf-theme-btn="playful">Playful</button>
+        <button type="button" data-bf-theme-btn="forest">Forest</button>
       </div>
-      <pre class="fz-mt-4"><code>:root {
-  --fz-primary: #2563eb;   /* change the accent, everything follows */
-  --fz-radius: 0.5rem;
-  --fz-font: "Inter", system-ui, sans-serif;
+      <pre class="bf-mt-4"><code>:root {
+  --bf-primary: #2563eb;   /* change the accent, everything follows */
+  --bf-radius: 0.5rem;
+  --bf-font: "Inter", system-ui, sans-serif;
 }</code></pre>
       <p class="doc-muted">See <a href="theming.md">docs/theming.md</a> for the full token reference, or follow <a href="theming-tutorial.md">docs/theming-tutorial.md</a> to build your first theme step by step.</p>
     </section>
@@ -121,7 +121,7 @@
     <section id="tabs-demo" class="doc-section" aria-labelledby="tabs-demo-title">
       <h2 id="tabs-demo-title">Tabs (opt-in, ~2.7KB)</h2>
       <p>The WAI-ARIA tabs pattern when you need arrow-key navigation. Try <kbd>←</kbd>/<kbd>→</kbd>.</p>
-      <div data-fz-tabs>
+      <div data-bf-tabs>
         <div role="tablist" aria-label="Tabs demo">
           <button id="t-one" role="tab" aria-controls="p-one" aria-selected="true">One</button>
           <button id="t-two" role="tab" aria-controls="p-two" aria-selected="false">Two</button>
@@ -131,7 +131,7 @@
         <div id="p-two" role="tabpanel" aria-labelledby="t-two" tabindex="0"><p>Tab two panel.</p></div>
         <div id="p-three" role="tabpanel" aria-labelledby="t-three" tabindex="0"><p>Tab three panel.</p></div>
       </div>
-      <pre class="fz-mt-4"><code>&lt;script type="module"&gt;
+      <pre class="bf-mt-4"><code>&lt;script type="module"&gt;
   import "barefoot/js/barefoot.js";
 &lt;/script&gt;</code></pre>
     </section>
@@ -162,9 +162,9 @@
     </section>
   </main>
 
-  <footer class="fz-container fz-mt-4" style="padding-block: var(--fz-space-6)">
+  <footer class="bf-container bf-mt-4" style="padding-block: var(--bf-space-6)">
     <hr>
-    <div class="fz-row fz-gap-4">
+    <div class="bf-row bf-gap-4">
       <a href="../README.md">README</a>
       <a href="components.md">Components</a>
       <a href="theming.md">Theming</a>
@@ -174,19 +174,19 @@
       <a href="api.md">API</a>
       <a href="../plan.md">Status</a>
       <a href="../plan.md">Plan</a>
-      <span class="fz-muted" style="margin-inline-start:auto">MIT — no boots, no baggage.</span>
+      <span class="bf-muted" style="margin-inline-start:auto">MIT — no boots, no baggage.</span>
     </div>
   </footer>
 
   <script>
     const root = document.documentElement;
     const applyTheme = (t) => {
-      const set = () => { root.dataset.theme = t; };
+      const set = () => { root.dataset.bfTheme = t; };
       if (document.startViewTransition) document.startViewTransition(set);
       else set();
     };
-    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
-      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.bfThemeBtn));
     }
   </script>
   <script type="module">

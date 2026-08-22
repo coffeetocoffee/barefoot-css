@@ -1,11 +1,11 @@
 /* Barefoot — navigation.
    Element-first site chrome. A <nav> landmark with an aria-label gets a
-   topbar row: an optional brand (.fz-brand — there is no native element
+   topbar row: an optional brand (.bf-brand — there is no native element
    for a site name) at the start, a link list beside it. The row wraps on
    narrow screens — nothing toggles, nothing hides.
 
    <nav data-nav aria-label="Primary">
-     <a class="fz-brand" href="/">Acme</a>
+     <a class="bf-brand" href="/">Acme</a>
      <ul>
        <li><a href="/" aria-current="page">Home</a></li>
        <li><a href="/docs">Docs</a></li>
@@ -20,8 +20,8 @@
    add a toggle button, then load js/nav.js:
 
      <nav data-nav="header" aria-label="Primary">
-       <a class="fz-brand" href="/">Acme</a>
-       <button type="button" class="fz-nav-toggle"
+       <a class="bf-brand" href="/">Acme</a>
+       <button type="button" class="bf-nav-toggle"
                aria-expanded="false" aria-controls="site-menu">Menu</button>
        <ul id="site-menu"> … </ul>
      </nav>
@@ -33,7 +33,7 @@
    first: without the module the toggle never renders and the list
    always stays visible, exactly like the plain wrapped topbar.
 
-   Pairs with .fz-skip-link (put that FIRST in <body>): the first Tab
+   Pairs with .bf-skip-link (put that FIRST in <body>): the first Tab
    stop jumps past this nav to <main>. Mark the active link with
    aria-current="page" — it gets the accent + semibold. */
 @layer components {
@@ -41,15 +41,15 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--fz-space-3);
-    padding-block: var(--fz-space-3);
+    gap: var(--bf-space-3);
+    padding-block: var(--bf-space-3);
   }
 
   [data-nav] > ul {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--fz-space-1);
+    gap: var(--bf-space-1);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -57,46 +57,46 @@
 
   [data-nav] a {
     display: inline-block;
-    padding: var(--fz-space-2) var(--fz-space-3);
-    border-radius: var(--fz-radius);
-    color: var(--fz-text);
+    padding: var(--bf-space-2) var(--bf-space-3);
+    border-radius: var(--bf-radius);
+    color: var(--bf-text);
     text-decoration: none;
   }
 
   [data-nav] a:hover {
-    background: var(--fz-surface-alt);
+    background: var(--bf-surface-alt);
   }
 
   [data-nav] [aria-current="page"] {
-    color: var(--fz-primary);
-    font-weight: var(--fz-font-weight-semibold);
+    color: var(--bf-primary);
+    font-weight: var(--bf-font-weight-semibold);
   }
 
   [data-nav="header"] {
     /* Size container for the hamburger collapse point below. */
     container-type: inline-size;
-    border-block-end: var(--fz-border-width) solid var(--fz-border);
+    border-block-end: var(--bf-border-width) solid var(--bf-border);
   }
 
   [data-nav="footer"] {
     justify-content: space-between;
-    border-block-start: var(--fz-border-width) solid var(--fz-border);
-    color: var(--fz-muted);
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
+    color: var(--bf-muted);
     font-size: 0.875rem;
   }
 
   [data-nav="footer"] a {
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
-  .fz-brand {
-    font-weight: var(--fz-font-weight-bold);
-    letter-spacing: var(--fz-letter-spacing-tight);
-    color: var(--fz-text);
+  .bf-brand {
+    font-weight: var(--bf-font-weight-bold);
+    letter-spacing: var(--bf-letter-spacing-tight);
+    color: var(--bf-text);
     text-decoration: none;
   }
 
-  [data-nav] .fz-brand {
+  [data-nav] .bf-brand {
     /* Flush at the row start and push the link list to the end. */
     margin-inline-end: auto;
     padding: 0;
@@ -107,12 +107,12 @@
      no module, no hiding, ever. The toggle is author markup (a real
      <button> with aria-expanded/aria-controls); the module only flips
      states. */
-  .fz-nav-toggle {
+  .bf-nav-toggle {
     display: none;
   }
 
   @container (max-width: 40rem) {
-    [data-nav-js] .fz-nav-toggle {
+    [data-nav-js] .bf-nav-toggle {
       display: inline-flex;
     }
 

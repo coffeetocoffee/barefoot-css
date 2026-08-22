@@ -19,7 +19,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -28,17 +28,17 @@
   [data-breadcrumbs] li {
     display: flex;
     align-items: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
   }
 
   /* Separator between crumbs (not before the first). */
   [data-breadcrumbs] li + li::before {
     content: "/";
-    color: var(--fz-muted);
+    color: var(--bf-muted);
   }
 
   [data-breadcrumbs] a {
-    color: var(--fz-primary);
+    color: var(--bf-primary);
     text-decoration: none;
   }
 
@@ -47,7 +47,7 @@
   }
 
   [data-breadcrumbs] li[aria-current="page"] {
-    color: var(--fz-muted);
+    color: var(--bf-muted);
     text-decoration: none;
   }
 }

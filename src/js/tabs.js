@@ -3,7 +3,7 @@
    Zero dependencies, ~1KB.
 
    Markup (progressive enhancement — without JS every panel shows):
-   <div data-fz-tabs>
+   <div data-bf-tabs>
      <div role="tablist" aria-label="…">
        <button id="tab-1" role="tab" aria-controls="panel-1" aria-selected="true">One</button>
        <button id="tab-2" role="tab" aria-controls="panel-2" aria-selected="false">Two</button>
@@ -20,7 +20,7 @@ import { onDomReady, bindOnce } from "./lifecycle.js";
 import { createRover } from "./roving-index.js";
 
 export function initTabs(root = document) {
-  const groups = root.querySelectorAll("[data-fz-tabs]");
+  const groups = root.querySelectorAll("[data-bf-tabs]");
 
   for (const group of groups) {
     const tabs = [...group.querySelectorAll('[role="tab"]')];
@@ -37,10 +37,10 @@ export function initTabs(root = document) {
     if (tabs.length === 0) continue;
     if (!bindOnce(group, "tabs")) continue;
 
-    // Mark the group as JS-driven so CSS hooks (data-fz-tabs-js) can react
+    // Mark the group as JS-driven so CSS hooks (data-bf-tabs-js) can react
     // and so the no-JS default (every panel visible, nothing lost) is
     // unambiguous once the module has taken over.
-    group.setAttribute("data-fz-tabs-js", "");
+    group.setAttribute("data-bf-tabs-js", "");
 
     const select = (tab) => {
       tabs.forEach((t, i) => {

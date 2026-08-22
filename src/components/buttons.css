@@ -10,50 +10,50 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--fz-space-2);
+    gap: var(--bf-space-2);
 
-    min-height: var(--fz-control-height);
-    padding-inline: var(--fz-space-4);
+    min-height: var(--bf-control-height);
+    padding-inline: var(--bf-space-4);
 
-    font-weight: var(--fz-font-weight-medium);
+    font-weight: var(--bf-font-weight-medium);
     font-size: 0.9375rem;
     text-decoration: none;
 
-    color: var(--fz-text);
-    background: var(--fz-surface);
-    border: var(--fz-border-width) solid var(--fz-border);
-    border-radius: var(--fz-radius);
+    color: var(--bf-text);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
 
     cursor: pointer;
     user-select: none;
 
     transition:
-      background var(--fz-transition),
-      border-color var(--fz-transition),
-      color var(--fz-transition);
+      background var(--bf-transition),
+      border-color var(--bf-transition),
+      color var(--bf-transition);
   }
 
   /* Submit = the "go" action. This is the primary button. */
   input[type="submit"] {
-    color: var(--fz-primary-fg);
-    background: var(--fz-primary);
-    border-color: var(--fz-primary);
+    color: var(--bf-primary-fg);
+    background: var(--bf-primary);
+    border-color: var(--bf-primary);
   }
 
-  /* Hover keeps text on --fz-text (never tints it with --fz-primary,
+  /* Hover keeps text on --bf-text (never tints it with --bf-primary,
      which flips to a light color in dark mode and would kill
      contrast). Just raise the background one step. */
   button:hover,
   input[type="button"]:hover,
   input[type="reset"]:hover,
   [role="button"]:hover {
-    background: var(--fz-surface-alt);
-    border-color: var(--fz-border-strong);
+    background: var(--bf-surface-alt);
+    border-color: var(--bf-border-strong);
   }
 
   input[type="submit"]:hover {
-    background: var(--fz-primary-darken);
-    color: var(--fz-primary-fg);
+    background: var(--bf-primary-darken);
+    color: var(--bf-primary-fg);
   }
 
   button:active,
@@ -67,9 +67,9 @@
   /* Variants — attributes, not utility classes. */
   button[data-variant="primary"],
   input[data-variant="primary"] {
-    color: var(--fz-primary-fg);
-    background: var(--fz-primary);
-    border-color: var(--fz-primary);
+    color: var(--bf-primary-fg);
+    background: var(--bf-primary);
+    border-color: var(--bf-primary);
   }
 
   /* The generic button:hover (higher-up, lower specificity) can't reach
@@ -77,38 +77,38 @@
      same treatment as input[type="submit"]:hover. */
   button[data-variant="primary"]:hover,
   input[data-variant="primary"]:hover {
-    background: var(--fz-primary-darken);
+    background: var(--bf-primary-darken);
   }
 
   button[data-variant="danger"] {
-    color: var(--fz-danger-fg);
-    background: var(--fz-danger);
-    border-color: var(--fz-danger);
+    color: var(--bf-danger-fg);
+    background: var(--bf-danger);
+    border-color: var(--bf-danger);
   }
 
   button[data-variant="danger"]:hover {
-    background: var(--fz-danger-darken);
+    background: var(--bf-danger-darken);
   }
 
   button[data-variant="ghost"] {
     background: transparent;
     border-color: transparent;
-    color: var(--fz-primary);
+    color: var(--bf-primary);
   }
 
   button[data-variant="ghost"]:hover {
-    background: var(--fz-surface-alt);
+    background: var(--bf-surface-alt);
   }
 
   button[data-size="sm"] {
-    min-height: calc(var(--fz-control-height) * 0.75);
-    padding-inline: var(--fz-space-3);
+    min-height: calc(var(--bf-control-height) * 0.75);
+    padding-inline: var(--bf-space-3);
     font-size: 0.8125rem;
   }
 
   button[data-size="lg"] {
-    min-height: calc(var(--fz-control-height) * 1.25);
-    padding-inline: var(--fz-space-6);
+    min-height: calc(var(--bf-control-height) * 1.25);
+    padding-inline: var(--bf-space-6);
     font-size: 1rem;
   }
 
@@ -117,7 +117,7 @@
   button[aria-disabled="true"],
   input:disabled,
   [role="button"][aria-disabled="true"] {
-    opacity: var(--fz-disabled-opacity);
+    opacity: var(--bf-disabled-opacity);
     cursor: not-allowed;
     transform: none;
   }

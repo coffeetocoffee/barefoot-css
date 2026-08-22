@@ -29,164 +29,164 @@ the base token and every ramp follows.
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-font` | `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | body font |
-| `--fz-font-mono` | `ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace` | code font |
-| `--fz-line-height` | `1.6` | body leading |
-| `--fz-font-weight-normal` | `400` | body, divider labels |
-| `--fz-font-weight-medium` | `500` | buttons, labels, summaries, tabs |
-| `--fz-font-weight-semibold` | `600` | headings, card/dialog headers, th, current states |
-| `--fz-font-weight-bold` | `700` | .fz-brand |
-| `--fz-letter-spacing-tight` | `-0.01em` | display/brand tracking |
-| `--fz-letter-spacing-wide` | `0.05em` | uppercase labels (badge, th) |
-| `--fz-letter-spacing-wider` | `0.08em` | overlines |
-| `--fz-type-xs` | `0.75rem` | tiny text (footnotes) |
-| `--fz-type-sm` | `0.875rem` | small text (figcaptions, hints) |
-| `--fz-type-base` | `1rem` | body text |
-| `--fz-type-md` | `clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem)` | h4 |
-| `--fz-type-lg` | `clamp(1.125rem, 1rem + 0.625vw, 1.375rem)` | h3 |
-| `--fz-type-xl` | `clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem)` | h2 |
-| `--fz-type-2xl` | `clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem)` | h1 |
+| `--bf-font` | `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | body font |
+| `--bf-font-mono` | `ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace` | code font |
+| `--bf-line-height` | `1.6` | body leading |
+| `--bf-font-weight-normal` | `400` | body, divider labels |
+| `--bf-font-weight-medium` | `500` | buttons, labels, summaries, tabs |
+| `--bf-font-weight-semibold` | `600` | headings, card/dialog headers, th, current states |
+| `--bf-font-weight-bold` | `700` | .bf-brand |
+| `--bf-letter-spacing-tight` | `-0.01em` | display/brand tracking |
+| `--bf-letter-spacing-wide` | `0.05em` | uppercase labels (badge, th) |
+| `--bf-letter-spacing-wider` | `0.08em` | overlines |
+| `--bf-type-xs` | `0.75rem` | tiny text (footnotes) |
+| `--bf-type-sm` | `0.875rem` | small text (figcaptions, hints) |
+| `--bf-type-base` | `1rem` | body text |
+| `--bf-type-md` | `clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem)` | h4 |
+| `--bf-type-lg` | `clamp(1.125rem, 1rem + 0.625vw, 1.375rem)` | h3 |
+| `--bf-type-xl` | `clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem)` | h2 |
+| `--bf-type-2xl` | `clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem)` | h1 |
 
 ### Spacing scale (1rem = 16px base)
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-space-1` | `0.25rem` |  |
-| `--fz-space-2` | `0.5rem` |  |
-| `--fz-space-3` | `0.75rem` |  |
-| `--fz-space-4` | `1rem` |  |
-| `--fz-space-5` | `1.5rem` |  |
-| `--fz-space-6` | `2rem` |  |
-| `--fz-space-7` | `3rem` |  |
-| `--fz-space-8` | `4rem` |  |
+| `--bf-space-1` | `0.25rem` |  |
+| `--bf-space-2` | `0.5rem` |  |
+| `--bf-space-3` | `0.75rem` |  |
+| `--bf-space-4` | `1rem` |  |
+| `--bf-space-5` | `1.5rem` |  |
+| `--bf-space-6` | `2rem` |  |
+| `--bf-space-7` | `3rem` |  |
+| `--bf-space-8` | `4rem` |  |
 
 ### Radii (small, neutral — no "rounded identity")
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-radius` | `0.375rem` | component corners |
-| `--fz-radius-sm` | `0.25rem` | small corners |
-| `--fz-radius-lg` | `0.625rem` | large corners |
-| `--fz-radius-full` | `999px` | pills — badges, switches, sliders, progress |
+| `--bf-radius` | `0.375rem` | component corners |
+| `--bf-radius-sm` | `0.25rem` | small corners |
+| `--bf-radius-lg` | `0.625rem` | large corners |
+| `--bf-radius-full` | `999px` | pills — badges, switches, sliders, progress |
 
 ### Strokes (v2.2)
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-border-width` | `1px` | hairline stroke for every component border |
+| `--bf-border-width` | `1px` | hairline stroke for every component border |
 
 ### Color
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-primary` | `light-dark(#1a1a1a, #ececec)` | the accent — change this and every component follows |
-| `--fz-primary-fg` | `light-dark(#ffffff, #141414)` | text/icon on the accent |
-| `--fz-surface` | `light-dark(#ffffff, #161616)` | page & component background |
-| `--fz-surface-alt` | `light-dark(#f4f4f4, #202020)` | hover chips, code, pre |
-| `--fz-text` | `light-dark(#1a1a1a, #e8e8e8)` | body text |
-| `--fz-muted` | `light-dark(#5a5a5a, #a0a0a0)` | secondary text |
-| `--fz-border` | `light-dark(#d8d8d8, #3a3a3a)` | hairlines, borders |
-| `--fz-danger` | `light-dark(#b3261e, #f2b8b5)` | errors, destructive |
-| `--fz-danger-fg` | `light-dark(#ffffff, #201000)` | text/icon on the danger fill |
-| `--fz-success` | `light-dark(#1a7f37, #7ee2a8)` | success states, valid fields |
-| `--fz-success-fg` | `light-dark(#ffffff, #0a2a16)` | text/icon on the success fill |
-| `--fz-info` | `light-dark(#0969da, #8ac7ff)` | informational states |
-| `--fz-info-fg` | `light-dark(#ffffff, #0b1f38)` | text/icon on the info fill |
-| `--fz-warning` | `light-dark(#9a6700, #e3b341)` | warnings, caution |
-| `--fz-warning-fg` | `light-dark(#ffffff, #2a1f00)` | text/icon on the warning fill |
-| `--fz-focus-ring` | `light-dark(#1a1a1a, #e8e8e8)` | focus outline color |
+| `--bf-primary` | `light-dark(#1a1a1a, #ececec)` | the accent — change this and every component follows |
+| `--bf-primary-fg` | `light-dark(#ffffff, #141414)` | text/icon on the accent |
+| `--bf-surface` | `light-dark(#ffffff, #161616)` | page & component background |
+| `--bf-surface-alt` | `light-dark(#f4f4f4, #202020)` | hover chips, code, pre |
+| `--bf-text` | `light-dark(#1a1a1a, #e8e8e8)` | body text |
+| `--bf-muted` | `light-dark(#5a5a5a, #a0a0a0)` | secondary text |
+| `--bf-border` | `light-dark(#d8d8d8, #3a3a3a)` | hairlines, borders |
+| `--bf-danger` | `light-dark(#b3261e, #f2b8b5)` | errors, destructive |
+| `--bf-danger-fg` | `light-dark(#ffffff, #201000)` | text/icon on the danger fill |
+| `--bf-success` | `light-dark(#1a7f37, #7ee2a8)` | success states, valid fields |
+| `--bf-success-fg` | `light-dark(#ffffff, #0a2a16)` | text/icon on the success fill |
+| `--bf-info` | `light-dark(#0969da, #8ac7ff)` | informational states |
+| `--bf-info-fg` | `light-dark(#ffffff, #0b1f38)` | text/icon on the info fill |
+| `--bf-warning` | `light-dark(#9a6700, #e3b341)` | warnings, caution |
+| `--bf-warning-fg` | `light-dark(#ffffff, #2a1f00)` | text/icon on the warning fill |
+| `--bf-focus-ring` | `light-dark(#1a1a1a, #e8e8e8)` | focus outline color |
 
 ### Backdrop
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-backdrop` | `light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.6))` | dialog/modal backdrop overlay |
+| `--bf-backdrop` | `light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.6))` | dialog/modal backdrop overlay |
 
 ### Effects (default: no shadows — neutral by default)
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-shadow` | `none` | default shadow (neutral by default) |
-| `--fz-shadow-sm` | `0 1px 2px rgb(0 0 0 / 0.25)` | small shadow (thumbs, subtle depth) |
-| `--fz-shadow-lifted` | `0 1px 3px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06)` | popovers, dialogs, [data-lifted] |
-| `--fz-surface-2` | `color-mix(in oklab, var(--fz-surface), var(--fz-primary) 5%)` | subtle raised surface |
-| `--fz-surface-3` | `color-mix(in oklab, var(--fz-surface), var(--fz-primary) 10%)` | stronger raised surface |
-| `--fz-overlay` | `color-mix(in oklab, var(--fz-surface), transparent 20%)` | light overlay |
-| `--fz-overlay-heavy` | `color-mix(in oklab, var(--fz-surface), transparent 5%)` | heavy overlay (backdrop) |
-| `--fz-primary-subtle` | `color-mix(in oklab, var(--fz-primary), transparent 88%)` | very light primary tint |
-| `--fz-primary-muted` | `color-mix(in oklab, var(--fz-primary), transparent 75%)` | light primary tint (focus rings) |
-| `--fz-primary-strong` | `color-mix(in oklab, var(--fz-primary), transparent 12%)` | strong primary tint |
-| `--fz-primary-darken` | `color-mix(in oklab, var(--fz-primary), #000000 8%)` | hover darken for primary fills |
-| `--fz-danger-darken` | `color-mix(in oklab, var(--fz-danger), #000000 8%)` | hover darken for danger fills |
-| `--fz-danger-muted` | `color-mix(in oklab, var(--fz-danger), transparent 75%)` | light danger tint (focus rings) |
-| `--fz-success-muted` | `color-mix(in oklab, var(--fz-success), transparent 75%)` | light success tint (focus rings) |
-| `--fz-info-muted` | `color-mix(in oklab, var(--fz-info), transparent 75%)` | light info tint (focus rings) |
-| `--fz-warning-muted` | `color-mix(in oklab, var(--fz-warning), transparent 75%)` | light warning tint (focus rings) |
-| `--fz-border-strong` | `color-mix(in oklab, var(--fz-border), var(--fz-text) 20%)` | stronger border on hover |
-| `--fz-transition` | `150ms ease` | default motion |
-| `--fz-transition-slow` | `250ms ease` | slower motion |
-| `--fz-disabled-opacity` | `0.5` | dimming for disabled buttons/inputs |
+| `--bf-shadow` | `none` | default shadow (neutral by default) |
+| `--bf-shadow-sm` | `0 1px 2px rgb(0 0 0 / 0.25)` | small shadow (thumbs, subtle depth) |
+| `--bf-shadow-lifted` | `0 1px 3px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06)` | popovers, dialogs, [data-lifted] |
+| `--bf-surface-2` | `color-mix(in oklab, var(--bf-surface), var(--bf-primary) 5%)` | subtle raised surface |
+| `--bf-surface-3` | `color-mix(in oklab, var(--bf-surface), var(--bf-primary) 10%)` | stronger raised surface |
+| `--bf-overlay` | `color-mix(in oklab, var(--bf-surface), transparent 20%)` | light overlay |
+| `--bf-overlay-heavy` | `color-mix(in oklab, var(--bf-surface), transparent 5%)` | heavy overlay (backdrop) |
+| `--bf-primary-subtle` | `color-mix(in oklab, var(--bf-primary), transparent 88%)` | very light primary tint |
+| `--bf-primary-muted` | `color-mix(in oklab, var(--bf-primary), transparent 75%)` | light primary tint (focus rings) |
+| `--bf-primary-strong` | `color-mix(in oklab, var(--bf-primary), transparent 12%)` | strong primary tint |
+| `--bf-primary-darken` | `color-mix(in oklab, var(--bf-primary), #000000 8%)` | hover darken for primary fills |
+| `--bf-danger-darken` | `color-mix(in oklab, var(--bf-danger), #000000 8%)` | hover darken for danger fills |
+| `--bf-danger-muted` | `color-mix(in oklab, var(--bf-danger), transparent 75%)` | light danger tint (focus rings) |
+| `--bf-success-muted` | `color-mix(in oklab, var(--bf-success), transparent 75%)` | light success tint (focus rings) |
+| `--bf-info-muted` | `color-mix(in oklab, var(--bf-info), transparent 75%)` | light info tint (focus rings) |
+| `--bf-warning-muted` | `color-mix(in oklab, var(--bf-warning), transparent 75%)` | light warning tint (focus rings) |
+| `--bf-border-strong` | `color-mix(in oklab, var(--bf-border), var(--bf-text) 20%)` | stronger border on hover |
+| `--bf-transition` | `150ms ease` | default motion |
+| `--bf-transition-slow` | `250ms ease` | slower motion |
+| `--bf-disabled-opacity` | `0.5` | dimming for disabled buttons/inputs |
 
 ### Layout
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-content-width` | `64ch` | max measure for prose |
-| `--fz-max-width` | `72rem` | .fz-container width |
-| `--fz-control-height` | `2.5rem` | buttons/inputs height |
-| `--fz-z-dropdown` | `10` | dropdown / menu panels |
-| `--fz-z-sticky` | `20` | .fz-sticky chrome |
-| `--fz-z-dialog` | `50` | dialogs (modal dialogs use the top layer) |
-| `--fz-z-toast` | `60` | toasts — top of the ladder |
+| `--bf-content-width` | `64ch` | max measure for prose |
+| `--bf-max-width` | `72rem` | .bf-container width |
+| `--bf-control-height` | `2.5rem` | buttons/inputs height |
+| `--bf-z-dropdown` | `10` | dropdown / menu panels |
+| `--bf-z-sticky` | `20` | .bf-sticky chrome |
+| `--bf-z-dialog` | `50` | dialogs (modal dialogs use the top layer) |
+| `--bf-z-toast` | `60` | toasts — top of the ladder |
 
 ### Layout (v1.6: app shell)
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-grid-min` | `14rem` | minimum track in [data-grid="auto-fit"/"auto-fill"] |
-| `--fz-grid-gap` | `var(--fz-space-4)` | default [data-grid] gap |
-| `--fz-sidebar-width` | `16rem` | fixed-ish aside in .fz-sidebar |
-| `--fz-sticky-top` | `0` | offset for .fz-sticky |
+| `--bf-grid-min` | `14rem` | minimum track in [data-grid="auto-fit"/"auto-fill"] |
+| `--bf-grid-gap` | `var(--bf-space-4)` | default [data-grid] gap |
+| `--bf-sidebar-width` | `16rem` | fixed-ish aside in .bf-sidebar |
+| `--bf-sticky-top` | `0` | offset for .bf-sticky |
 
 ### Layout (v1.8: content & media)
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--fz-avatar-size` | `2.5rem` | edge of .fz-avatar (matches control height) |
-| `--fz-primary` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-primary-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-surface` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
-| `--fz-text` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-muted` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-border` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-focus-ring` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-danger` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-danger-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-success` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-success-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-info` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-info-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-warning` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-warning-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-primary` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-primary-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-surface` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
-| `--fz-text` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-muted` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-border` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-focus-ring` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-danger` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-danger-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-success` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-success-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-info` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-info-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-warning` | `light-dark(#000000, #ffffff)` |  |
-| `--fz-warning-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--fz-shadow` | `none` |  |
-| `--fz-shadow-lifted` | `none` |  |
+| `--bf-avatar-size` | `2.5rem` | edge of .bf-avatar (matches control height) |
+| `--bf-primary` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-primary-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
+| `--bf-text` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-muted` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-border` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-danger` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-danger-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-success` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-success-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-info` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-info-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-warning` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-warning-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-primary` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-primary-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
+| `--bf-text` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-muted` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-border` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-danger` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-danger-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-success` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-success-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-info` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-info-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-warning` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-warning-fg` | `light-dark(#ffffff, #000000)` |  |
+| `--bf-shadow` | `none` |  |
+| `--bf-shadow-lifted` | `none` |  |
 
 <!-- TOKENS:END -->
 
@@ -197,21 +197,21 @@ Color tokens are `light-dark(lightValue, darkValue)`:
 ```css
 :root {
   color-scheme: light dark;
-  --fz-surface: light-dark(#ffffff, #161616);
+  --bf-surface: light-dark(#ffffff, #161616);
 }
 ```
 
 The browser resolves `light-dark()` from `color-scheme`, which already
 follows the OS. **Dark mode works with zero attributes and zero duplicate
-palettes.** The `[data-theme]` attribute simply overrides `color-scheme`:
+palettes.** The `[data-bf-theme]` attribute simply overrides `color-scheme`:
 
 | Attribute | Effect |
 |---|---|
-| (none) / `data-theme="auto"` | follow OS preference |
-| `data-theme="light"` | force light |
-| `data-theme="dark"` | force dark |
-| `data-theme="contrast"` | force high-contrast colors |
-| `data-theme="editorial"` etc. | starter themes (see below) |
+| (none) / `data-bf-theme="auto"` | follow OS preference |
+| `data-bf-theme="light"` | force light |
+| `data-bf-theme="dark"` | force dark |
+| `data-bf-theme="contrast"` | force high-contrast colors |
+| `data-bf-theme="editorial"` etc. | starter themes (see below) |
 
 ## Making your own theme
 
@@ -223,16 +223,16 @@ you want:
 
 ```css
 @layer tokens {
-  [data-theme="my-theme"] {
+  [data-bf-theme="my-theme"] {
     color-scheme: light dark;
-    --fz-primary: light-dark(#2563eb, #93b4fd);
-    --fz-radius: 0.5rem;
-    --fz-font: "Inter", system-ui, sans-serif;
+    --bf-primary: light-dark(#2563eb, #93b4fd);
+    --bf-radius: 0.5rem;
+    --bf-font: "Inter", system-ui, sans-serif;
   }
 }
 ```
 
-Then `<html data-theme="my-theme">`. Unset variables inherit from the base
+Then `<html data-bf-theme="my-theme">`. Unset variables inherit from the base
 tokens — you never "reset" anything.
 
 ## Starter themes
@@ -260,10 +260,10 @@ Tokens also respect OS settings via media queries at the end of
 - **`prefers-reduced-transparency: reduce`** — drops the lifted shadow to
   `none`, removing depth effects.
 
-An **explicit `data-theme` still wins** over both: a theme selector like
-`[data-theme="forest"]` outranks the plain `:root` the media queries set,
+An **explicit `data-bf-theme` still wins** over both: a theme selector like
+`[data-bf-theme="forest"]` outranks the plain `:root` the media queries set,
 so choosing a theme (explicit intent) beats OS preference. The manual
-`[data-theme="contrast"]` preset sets the same values as the
+`[data-bf-theme="contrast"]` preset sets the same values as the
 `prefers-contrast` block, so the two never fight.
 
 ## Typed properties
@@ -278,18 +278,18 @@ change — register your own copy in userland CSS; the last registration
 wins:
 
 ```css
-@property --fz-primary {
+@property --bf-primary {
   syntax: "<color>";
   inherits: true;
   initial-value: #yourcolor;
 }
-html { transition: --fz-primary 300ms; }
+html { transition: --bf-primary 300ms; }
 ```
 
 ## Using your own accent in one line
 
 ```css
-:root { --fz-primary: #yourcolor; }
+:root { --bf-primary: #yourcolor; }
 ```
 
 Everything that is "brand" — buttons, links, focus, selection, form
