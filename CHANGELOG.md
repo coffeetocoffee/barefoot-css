@@ -4,6 +4,88 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-08-22
+
+Presentation-ready polish: docs that generate themselves, an API
+reference that can't drift, a theme gallery — and the gallery
+immediately caught four sub-AA color pairs in the shipped starter
+themes. No public surface changed except the starter-theme token
+values listed under Fixed.
+
+### Added
+
+- **Theme gallery page** — `demo/gallery.html` renders every starter
+  theme (and contrast) as **live preview cards side by side**: each
+  card carries its own `data-theme`, so all six palettes resolve on
+  one page with zero JS, next to a real button/input/badge strip per
+  theme. The global switcher is the same tiny `data-theme-btn`
+  pattern as the demo. Linked from the demo hero and the docs-site
+  nav; `tests/helpers.js` gains `gotoGallery()` (ADR-0003 seam).
+  Pinned by three tests: one axe scan covers all six rendered themes
+  at once, and two CSS tests prove the previews are live — six cards
+  must resolve six *distinct* `--fz-primary` values, and each themed
+  card must carry the attribute naming what it previews.
+- **API reference audit** — `docs/api.md` is now machine-checked in
+  both directions against `src/`: every documented `data-*` attribute
+  must be implemented somewhere real, and everything implemented must
+  be documented or explicitly allowlisted. The first run found eight
+  implemented-but-undocumented attributes, now tabled:
+  `data-breadcrumbs`, `data-pagination`, `data-striped`,
+  `data-carousel` (the scroller itself), and the stepper's
+  `data-step` / `data-step-circle` / `data-step-label` /
+  `data-complete`. The three internal seams (`data-fz-tabs-js`,
+  `data-nav-js`, `data-open`) get their own "Internal markers"
+  section — module-set, never hand-authored, kept out of the consumer
+  table by test. Four source-parse tests in `tests/css.spec.js`;
+  Chromium CSS suite 80 → 84 tests.
+- **Token reference auto-gen** — the token tables in
+  [theming.md](docs/theming.md) are generated from
+  `src/tokens.css` by `build/token-docs.mjs` (`npm run docs:tokens`,
+  wired into `npm run check`): each `/* ---- Section ---- */` header
+  becomes a table group, each declaration a row, and its same-line
+  trailing comment the Purpose column. Every token in `tokens.css`
+  gained that trailing comment so the docs are single-sourced at the
+  definition site. A parity test fails CI when a new token lands
+  without regenerating — the hand-maintained tables could silently
+  rot; these cannot.
+- **Contrast-mode full suite** — beyond the existing page-wide
+  contrast scan, a sweep runs axe **per component section** of the
+  demo under `[data-theme="contrast"]`: ~20 scoped audits so a
+  violation names its component directly instead of hiding inside a
+  clean-looking page. Chromium a11y suite 17 → 19 tests.
+- **Cross-engine visual baselines** — the firefox/webkit Playwright
+  projects now include `tests/visual.spec.js`; snapshot names embed
+  the browser (`light-firefox-win32.png`), so each engine pins its
+  own rendering and no suites collide. All three engines' baselines
+  regenerated this release (the demo hero gained text). This also
+  retires the v2.7 caveat: a fresh Firefox binary runs the full
+  ladder green.
+- **Performance budget docs** — [docs/performance.md](docs/performance.md):
+  the budgets, how sizes are measured (gzip level 9 is the contract;
+  brotli/raw reported), and how to stay under the cap from both
+  sides — framework changes and consumer imports. Linked from the
+  README and the docs site.
+
+### Fixed
+
+- **Four starter themes shipped sub-AA light-scheme pairs** — found
+  on the gallery's first axe run (no prior test ever rendered the
+  starters): muted/primary text on the themes' own surfaces measured
+  3.77–4.48 : 1. Darkened in place, hue preserved, dark values
+  untouched (all already passed ≥ 5.7 : 1):
+  dashboard `--fz-muted` `#64748b` → `#5f6e84`;
+  playful `--fz-muted` `#a45378` → `#9c4f72` and
+  `--fz-primary`/`--fz-focus-ring` `#e11d74` → `#c61a66`;
+  forest `--fz-muted` `#6b7461` → `#626a59`.
+  Every affected pair now clears 4.5 : 1 with margin (4.60–5.61).
+
+### Tests
+
+- Chromium 125 → **133** (a11y 17 → 19 · CSS 74 → 80 · JS 31 ·
+  visual 3), all green. Firefox and WebKit each run **114**
+  (113 passed + the engine-gated WebKit shim skip) and gain their
+  own visual baselines.
+
 ## [2.7.0] - 2026-08-22
 
 ### Added

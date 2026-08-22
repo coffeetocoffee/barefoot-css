@@ -71,6 +71,12 @@ export async function gotoDemo(page) {
   await page.goto("/demo/");
 }
 
+/* Navigate to the theme gallery. Same seam as gotoDemo — the helper,
+   not the specs, knows where pages live. */
+export async function gotoGallery(page) {
+  await page.goto("/demo/gallery.html");
+}
+
 /* Mount standalone fixture markup. setContent alone bases URLs at
    about:blank — fixture <link>/import references under /dist/ would
    not resolve — so navigate first, then swap the document. Caveat:

@@ -1,13 +1,17 @@
 /* Barefoot — visual regression.
-   Full-page screenshots in light and dark. Baselines live in
+   Full-page screenshots of the conformance demo in light and dark, per
+   engine: snapshot names embed the browser (light-chromium-win32.png,
+   light-firefox-win32.png, …), so each engine pins its own rendering
+   and the suites never collide. Baselines live in
    tests/visual.spec.js-snapshots/.
 
    The demo bundles its own webfonts (demo/fonts/) so glyph metrics are
    identical on every machine — never fall back to system font stacks in
    the demo, or baselines drift per-OS. Regenerate deliberately with:
-   npx playwright test --project=chromium tests/visual.spec.js --update-snapshots
+   npx playwright test --project=<browser> tests/visual.spec.js --update-snapshots
 
-   npm run test:visual */
+   npm run test:visual            (chromium)
+   npm run test:ff / test:webkit  (their own baselines) */
 import { test, expect } from "@playwright/test";
 import { gotoDemo } from "./helpers.js";
 

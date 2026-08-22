@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, tokenColor } from "./helpers.js";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1140,5 +1140,128 @@ test.describe("shared component recipes (ADR-0007)", () => {
         []
       );
     }
+  });
+});
+
+test.describe("theme gallery (live preview cards)", () => {
+  test("six themes render side by side, each with its own accent", async ({ page }) => {
+    await gotoGallery(page);
+    // Each card scopes data-theme on itself, so tokens resolve inside
+    // the card subtree. Same probe trick as tokenColor(), but scoped:
+    // six cards must resolve six distinct --fz-primary values live —
+    // no screenshots needed to prove the previews are real.
+    const colors = await page.evaluate(() =>
+      [...document.querySelectorAll(".gallery-card")].map((card) => {
+        const probe = document.createElement("span");
+        card.append(probe);
+        probe.style.color = "var(--fz-primary)";
+        const resolved = getComputedStyle(probe).color;
+        probe.remove();
+        return resolved;
+      })
+    );
+    expect(colors).toHaveLength(6);
+    expect(
+      new Set(colors).size,
+      `expected six distinct live accents, got: ${colors.join(", ")}`
+    ).toBe(6);
+  });
+
+  test("cards carry real theme scoping, not just styling", async ({ page }) => {
+    await gotoGallery(page);
+    // The default card has no attribute; every themed one must name
+    // the theme it previews.
+    const themed = await page
+      .locator(".gallery-card[data-theme]")
+      .evaluateAll((els) => els.map((el) => el.dataset.theme));
+    expect(themed.sort()).toEqual([
+      "contrast",
+      "dashboard",
+      "editorial",
+      "forest",
+      "playful",
+    ]);
+  });
+});
+
+test.describe("API reference audit (docs/api.md ↔ src)", () => {
+  // The data-* table in docs/api.md is the frozen public contract; this
+  // audit keeps it true in both directions (source-parse only — never
+  // touches a page). Internal seams the JS modules set and their CSS
+  // consumes are deliberately not consumer API and live in an explicit
+  // allowlist inside api.md itself; data-theme-btn is the demo pages'
+  // switcher convention (docs + demo markup, no src/ implementation).
+  const INTERNAL_MARKERS = new Set(["data-fz-tabs-js", "data-nav-js", "data-open"]);
+  const DEMO_ONLY = new Set(["data-theme-btn"]);
+
+  function documentedAttributes() {
+    const api = fs.readFileSync(path.join(rootDir, "docs/api.md"), "utf8");
+    const table = api.slice(api.indexOf("## data-* attribute reference"));
+    return new Set(
+      [...table.matchAll(/^\|\s*`(data-[a-z0-9-]+)`/gm)].map((m) => m[1])
+    );
+  }
+
+  function implementedAttributes() {
+    const found = new Set();
+    for (const dir of ["src/components", "src/js"]) {
+      for (const f of fs
+        .readdirSync(path.join(rootDir, dir))
+        .filter((f) => /\.(css|js)$/.test(f))) {
+        const src = fs.readFileSync(path.join(rootDir, dir, f), "utf8");
+        // CSS attribute selectors + HTML-ish literals: [data-x], "data-x".
+        for (const m of src.matchAll(/\[?(data-[a-z0-9-]+)/g)) {
+          found.add({ name: m[1], where: `${dir}/${f}` });
+        }
+        // JS dataset access: dataset.themeBtn → data-theme-btn.
+        for (const m of src.matchAll(/dataset\.([A-Za-z0-9]+)/g)) {
+          const kebab = m[1].replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+          found.add({ name: `data-${kebab}`, where: `${dir}/${f}` });
+        }
+      }
+    }
+    return found;
+  }
+
+  test("every documented data-* attribute exists in src or the demo pages", () => {
+    const implemented = implementedAttributes();
+    const names = new Set([...implemented].map((a) => a.name));
+    const missing = [...documentedAttributes()].filter(
+      (n) => !names.has(n) && !DEMO_ONLY.has(n)
+    );
+    expect(missing, "documented in api.md but not implemented anywhere").toEqual([]);
+  });
+
+  test("everything implemented in src is documented or an internal marker", () => {
+    const documented = documentedAttributes();
+    const undocumented = [...implementedAttributes()]
+      .filter((a) => !documented.has(a.name) && !INTERNAL_MARKERS.has(a.name))
+      .map((a) => `${a.name} (${a.where})`);
+    expect(undocumented, "implemented in src but missing from api.md").toEqual([]);
+  });
+
+  test("internal markers stay out of the consumer table", () => {
+    const table = documentedAttributes();
+    const leaked = [...INTERNAL_MARKERS].filter((n) => table.has(n));
+    expect(leaked, "internal JS→CSS seam leaked into the public table").toEqual([]);
+  });
+
+  test("theming.md carries a generated token region that knows every --fz-* token", () => {
+    // Pins build/token-docs.mjs output against tokens.css so a new token
+    // cannot land without regenerating the reference (npm run docs:tokens,
+    // part of npm run check).
+    const tokensSrc = fs.readFileSync(path.join(rootDir, "src/tokens.css"), "utf8");
+    const rootBlock = tokensSrc.slice(tokensSrc.indexOf(":root {"));
+    const defined = new Set(
+      [...rootBlock.matchAll(/^\s*(--fz-[a-z0-9-]+):/gm)].map((m) => m[1])
+    );
+    const theming = fs.readFileSync(path.join(rootDir, "docs/theming.md"), "utf8");
+    const start = theming.indexOf("<!-- TOKENS:START -->");
+    const end = theming.indexOf("<!-- TOKENS:END -->");
+    expect(start, "theming.md lost its TOKENS markers").toBeGreaterThanOrEqual(0);
+    expect(end, "theming.md lost its TOKENS markers").toBeGreaterThan(start);
+    const generated = theming.slice(start, end);
+    const missing = [...defined].filter((t) => !generated.includes(`\`${t}\``));
+    expect(missing, "tokens.css defines these but theming.md does not list them — run npm run docs:tokens").toEqual([]);
   });
 });

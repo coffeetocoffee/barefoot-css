@@ -12,34 +12,34 @@
 
     /* ---- Typography ---- */
     --fz-font: system-ui, -apple-system, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+      "Helvetica Neue", Arial, sans-serif; /* body font */
     --fz-font-mono: ui-monospace, "SF Mono", "Cascadia Mono",
-      "Segoe UI Mono", Menlo, Consolas, monospace;
-    --fz-line-height: 1.6;
+      "Segoe UI Mono", Menlo, Consolas, monospace; /* code font */
+    --fz-line-height: 1.6; /* body leading */
 
     /* ---- Font weight (v2.6) ----
        Named steps so a theme can re-map emphasis in one place —
        components never hard-code a weight. */
-    --fz-font-weight-normal: 400;
-    --fz-font-weight-medium: 500;
-    --fz-font-weight-semibold: 600;
-    --fz-font-weight-bold: 700;
+    --fz-font-weight-normal: 400; /* body, divider labels */
+    --fz-font-weight-medium: 500; /* buttons, labels, summaries, tabs */
+    --fz-font-weight-semibold: 600; /* headings, card/dialog headers, th, current states */
+    --fz-font-weight-bold: 700; /* .fz-brand */
 
     /* ---- Letter spacing (v2.6) ----
        Tracking for display and uppercase-label contexts; body text
        stays at the browser default. */
-    --fz-letter-spacing-tight: -0.01em;
-    --fz-letter-spacing-wide: 0.05em;
-    --fz-letter-spacing-wider: 0.08em;
+    --fz-letter-spacing-tight: -0.01em; /* display/brand tracking */
+    --fz-letter-spacing-wide: 0.05em; /* uppercase labels (badge, th) */
+    --fz-letter-spacing-wider: 0.08em; /* overlines */
 
     /* ---- Type scale (v1.8: fluid) ----
        Headings are clamp() across the viewport: the sizes above
        shrink on small screens instead of overflowing their measure,
        and grow to the cap on large ones. Override any step with a
        fixed rem to opt back into a static scale. */
-    --fz-type-xs: 0.75rem;
-    --fz-type-sm: 0.875rem;
-    --fz-type-base: 1rem;
+    --fz-type-xs: 0.75rem; /* tiny text (footnotes) */
+    --fz-type-sm: 0.875rem; /* small text (figcaptions, hints) */
+    --fz-type-base: 1rem; /* body text */
     --fz-type-md: clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem);    /* h4 */
     --fz-type-lg: clamp(1.125rem, 1rem + 0.625vw, 1.375rem);      /* h3 */
     --fz-type-xl: clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem);   /* h2 */
@@ -56,92 +56,92 @@
     --fz-space-8: 4rem;
 
     /* ---- Radii (small, neutral — no "rounded identity") ---- */
-    --fz-radius: 0.375rem;
-    --fz-radius-sm: 0.25rem;
-    --fz-radius-lg: 0.625rem;
-    --fz-radius-full: 999px;
+    --fz-radius: 0.375rem; /* component corners */
+    --fz-radius-sm: 0.25rem; /* small corners */
+    --fz-radius-lg: 0.625rem; /* large corners */
+    --fz-radius-full: 999px; /* pills — badges, switches, sliders, progress */
 
     /* ---- Strokes (v2.2) ---- */
-    --fz-border-width: 1px;
+    --fz-border-width: 1px; /* hairline stroke for every component border */
 
     /* ---- Color ---- */
     /* The accent. Defaults to ink on paper. Change this one variable
        and every component follows. */
-    --fz-primary: light-dark(#1a1a1a, #ececec);
-    --fz-primary-fg: light-dark(#ffffff, #141414);
+    --fz-primary: light-dark(#1a1a1a, #ececec); /* the accent — change this and every component follows */
+    --fz-primary-fg: light-dark(#ffffff, #141414); /* text/icon on the accent */
 
-    --fz-surface: light-dark(#ffffff, #161616);
-    --fz-surface-alt: light-dark(#f4f4f4, #202020);
+    --fz-surface: light-dark(#ffffff, #161616); /* page & component background */
+    --fz-surface-alt: light-dark(#f4f4f4, #202020); /* hover chips, code, pre */
 
-    --fz-text: light-dark(#1a1a1a, #e8e8e8);
-    --fz-muted: light-dark(#5a5a5a, #a0a0a0);
+    --fz-text: light-dark(#1a1a1a, #e8e8e8); /* body text */
+    --fz-muted: light-dark(#5a5a5a, #a0a0a0); /* secondary text */
 
-    --fz-border: light-dark(#d8d8d8, #3a3a3a);
+    --fz-border: light-dark(#d8d8d8, #3a3a3a); /* hairlines, borders */
 
-    --fz-danger: light-dark(#b3261e, #f2b8b5);
-    --fz-danger-fg: light-dark(#ffffff, #201000);
+    --fz-danger: light-dark(#b3261e, #f2b8b5); /* errors, destructive */
+    --fz-danger-fg: light-dark(#ffffff, #201000); /* text/icon on the danger fill */
 
-    --fz-success: light-dark(#1a7f37, #7ee2a8);
-    --fz-success-fg: light-dark(#ffffff, #0a2a16);
+    --fz-success: light-dark(#1a7f37, #7ee2a8); /* success states, valid fields */
+    --fz-success-fg: light-dark(#ffffff, #0a2a16); /* text/icon on the success fill */
 
-    --fz-info: light-dark(#0969da, #8ac7ff);
-    --fz-info-fg: light-dark(#ffffff, #0b1f38);
+    --fz-info: light-dark(#0969da, #8ac7ff); /* informational states */
+    --fz-info-fg: light-dark(#ffffff, #0b1f38); /* text/icon on the info fill */
 
-    --fz-warning: light-dark(#9a6700, #e3b341);
-    --fz-warning-fg: light-dark(#ffffff, #2a1f00);
+    --fz-warning: light-dark(#9a6700, #e3b341); /* warnings, caution */
+    --fz-warning-fg: light-dark(#ffffff, #2a1f00); /* text/icon on the warning fill */
 
-    --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8);
+    --fz-focus-ring: light-dark(#1a1a1a, #e8e8e8); /* focus outline color */
 
     /* ---- Backdrop ---- */
-    --fz-backdrop: light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.6));
+    --fz-backdrop: light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.6)); /* dialog/modal backdrop overlay */
 
     /* ---- Effects (default: no shadows — neutral by default) ---- */
-    --fz-shadow: none;
-    --fz-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25);
+    --fz-shadow: none; /* default shadow (neutral by default) */
+    --fz-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25); /* small shadow (thumbs, subtle depth) */
     --fz-shadow-lifted: 0 1px 3px rgb(0 0 0 / 0.08),
-      0 4px 12px rgb(0 0 0 / 0.06);
+      0 4px 12px rgb(0 0 0 / 0.06); /* popovers, dialogs, [data-lifted] */
 
     /* ---- Alpha ramps (v2.0: color-mix) ----
        Derived from base tokens. Override the base token and the ramps
        follow — no duplicate palettes to maintain. */
-    --fz-surface-2: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 5%);
-    --fz-surface-3: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 10%);
-    --fz-overlay: color-mix(in oklab, var(--fz-surface), transparent 20%);
-    --fz-overlay-heavy: color-mix(in oklab, var(--fz-surface), transparent 5%);
-    --fz-primary-subtle: color-mix(in oklab, var(--fz-primary), transparent 88%);
-    --fz-primary-muted: color-mix(in oklab, var(--fz-primary), transparent 75%);
-    --fz-primary-strong: color-mix(in oklab, var(--fz-primary), transparent 12%);
-    --fz-primary-darken: color-mix(in oklab, var(--fz-primary), #000000 8%);
-    --fz-danger-darken: color-mix(in oklab, var(--fz-danger), #000000 8%);
-    --fz-danger-muted: color-mix(in oklab, var(--fz-danger), transparent 75%);
-    --fz-success-muted: color-mix(in oklab, var(--fz-success), transparent 75%);
-    --fz-info-muted: color-mix(in oklab, var(--fz-info), transparent 75%);
-    --fz-warning-muted: color-mix(in oklab, var(--fz-warning), transparent 75%);
-    --fz-border-strong: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%);
+    --fz-surface-2: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 5%); /* subtle raised surface */
+    --fz-surface-3: color-mix(in oklab, var(--fz-surface), var(--fz-primary) 10%); /* stronger raised surface */
+    --fz-overlay: color-mix(in oklab, var(--fz-surface), transparent 20%); /* light overlay */
+    --fz-overlay-heavy: color-mix(in oklab, var(--fz-surface), transparent 5%); /* heavy overlay (backdrop) */
+    --fz-primary-subtle: color-mix(in oklab, var(--fz-primary), transparent 88%); /* very light primary tint */
+    --fz-primary-muted: color-mix(in oklab, var(--fz-primary), transparent 75%); /* light primary tint (focus rings) */
+    --fz-primary-strong: color-mix(in oklab, var(--fz-primary), transparent 12%); /* strong primary tint */
+    --fz-primary-darken: color-mix(in oklab, var(--fz-primary), #000000 8%); /* hover darken for primary fills */
+    --fz-danger-darken: color-mix(in oklab, var(--fz-danger), #000000 8%); /* hover darken for danger fills */
+    --fz-danger-muted: color-mix(in oklab, var(--fz-danger), transparent 75%); /* light danger tint (focus rings) */
+    --fz-success-muted: color-mix(in oklab, var(--fz-success), transparent 75%); /* light success tint (focus rings) */
+    --fz-info-muted: color-mix(in oklab, var(--fz-info), transparent 75%); /* light info tint (focus rings) */
+    --fz-warning-muted: color-mix(in oklab, var(--fz-warning), transparent 75%); /* light warning tint (focus rings) */
+    --fz-border-strong: color-mix(in oklab, var(--fz-border), var(--fz-text) 20%); /* stronger border on hover */
 
-    --fz-transition: 150ms ease;
-    --fz-transition-slow: 250ms ease;
+    --fz-transition: 150ms ease; /* default motion */
+    --fz-transition-slow: 250ms ease; /* slower motion */
 
     /* Disabled controls (buttons, inputs) dim by this much. */
-    --fz-disabled-opacity: 0.5;
+    --fz-disabled-opacity: 0.5; /* dimming for disabled buttons/inputs */
 
     /* ---- Layout ---- */
-    --fz-content-width: 64ch;
-    --fz-max-width: 72rem;
-    --fz-control-height: 2.5rem;
+    --fz-content-width: 64ch; /* max measure for prose */
+    --fz-max-width: 72rem; /* .fz-container width */
+    --fz-control-height: 2.5rem; /* buttons/inputs height */
 
     /* ---- Z-index scale (v2.2) ----
        One ladder for the whole framework: dropdowns sit above sticky
        chrome, dialogs above those, toasts on top. Override a rung and
        the stacking order stays coherent. */
-    --fz-z-dropdown: 10;
-    --fz-z-sticky: 20;
-    --fz-z-dialog: 50;
-    --fz-z-toast: 60;
+    --fz-z-dropdown: 10; /* dropdown / menu panels */
+    --fz-z-sticky: 20; /* .fz-sticky chrome */
+    --fz-z-dialog: 50; /* dialogs (modal dialogs use the top layer) */
+    --fz-z-toast: 60; /* toasts — top of the ladder */
 
     /* ---- Layout (v1.6: app shell) ---- */
-    --fz-grid-min: 14rem;      /* minimum track in [data-grid="auto-fit"] */
-    --fz-grid-gap: var(--fz-space-4);
+    --fz-grid-min: 14rem;      /* minimum track in [data-grid="auto-fit"/"auto-fill"] */
+    --fz-grid-gap: var(--fz-space-4); /* default [data-grid] gap */
     --fz-sidebar-width: 16rem; /* fixed-ish aside in .fz-sidebar */
     --fz-sticky-top: 0;        /* offset for .fz-sticky */
 

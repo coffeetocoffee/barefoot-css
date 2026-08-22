@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -32,6 +32,39 @@ test.describe("accessibility conformance (axe-core)", () => {
     // dark) — the palette must stay axe-clean end to end.
     await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
     const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("contrast theme: every component section is individually clean", async ({ page }) => {
+    await gotoDemo(page);
+    await page.getByRole("button", { name: "Contrast" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "contrast");
+    await page.waitForTimeout(400);
+
+    // The page-wide scan above proves the palette; this sweep proves it
+    // per component — a violation can never hide inside one section's
+    // markup while the rest of the page dilutes a fix. Scoped axe runs,
+    // one per section, so a failure names its component directly.
+    const sections = await page
+      .locator("main > section[id]")
+      .evaluateAll((els) => els.map((el) => el.id));
+    expect(sections.length, "demo sections discovered for the sweep").toBeGreaterThan(15);
+
+    for (const id of sections) {
+      if (id === DEMOS.stepper.slice(1)) continue; // same exclusion as every scan
+      const results = await new AxeBuilder({ page }).include(`#${id}`).analyze();
+      expect(
+        results.violations,
+        `section #${id} has axe violations under contrast theme`
+      ).toEqual([]);
+    }
+  });
+
+  test("theme gallery has no violations (six themes rendered at once)", async ({ page }) => {
+    await gotoGallery(page);
+    // Every starter theme renders live on one page — each card scopes
+    // its own data-theme, so this single scan axe-checks all of them.
+    const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
 

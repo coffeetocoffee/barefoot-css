@@ -1,49 +1,36 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-22 — v2.7.0_
+_Last updated: 2026-08-22 — v2.8.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@2.7.0` (2026-08-22) — architecture
-  deepening across all seven upkeep candidates (details in the Upkeep
-  bullet): one lifecycle seam for opt-in JS, shared keyboard and
-  removal seams behind the interactive components, shared menu-item
-  recipe + disabled-opacity token in CSS, dead `@property`
-  registrations dropped, contrast-palette parity guard, test fixture
-  harness. Public surfaces unchanged except the documented range-focus
-  halo and the à-la-carte import now needed for `menu-items.css`.
-  Release notes: `CHANGELOG.md`.
-- **Next:** v2.8.0 — polish & docs (theme gallery page, performance
-  budget docs, API reference audit, token reference auto-gen,
-  contrast-mode full suite, cross-browser visual refresh).
-- **Upkeep:** architecture scan 2026-08-21 produced seven deepening
-  candidates (C1–C7, local scratch `GRILL PLAN.txt`). Shipped early:
-  C1 contrast-palette parity guard (`docs/adr/0001`), C3 one lifecycle
-  seam for all opt-in JS (`js/lifecycle.js`, `docs/adr/0002`), C2
-  test fixture harness (`tests/helpers.js`: gotoDemo/DEMOS/tokenColor,
-  `docs/adr/0003`), C4 shared removal factory behind the chips /
-  alert-dismiss adapters (`js/remove-on-click.js`, `docs/adr/0004`),
-  C5 dropped the ten dead `@property` registrations
-  (`docs/adr/0005`), C6 shared keyboard seams behind tabs /
-  popover-menu / nav / details-close (`js/roving-index.js`,
-  `js/return-focus.js`, `docs/adr/0006`) — public surfaces untouched,
-  all pre-existing behavior tests pass unchanged — and C7 de-duplicated
-  the component-CSS recipes (shared menu-item file, disabled-opacity
-  token, `:is()` chain compression, `:where()` audit with one real
-  fix; motion guards kept after the suite pinned name-level removal;
-  `docs/adr/0007`). Scan complete: all seven candidates processed.
-- **Tests:** Chromium 125 (17 a11y / 31 JS / 74 CSS / 3 visual) ·
-  WebKit 104 run, 1 skipped · Firefox — see caveat — all green.
-  Caveat: the Playwright Firefox binary broke mid-session (launch
-  access-violation; CDN download refused, no system install), so its
-  last full-ladder green (103 + 1 skipped) predates two review fixes
-  of C7 — a disabled-switch cursor arm and a test serialization fix,
-  both engine-agnostic and covered by the other engines. Re-run
-  `npm run test:ff` once Firefox reinstalls. Specs address the demo
-  only through `tests/helpers.js`.
-- **Build:** `index.css` 2.06KB gzip · `full.css` 7.88KB gzip (10KB
+- **Current:** `barefoot-css@2.8.0` (2026-08-22) — polish & docs,
+  presentation-ready before the v3 wave: self-generating token
+  reference (`npm run docs:tokens`, parity-tested), machine-checked
+  API reference (two-way audit against `src/`; first run found eight
+  undocumented attributes), theme gallery with live preview cards —
+  which immediately caught four sub-AA starter-theme pairs (fixed),
+  per-component-section contrast sweep, cross-engine visual baselines
+  (Firefox/WebKit now pin their own rendering; v2.7's Firefox caveat
+  retired), performance budget docs. Public surfaces unchanged except
+  the starter-theme muted/primary values listed under Fixed in
+  `CHANGELOG.md`.
+- **Next:** v3.0.0 — the breaking cleanup: token rename (`--fz-*` →
+  `--barefoot-*`, or similar), `data-theme` → `data-fz-theme`,
+  migration guide + codemod script, drop anything deprecated in 2.x.
+  Specifics TBD as 2.x usage reveals them.
+- **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
+  completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
+  recipes, palette-parity guard, test fixture harness (ADRs
+  0001–0007). v2.8 added no new runtime machinery; it pinned docs to
+  code instead (api.md audit, token-table parity).
+- **Tests:** Chromium 133 (19 a11y / 31 JS / 80 CSS / 3 visual) ·
+  Firefox 114 run, 1 skipped · WebKit 114 run, 1 skipped — all
+  green, and every engine now runs its own visual baselines. Specs
+  address the demo only through `tests/helpers.js`.
+- **Build:** `index.css` 2.07KB gzip · `full.css` 7.79KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 2.6. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 2.8. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -210,21 +197,20 @@ and `.fz-*` utilities.
   letter-spacing tokens (all weights/tracking now tokenized),
   hamburger axe + keyboard tests, chip interaction tests. Shipped as
   `barefoot-css@2.6.0` (2026-08-21).
+- [x] **2.8** — polish & docs before the v3 wave: theme gallery page
+  (six live preview cards; its first axe run caught four sub-AA
+  starter-theme pairs — fixed in place), API reference audit
+  (docs ↔ src, both directions, eight attributes tabled, internal
+  markers allowlisted), token reference auto-gen (`npm run
+  docs:tokens`; purposes live as trailing comments in `tokens.css`),
+  contrast-mode per-section axe sweep, cross-engine visual baselines
+  (Firefox/WebKit projects join the visual suite), performance
+  budget docs (`docs/performance.md`). Shipped as
+  `barefoot-css@2.8.0` (2026-08-22).
 
-## Next — v2.8 through v3.0
+## Next — v3.0
 
-### v2.8.0 — Polish & documentation (next)
-
-Make the project presentation-ready before the v3 breaking wave.
-
-- [ ] **Theme gallery page** — dedicated HTML with live preview cards
-- [ ] **Performance budget docs** — size targets and how to stay under them
-- [ ] **API reference audit** — every `data-*` attribute tested
-- [ ] **Token reference auto-gen** — script to parse tokens.css → theming.md
-- [ ] **Contrast-mode full suite** — all components in contrast theme
-- [ ] **Cross-browser visual baseline refresh**
-
-### v3.0.0 — Breaking changes
+### v3.0.0 — Breaking changes (next)
 
 The namespace cleanup. Specifics TBD based on what v2.x reveals.
 
@@ -287,6 +273,19 @@ The namespace cleanup. Specifics TBD based on what v2.x reveals.
   hides nothing without that marker. A plain topbar under the module,
   or markup missing the module, always stays fully visible — the
   no-JS-first contract holds in both directions.
+- **Docs generate from source where drift hurts.** README sizes
+  (`build/readme-size.mjs`) and the token tables in theming.md
+  (`build/token-docs.mjs`, purposes = trailing comments in
+  `tokens.css`) are regenerated on every `npm run check`; the
+  `data-*` table in api.md is pinned to `src/` by a two-way audit.
+  Hand-maintained reference tables rot silently; generated and
+  audited ones can't.
+- **Starter themes clear AA in both schemes.** The theme gallery
+  renders every starter at once under axe — which is how four
+  light-scheme muted/primary pairs shipped sub-4.5:1 unnoticed.
+  Fixed by darkening tokens in place (hue kept); any new starter
+  gets its card on the gallery page, so this class of bug cannot
+  ship quietly again.
 
 ## Non-goals
 

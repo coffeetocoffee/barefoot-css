@@ -77,8 +77,8 @@ npm install barefoot-css
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.29KB |
+| `themes/playful.css` | 0.58KB | **0.33KB** | 0.29KB |
 | `components/pagination.css` | 0.75KB | **0.33KB** | 0.25KB |
-| `themes/playful.css` | 0.58KB | **0.33KB** | 0.30KB |
 | `themes/editorial.css` | 0.57KB | **0.32KB** | 0.27KB |
 | `components/skeleton.css` | 0.52KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
@@ -124,7 +124,9 @@ src/
   themes/              editorial, dashboard, playful, custom template
   utilities.css        opt-in helpers
 demo/index.html        conformance page (keyboard walkthroughs)
-docs/                  theming, components, javascript, accessibility
+demo/gallery.html      theme gallery — every starter rendered live
+docs/                  theming, components, javascript, accessibility,
+                       performance, api
 tests/                 a11y (axe-core), opt-in JS, visual regression
 build/                 Lightning CSS bundler + size budget + preview server
 ```
@@ -137,6 +139,7 @@ build/                 Lightning CSS bundler + size budget + preview server
 - [Components](docs/components.md) — markup, behavior, JS status for each component
 - [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
 - [Accessibility](docs/accessibility.md) — conformance stance and keyboard matrix
+- [Performance](docs/performance.md) — size budgets, measurement, staying under them
 - [Status](plan.md) — what's built, what's next
 - [Plan](plan.md) — the original plan and the decisions made
 
@@ -150,13 +153,15 @@ npm run preview   # serve demo/ at localhost:4173
 
 ## Testing & CI
 
-`npm test` runs the full suite on Chromium — 62 tests, all passing:
+`npm test` runs the full suite on Chromium — 133 tests, all passing:
 
 - **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the
-  demo page in five states (resting, dark, dialog-open, dropdown-open,
-  toast-open), asserted at **zero violations**, plus keyboard-contract
-  tests (focus rings, `<details>` toggle, popover Esc, dialog focus
-  return, nav links + `aria-current`).
+  demo page in eight states (resting, dark, contrast, dialog-open,
+  dropdown-open, toast-open, hamburger nav, invalid form), a
+  per-component-section contrast sweep, and the theme gallery — all
+  asserted at **zero violations** — plus keyboard-contract tests (focus
+  rings, `<details>` toggle, popover Esc, dialog focus return, nav links
+  + `aria-current`).
 - **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End),
   the tabs no-JS-first contract (all panels visible without the module;
   marked + hidden with it), details Esc-close with focus return, the
@@ -165,19 +170,22 @@ npm run preview   # serve demo/ at localhost:4173
 - **CSS behavior (`tests/css.spec.js`)** — container-query grid columns,
   container-unit carousel slides, anchored popover placement, theme switch
   via `startViewTransition`, the v1.6 layout suite (spacing scale,
-  grid `auto-fit`/`data-gap`, nav, sidebar, sticky), and the v1.7 status
-  suite (tokens, alerts, validation, skeleton, toasts, badges).
+  grid `auto-fit`/`data-gap`, nav, sidebar, sticky), the v1.7 status
+  suite (tokens, alerts, validation, skeleton, toasts, badges), live
+  theme-gallery previews, and the API reference audit pinning
+  `docs/api.md` and the generated token tables to `src/`.
 - **Visual regression (`tests/visual.spec.js`)** — full-page light/dark
-  screenshots against committed baselines.
+  screenshots against committed per-engine baselines.
 
-The JS + CSS behavior suites also re-run cross-engine — `npm run test:ff`
-(Firefox) and `npm run test:webkit` (Safari's engine, 52 each, passing).
+The JS + CSS behavior suites plus their own visual baselines also re-run
+cross-engine — `npm run test:ff` (Firefox) and `npm run test:webkit`
+(Safari's engine; 113 passing + 1 engine-gated skip each).
 
 ```bash
 npm test                          # all tests (Chromium)
 npm run test:a11y                 # axe-core only
-npm run test:ff                   # JS + CSS behavior on Firefox
-npm run test:webkit               # JS + CSS behavior on WebKit/Safari
+npm run test:ff                   # JS + CSS + visual on Firefox
+npm run test:webkit               # JS + CSS + visual on WebKit/Safari
 npm run test:visual               # compare against baselines
 npm run test:visual:update        # regenerate baselines (deliberately!)
 ```

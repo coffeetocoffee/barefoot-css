@@ -7,14 +7,14 @@
 
     --fz-font: ui-rounded, "Segoe UI", system-ui, sans-serif;
 
-    --fz-primary: light-dark(#e11d74, #ff9ec8);
+    --fz-primary: light-dark(#c61a66, #ff9ec8);
     --fz-primary-fg: light-dark(#ffffff, #2b0314);
     --fz-surface: light-dark(#fff5f9, #2a1220);
     --fz-surface-alt: light-dark(#ffe3ee, #3a1a2c);
     --fz-text: light-dark(#3d1228, #ffd9e8);
-    --fz-muted: light-dark(#a45378, #d8a3ba);
+    --fz-muted: light-dark(#9c4f72, #d8a3ba);
     --fz-border: light-dark(#f5c4d8, #6b3a52);
-    --fz-focus-ring: light-dark(#e11d74, #ff9ec8);
+    --fz-focus-ring: light-dark(#c61a66, #ff9ec8);
 
     --fz-radius: 1rem;
     --fz-radius-sm: 0.75rem;

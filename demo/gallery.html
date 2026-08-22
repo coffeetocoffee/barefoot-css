@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — theme gallery</title>
+  <meta name="description" content="Every Barefoot starter theme rendered live, side by side. A handful of variables, completely different products.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/themes/editorial.css">
+  <link rel="stylesheet" href="../dist/themes/dashboard.css">
+  <link rel="stylesheet" href="../dist/themes/playful.css">
+  <link rel="stylesheet" href="../dist/themes/forest.css">
+  <link rel="stylesheet" href="../dist/components/view-transition.css">
+  <style>
+    /* Page chrome only — the card styling is all Barefoot. Bundled
+       webfonts keep previews pixel-stable across machines (same trick
+       as the conformance demo). */
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root {
+      --fz-font: "Inter", system-ui, sans-serif;
+      --fz-font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    .gallery-hero { padding-block: var(--fz-space-8) var(--fz-space-6); }
+    .gallery-hero p { max-width: 60ch; }
+    .gallery-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--fz-space-3);
+      padding: var(--fz-space-5);
+      background: var(--fz-surface);
+      border: var(--fz-border-width) solid var(--fz-border);
+      border-radius: var(--fz-radius-lg);
+    }
+    .gallery-card h2 { margin: 0; }
+    .gallery-card > p { margin: 0; min-height: 3lh; }
+    .gallery-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--fz-space-2);
+      padding-block-start: var(--fz-space-2);
+      border-block-start: var(--fz-border-width) solid var(--fz-border);
+    }
+    .gallery-strip input { max-width: 11rem; }
+  </style>
+</head>
+<body>
+  <a class="fz-skip-link" href="#main">Skip to content</a>
+
+  <header class="fz-container gallery-hero">
+    <p class="fz-overline">Barefoot CSS</p>
+    <h1>Theme gallery</h1>
+    <p>Five starter themes and the neutral default, each rendered
+       <strong>live</strong> below — every card carries its own
+       <code>data-theme</code>, so what you see is what you ship. No
+       screenshots: each preview is real components reading the same
+       tokens your app would.</p>
+
+    <div class="fz-row fz-gap-2" role="group" aria-label="Theme switcher">
+      <span class="fz-muted">Re-theme the whole page:</span>
+      <button type="button" data-theme-btn="auto">Auto</button>
+      <button type="button" data-theme-btn="light">Light</button>
+      <button type="button" data-theme-btn="dark">Dark</button>
+      <button type="button" data-theme-btn="contrast">Contrast</button>
+      <button type="button" data-theme-btn="editorial">Editorial</button>
+      <button type="button" data-theme-btn="dashboard">Dashboard</button>
+      <button type="button" data-theme-btn="playful">Playful</button>
+      <button type="button" data-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="fz-container" id="main">
+    <section data-grid aria-label="Theme previews">
+      <!-- The default: no data-theme at all. -->
+      <article class="gallery-card" id="gallery-barefoot" aria-labelledby="gallery-barefoot-title">
+        <h2 id="gallery-barefoot-title">Barefoot (default)</h2>
+        <p class="fz-muted">Ink on paper, hairline borders, no shadows,
+           small neutral radii. Zero overrides — this is the framework.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Your name" aria-label="Sample text input">
+          <span class="badge">Badge</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-editorial" data-theme="editorial" aria-labelledby="gallery-editorial-title">
+        <h2 id="gallery-editorial-title">Editorial</h2>
+        <p class="fz-muted">Serif voice, warm paper tones, square corners.
+           Overrides the fonts, eight color tokens, and the radii.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Your name" aria-label="Sample text input">
+          <span class="badge">Badge</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-dashboard" data-theme="dashboard" aria-labelledby="gallery-dashboard-title">
+        <h2 id="gallery-dashboard-title">Dashboard</h2>
+        <p class="fz-muted">Blue accent, denser controls, tighter radii.
+           One accent change plus control height and spacing.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Filter…" aria-label="Sample text input">
+          <span class="badge">Live</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-playful" data-theme="playful" aria-labelledby="gallery-playful-title">
+        <h2 id="gallery-playful-title">Playful</h2>
+        <p class="fz-muted">Rounded, saturated, bouncier transitions.
+           Proof that personality is six variables away.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Say hi…" aria-label="Sample text input">
+          <span class="badge">New</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-forest" data-theme="forest" aria-labelledby="gallery-forest-title">
+        <h2 id="gallery-forest-title">Forest</h2>
+        <p class="fz-muted">Deep greens on warm paper, soft green shadow.
+           The quiet one of the set.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Search…" aria-label="Sample text input">
+          <span class="badge">Calm</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-contrast" data-theme="contrast" aria-labelledby="gallery-contrast-title">
+        <h2 id="gallery-contrast-title">Contrast</h2>
+        <p class="fz-muted">Pure black on pure white (and mirrored in
+           dark). Also available as the OS-driven
+           <code>prefers-contrast</code> mode.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Maximum clarity" aria-label="Sample text input">
+          <span class="badge">AA+</span>
+        </div>
+      </article>
+    </section>
+
+    <section aria-labelledby="steal-title">
+      <h2 id="steal-title">Steal one</h2>
+      <p>Each card is a file in <code>src/themes/</code> — copy it, rename
+         the attribute value, tweak the variables, done. The
+         <a href="../docs/theming-tutorial.md">theming tutorial</a> walks
+         through building your own from scratch, and
+         <a href="../docs/theming.md">theming.md</a> lists every token the
+         cards above are reading.</p>
+      <pre><code>&lt;html <strong>data-theme="forest"</strong>&gt;</code></pre>
+    </section>
+  </main>
+
+  <footer class="fz-container fz-mt-8">
+    <p class="fz-muted">
+      <a href="index.html">Conformance demo</a> ·
+      <a href="../docs/index.html">Docs</a> — every visual is a variable. Make it yours.
+    </p>
+  </footer>
+
+  <script>
+    // Same tiny switcher as the conformance demo — not framework code.
+    const root = document.documentElement;
+    const applyTheme = (t) => {
+      const set = () => { root.dataset.theme = t; };
+      if (document.startViewTransition) {
+        document.startViewTransition(set);
+      } else {
+        set();
+      }
+    };
+    for (const btn of document.querySelectorAll("[data-theme-btn]")) {
+      btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+    }
+  </script>
+</body>
+</html>

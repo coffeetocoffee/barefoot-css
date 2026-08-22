@@ -110,12 +110,35 @@ All component attributes and their valid values:
 | `data-chip` | any text-holding element | (boolean) | 2.6 |
 | `data-chip-remove` | child of `[data-chip]` | (boolean) | 2.6 |
 | `data-fz-tabs` | tabs container | (boolean) | 0.1 |
-| `data-autoplay` | carousel scroller | `ms` value (default 3000) | 1.4 |
+| `data-carousel` | scroll container | (boolean) | 1.4 |
+| `data-autoplay` | `[data-carousel]` | `ms` value (default 3000) | 1.4 |
 | `data-carousel-prev` | button | (boolean) | 1.4 |
 | `data-carousel-next` | button | (boolean) | 1.4 |
+| `data-breadcrumbs` | `<nav>` | (boolean) | 1.4 |
+| `data-pagination` | `<nav>` | (boolean) | 1.4 |
+| `data-striped` | `<table>` | (boolean) | 0.1 |
+| `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
+| `data-step-circle` | child of `[data-step]` | (boolean) | 1.9 |
+| `data-step-label` | child of `[data-step]` | (boolean) | 1.9 |
+| `data-complete` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
 | `data-theme-btn` | theme switcher buttons | theme name | — |
+
+### Internal markers (not consumer API)
+
+Three attributes are seams between an opt-in JS module and its CSS —
+the module sets them, the stylesheet keys off them. They appear in
+`src/` but are not part of the public API; never author them by hand:
+
+- `data-fz-tabs-js` — set on `[data-fz-tabs]` by `js/tabs.js`
+- `data-nav-js` / `data-open` — set on `[data-nav="header"]` by `js/nav.js`
+
+The API reference audit (`tests/css.spec.js`) enforces this table
+against `src/`: every attribute documented here must be implemented,
+and everything implemented must be documented here or listed above.
+A parity test also pins the generated token tables in
+[theming.md](theming.md) against `src/tokens.css`.
 
 ## v1.x → v2.0 migration
 

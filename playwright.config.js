@@ -22,7 +22,8 @@ export default defineConfig({
   },
 
   // chromium runs the full suite (a11y + axe-core, JS, CSS, visual).
-  // firefox/webkit re-run the behavior specs (JS + CSS) as a cross-engine
+  // firefox/webkit re-run the behavior specs and their own visual
+  // baselines (snapshot names embed the browser) as a cross-engine
   // check — pick them explicitly with --project, or npm run test:ff /
   // test:webkit.
   projects: [
@@ -30,12 +31,12 @@ export default defineConfig({
     {
       name: "firefox",
       use: { browserName: "firefox" },
-      testMatch: /(css|js)\.spec\.js/,
+      testMatch: /(css|js|visual)\.spec\.js/,
     },
     {
       name: "webkit",
       use: { browserName: "webkit" },
-      testMatch: /(css|js)\.spec\.js/,
+      testMatch: /(css|js|visual)\.spec\.js/,
     },
   ],
 });
