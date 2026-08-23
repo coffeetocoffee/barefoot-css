@@ -47,10 +47,10 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 46.12KB | **8.60KB** | 7.55KB |
-| `index.css` | 7.58KB | **2.12KB** | 1.83KB |
+| `full.css` | 46.54KB | **8.66KB** | 7.59KB |
+| `index.css` | 7.84KB | **2.18KB** | 1.87KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
-| `components/forms.css` | 8.20KB | **1.83KB** | 1.57KB |
+| `components/forms.css` | 8.39KB | **1.86KB** | 1.59KB |
 | `js/popover-anchor.js` | 3.80KB | **1.60KB** | 1.34KB |
 | `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
@@ -61,16 +61,16 @@ npm install barefoot-css
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `js/details-close.js` | 1.63KB | **0.84KB** | 0.69KB |
 | `js/lifecycle.js` | 1.57KB | **0.82KB** | 0.67KB |
-| `components/stepper.css` | 2.62KB | **0.69KB** | 0.57KB |
+| `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
 | `components/buttons.css` | 2.02KB | **0.59KB** | 0.47KB |
 | `components/table.css` | 1.44KB | **0.57KB** | 0.48KB |
-| `components/carousel.css` | 1.29KB | **0.52KB** | 0.43KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
 | `components/dropdown.css` | 1.23KB | **0.50KB** | 0.39KB |
+| `components/carousel.css` | 1.19KB | **0.50KB** | 0.41KB |
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
+| `components/accordion.css` | 1.44KB | **0.49KB** | 0.38KB |
 | `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
-| `components/accordion.css` | 1.42KB | **0.48KB** | 0.38KB |
 | `components/segmented.css` | 1.12KB | **0.46KB** | 0.34KB |
 | `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
 | `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
@@ -95,7 +95,7 @@ npm install barefoot-css
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
-| `components/divider.css` | 0.35KB | **0.22KB** | 0.16KB |
+| `components/divider.css` | 0.36KB | **0.22KB** | 0.16KB |
 | `components/menu-items.css` | 0.36KB | **0.21KB** | 0.14KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
 | `components/reveal.css` | 0.32KB | **0.21KB** | 0.16KB |

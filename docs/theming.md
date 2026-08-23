@@ -153,6 +153,18 @@ the base token and every ramp follows.
 | Token | Default | Purpose |
 |---|---|---|
 | `--bf-avatar-size` | `2.5rem` | edge of .bf-avatar (matches control height) |
+| `--bf-space-1` | `0.125rem` |  |
+| `--bf-space-2` | `0.25rem` |  |
+| `--bf-space-3` | `0.5rem` |  |
+| `--bf-space-4` | `0.75rem` |  |
+| `--bf-space-5` | `1rem` |  |
+| `--bf-space-6` | `1.5rem` |  |
+| `--bf-space-7` | `2rem` |  |
+| `--bf-space-8` | `3rem` |  |
+| `--bf-radius` | `0.25rem` |  |
+| `--bf-radius-sm` | `0.125rem` |  |
+| `--bf-radius-lg` | `0.5rem` |  |
+| `--bf-control-height` | `2rem` |  |
 | `--bf-primary` | `light-dark(#000000, #ffffff)` |  |
 | `--bf-primary-fg` | `light-dark(#ffffff, #000000)` |  |
 | `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
@@ -295,3 +307,35 @@ html { transition: --bf-primary 300ms; }
 
 Everything that is "brand" — buttons, links, focus, selection, form
 accents — follows, in both light and dark.
+
+## Density axis (v3.4)
+
+Themes gain a second axis — **density** — without new palettes. Set
+`data-density="compact"` on `<html>` (or any subtree) to remap the
+spacing scale, radii, and control height to tighter values:
+
+```html
+<html data-bf-theme="dashboard" data-density="compact">
+```
+
+The compact preset overrides:
+
+| Token | Normal | Compact |
+|---|---|---|
+| `--bf-space-1` | `0.25rem` | `0.125rem` |
+| `--bf-space-2` | `0.5rem` | `0.25rem` |
+| `--bf-space-3` | `0.75rem` | `0.5rem` |
+| `--bf-space-4` | `1rem` | `0.75rem` |
+| `--bf-space-5` | `1.5rem` | `1rem` |
+| `--bf-space-6` | `2rem` | `1.5rem` |
+| `--bf-space-7` | `3rem` | `2rem` |
+| `--bf-space-8` | `4rem` | `3rem` |
+| `--bf-radius` | `0.375rem` | `0.25rem` |
+| `--bf-radius-sm` | `0.25rem` | `0.125rem` |
+| `--bf-radius-lg` | `0.625rem` | `0.5rem` |
+| `--bf-control-height` | `2.5rem` | `2rem` |
+
+Combine with any theme — the density axis is orthogonal to the color
+axis. A dashboard theme with compact density gives denser controls;
+an editorial theme without it stays airy. Override individual tokens
+to fine-tune the compact preset.

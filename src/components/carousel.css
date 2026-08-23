@@ -88,7 +88,7 @@
       background-color: var(--bf-border);
       background-image: linear-gradient(var(--bf-primary), var(--bf-primary));
       background-repeat: no-repeat;
-      background-position: left;
+      background-position: inline-start;
       background-size: 0% 100%;
       animation: bf-carousel-progress linear both;
     }
@@ -98,11 +98,6 @@
        re-folded into an `animation` shorthand Chromium can't parse. */
     [data-carousel][data-progress][data-carousel][data-progress]::after {
       animation-timeline: scroll(nearest inline);
-    }
-
-    [dir="rtl"] [data-carousel][data-progress]::after,
-    [data-carousel][data-progress][dir="rtl"]::after {
-      background-position: right;
     }
 
     @keyframes bf-carousel-progress {

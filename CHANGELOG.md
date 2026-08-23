@@ -4,6 +4,65 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] — 2026-08-23
+
+Theming depth & global correctness — density tokens for a second
+theming axis, a logical-property audit so RTL mirrors correctly, and
+an i18n test page. All additive, no renames.
+
+### Added
+
+- **Density tokens** (`tokens.css`) — `data-density="compact"` on
+  `<html>` (or any subtree) remaps the spacing scale
+  (`--bf-space-1…8`), radii (`--bf-radius`, `-sm`, `-lg`), and
+  `--bf-control-height` to tighter values. Themes gain a second axis
+  (compact vs. normal) without new palettes; the attribute is
+  documented in `api.md`.
+- **i18n / RTL test page** (`demo/i18n.html`) — a full conformance
+  page rendered under `dir="rtl"` with Arabic placeholder text:
+  blockquotes, lists, breadcrumbs, pagination, stepper (horizontal +
+  vertical), forms, input groups, accordion, navigation, buttons,
+  cards, alerts. Validates that every logical property flips correctly.
+
+### Changed
+
+- **Logical-property audit** — the following physical properties are
+  converted to logical equivalents so RTL mirrors correctly without
+  `[dir]` overrides:
+  - `src/components/stepper.css`: `left` → `inset-inline-start` on
+    horizontal and vertical connector pseudo-elements;
+    `text-align: left` → `text-align: start` on vertical step content.
+  - `src/components/forms.css`: select chevron `background-position:
+    right` → `inline-end`; switch thumb positions (`0.3em` /
+    `calc(100% - 0.3em)`) → `inline-end` / `inline-start`;
+    `[data-input-group]` border-radius shorthand → logical
+    (`border-start-start-radius`, etc.) so affix/input corners flip.
+  - `src/components/accordion.css`: panel `padding` shorthand →
+    logical (`padding-block-start`, `padding-inline`,
+    `padding-block-end`).
+  - `src/components/divider.css`: hairline `border-top` →
+    `border-block-start`.
+  - `src/base.css`: `<hr>` `border-top` → `border-block-start`.
+  - `src/components/carousel.css`: progress bar `background-position:
+    left` → `inline-start`; removed the `[dir="rtl"]` override
+    (redundant with the logical property).
+
+### Docs
+
+- api.md: `data-density` row added to the attribute table.
+- theming.md: density section added explaining the compact axis.
+- components.md: note that all components use logical properties and
+  mirror correctly in RTL.
+
+### Tests
+
+- i18n test page (`demo/i18n.html`) validates RTL rendering of all
+  affected components. No visual baselines changed (the default demo
+  stays LTR). All existing suites green; the logical-property
+  conversions are source-parse pinned.
+- No new tokens beyond density (tokens 113 → 113 + density preset).
+  `index.css` and `full.css` size budget unchanged.
+
 ## [3.3.0] — 2026-08-23
 
 The growth batch — proof the thesis still scales. Six new surfaces,

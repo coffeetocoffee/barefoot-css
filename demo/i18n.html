@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — i18n / RTL test</title>
+  <link rel="stylesheet" href="../dist/full.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    :root {
+      --bf-font: "Inter", system-ui, sans-serif;
+    }
+    section { margin-block-start: var(--bf-space-8); }
+    .demo-side-by-side { display: flex; gap: var(--bf-space-6); flex-wrap: wrap; }
+    .demo-side-by-side > * { flex: 1 1 20rem; min-width: 0; }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+  <header class="bf-container hero" style="padding-block: var(--bf-space-8);">
+    <p class="bf-overline">Barefoot CSS</p>
+    <h1>i18n / RTL test page</h1>
+    <p>This page sets <code>dir="rtl"</code> on <code>&lt;html&gt;</code> to verify that all logical properties mirror correctly. Every component below should render with its inline-start/end edges flipped compared to the LTR demo.</p>
+    <div class="bf-row bf-gap-2" role="group" aria-label="Theme switcher">
+      <span class="bf-muted">Theme:</span>
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Blockquote — border-inline-start should appear on the right -->
+    <section id="blockquote" aria-labelledby="blockquote-title">
+      <h2 id="blockquote-title">Blockquote</h2>
+      <p>The blockquote border should appear on the <strong>right</strong> edge in RTL.</p>
+      <blockquote>"الركض حافي القدمين — لا حذاء، لا حمولة."</blockquote>
+    </section>
+
+    <!-- Lists — padding-inline-start should indent from the right -->
+    <section id="lists" aria-labelledby="lists-title">
+      <h2 id="lists-title">Lists</h2>
+      <p>List indentation should come from the <strong>right</strong> edge.</p>
+      <div class="demo-side-by-side">
+        <div>
+          <h3>Unordered</h3>
+          <ul>
+            <li>العنصر الأول</li>
+            <li>العنصر الثاني</li>
+            <li>العنصر الثالث</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Ordered</h3>
+          <ol>
+            <li>الخطوة الأولى</li>
+            <li>الخطوة الثانية</li>
+            <li>الخطوة الثالثة</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Breadcrumbs — separators should flow right-to-left -->
+    <section id="breadcrumbs" aria-labelledby="breadcrumbs-title">
+      <h2 id="breadcrumbs-title">Breadcrumbs</h2>
+      <nav aria-label="Breadcrumb (RTL)" data-breadcrumbs>
+        <ol>
+          <li><a href="#">الرئيسية</a></li>
+          <li><a href="#">التوثيق</a></li>
+          <li aria-current="page">السمات</li>
+        </ol>
+      </nav>
+    </section>
+
+    <!-- Pagination -->
+    <section id="pagination" aria-labelledby="pagination-title">
+      <h2 id="pagination-title">Pagination</h2>
+      <nav aria-label="Pagination (RTL)" data-pagination>
+        <ul>
+          <li><span aria-label="Previous page" aria-disabled="true">&larr;</span></li>
+          <li><a href="#">١</a></li>
+          <li><span aria-current="page">٢</span></li>
+          <li><a href="#">٣</a></li>
+          <li><a href="#" aria-label="Next page">&rarr;</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <!-- Stepper — connector lines and vertical spine should flip -->
+    <section id="stepper" aria-labelledby="stepper-title">
+      <h2 id="stepper-title">Stepper</h2>
+      <h3>Horizontal</h3>
+      <div data-stepper>
+        <ol>
+          <li data-complete>
+            <div data-step>
+              <span data-step-circle>١</span>
+              <span data-step-label>الحساب</span>
+            </div>
+          </li>
+          <li aria-current="step">
+            <div data-step>
+              <span data-step-circle>٢</span>
+              <span data-step-label>الملف</span>
+            </div>
+          </li>
+          <li>
+            <div data-step>
+              <span data-step-circle>٣</span>
+              <span data-step-label>التأكيد</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <h3>Vertical</h3>
+      <div data-stepper data-orientation="vertical">
+        <ol>
+          <li data-complete>
+            <div data-step>
+              <span data-step-circle>١</span>
+              <span data-step-label>الشحن</span>
+            </div>
+          </li>
+          <li aria-current="step">
+            <div data-step>
+              <span data-step-circle>٢</span>
+              <span data-step-label>الدفع</span>
+            </div>
+          </li>
+          <li>
+            <div data-step>
+              <span data-step-circle>٣</span>
+              <span data-step-label>المراجعة</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Forms — select chevron should appear on the left, switch thumb should flip -->
+    <section id="forms" aria-labelledby="forms-title">
+      <h2 id="forms-title">Forms</h2>
+      <form onsubmit="return false">
+        <div class="bf-stack">
+          <div>
+            <label for="rtl-name">الاسم</label>
+            <input id="rtl-name" type="text" placeholder="أحمد">
+          </div>
+          <div>
+            <label for="rtl-country">البلد</label>
+            <select id="rtl-country">
+              <option>اختر…</option>
+              <option>السعودية</option>
+              <option>مصر</option>
+              <option>الإمارات</option>
+            </select>
+          </div>
+          <div>
+            <label for="rtl-bio">السيرة الذاتية</label>
+            <textarea id="rtl-bio" rows="2" data-autogrow placeholder="اكتب شيئاً…"></textarea>
+          </div>
+          <fieldset>
+            <legend>التفضيلات</legend>
+            <label><input type="checkbox" checked> الوضع الداكن</label>
+            <label><input type="checkbox"> إرسال بريد</label>
+            <label><input type="checkbox" data-switch> تبديل الليل</label>
+          </fieldset>
+          <fieldset data-segmented>
+            <legend>العرض</legend>
+            <label><input type="radio" name="rtl-view" checked> يوم</label>
+            <label><input type="radio" name="rtl-view"> أسبوع</label>
+            <label><input type="radio" name="rtl-view"> شهر</label>
+          </fieldset>
+        </div>
+      </form>
+    </section>
+
+    <!-- Input groups — affix should be on the right, input on the left -->
+    <section id="input-groups" aria-labelledby="ig-title">
+      <h2 id="ig-title">Input groups</h2>
+      <form class="bf-stack">
+        <div>
+          <label for="rtl-username">اسم المستخدم</label>
+          <div data-input-group>
+            <span aria-hidden="true">@</span>
+            <input id="rtl-username" type="text" placeholder="ahmed">
+          </div>
+        </div>
+        <div>
+          <label for="rtl-amount">المبلغ</label>
+          <div data-input-group>
+            <span aria-hidden="true">$</span>
+            <input id="rtl-amount" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Divider -->
+    <section id="divider" aria-labelledby="divider-title">
+      <h2 id="divider-title">Divider</h2>
+      <p data-divider>الفصل الثاني</p>
+      <p>المحتوى يستمر أسفل الفاصل.</p>
+    </section>
+
+    <!-- Accordion -->
+    <section id="accordion" aria-labelledby="accordion-title">
+      <h2 id="accordion-title">Accordion</h2>
+      <details data-accordion name="rtl-faq" open>
+        <summary>لماذا حافي القدمين؟</summary>
+        <p>لا حذاء، لا حمولة. صغير، قابل للسمة، سهل الوصول بشكل افتراضي.</p>
+      </details>
+      <details data-accordion name="rtl-faq">
+        <summary>هل هناك جافاسكريبت؟</summary>
+        <p>صفر في إطار العمل. العناصر الأصلية ت القيام بالعمل.</p>
+      </details>
+    </section>
+
+    <!-- Navigation -->
+    <section id="nav" aria-labelledby="nav-title">
+      <h2 id="nav-title">Navigation</h2>
+      <nav data-nav="header" aria-label="Primary (RTL)">
+        <a class="bf-brand" href="#">حافي</a>
+        <ul>
+          <li><a href="#" aria-current="page">الرئيسية</a></li>
+          <li><a href="#">التوثيق</a></li>
+          <li><a href="#">المكونات</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <!-- Buttons -->
+    <section id="buttons" aria-labelledby="buttons-title">
+      <h2 id="buttons-title">Buttons</h2>
+      <div class="bf-row bf-gap-2">
+        <button type="button">محايد</button>
+        <button type="button" data-variant="primary">أساسي</button>
+        <button type="button" data-variant="ghost">شبح</button>
+        <button type="button" data-variant="danger">خطر</button>
+      </div>
+    </section>
+
+    <!-- Cards -->
+    <section id="cards" aria-labelledby="cards-title">
+      <h2 id="cards-title">Cards &amp; badges</h2>
+      <div class="bf-row">
+        <article class="card">
+          <header>بطاقة محايدة</header>
+          <p>بطاقة مسطحة بإطار رفيع وبدون ظل.</p>
+          <div class="bf-row bf-gap-2"><span class="badge">جديد</span><span class="badge" data-variant="primary">أساسي</span></div>
+        </article>
+        <article class="card" data-lifted>
+          <header>بطاقة مرفوعة</header>
+          <p>أضف <code>data-lifted</code> للحصول على ظل خفيف.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Alert -->
+    <section id="alerts" aria-labelledby="alerts-title">
+      <h2 id="alerts-title">Alerts</h2>
+      <div data-alert="danger" role="alert">
+        <p>فشل النشر — انتهى وقت البناء.</p>
+      </div>
+      <div data-alert="success" role="status" class="bf-mt-3">
+        <p>تم النسخ الاحتياطي بنجاح.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bf-container bf-mt-8">
+    <p class="bf-muted">Barefoot — كل بصري هو متغير. اجعله ملكك.</p>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
+      btn.addEventListener("click", () => { root.dataset.bfTheme = btn.dataset.bfThemeBtn; });
+    }
+  </script>
+</body>
+</html>

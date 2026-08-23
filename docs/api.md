@@ -144,6 +144,7 @@ All component attributes and their valid values:
 | `data-bf-sort` | `<table>` | (boolean) | 3.3 |
 | `data-segmented` | `<fieldset>` | (boolean) | 3.3 |
 | `data-timeline` | `<ol>` | (boolean) | 3.3 |
+| `data-density` | `<html>` | `compact` | 3.4 |
 | `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-step-circle` | child of `[data-step]` | (boolean) | 1.9 |
 | `data-step-label` | child of `[data-step]` | (boolean) | 1.9 |

@@ -4,6 +4,12 @@ Element-first. You write plain HTML; Barefoot styles it. No classes needed
 except where there is no native element. Every component degrades to fully
 functional semantics without CSS.
 
+All components use **logical CSS properties** (`margin-inline`,
+`padding-block`, `inset-inline-start`, `text-align: start`, logical
+`border-radius`) so they mirror correctly in RTL layouts — set
+`dir="rtl"` on `<html>` and everything flips automatically. See the
+[i18n test page](../demo/i18n.html) for a full RTL conformance demo.
+
 Import from `dist/components/*.css` (or get everything with `full.css`).
 
 ## Buttons
@@ -827,7 +833,8 @@ Layout-only, opt-in:
   (margin-block-start/end), `.bf-p-1…8` (all-sides padding),
   `.bf-px-1…8` / `.bf-py-1…8` (padding-inline/block). Each maps to the
   matching `--bf-space-*` token. When `.bf-p-*` and an axis shorthand are
-  both applied, the axis shorthand wins.
+  both applied, the axis shorthand wins. Under `data-density="compact"`
+  the spacing scale compresses automatically.
 - **Split layout** — `.bf-sidebar`: the first child is the aside
   (`--bf-sidebar-width`, 16rem), everything else flows beside it; the
   split wraps to one column when the row can't fit the aside plus ≥60%

@@ -1,22 +1,25 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-23 — v3.3.0_
+_Last updated: 2026-08-23 — v3.4.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.3.0` (2026-08-23) — the growth batch:
-  segmented control (`fieldset[data-segmented]`, native radios kept
-  invisible-but-functional), `<datalist>` field affordance, `<kbd>`
-  promoted to the base layer, `ol[data-timeline]` spine variant,
-  `.empty-state`, pure-CSS toast stacking (`:has(~ …)` sibling chains),
-  sortable tables as opt-in JS (`js/table-sort.js` + `data-bf-sort`,
-  numeric-aware, maintains `aria-sort`), the **sunset** starter theme
-  (#6), and the demo dialog now declarative via `command`/`commandfor`
-  with the `showModal()` line as fallback.
-- **Next:** **3.4** — theming depth & global correctness: density
-  tokens, a logical-property audit so RTL mirrors correctly with an
-  i18n test page, and an audit of remaining `@media` breakpoints
-  converting any that have a container boundary.
+- **Current:** `barefoot-css@3.4.0` (2026-08-23) — theming depth &
+  global correctness: density tokens (`data-density="compact"` remaps
+  spacing/radius/control-height for a compact axis), a logical-property
+  audit converting all remaining physical properties to logical
+  equivalents (`margin-inline`, `padding-block`, `inset-inline-start`,
+  `text-align: start`, logical `border-radius`) so RTL mirrors correctly,
+  and an i18n test page (`demo/i18n.html`) validating Arabic RTL
+  rendering of every affected component. The `@media` breakpoint audit
+  found zero candidates — the codebase is already 100% container queries
+  and intrinsic CSS.
+- **Next:** **3.5** — v4 rehearsal: freeze the raised browser-baseline
+  contract (2026 evergreen + explicit required-feature list), rehearse
+  every announced removal on a branch and re-derive the size budget
+  from what survives, draft `docs/migration-4.md`, finish codemod-4
+  (`--write`), and gate-check the shims — whatever upstream has *not*
+  fixed by then stays in 4.0 and returns to the watch-list.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -31,7 +34,7 @@ _Last updated: 2026-08-23 — v3.3.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 3.3. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 3.4. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -251,13 +254,14 @@ and `.bf-*` utilities.
   on arrival); demo adopts `command`/`commandfor` where supported with
   the `showModal()` line kept as fallback.
   Shipped as `barefoot-css@3.3.0` (2026-08-23).
-- [ ] **3.4** — theming depth & global correctness: density tokens
+- [x] **3.4** — theming depth & global correctness: density tokens
   (`data-density="compact"` mapping to the spacing/radius tokens —
   themes gain a second axis without new palettes), a logical-property
   audit (`margin-inline`, `padding-block`, …) so RTL mirrors
   correctly with an i18n test page, and an audit of remaining
   `@media` breakpoints converting any that have a container boundary
   into container-based variants; all additive, no renames.
+  Shipped as `barefoot-css@3.4.0` (2026-08-23).
 - [ ] **3.5** — v4 rehearsal: freeze the raised browser-baseline
   contract (2026 evergreen + explicit required-feature list), rehearse
   every announced removal on a branch and re-derive the size budget
@@ -282,13 +286,13 @@ the first deprecation wave — shipped as 3.2 (`details[data-menu]` →
 Popover-API menus; shims flagged as baseline-gated); a component-growth
 batch proving the thesis still scales (3.3, incl. the
 `table-sort.js` opt-in module); theming depth +
-RTL/container correctness, all additive (3.4); the breaking-release
-rehearsal (3.5); then **4.0 raises the browser baseline, deletes what
-was announced, and tightens the size budget.** Next session starts
-3.3; each milestone keeps the full suite green and the budget enforced
-before the next begins. Post-4.0 ideas (masonry grids, more starter
-themes, further budget tightening) stay off-roadmap until the next
-scan picks them up.
+RTL/container correctness, all additive (3.4, shipped); the
+breaking-release rehearsal (3.5); then **4.0 raises the browser
+baseline, deletes what was announced, and tightens the size budget.**
+Next session starts 3.5; each milestone keeps the full suite green and
+the budget enforced before the next begins. Post-4.0 ideas (masonry
+grids, more starter themes, further budget tightening) stay off-roadmap
+until the next scan picks them up.
 
 ## Watch-list (no action until browsers fix it)
 

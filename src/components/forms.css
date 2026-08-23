@@ -80,7 +80,7 @@
     padding-inline-end: var(--bf-space-6);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right var(--bf-space-3) center;
+    background-position: inline-end var(--bf-space-3) center;
     background-size: 1rem;
   }
 
@@ -195,7 +195,8 @@
     background-color: var(--bf-surface-alt);
     background-image: radial-gradient(circle, var(--bf-text) 42%, transparent 43%);
     background-size: 1.05em 1.05em;
-    background-position: 0.3em center;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end 0.3em center;
     background-repeat: no-repeat;
 
     transition:
@@ -206,7 +207,8 @@
   input[type="checkbox"][data-switch]:checked {
     background-color: var(--bf-primary);
     background-image: radial-gradient(circle, var(--bf-primary-fg) 42%, transparent 43%);
-    background-position: calc(100% - 0.3em) center;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-start 0.3em center;
   }
 
   input[type="checkbox"][data-switch]:indeterminate {
@@ -409,13 +411,19 @@
     background: var(--bf-surface-alt);
     border: var(--bf-border-width) solid var(--bf-border);
     border-inline-end: none;
-    border-radius: var(--bf-radius) 0 0 var(--bf-radius);
+    border-start-start-radius: var(--bf-radius);
+    border-end-start-radius: var(--bf-radius);
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
     font-size: 0.9375rem;
   }
 
   [data-input-group] > :is(input, select, textarea) {
     flex: 1;
-    border-radius: 0 var(--bf-radius) var(--bf-radius) 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: var(--bf-radius);
+    border-end-end-radius: var(--bf-radius);
   }
 
   [data-input-group]:has(> :is(input, select, textarea):focus-visible) > :first-child {

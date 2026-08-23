@@ -150,6 +150,25 @@
   }
 }
 
+/* ---- Density presets (v3.4) ----
+   data-density="compact" on <html> (or any subtree) remaps the spacing
+   and radius tokens to tighter values — a second theming axis that
+   compresses chrome without new palettes. Normal is the default. */
+[data-density="compact"] {
+  --bf-space-1: 0.125rem;
+  --bf-space-2: 0.25rem;
+  --bf-space-3: 0.5rem;
+  --bf-space-4: 0.75rem;
+  --bf-space-5: 1rem;
+  --bf-space-6: 1.5rem;
+  --bf-space-7: 2rem;
+  --bf-space-8: 3rem;
+  --bf-radius: 0.25rem;
+  --bf-radius-sm: 0.125rem;
+  --bf-radius-lg: 0.5rem;
+  --bf-control-height: 2rem;
+}
+
 /* ---- Theme presets ----
    No rebuild needed. Set data-bf-theme on <html> (or any subtree):
    <html data-bf-theme="dark">            → force dark

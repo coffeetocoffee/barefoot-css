@@ -65,7 +65,7 @@
 
   hr {
     border: 0;
-    border-top: var(--bf-border-width) solid var(--bf-border);
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
     margin-block: var(--bf-space-6);
   }
 

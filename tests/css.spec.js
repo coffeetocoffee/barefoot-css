@@ -1609,6 +1609,12 @@ test.describe("API reference audit (docs/api.md ↔ src)", () => {
         }
       }
     }
+    // tokens.css defines theme-level data-* attributes (data-bf-theme,
+    // data-density) that live outside components/js.
+    const tokensSrc = fs.readFileSync(path.join(rootDir, "src/tokens.css"), "utf8");
+    for (const m of tokensSrc.matchAll(/\[?(data-[a-z0-9-]+)/g)) {
+      found.add({ name: m[1], where: "src/tokens.css" });
+    }
     return found;
   }
 

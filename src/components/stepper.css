@@ -27,7 +27,7 @@
     content: "";
     position: absolute;
     top: calc(var(--bf-space-3) + 0.5rem);
-    left: 50%;
+    inset-inline-start: 50%;
     width: 100%;
     height: 2px;
     background: var(--bf-border);
@@ -118,7 +118,7 @@
 
   [data-stepper][data-orientation="horizontal"] li:not(:last-child)::after {
     top: var(--bf-space-3);
-    left: 50%;
+    inset-inline-start: 50%;
     width: 100%;
     height: 2px;
   }
@@ -138,7 +138,7 @@
 
   [data-stepper][data-orientation="vertical"] li:not(:last-child)::after {
     top: calc(var(--bf-space-3) + 1rem);
-    left: 1rem;
+    inset-inline-start: 1rem;
     width: 2px;
     height: 100%;
   }
@@ -147,12 +147,12 @@
     flex-direction: row;
     align-items: flex-start;
     gap: var(--bf-space-3);
-    text-align: left;
+    text-align: start;
     width: 100%;
   }
 
   [data-stepper][data-orientation="vertical"] [data-step-label] {
-    text-align: left;
+    text-align: start;
     max-width: none;
   }
 }

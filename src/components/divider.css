@@ -25,6 +25,6 @@
   [data-divider]::after {
     content: "";
     flex: 1 1 0;
-    border-top: var(--bf-border-width) solid var(--bf-border);
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
   }
 }
