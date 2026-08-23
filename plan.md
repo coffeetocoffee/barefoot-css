@@ -1,32 +1,36 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-22 — v3.0.0_
+_Last updated: 2026-08-23 — v3.1.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.0.0` (2026-08-22) — the breaking
-  cleanup: one namespace, `bf`. Tokens `--fz-*` → `--bf-*`, theme
-  attribute `data-theme` → `data-bf-theme`, utility classes
-  `.fz-*` → `.bf-*`, internal marker `data-fz-tabs-js` →
-  `data-bf-tabs-js` (plus the internal `fz-*` keyframe names).
-  Consumers migrate with `npm run migrate:v3` (codemod) or by hand
-  via `docs/migration-3.md`. Nothing deprecated in 2.x existed to
-  drop; no other public surface changed.
-- **Next:** TBD — first post-v3 arc. Candidates live in the
-  watch-list or a fresh architecture scan; no commitments yet.
+- **Current:** `barefoot-css@3.1.0` (2026-08-23) — first platform
+  catch-up release: `data-progress` scroll-driven carousel bar
+  (anonymous `scroll()` timeline, no wrapper), `components/reveal.css`
+  (`[data-reveal]`, view-timeline entry, reduced-motion-gated),
+  hover/focus hint tooltips (`popover="hint"` + interest invokers over
+  the click fallback), and implicit-anchor popovers (no inline
+  anchoring styles needed). Everything opt-in and `@supports`-gated;
+  `carousel.js` untouched; `js/popover-anchor.js` learned implicit
+  anchors.
+- **Next:** **3.2** — the first real run of the deprecation policy:
+  announce `<details data-menu>` → Popover-API menus, flag both
+  engine-gap shims as baseline-gated removal candidates, console.warn
+  notices, deprecation table in api.md, `build/codemod-4.mjs`
+  detection pass.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
   0001–0007). v2.8 added no new runtime machinery; it pinned docs to
   code instead (api.md audit, token-table parity).
-- **Tests:** Chromium 133 (19 a11y / 31 JS / 80 CSS / 3 visual) ·
-  Firefox 114 run, 1 skipped · WebKit 114 run, 1 skipped — all
-  green, and every engine now runs its own visual baselines. Specs
-  address the demo only through `tests/helpers.js`. In CI the visual
-  specs are Windows-only (win32 baselines): Chromium in `visual`,
-  Firefox+WebKit in `visual-cross`; the ubuntu/macos jobs stay
-  behavior-only.
-- **Build:** `index.css` 2.08KB gzip · `full.css` 7.79KB gzip (10KB
+- **Tests:** Chromium 140 (20 a11y / 31 JS / 86 CSS / 3 visual) ·
+  Firefox 116 run, 4 skipped · WebKit 115 run, 3 skipped — all
+  green; skips are engine-gated (interest invokers, SDA), and every
+  engine runs its own visual baselines. Specs address the demo only
+  through `tests/helpers.js`. In CI the visual specs are Windows-only
+  (win32 baselines): Chromium in `visual`, Firefox+WebKit in
+  `visual-cross`; the ubuntu/macos jobs stay behavior-only.
+- **Build:** `index.css` 2.08KB gzip · `full.css` 8.04KB gzip (10KB
   budget → PASS).
 - **Done:** milestones 0.1 → 2.8. Full history: `CHANGELOG.md`.
 
@@ -211,11 +215,71 @@ and `.bf-*` utilities.
   `data-bf-tabs-js`; migration guide (`docs/migration-3.md`) +
   codemod (`npm run migrate:v3`). Nothing deprecated in 2.x existed
   to drop. Shipped as `barefoot-css@3.0.0` (2026-08-22).
+- [x] **3.1** — platform primitives, opt-in and `@supports`-gated
+  (the accordion's `interpolate-size` path is the precedent):
+  `[data-carousel]` scroll-progress bar via `animation-timeline:
+  scroll()` (pure CSS where supported, absent elsewhere — carousel.js
+  untouched), a `[data-reveal]` scroll-entry animation gated on
+  `prefers-reduced-motion`, hover/focus tooltips upgraded to
+  `popover=hint` where engines support it (`data-tooltip`'s
+  click-popover stays the fallback), and pure-CSS anchor positioning
+  for anchored popovers in engines that ship it; engine-gated behavior
+  tests, reduced-motion test, sections in components.md +
+  performance.md. Shipped as `barefoot-css@3.1.0` (2026-08-23).
+- [ ] **3.2** — first real run of the deprecation policy
+  (docs/api.md): announce `<details data-menu>` dropdowns with the
+  Popover-API menu as replacement (the direction docs already steer),
+  and flag the engine-gap shims (`js/details-tabindex.js`,
+  `js/popover-anchor.js`) as baseline-gated removal candidates for
+  4.0; once-per-page `console.warn` notices in affected modules, a
+  deprecation table in api.md, and `build/codemod-4.mjs` with a
+  detection pass (`--write` comes at 3.5).
+- [ ] **3.3** — growth proves the thesis still scales: segmented
+  control as a skinned native radio group (`[data-segmented]` — same
+  precedent as the switch: native semantics kept, drawing is ours),
+  `<datalist>` autocomplete skinning, `<kbd>` base styling, a timeline
+  variant for ordered lists, an empty-state pattern, and stacking
+  behavior for multiple `[popover][data-kind="toast"]` toasts; plus
+  one new starter theme (~6 token overrides; gallery card + axe sweep
+  on arrival); demo adopts `command`/`commandfor` where supported with
+  the `showModal()` line kept as fallback.
+- [ ] **3.4** — theming depth & global correctness: density tokens
+  (`data-density="compact"` mapping to the spacing/radius tokens —
+  themes gain a second axis without new palettes), a logical-property
+  audit (`margin-inline`, `padding-block`, …) so RTL mirrors
+  correctly with an i18n test page, and an audit of remaining
+  `@media` breakpoints converting any that have a container boundary
+  into container-based variants; all additive, no renames.
+- [ ] **3.5** — v4 rehearsal: freeze the raised browser-baseline
+  contract (2026 evergreen + explicit required-feature list), rehearse
+  every announced removal on a branch and re-derive the size budget
+  from what survives, draft `docs/migration-4.md`, finish codemod-4
+  (`--write`), and gate-check the shims — whatever upstream has *not*
+  fixed by then stays in 4.0 and returns to the watch-list.
+- [ ] **4.0** — the platform catch-up: raise the baseline, adopt
+  `@scope` for prose/code scoping where it retires long `:where()`
+  chains, execute the 3.2 removals (`details[data-menu]` CSS hooks +
+  `js/details-close.js` die together; shims per the 3.5 gate check),
+  drop anything else deprecated during 3.x, tighten the enforced size
+  budget below its pre-removal number, ship migration-4 +
+  `npm run migrate:v4`, regenerate README sizes. The first Barefoot
+  major that actually deletes.
 
 ## Next
 
-No arc committed yet — the first post-3.0 session picks one from the
-watch-list or a fresh scan.
+The 3.1 → 4.0 arc is committed: **platform catch-up**. Six milestones:
+new platform primitives behind `@supports` gates — shipped as 3.1
+(scroll-driven animations, hint popovers, implicit anchor positioning);
+the first real deprecation wave (3.2: `details[data-menu]` →
+Popover-API menus; shims flagged as baseline-gated); a component-growth
+batch proving the thesis still scales (3.3); theming depth +
+RTL/container correctness, all additive (3.4); the breaking-release
+rehearsal (3.5); then **4.0 raises the browser baseline, deletes what
+was announced, and tightens the size budget.** Next session starts
+3.2; each milestone keeps the full suite green and the budget enforced
+before the next begins. Post-4.0 ideas (masonry grids, more starter
+themes, further budget tightening) stay off-roadmap until the next
+scan picks them up.
 
 ## Watch-list (no action until browsers fix it)
 
@@ -223,6 +287,13 @@ watch-list or a fresh scan.
   does, the 1.3.1 `popover-anchor.js` guard becomes a no-op and can be
   dropped. (The Firefox off-screen clamp itself is upstream, re-verified
   in Firefox 153, 2026-08-18.)
+- WebKit's `<details>` tab order (the gap `js/details-tabindex.js`
+  papers over) — same rule: lands upstream → shim deleted at the next
+  major. Both shims are formally flagged as baseline-gated removal
+  candidates in the 3.2 deprecation wave.
+- `grid-template-rows: masonry` landing across engines — a
+  `[data-grid="masonry"]` variant becomes a one-liner then; no
+  columns-hack imitation ships before that.
 
 ## Decision log
 
@@ -289,6 +360,31 @@ watch-list or a fresh scan.
   (`var(--bf-primary)`, `.bf-row`, `data-bf-theme`) while staying
   collision-proof against framework CSS; the package keeps its full
   name, only the prefix shortens.
+- **v4 breaks by raising the floor, not renaming again.** After v3's
+  namespace sweep another rename cycle would be cruelty. The second
+  major spends its breaking budget on the browser baseline and on
+  removing surface the platform obsoleted — everything announced
+  through the docs/api.md policy during 3.x (announce → grace period
+  → migration path), never silently. Engine-gap shims are gated: a
+  shim is removed in 4.0 only if upstream actually fixed the gap,
+  verified at 3.4; otherwise it ships once more and stays on the
+  watch-list. A deprecation without a concrete replacement is not a
+  deprecation — that api.md rule is why the details-menu announcement
+  points at Popover-API menus rather than "just stop using it."
+- **Platform primitives gate on `@supports`, and degrade by omission,
+  not imitation (3.1).** A primitive ships only where the platform can
+  honor it; no polyfill, no JS fallback, no half-rendered imitation.
+   Three corollaries learned shipping the progress bar: prefer the
+  ANONYMOUS timeline (`scroll(nearest inline)` on the scroller's own
+  `::after`) over a named one hoisted with `timeline-scope` — early
+  WebKit parses the whole named chain yet leaves it unresolved at
+  runtime, while every engine that scrubs at all scrubs anonymous ones,
+  so the simple shape is the portable one; a container's own
+  pseudo-elements are NOT its own descendants, so `cqi` units there
+  resolve against an ancestor container — size pseudo slots in `%`;
+  and keep the timeline longhand out of any rule an `animation`
+  shorthand touches (see AGENTS.md) — the doubled-selector trick is
+  load-bearing, not decoration.
 
 ## Non-goals
 

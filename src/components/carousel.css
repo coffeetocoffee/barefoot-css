@@ -36,4 +36,82 @@
     border-radius: var(--bf-radius);
     object-fit: cover;
   }
+
+  /* ---- Scroll progress bar (opt-in, pure CSS) ----
+     Add [data-progress] to the carousel itself:
+
+       <div data-carousel data-progress tabindex="0" aria-label="…">…</div>
+
+     The scroller's ::after becomes a hairline bar pinned along the
+     bottom edge that fills as the carousel scrolls. A scroll-driven
+     animation with an ANONYMOUS timeline (animation-timeline:
+     scroll(nearest inline)) does all the work — Chromium 115+,
+     Safari 26+, Firefox when SDA ships — and the ::after slot is
+     cancelled by a negative margin so it adds no scrollable length.
+     The @supports gate keeps the whole feature absent where SDA
+     doesn't parse; engines that pass the gate scrub anonymous
+     timelines correctly, so there is no half-drawn middle state.
+     carousel.js is untouched: this is position feedback driven by the
+     scroll itself, so it also stays live under prefers-reduced-motion.
+     The fill animates background-size (0% → 100%), which needs no
+     @property registration and follows [dir="rtl"] via
+     background-position. */
+  @supports (animation-timeline: scroll()) {
+    [data-carousel][data-progress] {
+      /* Room for the bar so it doesn't cover the slides' bottom edge. */
+      padding-block-end: var(--bf-space-2);
+    }
+
+    [data-carousel][data-progress]::after {
+      content: "";
+      position: sticky; /* rides the scrollport instead of the content */
+      inset-inline-start: 0;
+      align-self: flex-end;
+      flex: 0 0 100%; /* full width of the carousel's own box */
+      block-size: var(--bf-space-1);
+
+      /* Cancel this pseudo-element's slot (width + one gap) so it
+         contributes no extra scrollable length past the last slide.
+         Percentages, not cqi: container units here would resolve
+         against an ANCESTOR container — a container's own pseudo is
+         not its own descendant — and miss the carousel's width. */
+      margin-inline-start: calc(-100% - var(--bf-space-4));
+      border-radius: var(--bf-radius-full);
+
+      /* Track = background-color, fill = a flat gradient sized by the
+         animation. One pseudo-element, two layers, zero extra markup.
+         Fill mode both on purpose: Chromium only applies the scrubbed
+         value to computed style while the effect persists outside its
+         active interval, and every engine that passes the gate above
+         resolves this anonymous timeline — there is no degraded state
+         left to protect against. */
+      background-color: var(--bf-border);
+      background-image: linear-gradient(var(--bf-primary), var(--bf-primary));
+      background-repeat: no-repeat;
+      background-position: left;
+      background-size: 0% 100%;
+      animation: bf-carousel-progress linear both;
+    }
+
+    /* The doubled attributes keep this selector text distinct — see the
+       reveal component for why: same-selector rules get merged and
+       re-folded into an `animation` shorthand Chromium can't parse. */
+    [data-carousel][data-progress][data-carousel][data-progress]::after {
+      animation-timeline: scroll(nearest inline);
+    }
+
+    [dir="rtl"] [data-carousel][data-progress]::after,
+    [data-carousel][data-progress][dir="rtl"]::after {
+      background-position: right;
+    }
+
+    @keyframes bf-carousel-progress {
+      from {
+        background-size: 0% 100%;
+      }
+      to {
+        background-size: 100% 100%;
+      }
+    }
+  }
 }

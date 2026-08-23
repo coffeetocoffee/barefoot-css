@@ -115,18 +115,41 @@ document.querySelector("dialog").showModal();
 - **JS:** none — Popover API is declarative.
 - **A11y:** light-dismiss + `Esc` native. Position with anchor positioning
   or your own CSS.
-- **Anchoring:** in browsers with anchor positioning (Chromium 125+,
-  Firefox 147+, Safari 18.2+), give the trigger `anchor-name: --x` and the
-  popover `position-anchor: --x` (use the popover's id as `--x`) and it
-  pins to that trigger — the menu below, left-aligned; the tooltip above,
-  centered. One inline style on each element, unique per popover, so any
-  number of anchored popovers can coexist. (A named anchor is used rather
-  than the `anchor` attribute because Chromium doesn't support that
-  attribute yet.) Without anchor positioning the popover falls back to the
-  default placement. `position-try-fallbacks: flip-block` flips the
-  popover to the opposite side when the trigger sits near a viewport edge
-  (e.g. a menu anchored below a button at the bottom of the screen opens
-  above it instead).
+- **Anchoring (implicit, 3.1):** in browsers with anchor positioning
+  (Chromium 125+, Firefox 147+, Safari 18.2+) a popover pins to its own
+  invoker automatically — the invoker *is* the default anchor — so the
+  common case needs no anchoring markup at all:
+
+  ```html
+  <button popovertarget="menu">Actions</button>
+  <div popover id="menu" data-kind="menu">…</div>
+  ```
+
+  The stylesheet's `position-area` does the placing: menus open below,
+  left-aligned; tooltips above, centered. To anchor a popover to
+  something that is *not* its invoker, fall back to explicit named
+  anchors — `anchor-name: --x` on that element and
+  `position-anchor: --x` on the popover (one inline style on each,
+  unique per popover). Without anchor positioning all of this is inert
+  and popovers keep default placement. `position-try-fallbacks:
+  flip-block` flips the popover to the opposite side when the trigger
+  sits near a viewport edge (e.g. a menu anchored below a button at the
+  bottom of the screen opens above it instead).
+- **Hover/focus tooltips (`popover="hint"`, 3.1):** upgrade the bubble to
+  a hint popover and add an interest invoker alongside the click one:
+
+  ```html
+  <button data-tooltip interestfor="tip"
+          popovertarget="tip" popovertargetaction="show">?</button>
+  <div popover="hint" id="tip" data-kind="tooltip">…</div>
+  ```
+
+  Three tiers, one markup, zero JS: engines with interest invokers
+  (Chromium 139+) show on hover and keyboard focus and dismiss on
+  hover-away/blur; every Popover-API engine keeps click-to-show via
+  `popovertarget`; engines without the hint state treat it as a plain
+  auto popover. A hint also never tears down an open menu/dialog —
+  it lives one dismissal tier below them.
 - **Cross-browser:** `position-area` anchoring is verified in Chromium,
   Firefox, and WebKit (Safari) by the CI behavior suite, including the
   viewport-edge flip. One Firefox limitation: if the trigger is *off-screen*
@@ -261,6 +284,24 @@ support, carousel controls + autoplay) and their markup.
   nothing changes.
 - **A11y:** keep the `tabindex` and `aria-label`; that's what makes it
   keyboard reachable.
+- **Scroll progress bar (opt-in, pure CSS):** add `data-progress` to
+  the scroller itself and a hairline bar appears along its bottom edge,
+  filling as you scroll:
+
+  ```html
+  <div data-carousel data-progress tabindex="0" aria-label="Slides">…</div>
+  ```
+
+  It's a scroll-driven animation (`animation-timeline:
+  scroll(nearest inline)` — an anonymous timeline, so no wrapper, no
+  `timeline-scope`, no extra markup), so it tracks position with zero
+  JS and stays live under reduced motion — a progress bar is position
+  feedback, not animation. Engine tiers, verified in CI: Chromium and
+  Safari 26+ resolve the anonymous timeline and draw a live bar;
+  engines without scroll-driven animations render nothing — every rule
+  sits behind a `@supports (animation-timeline: scroll())` gate. The
+  fill uses `--bf-primary` over a `--bf-border` track; follows
+  `[dir="rtl"]`.
 
 ## Breadcrumbs
 
@@ -657,6 +698,27 @@ support, carousel controls + autoplay) and their markup.
   you decide when to call `startViewTransition()`.
 - **A11y:** motion-safe by default; without the media-query guard a
   theme flip would animate for everyone.
+
+## Reveal (scroll-entry)
+
+```html
+<section data-reveal>…</section>
+```
+
+- Opt-in scroll-entry motion (`components/reveal.css`): the element
+  fades from 0 and rises `--bf-space-4` into place as it enters the
+  viewport. A scroll-driven animation (`animation-timeline: view()`)
+  ties progress to the element's own position — scrolling back re-hides
+  it, and there is no IntersectionObserver or JS anywhere.
+- **Two gates, both load-bearing:** engines without scroll-driven
+  animations never apply the rule (the start state lives only inside
+  the animation, so content is simply visible); and
+  `prefers-reduced-motion: no-preference` wraps everything, because
+  base.css's motion kill-switch clamps *durations* — which a scroll
+  timeline ignores — so the media query is what actually protects
+  reduced-motion users.
+- **Placement:** don't put `data-reveal` inside horizontal scrollers;
+  `view()` tracks the nearest scroll container's block axis by default.
 
 ## Utilities
 

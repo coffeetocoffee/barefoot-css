@@ -35,7 +35,25 @@
     opacity: 1;
   }
 
-  /* Tooltip affordance: small, muted, no shadow. */
+  /* Tooltip affordance: small, muted, no shadow.
+     Pair it with a [popover][data-kind="tooltip"] anchored to
+     the trigger (see the anchoring section below) — the bubble is
+     unadorned by design so position-try-fallbacks: flip-block stays
+     correct when the tooltip flips below the trigger.
+
+     The 3.1 hover/focus pattern upgrades the bubble to a *hint*
+     popover and lets an interest invoker show it — one element, two
+     declarative invokers, zero JS:
+
+       <button data-tooltip interestfor="tip"
+               popovertarget="tip" popovertargetaction="show">?</button>
+       <div popover="hint" id="tip" data-kind="tooltip">…</div>
+
+     Engines with interest invokers (Chromium 139+) show the hint on
+     hover and focus, hide on hover-away/blur; every Popover-API engine
+     keeps click-to-show working via popovertarget; engines with
+     neither treat popover="hint" as auto — today's click-popover,
+     byte-identical behavior. */
   [popover][data-kind="tooltip"] {
     font-size: 0.8125rem;
     padding-block: var(--bf-space-1);
@@ -43,11 +61,6 @@
     box-shadow: none;
   }
 
-  /* The tooltip trigger: a dotted underline marks "this control has a
-     tooltip". Pair it with a [popover][data-kind="tooltip"] anchored to
-     the trigger (see the anchoring section below) — the bubble is
-     unadorned by design so position-try-fallbacks: flip-block stays
-     correct when the tooltip flips below the trigger. */
   [data-tooltip] {
     text-decoration: underline dotted;
     text-underline-offset: 4px;
@@ -103,25 +116,32 @@
   /* Item rows live in menu-items.css — shared verbatim with
      details[data-menu] (ADR-0007). */
 
-  /* ---- Opt-in anchoring ----
+  /* ---- Anchoring ----
      Browsers with anchor positioning (Chromium 125+, Firefox 147+,
-     Safari 18.2+) pin a popover to its trigger when it has a
-     position-anchor. Give the trigger an anchor-name (use the popover's
-     id) and the popover a matching position-anchor — one inline style
-     on each element:
+     Safari 18.2+) pin a popover to its trigger. The default anchor is
+     the *implicit* one — the invoker — so the common case needs zero
+     anchoring markup: any popovertarget button (or interestfor
+     invoker) pins its popover with no inline styles at all:
+
+       <button popovertarget="menu">Actions</button>
+       <div popover id="menu" data-kind="menu">…</div>
+
+     position-area then places it (menu → below, left-aligned;
+     tooltip → above, centered). To anchor a popover to something that
+     is *not* its invoker, fall back to explicit named anchors — give
+     the element an anchor-name and the popover a matching
+     position-anchor (one inline style on each; use unique names so
+     any number can coexist — a shared anchor-name class silently
+     breaks the moment a page has two popovers, don't use one):
 
        <button style="anchor-name: --menu" popovertarget="menu">Actions</button>
        <div popover id="menu" data-kind="menu"
             style="position-anchor: --menu">…</div>
 
-     position-area then pins it (menu → below, left-aligned; tooltip →
-     above, centered). Each popover names its own anchor, so any number
-     can coexist on a page. Without anchor positioning, or when
-     position-anchor is missing, the popover keeps the default placement
-     — safe everywhere. (Note: we use a named anchor rather than the
-     `anchor` attribute because Chromium doesn't support that attribute
-     yet; and a shared anchor-name class silently breaks the moment a
-     page has two popovers — don't use one.)
+     Without anchor positioning everything above is inert and the
+     popover keeps default placement — safe everywhere. (We name
+     anchors rather than using the `anchor` attribute because engines
+     don't agree on that attribute yet.)
 
      position-try-fallbacks: flip-block keeps the popover usable when
      the trigger sits near a viewport edge — a menu anchored below a
@@ -131,13 +151,15 @@
      help when the trigger itself is off-screen at open time (the
      engine clamps the popover to the viewport edge instead of hiding
      it); opt-in js/popover-anchor.js closes that — see plan.md.) */
-  [popover][data-kind="menu"] {
-    position-area: bottom span-right;
-    position-try-fallbacks: flip-block;
-  }
+  @supports (anchor-name: --bf-a) {
+    [popover][data-kind="menu"] {
+      position-area: bottom span-right;
+      position-try-fallbacks: flip-block;
+    }
 
-  [popover][data-kind="tooltip"] {
-    position-area: top center;
-    position-try-fallbacks: flip-block;
+    [popover][data-kind="tooltip"] {
+      position-area: top center;
+      position-try-fallbacks: flip-block;
+    }
   }
 }

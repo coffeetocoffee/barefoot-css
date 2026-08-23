@@ -4,6 +4,86 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] — 2026-08-23
+
+The first "platform catch-up" release: new primitives land behind
+`@supports` gates, opt-in, and degrading to nothing where engines lack
+them (the accordion's `interpolate-size` path is the precedent). No
+public surface renamed or removed; `js/carousel.js` is byte-identical
+to 3.0.0. The one behavioral change to existing markup is an upgrade:
+anchored popovers no longer need inline anchoring styles.
+
+### Added
+
+- **Carousel scroll-progress bar** — add `data-progress` to a
+  `[data-carousel]` and a hairline bar along its bottom edge fills as
+  the carousel scrolls: pure CSS via an anonymous `animation-timeline:
+  scroll(nearest inline)`, zero JS, no wrapper element, still live
+  under reduced motion (position feedback, not animation). Engines
+  without scroll-driven animations render nothing — every rule is
+  gated behind `@supports (animation-timeline: scroll())`.
+- **Scroll-entry reveal** — `components/reveal.css` (new opt-in file):
+  `[data-reveal]` fades and rises into place as it enters the viewport,
+  driven by `animation-timeline: view()` with no IntersectionObserver
+  anywhere. Gated twice on purpose: `@supports` keeps unsupported
+  engines static-visible, and `prefers-reduced-motion:
+  no-preference` does what base.css's duration clamp cannot — a scroll
+  timeline ignores durations, so the media query is the real guard.
+- **Hover/focus tooltips** — `popover="hint"` + interest invokers on
+  top of the existing click invoker: one markup, three tiers of
+  platform support (interest invokers show on hover/focus; every
+  Popover-API engine keeps click-to-show; hintless engines treat it as
+  auto), zero JS. The click-popover fallback is byte-for-byte 3.0's.
+
+### Changed
+
+- **Anchored popovers need no anchoring markup anymore.** The invoker
+  is the platform's implicit anchor, so the stylesheet's
+  `position-area` rules pin menus below and tooltips above their own
+  triggers with no inline styles; the demo dropped its
+  `anchor-name`/`position-anchor` attributes accordingly. Explicit
+  named anchors remain documented for non-invoker targets, and the
+  position rules now sit inside `@supports (anchor-name: …)` so the
+  intent is greppable. `position-area` behavior is unchanged wherever
+  anchor positioning ships.
+
+### Fixed
+
+- **`js/popover-anchor.js` now guards implicit-anchor popovers.** The
+  off-screen guard resolved its anchor only from `position-anchor`
+  names, so after the demo dropped inline anchoring styles a
+  script-opened popover with an off-screen trigger stayed open (pinned
+  to the viewport edge). Resolution now follows platform precedence: an
+  explicit name first, otherwise the invoker (`popovertarget` /
+  `interestfor`).
+
+### Tests
+
+- New engine-gated describe ("platform primitives"): progress-bar
+  wiring plus live scrubbing 0%→100% (and an assertion that the bar's
+  pseudo-element slot adds no scrollable length), reveal wiring plus
+  the required reduced-motion removal test, hint tooltip click/Esc and
+  hover/focus tiers, and the zero-markup implicit-anchor pin. Every
+  gate is a live capability probe (parse *and* runtime timeline
+  resolution) so each engine runs what it ships and skips the rest.
+- Two hardening lessons are encoded in specs and comments: minifiers
+  fold `animation-timeline` into the `animation` shorthand, which
+  Chromium drops whole (the timeline lives in a deliberately separate
+  rule); and Playwright's auto-scrolling clicks race smooth-scroll
+  pages (open-and-measure tests scroll instantly first, then click).
+- Visual baselines regenerated for all three engines — the demo gained
+  a Reveal section and the carousel grew its progress bar.
+
+### Docs
+
+- components.md: popover section rewritten around implicit anchors +
+  the hint-tooltip tier model; carousel section gained the progress
+  bar; new Reveal section. performance.md gained "Platform primitives
+  are @supports-gated" (the bytes-vs-runtime cost model). api.md table
+  grew `data-progress` and `data-reveal`.
+- No new tokens (113 unchanged). `index.css` 2.08KB gzip (unchanged) ·
+  `full.css` 7.79 → 8.04KB gzip (10KB budget → PASS).
+
 ## [3.0.0] - 2026-08-22
 
 The namespace cleanup — one prefix, `bf`, across every public surface.
@@ -906,6 +986,7 @@ was taken on npm by an unrelated project).
 - Release workflow: tag `v*` → build + budget + tests → `npm publish`
   → GitHub Release.
 
+[3.1.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v3.1.0
 [1.7.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.7.0
 [1.6.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.6.0
 [1.5.0]: https://github.com/coffeetocoffee/barefoot-css/releases/tag/v1.5.0

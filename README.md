@@ -9,7 +9,7 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 1.8KB gzipped. The *entire* framework (all 19 components) is 6.4KB gzipped. Per-component entry points mean you only pay for what you import.
+- **~10KB or bust.** `index.css` is 2.1KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 8.0KB gzipped. Per-component entry points mean you only pay for what you import.
 - **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
 - **JS-free.** Dropdowns are `<details>`, modals are `<dialog>` (one line of native JS to open) or the Popover API (zero JS), accordions are `<details name>`. Optional tiny JS modules add tabs, Esc-close, and menu keyboard nav — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
@@ -47,22 +47,23 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 40.61KB | **7.79KB** | 6.86KB |
+| `full.css` | 41.80KB | **8.04KB** | 7.09KB |
 | `index.css` | 7.36KB | **2.08KB** | 1.78KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `components/forms.css` | 7.92KB | **1.80KB** | 1.54KB |
+| `js/popover-anchor.js` | 3.06KB | **1.31KB** | 1.09KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
 | `js/popover-menu.js` | 2.25KB | **1.12KB** | 0.95KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
-| `js/popover-anchor.js` | 2.17KB | **1.02KB** | 0.83KB |
 | `js/details-tabindex.js` | 1.91KB | **0.97KB** | 0.79KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/stepper.css` | 2.62KB | **0.69KB** | 0.57KB |
 | `js/lifecycle.js` | 1.13KB | **0.64KB** | 0.50KB |
 | `components/buttons.css` | 2.02KB | **0.59KB** | 0.47KB |
-| `components/popover.css` | 1.73KB | **0.57KB** | 0.48KB |
+| `components/popover.css` | 1.76KB | **0.59KB** | 0.50KB |
 | `js/details-close.js` | 0.96KB | **0.53KB** | 0.43KB |
+| `components/carousel.css` | 1.29KB | **0.52KB** | 0.43KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
 | `components/dropdown.css` | 1.23KB | **0.50KB** | 0.39KB |
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
@@ -86,13 +87,13 @@ npm install barefoot-css
 | `components/grid.css` | 0.99KB | **0.28KB** | 0.22KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
-| `components/carousel.css` | 0.44KB | **0.26KB** | 0.20KB |
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
 | `components/code.css` | 0.48KB | **0.25KB** | 0.20KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/divider.css` | 0.35KB | **0.22KB** | 0.16KB |
 | `components/menu-items.css` | 0.36KB | **0.21KB** | 0.14KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
+| `components/reveal.css` | 0.32KB | **0.21KB** | 0.16KB |
 | `components/view-transition.css` | 0.28KB | **0.16KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
 <!-- SIZES:END -->
@@ -154,7 +155,8 @@ npm run preview   # serve demo/ at localhost:4173
 
 ## Testing & CI
 
-`npm test` runs the full suite on Chromium — 133 tests, all passing:
+`npm test` runs the full suite on Chromium — 140 tests, all passing
+(one engine-gated skip):
 
 - **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the
   demo page in eight states (resting, dark, contrast, dialog-open,
@@ -173,14 +175,17 @@ npm run preview   # serve demo/ at localhost:4173
   via `startViewTransition`, the v1.6 layout suite (spacing scale,
   grid `auto-fit`/`data-gap`, nav, sidebar, sticky), the v1.7 status
   suite (tokens, alerts, validation, skeleton, toasts, badges), live
-  theme-gallery previews, and the API reference audit pinning
-  `docs/api.md` and the generated token tables to `src/`.
+  theme-gallery previews, the API reference audit pinning
+  `docs/api.md` and the generated token tables to `src/`, and the
+  3.1 platform primitives (scroll-driven carousel progress bar +
+  reveal, hint tooltips, implicit anchors — engine-gated).
 - **Visual regression (`tests/visual.spec.js`)** — full-page light/dark
   screenshots against committed per-engine baselines.
 
 The JS + CSS behavior suites plus their own visual baselines also re-run
-cross-engine — `npm run test:ff` (Firefox) and `npm run test:webkit`
-(Safari's engine; 113 passing + 1 engine-gated skip each).
+cross-engine — `npm run test:ff` (Firefox; 116 passing + 4
+engine-gated skips) and `npm run test:webkit` (Safari's engine; 115
+passing + 3 engine-gated skips).
 
 ```bash
 npm test                          # all tests (Chromium)

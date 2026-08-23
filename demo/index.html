@@ -449,18 +449,19 @@
     <!-- Popover -->
     <section id="popover" aria-labelledby="popover-title">
       <h2 id="popover-title">Popover (zero JS)</h2>
-      <p>The Popover API: a button + <code>popovertarget</code> + a <code>[popover]</code> element. No JavaScript anywhere. Each popover pins to its own trigger via anchor positioning (<code>position-area</code>): the trigger declares an <code>anchor-name</code> and the popover points <code>position-anchor</code> at it — one inline style on each element.</p>
+      <p>The Popover API: a button + <code>popovertarget</code> + a <code>[popover]</code> element. No JavaScript anywhere. In engines with anchor positioning each popover pins to its own trigger automatically — the invoker <em>is</em> the anchor (<code>position-area</code> does the placing, no inline styles needed). To pin a popover to something that isn't its invoker, give that element an <code>anchor-name</code> and point <code>position-anchor</code> at it.</p>
       <div class="bf-row bf-gap-3">
-        <button id="help-trigger" type="button" style="anchor-name: --help-pop" popovertarget="help-pop">Popover menu</button>
-        <div popover id="help-pop" data-kind="menu" style="position-anchor: --help-pop">
+        <button id="help-trigger" type="button" popovertarget="help-pop">Popover menu</button>
+        <div popover id="help-pop" data-kind="menu">
           <a href="#">Rename</a>
           <a href="#">Duplicate</a>
           <a href="#">Archive</a>
         </div>
 
-        <button id="tip-trigger" type="button" data-tooltip style="anchor-name: --tip-pop" popovertarget="tip-pop" popovertargetaction="show">Tooltip</button>
-        <div popover id="tip-pop" data-kind="tooltip" style="position-anchor: --tip-pop">This is a tooltip.</div>
+        <button id="tip-trigger" type="button" data-tooltip interestfor="tip-pop" popovertarget="tip-pop" popovertargetaction="show">Tooltip</button>
+        <div popover="hint" id="tip-pop" data-kind="tooltip">This is a tooltip.</div>
       </div>
+      <p>The tooltip is a <code>popover="hint"</code>: where the engine has <em>interest invokers</em> it appears on hover and focus and dismisses on hover-away; everywhere else <code>popovertarget</code> keeps click-to-show working, and engines without the hint state treat it as a plain popover. Same markup, three tiers of platform support, zero JS.</p>
     </section>
 
     <!-- Dropdown -->
@@ -522,8 +523,8 @@
     <!-- Carousel -->
     <section id="carousel" aria-labelledby="carousel-title">
       <h2 id="carousel-title">Carousel (scroll-snap)</h2>
-      <p>Tab to the scroller, then scroll with the arrow keys. Pure CSS. Slides are sized in container units (<code>60cqi</code> = 60% of the carousel's own width) — they adapt to their container, not the viewport. Add <code>data-autoplay</code> (opt-in <code>js/carousel.js</code>) to auto-advance; controls below are wired by the same module.</p>
-      <div data-carousel id="demo-carousel" tabindex="0" aria-label="Demo slides">
+      <p>Tab to the scroller, then scroll with the arrow keys. Pure CSS. Slides are sized in container units (<code>60cqi</code> = 60% of the carousel's own width) — they adapt to their container, not the viewport. Add <code>data-autoplay</code> (opt-in <code>js/carousel.js</code>) to auto-advance; controls below are wired by the same module. This one carries <code>data-progress</code>: the bar along its bottom edge is a scroll-driven animation (<code>animation-timeline: scroll()</code>), so it tracks your position with no JS.</p>
+      <div data-carousel data-progress id="demo-carousel" tabindex="0" aria-label="Demo slides">
         <div class="card">Slide 1 — press <kbd>→</kbd></div>
         <div class="card">Slide 2 — still snapping</div>
         <div class="card">Slide 3 — no JS anywhere</div>
@@ -532,6 +533,17 @@
       <div class="bf-row bf-mt-3">
         <button type="button" data-carousel-prev="#demo-carousel" aria-label="Previous slide">&larr;</button>
         <button type="button" data-carousel-next="#demo-carousel" aria-label="Next slide">&rarr;</button>
+      </div>
+    </section>
+
+    <!-- Reveal -->
+    <section id="reveal" aria-labelledby="reveal-title">
+      <h2 id="reveal-title">Reveal (scroll-entry)</h2>
+      <p><code>data-reveal</code> fades an element up into place as it enters the viewport — a scroll-driven animation (<code>animation-timeline: view()</code>), not an IntersectionObserver, so scrolling back re-hides it. Engines without scroll-driven animations show everything immediately; <code>prefers-reduced-motion</code> turns it off entirely.</p>
+      <div class="bf-row bf-gap-3">
+        <div class="card" data-reveal>Each card rises 1rem…</div>
+        <div class="card" data-reveal>…and fades from 0 to 1…</div>
+        <div class="card" data-reveal>…as it scrolls into view.</div>
       </div>
     </section>
 

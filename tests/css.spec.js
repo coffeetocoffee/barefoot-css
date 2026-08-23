@@ -134,6 +134,208 @@ test.describe("anchored popovers (anchor positioning)", () => {
   });
 });
 
+test.describe("platform primitives (@supports-gated)", () => {
+  // The 3.1 primitives: scroll-driven animations, popover=hint,
+  // interest invokers, implicit anchor positioning. Every gate is a
+  // live CSS.supports/prototype probe so each engine exercises what it
+  // ships and skips the rest — an engine lacking a feature fails only
+  // if the framework's fallback for that feature breaks, never for the
+  // absence itself.
+  const supportsScrollDriven = (page) =>
+    page.evaluate(() => CSS.supports("animation-timeline: scroll()"));
+  // The progress bar rides an ANONYMOUS scroll() timeline, so the gate
+  // is just SDA support — engines that parse scroll() scrub anonymous
+  // timelines (verified Chromium 115+, Safari 26+). This probe also
+  // demands actual runtime resolution so the spec only asserts
+  // tracking where it tracks.
+  const supportsCarouselProgress = async (page) =>
+    page.evaluate(() => {
+      if (!CSS.supports("animation-timeline: scroll()")) return false;
+      const sc = document.querySelector("[data-carousel][data-progress]");
+      if (!sc) return true; // fixture missing — let the wiring assert fail loudly
+      const anim = sc.getAnimations({ subtree: true }).find(
+        (a) => a.animationName === "bf-carousel-progress"
+      );
+      return Boolean(anim && anim.timeline);
+    });
+  const supportsAnchorPos = (page) =>
+    page.evaluate(() => CSS.supports("anchor-name: --bf-a"));
+  const supportsHint = (page) =>
+    page.evaluate(() => {
+      const el = document.createElement("div");
+      el.setAttribute("popover", "hint");
+      return el.popover === "hint";
+    });
+  const supportsInterestInvokers = (page) =>
+    page.evaluate(() => "interestFor" in HTMLElement.prototype);
+
+  test("carousel progress bar: scroll-driven, no JS, tracks position", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsCarouselProgress(page)))
+      test.skip(true, "scroll-driven animations unsupported here");
+
+    const scroller = page.locator("[data-carousel][data-progress]");
+
+    const wiring = await scroller.evaluate((el) => {
+      const s = getComputedStyle(el, "::after");
+      return {
+        name: s.animationName,
+        timeline: s.animationTimeline,
+        sticky: s.position,
+      };
+    });
+    expect(wiring.name).toBe("bf-carousel-progress");
+    expect(wiring.timeline).toContain("scroll(");
+    expect(wiring.sticky).toBe("sticky");
+
+    // Live feedback: background-size (the animated property) goes from
+    // ~0% at the first snap point to ~100% at the last. Snap points —
+    // not raw max scroll — bound both ends, so thresholds stay loose.
+    const readFill = () =>
+      scroller.evaluate(
+        (el) => parseFloat(getComputedStyle(el, "::after").backgroundSize)
+      );
+    expect(await readFill()).toBeLessThan(15);
+    await scroller.evaluate((el) =>
+      el.scrollTo({ left: el.scrollWidth, behavior: "instant" })
+    );
+    await expect.poll(readFill).toBeGreaterThan(85);
+
+    // The bar's slot is cancelled — scrolling to the end lands on the
+    // last slide's edge, not on blank space the pseudo-element added.
+    // Viewport rects, not offsetLeft: the carousel isn't positioned,
+    // so slide offsets are relative to some ancestor, not the scroller.
+    const overshoot = await scroller.evaluate((el) =>
+      Math.abs(
+        el.getBoundingClientRect().right -
+          el.lastElementChild.getBoundingClientRect().right
+      )
+    );
+    expect(overshoot).toBeLessThanOrEqual(2);
+  });
+
+  test("[data-reveal] animates in on scroll-entry (view timeline)", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsScrollDriven(page)))
+      test.skip(true, "scroll-driven animations unsupported here");
+
+    const reveal = page
+      .locator(`${DEMOS.revealSection} [data-reveal]`)
+      .first();
+    const anim = await reveal.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { name: s.animationName, timeline: s.animationTimeline };
+    });
+    expect(anim.name).toBe("bf-reveal");
+    expect(anim.timeline).toContain("view()");
+  });
+
+  test("[data-reveal]: prefers-reduced-motion removes it and shows content", async ({ page }) => {
+    // Ungated on purpose: in engines without scroll-driven animations
+    // this must ALSO pass trivially (no rule ever applied). The gate
+    // that matters lives in the stylesheet (@media no-preference),
+    // because base.css's motion kill-switch clamps durations — which a
+    // scroll timeline ignores.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await gotoDemo(page);
+
+    const reveal = page
+      .locator(`${DEMOS.revealSection} [data-reveal]`)
+      .first();
+    await expect(reveal).toBeVisible();
+    const anim = await reveal.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { name: s.animationName, opacity: s.opacity };
+    });
+    expect(anim.name).toBe("none");
+    expect(anim.opacity).toBe("1");
+  });
+
+  test("hint tooltip: click invoker still opens declaratively, Esc closes", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsHint(page)))
+      test.skip(true, "popover=hint unsupported here");
+
+    const tip = page.locator(DEMOS.tipPop);
+    await expect(tip).toHaveAttribute("popover", "hint");
+    // Element.click() (not Playwright's click): the page scrolls
+    // smoothly, and an auto-scroll mid-click shifts the trigger between
+    // open and measurement — same discipline as the flip test above.
+    await page
+      .locator(DEMOS.tipTrigger)
+      .evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+    await page.locator(DEMOS.tipTrigger).evaluate((el) => el.click());
+    await expect(tip).toBeVisible();
+
+    // Anchored above the trigger where anchor positioning exists.
+    if (await supportsAnchorPos(page)) {
+      const tb = await page.locator(DEMOS.tipTrigger).boundingBox();
+      const pb = await tip.boundingBox();
+      expect(pb.y + pb.height).toBeLessThanOrEqual(tb.y + 1);
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(tip).toBeHidden();
+  });
+
+  test("hint tooltip: hover/focus opens it via interest invoker, hover-away closes", async ({ page }) => {
+    await gotoDemo(page);
+    if (
+      !(await supportsInterestInvokers(page)) ||
+      !(await supportsHint(page))
+    )
+      test.skip(true, "interest invokers unsupported here");
+
+    const trigger = page.locator(DEMOS.tipTrigger);
+    const tip = page.locator(DEMOS.tipPop);
+
+    await trigger.hover();
+    await expect(tip).toBeVisible(); // engines may delay the show; auto-waits
+
+    await page.mouse.move(5, 5);
+    await expect(tip).toBeHidden({ timeout: 5000 }); // …and delay the hide
+
+    await trigger.focus();
+    await expect(tip).toBeVisible(); // keyboard focus counts as interest too
+  });
+
+  test("popovers pin to their invoker with zero anchoring markup (implicit anchors)", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsAnchorPos(page)))
+      test.skip(true, "anchor positioning unsupported here");
+
+    // The demo dropped its inline anchor styles in 3.1 — pinning must
+    // come entirely from the implicit invoker relationship. If any of
+    // these grows a style attribute again, this contract has regressed
+    // to requiring per-element inline CSS.
+    for (const sel of [DEMOS.helpTrigger, DEMOS.helpPop, DEMOS.tipTrigger, DEMOS.tipPop]) {
+      expect(
+        await page.locator(sel).getAttribute("style"),
+        `${sel} grew an inline style`
+      ).toBeNull();
+    }
+
+    const trigger = page.locator(DEMOS.helpTrigger);
+    const pop = page.locator(DEMOS.helpPop);
+    // Same discipline as the flip test: scroll first (instant), then
+    // click via the element so nothing auto-scrolls between open and
+    // measurement — WebKit's timing made that race visible here.
+    await trigger.evaluate((el) =>
+      el.scrollIntoView({ block: "center", behavior: "instant" })
+    );
+    await trigger.evaluate((el) => el.click());
+    await expect(pop).toBeVisible();
+    const tb = await trigger.boundingBox();
+    const pb = await pop.boundingBox();
+    // Tolerance covers subpixel + scrollbar-shift noise between open
+    // and measurement (Firefox measured ~3.5px); default unanchored
+    // placement would be hundreds of pixels away, so 8px still proves
+    // pinning. The legacy describe above keeps the tight <2px pin.
+    expect(Math.abs(pb.x - tb.x)).toBeLessThan(8);                // left-aligned…
+    expect(Math.abs(pb.y - (tb.y + tb.height))).toBeLessThan(8); // …and below
+  });
+});
+
 test.describe("theme switching through view transitions", () => {
   test("theme buttons work with startViewTransition", async ({ page }) => {
     await gotoDemo(page);

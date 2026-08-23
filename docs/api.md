@@ -114,6 +114,8 @@ All component attributes and their valid values:
 | `data-autoplay` | `[data-carousel]` | `ms` value (default 3000) | 1.4 |
 | `data-carousel-prev` | button | (boolean) | 1.4 |
 | `data-carousel-next` | button | (boolean) | 1.4 |
+| `data-progress` | `[data-carousel]` | (boolean) | 3.1 |
+| `data-reveal` | any element | (boolean) | 3.1 |
 | `data-breadcrumbs` | `<nav>` | (boolean) | 1.4 |
 | `data-pagination` | `<nav>` | (boolean) | 1.4 |
 | `data-striped` | `<table>` | (boolean) | 0.1 |

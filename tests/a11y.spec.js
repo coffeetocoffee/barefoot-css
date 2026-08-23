@@ -89,6 +89,17 @@ test.describe("accessibility conformance (axe-core)", () => {
     expect(results.violations).toEqual([]);
   });
 
+  test("hint tooltip open has no violations", async ({ page }) => {
+    await gotoDemo(page);
+    // The click invoker opens it in every Popover-API engine (hover is
+    // the interest-invoker tier on top), so this state sweep works
+    // regardless of which platform tier the engine sits in.
+    await page.locator(DEMOS.tipTrigger).click();
+    await expect(page.locator(DEMOS.tipPop)).toBeVisible();
+    const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
   test("mobile hamburger nav open has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await gotoDemo(page);

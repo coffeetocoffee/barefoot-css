@@ -85,3 +85,28 @@ the cap on every run without rebuilding.
    // fail if dist/index.css grows past 10KB gzipped:
    if (kb(gzipSync(css, { level: 9 })) > 10) process.exit(1);
    ```
+
+## Platform primitives are @supports-gated (3.1)
+
+The scroll-driven primitives (carousel progress bar, `[data-reveal]`)
+and the anchor-positioned popovers ship as bytes in every bundle that
+imports their component file — but their **runtime cost is zero where
+the platform lacks the feature**:
+
+- The whole rule set lives inside `@supports (animation-timeline:
+  …)` / `@supports (anchor-name: …)`. Engines without the feature skip
+  parsing to the end of the block: no style recalc, no animation
+  objects, no fallback rendering. Nothing renders that isn't real.
+- No JS was added for any of them. `carousel.js` is byte-identical to
+  3.0; the progress bar is the scroller's own timeline read by a
+  pseudo-element.
+- Gating is also how motion safety works here: base.css's kill-switch
+  clamps *durations*, which a scroll-driven timeline ignores — so
+  `[data-reveal]` is wrapped in `@media (prefers-reduced-motion:
+  no-preference)` instead. The gate *is* the guard.
+
+Cost model for reviewers: an `@supports`-gated primitive costs its
+compressed bytes once and nothing per element; an ungated equivalent
+(or a JS polyfill) costs layout work on every engine whether or not it
+can honor it. Bytes are the budget; this section is why runtime never
+becomes one.
