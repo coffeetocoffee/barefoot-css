@@ -7,15 +7,19 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | Module | Adds |
 |---|---|
 | `js/tabs.js` | WAI-ARIA tabs: roving tabindex, arrow-key nav |
-| `js/details-close.js` | Reliable Esc-close for `details[data-menu]` |
-| `js/details-tabindex.js` | WebKit tab-order fix for open `<details>` panels |
+| `js/details-close.js` | Reliable Esc-close for `details[data-menu]` — **deprecated 3.2** |
+| `js/details-tabindex.js` | WebKit tab-order fix for open `<details>` panels — **removal candidate 4.0** |
 | `js/popover-menu.js` | Arrow-key nav + focus restore for popover menus |
-| `js/popover-anchor.js` | Closes anchored popovers whose trigger is off-screen |
+| `js/popover-anchor.js` | Closes anchored popovers whose trigger is off-screen — **removal candidate 4.0** |
 | `js/carousel.js` | Carousel autoplay + prev/next controls |
 | `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
 | `js/chips.js` | Removes `[data-chip]` tags on × click |
 | `js/nav.js` | Responsive header nav: hamburger toggle, Esc-close |
 | `js/barefoot.js` | All nine in one import |
+
+Deprecated surfaces keep working through 3.x and warn once per page
+when their markup is present; the full table with replacements lives
+in [api.md → Deprecations](api.md#deprecations).
 
 Sizes live in the README table (regenerated from every build) — never
 here, so this page can't drift from the bytes.
@@ -84,6 +88,11 @@ there's no flash of all panels.
 
 ## 2. Details Esc-close (`js/details-close.js`)
 
+> **Deprecated since 3.2, removed in 4.0** together with the
+> `details[data-menu]` pattern it exists for — use a popover menu (see
+> section 4). Still functional through 3.x; pages that arm it against
+> details-menu markup get one console notice.
+
 Fixes the browser-dependent Esc behavior of `<details>` (Chrome closes
 only when focus is *inside* the panel). With this module, pressing `Esc`
 anywhere inside an open `details[data-menu]` closes it and returns focus
@@ -100,6 +109,11 @@ Load the module; every `details[data-menu]` gets the behavior. No markup
 changes.
 
 ## 3. Details tab order (`js/details-tabindex.js`)
+
+> **Removal candidate for 4.0 (baseline-gated):** this shim exists only
+> while engines skip open `<details>` panels in the tab order; it is
+> deleted once the gap closes upstream (gate-checked at 3.5). Drop the
+> import when your browser baseline includes the native fix.
 
 WebKit/Safari skips the contents of an *open* `<details>` in the
 sequential tab order (a long-standing WebKit quirk): panel links and
@@ -134,6 +148,11 @@ This is **roving focus, not a modal trap** — popovers stay non-modal by
 design. Use a `<dialog>` for blocking actions.
 
 ## 5. Anchored popover off-screen guard (`js/popover-anchor.js`)
+
+> **Removal candidate for 4.0 (baseline-gated):** this guard exists only
+> while engines lack `position-visibility: anchors-visible`; it is
+> deleted once they ship it (gate-checked at 3.5). Drop the import when
+> your browser baseline includes the fix.
 
 For `[popover]` elements that pin to a trigger via anchor positioning
 (`position-anchor`), the guard closes a popover whose trigger is **fully

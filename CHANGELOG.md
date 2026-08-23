@@ -4,6 +4,69 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] — 2026-08-23
+
+The first real run of the deprecation policy. Three surfaces are
+announced for removal at 4.0 — the `<details data-menu>` pattern
+(replaced by Popover-API menus) and both engine-gap shims
+(`js/details-tabindex.js`, `js/popover-anchor.js`), which are deleted
+only if upstream fixed their gaps. Nothing breaks or changes behavior
+in 3.x: every announced surface works exactly as before and emits a
+once-per-page console notice where its markup is present.
+
+### Deprecated
+
+- **`<details data-menu>` dropdowns** → replaced by **Popover-API
+  menus** (`<button popovertarget>` + `<div popover data-kind="menu">`):
+  same look (the item recipe is shared verbatim), but Esc-close,
+  light-dismiss, and focus return come from the platform instead of
+  engine-dependent `<details>` behavior. Removed in 4.0 together with
+  `js/details-close.js`, which exists solely for this pattern.
+- **`js/details-tabindex.js`** — baseline-gated removal candidate:
+  ships only while engines skip open `<details>` panels in the tab
+  order (WebKit today); deleted in 4.0 if the gap closed upstream
+  (gate-checked at 3.5), otherwise returns to the watch-list.
+- **`js/popover-anchor.js`** — same tier, gated on engines implementing
+  `position-visibility: anchors-visible`.
+
+### Added
+
+- **Once-per-page deprecation notices.** `warnOnce` joins
+  `js/lifecycle.js`; the three affected modules emit one
+  `[barefoot-css]`-prefixed `console.warn` when they arm against
+  matching markup — pages that never use a deprecated pattern stay
+  completely silent, and double-inits never repeat a notice.
+- **Detection codemod** — `build/codemod-4.mjs` (`npm run migrate:v4`)
+  scans consumer code for all announced surfaces (markup, CSS
+  selectors, imports), reporting file and line with replacement
+  guidance. Detection-only: exit code 1 while findings remain (CI can
+  gate on it); `--write` lands at 3.5 alongside docs/migration-4.md.
+
+### Docs
+
+- **api.md gains the Deprecations table** — surface, announced-in,
+  removal version, concrete replacement — plus the baseline-gated
+  semantics (a shim whose gap persists is load-bearing, not broken) and
+  a pointer from the `data-menu` row in the frozen attribute table.
+- components.md's dropdown section carries the deprecation banner and
+  the popover section flags the anchor shim; javascript.md marks the
+  three modules and documents the notice contract; accessibility.md
+  steers menu Esc needs to the platform path.
+
+### Tests
+
+- New "deprecation notices (3.2 wave)" describe: exactly one warning
+  per module against matching markup, zero without it, once-per-page
+  holds across cache-busted re-imports (relative `./lifecycle.js`
+  resolves query-free, so the Set is shared), messages name the removal
+  version and the replacement, and `warnOnce` usage stays scoped to the
+  three announced modules. The lifecycle re-init spec now treats the
+  three notices as the only allowed warnings — anything else means
+  double-binding noise.
+- No visual change: baselines untouched. Suites green on Chromium
+  (146 tests: 20 a11y / 37 JS / 86 CSS / 3 visual), Firefox (122 run,
+  4 engine-gated skips), WebKit (123 run, 3 skips).
+
 ## [3.1.0] — 2026-08-23
 
 The first "platform catch-up" release: new primitives land behind

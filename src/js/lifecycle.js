@@ -8,13 +8,18 @@
      initX() call after auto-load (or any double import) never binds
      the same listeners twice. WeakMap-backed: no DOM attributes, gone
      on reload.
+   - warnOnce(key, message): once-per-page deprecation notice. A module
+     calls it when it arms against markup that uses a deprecated
+     surface; pages that never touch it stay silent. Set-backed per
+     module instance — one page load = at most one warning per key.
 
-   Ships as-is like its siblings; behavior modules import it relatively,
-   so dist/js/ travels as one directory — which it always is, being a
-   single npm package. Zero dependencies.
+    Ships as-is like its siblings; behavior modules import it relatively,
+    so dist/js/ travels as one directory — which it always is, being a
+    single npm package. Zero dependencies.
 */
 
 const bindings = new WeakMap();
+const warned = new Set();
 
 export function onDomReady(fn) {
   if (document.readyState === "loading") {
@@ -30,4 +35,10 @@ export function bindOnce(el, name) {
   if (names.has(name)) return false;
   names.add(name);
   return true;
+}
+
+export function warnOnce(key, message) {
+  if (warned.has(key)) return;
+  warned.add(key);
+  console.warn(`[barefoot-css] ${message}`);
 }

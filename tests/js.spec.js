@@ -496,7 +496,9 @@ test.describe("opt-in JS: lifecycle seam", () => {
 
     // Every behavior module re-inits itself against already-wired markup;
     // bindOnce guards must make each call a no-op (no stacked listeners,
-    // no double state flips). Demo markup is complete — no warnings.
+    // no double state flips). Demo markup is complete, so the 3.2
+    // deprecation notices fired once at autoload — they are the only
+    // allowed warnings; anything else means double-binding noise.
     await page.evaluate(async () => {
       for (const name of [
         "tabs",
@@ -522,7 +524,132 @@ test.describe("opt-in JS: lifecycle seam", () => {
     await expect(tabs.nth(2)).toHaveAttribute("aria-selected", "true");
     await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "false");
 
+    expect(
+      warnings.filter((w) => !w.includes("[barefoot-css]")),
+      "re-init must stay silent apart from the one-time deprecation notices"
+    ).toEqual([]);
+  });
+});
+
+test.describe("opt-in JS: deprecation notices (3.2 wave)", () => {
+  const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+  // A minimal page served from the dev-server origin so /dist/js/*
+  // resolve, with exactly the deprecated markup under test (or none).
+  function fixtureRoute(page, body) {
+    return page.route("**/barefoot-deprecation-fixture.html", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: `<!doctype html><html><head><script type="module">
+            Promise.all([
+              import("/dist/js/details-close.js"),
+              import("/dist/js/details-tabindex.js"),
+              import("/dist/js/popover-anchor.js"),
+            ]).then(() => { window.__modulesReady = true; });
+          </scr` + `ipt></head><body>${body}</body></html>`,
+      })
+    );
+  }
+
+  const DEPRECATED_MARKUP = `
+    <details data-menu open>
+      <summary>Actions</summary>
+      <div><a href="#">Edit</a></div>
+    </details>
+    <button type="button" popovertarget="fixture-pop">Open</button>
+    <div id="fixture-pop" popover>…</div>`;
+
+  async function collectWarnings(page, body) {
+    await fixtureRoute(page, body);
+    const warnings = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "warning") warnings.push(msg.text());
+    });
+    await page.goto("/barefoot-deprecation-fixture.html");
+    await page.waitForFunction(() => window.__modulesReady === true);
+    return warnings;
+  }
+
+  test("arming against every announced surface warns once per module", async ({ page }) => {
+    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
+
+    for (const module of [
+      "js/details-close.js",
+      "js/details-tabindex.js",
+      "js/popover-anchor.js",
+    ]) {
+      expect(
+        warnings.filter((w) => w.includes(module)),
+        `exactly one notice from ${module}`
+      ).toHaveLength(1);
+    }
+    expect(warnings.filter((w) => w.includes("[barefoot-css]"))).toHaveLength(3);
+  });
+
+  test("notices name the removal version and the replacement", async ({ page }) => {
+    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
+
+    const close = warnings.find((w) => w.includes("details-close"));
+    expect(close).toContain("v4.0");
+    expect(close).toContain("popover");
+
+    for (const w of [warnings.find((x) => x.includes("tabindex")), warnings.find((x) => x.includes("popover-anchor"))]) {
+      expect(w).toContain("Removal candidate");
+      expect(w).toContain("v4.0");
+    }
+  });
+
+  test("a fresh copy of a module stays silent — notices are once per page", async ({ page }) => {
+    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
+
+    // Cache-busted import runs the module again on the same document;
+    // the shared lifecycle Set (relative ./lifecycle.js resolves without
+    // the query) keeps every key at one warning per page.
+    await page.evaluate(() => import("/dist/js/details-close.js?once-per-page"));
+
+    expect(warnings.filter((w) => w.includes("[barefoot-css]"))).toHaveLength(3);
+  });
+
+  test("a page using none of the announced surfaces stays fully silent", async ({ page }) => {
+    const warnings = await collectWarnings(page, "<p>nothing deprecated here</p>");
     expect(warnings).toEqual([]);
+  });
+
+  test("warnOnce fires at most once per page per key, prefixed", async ({ page }) => {
+    await gotoDemo(page);
+    const fired = await page.evaluate(async () => {
+      const m = await import("/dist/js/lifecycle.js");
+      const seen = [];
+      const original = console.warn;
+      console.warn = (msg) => seen.push(String(msg));
+      try {
+        m.warnOnce("spec-key-a", "first");
+        m.warnOnce("spec-key-a", "second");
+        m.warnOnce("spec-key-b", "other key");
+      } finally {
+        console.warn = original;
+      }
+      return seen;
+    });
+    expect(fired).toEqual(["[barefoot-css] first", "[barefoot-css] other key"]);
+  });
+
+  test("notices stay scoped to the three announced modules", () => {
+    const affected = new Set(["details-close", "details-tabindex", "popover-anchor"]);
+    const files = fs
+      .readdirSync(path.join(rootDir, "src/js"))
+      .filter((f) => f.endsWith(".js") && f !== "lifecycle.js" && f !== "barefoot.js");
+    for (const f of files) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", f), "utf8");
+      const name = f.replace(/\.js$/, "");
+      if (affected.has(name)) {
+        expect(src, `${f} must announce its deprecation`).toContain("warnOnce(");
+      } else {
+        expect(src, `${f} is not part of the 3.2 wave — no notice`).not.toContain(
+          "warnOnce("
+        );
+      }
+    }
   });
 });
 

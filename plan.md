@@ -1,38 +1,40 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-23 — v3.1.0_
+_Last updated: 2026-08-23 — v3.2.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.1.0` (2026-08-23) — first platform
-  catch-up release: `data-progress` scroll-driven carousel bar
-  (anonymous `scroll()` timeline, no wrapper), `components/reveal.css`
-  (`[data-reveal]`, view-timeline entry, reduced-motion-gated),
-  hover/focus hint tooltips (`popover="hint"` + interest invokers over
-  the click fallback), and implicit-anchor popovers (no inline
-  anchoring styles needed). Everything opt-in and `@supports`-gated;
-  `carousel.js` untouched; `js/popover-anchor.js` learned implicit
-  anchors.
-- **Next:** **3.2** — the first real run of the deprecation policy:
-  announce `<details data-menu>` → Popover-API menus, flag both
-  engine-gap shims as baseline-gated removal candidates, console.warn
-  notices, deprecation table in api.md, `build/codemod-4.mjs`
-  detection pass.
+- **Current:** `barefoot-css@3.2.0` (2026-08-23) — the first real run
+  of the deprecation policy: `<details data-menu>` announced with the
+  Popover-API menu as replacement (dies in 4.0 together with
+  `js/details-close.js`), and both engine-gap shims
+  (`js/details-tabindex.js`, `js/popover-anchor.js`) flagged as
+  baseline-gated removal candidates. Each affected module warns once
+  per page when its markup is present (new `warnOnce` seam in
+  `lifecycle.js`; silent otherwise); api.md gained the deprecation
+  table; `npm run migrate:v4` (`build/codemod-4.mjs`) detects usage,
+  `--write` deferred to 3.5. Zero behavior change in 3.x.
+- **Next:** **3.3** — growth proves the thesis still scales:
+  segmented control as a skinned radio group (`[data-segmented]`),
+  `<datalist>` skinning, `<kbd>` base styling, a timeline list variant,
+  an empty-state pattern, toast stacking, sortable tables as opt-in JS
+  (`js/table-sort.js`), one new starter theme, demo adopts
+  `command`/`commandfor`.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
   0001–0007). v2.8 added no new runtime machinery; it pinned docs to
   code instead (api.md audit, token-table parity).
-- **Tests:** Chromium 140 (20 a11y / 31 JS / 86 CSS / 3 visual) ·
-  Firefox 116 run, 4 skipped · WebKit 115 run, 3 skipped — all
+- **Tests:** Chromium 146 (20 a11y / 37 JS / 86 CSS / 3 visual) ·
+  Firefox 122 run, 4 skipped · WebKit 123 run, 3 skipped — all
   green; skips are engine-gated (interest invokers, SDA), and every
   engine runs its own visual baselines. Specs address the demo only
   through `tests/helpers.js`. In CI the visual specs are Windows-only
   (win32 baselines): Chromium in `visual`, Firefox+WebKit in
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.08KB gzip · `full.css` 8.04KB gzip (10KB
-  budget → PASS).
-- **Done:** milestones 0.1 → 2.8. Full history: `CHANGELOG.md`.
+  budget → PASS). Unchanged by 3.2 — the wave is JS + docs only.
+- **Done:** milestones 0.1 → 3.2. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -226,20 +228,28 @@ and `.bf-*` utilities.
   for anchored popovers in engines that ship it; engine-gated behavior
   tests, reduced-motion test, sections in components.md +
   performance.md. Shipped as `barefoot-css@3.1.0` (2026-08-23).
-- [ ] **3.2** — first real run of the deprecation policy
-  (docs/api.md): announce `<details data-menu>` dropdowns with the
-  Popover-API menu as replacement (the direction docs already steer),
-  and flag the engine-gap shims (`js/details-tabindex.js`,
-  `js/popover-anchor.js`) as baseline-gated removal candidates for
-  4.0; once-per-page `console.warn` notices in affected modules, a
-  deprecation table in api.md, and `build/codemod-4.mjs` with a
-  detection pass (`--write` comes at 3.5).
+- [x] **3.2** — first real run of the deprecation policy
+  (docs/api.md): `<details data-menu>` announced with the Popover-API
+  menu as replacement (the direction docs already steer) and removed
+  in 4.0 together with `js/details-close.js`; both engine-gap shims
+  (`js/details-tabindex.js`, `js/popover-anchor.js`) flagged as
+  baseline-gated removal candidates for 4.0 (gate-check at 3.5);
+  once-per-page `console.warn` notices via a `warnOnce` seam in
+  lifecycle.js — silent on pages that use none of the announced
+  surfaces; deprecation table in api.md; `build/codemod-4.mjs`
+  detection pass as `npm run migrate:v4` (`--write` comes at 3.5).
+  Shipped as `barefoot-css@3.2.0` (2026-08-23).
 - [ ] **3.3** — growth proves the thesis still scales: segmented
   control as a skinned native radio group (`[data-segmented]` — same
   precedent as the switch: native semantics kept, drawing is ours),
   `<datalist>` autocomplete skinning, `<kbd>` base styling, a timeline
   variant for ordered lists, an empty-state pattern, and stacking
-  behavior for multiple `[popover][data-kind="toast"]` toasts; plus
+  behavior for multiple `[popover][data-kind="toast"]` toasts;
+  sortable tables as a new opt-in JS module (`js/table-sort.js` —
+  `data-bf-sort` on `<table>`, real `<button>` triggers inside `<th>`,
+  numeric-aware row compare, the module reorders rows and maintains
+  `aria-sort`; the tabs precedent: no native sort primitive exists);
+  plus
   one new starter theme (~6 token overrides; gallery card + axe sweep
   on arrival); demo adopts `command`/`commandfor` where supported with
   the `showModal()` line kept as fallback.
@@ -270,13 +280,14 @@ and `.bf-*` utilities.
 The 3.1 → 4.0 arc is committed: **platform catch-up**. Six milestones:
 new platform primitives behind `@supports` gates — shipped as 3.1
 (scroll-driven animations, hint popovers, implicit anchor positioning);
-the first real deprecation wave (3.2: `details[data-menu]` →
+the first deprecation wave — shipped as 3.2 (`details[data-menu]` →
 Popover-API menus; shims flagged as baseline-gated); a component-growth
-batch proving the thesis still scales (3.3); theming depth +
+batch proving the thesis still scales (3.3, incl. the
+`table-sort.js` opt-in module); theming depth +
 RTL/container correctness, all additive (3.4); the breaking-release
 rehearsal (3.5); then **4.0 raises the browser baseline, deletes what
 was announced, and tightens the size budget.** Next session starts
-3.2; each milestone keeps the full suite green and the budget enforced
+3.3; each milestone keeps the full suite green and the budget enforced
 before the next begins. Post-4.0 ideas (masonry grids, more starter
 themes, further budget tightening) stay off-roadmap until the next
 scan picks them up.
@@ -306,6 +317,12 @@ scan picks them up.
   tabindex, `aria-selected`, panel hiding) cannot be done in pure CSS.
   `js/tabs.js` implements it with zero dependencies and a no-JS fallback
   where every panel stays visible.
+- **Table sorting is opt-in JS, not CSS and not out of scope.** No
+  native element sorts rows, which puts it exactly where Barefoot
+  allows script (tabs/carousel tier): the consumer adds `data-bf-sort`
+  and keeps `<button>` triggers inside `<th>`; the module only
+  reorders rows and maintains `aria-sort`. Semantics stay native, the
+  sort is the enhancement, no-JS tables stay plain but valid.
 - **Popover menus get roving focus, not a modal trap.** Popovers are
   non-modal by design; `js/popover-menu.js` adds arrow-key nav and focus
   restore without changing that.
@@ -385,6 +402,14 @@ scan picks them up.
   and keep the timeline longhand out of any rule an `animation`
   shorthand touches (see AGENTS.md) — the doubled-selector trick is
   load-bearing, not decoration.
+
+- **Deprecation notices warn on use, not on import (3.2).** A
+  `warnOnce` seam in lifecycle.js fires at most once per page, and only
+  when a module arms against markup that matches an announced surface —
+  importing `barefoot.js` without using a deprecated pattern stays
+  completely silent. Notices name the removal version and the concrete
+  replacement and are the only console noise the framework ever emits;
+  the lifecycle re-init spec pins that contract.
 
 ## Non-goals
 

@@ -13,12 +13,28 @@
    Nothing is touched for the normal case: a trigger in view opens its
    popover exactly as before. Zero dependencies, <1KB.
 
-   import "barefoot/js/popover-anchor.js"
+   REMOVAL CANDIDATE for 4.0 (baseline-gated): exists only while engines
+   lack `position-visibility: anchors-visible`; deleted once they ship it
+   (gate-checked at 3.5). Pages with popover invokers or inline anchors
+   get one console notice.
+
+    import "barefoot/js/popover-anchor.js"
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, warnOnce } from "./lifecycle.js";
 
 export function initPopoverAnchors(root = document) {
+  if (root.querySelector?.("[popovertarget], [interestfor], [style*='anchor-name']")) {
+    warnOnce(
+      "popover-anchor",
+      "js/popover-anchor.js: Removal candidate (v4.0) — this off-screen guard " +
+        "stands in for position-visibility: anchors-visible, which no engine " +
+        "implements yet. It is deleted once engines ship that behavior; drop " +
+        "the import when your browser baseline includes the fix. " +
+        "See docs/api.md."
+    );
+  }
+
   if (!bindOnce(root, "popover-anchor")) return;
   root.addEventListener(
     "toggle",

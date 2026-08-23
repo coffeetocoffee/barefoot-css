@@ -44,16 +44,38 @@ These are the contracts consumers build on:
 
 ## Deprecation policy
 
-Barefoot v2 promises **no silent breaks.**
+Barefoot promises **no silent breaks.**
 
 1. **Announce.** A deprecated token, attribute, or export is announced
    in the CHANGELOG with the replacement and the version it will be
-   removed.
+   removed. Announcements land in three places at once: a CHANGELOG
+   entry, a row in the [deprecation table](#deprecations), and a
+   once-per-page `console.warn` from any opt-in module that arms
+   against the deprecated markup.
 2. **Grace period.** Deprecated items remain functional for at least
    one minor version after the announcement (e.g. deprecated in 2.1,
-   removed in 2.3 minimum).
+   removed in 2.3 minimum). In practice majors are the only removal
+   vehicles since v2 froze the API.
 3. **Migration path.** Every deprecation ships a concrete replacement.
    If no replacement exists, the item is not deprecated — it stays.
+4. **Detect.** `npm run migrate:v4 -- <paths>` scans consumer code for
+   every announced surface (detection pass; `--write` arrives with
+   docs/migration-4.md at 3.5).
+
+## Deprecations
+
+| Deprecated | Announced | Removal | Replacement |
+|---|---|---|---|
+| `<details data-menu>` dropdowns — the `dropdown.css` styles, the details half of `menu-items.css` | 3.2 | 4.0 | Popover-API menus: `<button popovertarget>` + `<div popover data-kind="menu">` — same look, reliable Esc and light-dismiss |
+| `js/details-close.js` | 3.2 | 4.0 | Dies together with the details-menu pattern it exists for; popover menus close natively (`Esc`, light dismiss) and `js/popover-menu.js` adds arrow keys |
+| `js/details-tabindex.js` | 3.2 | 4.0, baseline-gated | None needed — native tab order covers open panels once WebKit ships the fix; drop the import when your baseline includes it |
+| `js/popover-anchor.js` | 3.2 | 4.0, baseline-gated | None needed — `position-visibility: anchors-visible` turns the guard into dead code; drop the import when your baseline includes it |
+
+**Baseline-gated** shims are removal *candidates*, not certainties:
+a shim is deleted in 4.0 only if upstream actually fixed the engine gap,
+verified at the 3.5 gate-check. While the gap exists the shim is
+load-bearing — it ships and warns once per page, silently doing nothing
+on engines that no longer need it.
 
 ## Export map
 
@@ -126,6 +148,10 @@ All component attributes and their valid values:
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
 | `data-bf-theme-btn` | theme switcher buttons | theme name | — |
+
+`data-menu` is announced deprecated since 3.2 (removed in 4.0 with the
+whole details-menu pattern) — see [Deprecations](#deprecations). It
+keeps working through 3.x and stays in this table until then.
 
 ### Internal markers (not consumer API)
 

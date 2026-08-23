@@ -6,6 +6,10 @@
    focusable descendants an explicit tabindex="0" (skipping deliberate
    tabindex="-1"). Zero dependencies, <1KB.
 
+   REMOVAL CANDIDATE for 4.0 (baseline-gated): exists only while engines
+   have this gap; deleted once they fix it (gate-checked at 3.5). Pages
+   with <details> markup get one console notice.
+
    Uses a MutationObserver on the `open` attribute: a <details> can flip
    via click, keyboard, or script, and Chromium doesn't fire the "toggle"
    event on a summary click, so the attribute is the reliable signal.
@@ -13,7 +17,7 @@
     import "barefoot/js/details-tabindex.js"
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, warnOnce } from "./lifecycle.js";
 
 const FOCUSABLE =
   "a[href], button:not([disabled]), input:not([disabled]):not([type='hidden']), select:not([disabled]), textarea:not([disabled]), [tabindex]";
@@ -26,6 +30,17 @@ function makeTabbable(details) {
 }
 
 export function initDetailsTabIndex(root = document) {
+  if (root.querySelector?.("details")) {
+    warnOnce(
+      "details-tabindex",
+      "js/details-tabindex.js: Removal candidate (v4.0) — this shim exists " +
+        "only while engines skip open <details> panels in the tab order " +
+        "(WebKit today). It ships until that gap closes upstream and is " +
+        "deleted at the next major; drop the import once your browser " +
+        "baseline includes the native fix. See docs/api.md."
+    );
+  }
+
   // Scan on every call: cheap, idempotent, and covers markup that
   // arrived after a previous init (late-injected content).
   for (const details of root.querySelectorAll("details[open]")) {

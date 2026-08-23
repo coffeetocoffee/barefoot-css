@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",
@@ -31,6 +31,7 @@
     "docs:size": "node build/readme-size.mjs",
     "docs:tokens": "node build/token-docs.mjs",
     "migrate:v3": "node build/codemod-3.mjs",
+    "migrate:v4": "node build/codemod-4.mjs",
     "lint:css": "stylelint \"src/**/*.css\"",
     "preview": "node build/serve.mjs",
     "check": "npm run build && npm run size && npm run docs:size && npm run docs:tokens && npm run lint:css",
