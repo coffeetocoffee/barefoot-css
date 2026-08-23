@@ -107,7 +107,7 @@ All component attributes and their valid values:
 
 | Attribute | Element(s) | Values | Since |
 |---|---|---|---|
-| `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `custom` | 0.1 |
+| `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `sunset`, `custom` | 0.1 |
 | `data-variant` | `<button>` | `primary`, `danger`, `ghost` | 0.1 |
 | `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `1`–`4` (column count) | 0.1 |
@@ -141,6 +141,9 @@ All component attributes and their valid values:
 | `data-breadcrumbs` | `<nav>` | (boolean) | 1.4 |
 | `data-pagination` | `<nav>` | (boolean) | 1.4 |
 | `data-striped` | `<table>` | (boolean) | 0.1 |
+| `data-bf-sort` | `<table>` | (boolean) | 3.3 |
+| `data-segmented` | `<fieldset>` | (boolean) | 3.3 |
+| `data-timeline` | `<ol>` | (boolean) | 3.3 |
 | `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-step-circle` | child of `[data-step]` | (boolean) | 1.9 |
 | `data-step-label` | child of `[data-step]` | (boolean) | 1.9 |

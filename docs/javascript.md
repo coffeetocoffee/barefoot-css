@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-nine small opt-in modules add the missing behavior. Each is a single
+ten small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Adds |
@@ -15,7 +15,8 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
 | `js/chips.js` | Removes `[data-chip]` tags on × click |
 | `js/nav.js` | Responsive header nav: hamburger toggle, Esc-close |
-| `js/barefoot.js` | All nine in one import |
+| `js/table-sort.js` | Sorts `table[data-bf-sort]` rows from header buttons |
+| `js/barefoot.js` | All ten in one import |
 
 Deprecated surfaces keep working through 3.x and warn once per page
 when their markup is present; the full table with replacements lives
@@ -27,7 +28,7 @@ here, so this page can't drift from the bytes.
 ## Loading
 
 ```html
-<!-- all nine -->
+<!-- all ten -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -48,7 +49,7 @@ import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
 
-All nine share two internal primitives from `js/lifecycle.js`
+All ten share two internal primitives from `js/lifecycle.js`
 (`onDomReady`, `bindOnce`) — not public API, just plumbing that makes
 every `init*` call idempotent: re-running an init on markup that was
 already wired changes nothing. The two removal behaviors (chips,
@@ -259,6 +260,37 @@ Styles live in `components/nav.css`; the module drives the collapse.
 - **No-JS first:** without the module nothing ever hides — the button
   never renders and the list wraps like the plain topbar. A header nav
   without a complete contract (toggle + id'd list) is never armed.
+
+## 9. Sortable tables (`js/table-sort.js`)
+
+No native element sorts rows — that puts this in the tabs tier of
+opt-in JS. The semantics stay yours: triggers are real `<button>`s you
+author inside header cells; the module only reorders `<tbody>` rows and
+maintains `aria-sort` on the active column's `th`.
+
+```html
+<table data-bf-sort>
+  <thead><tr>
+    <th><button type="button">Task</button></th>
+    <th><button type="button">Points</button></th>
+  </tr></thead>
+  <tbody>…</tbody>
+</table>
+```
+
+- Click a header button once for ascending, again for descending; the
+  active column's `th` gets `aria-sort="ascending|descending"` and the
+  others are cleared.
+- Comparison is numeric-aware: if every non-empty cell in the column
+  parses as a number (whitespace and thousands commas tolerated), rows
+  compare numerically — `12` sorts after `3`, not after `1`. Otherwise
+  text compares case-insensitively with `localeCompare`.
+- Rows move by re-appending existing nodes — no innerHTML round-trip,
+  so listeners inside cells survive.
+- **No-JS first:** without the module nothing sorts; the table is plain
+  but valid, buttons inert. Header-button styles (muted voice, ↕/↑/↓
+  indicator) live in `components/table.css`.
+- For dynamic content: `import { initTableSort } from "barefoot-css/js/table-sort.js"`.
 
 ## Why no bundle
 

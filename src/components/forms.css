@@ -84,6 +84,27 @@
     background-size: 1rem;
   }
 
+  /* ---- Datalist (native autocomplete) ----
+     The suggestion popup is engine-drawn and not stylable anywhere —
+     same honesty as <select>'s native list. What Barefoot skins is
+     the field: reserved inline-end space so typed text never slides
+     under the native picker arrow, themed indicator opacity where an
+     engine exposes one. */
+  input[list] {
+    padding-inline-end: var(--bf-space-6);
+  }
+
+  input[list]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--bf-transition);
+  }
+
+  input[list]:hover::-webkit-calendar-picker-indicator,
+  input[list]:focus-visible::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+
   /* ---- File input ----
      The native button is skinned with the button tokens via
      ::file-selector-button; the control stays a native file input. */

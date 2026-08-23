@@ -9,9 +9,9 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 2.1KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 8.0KB gzipped. Per-component entry points mean you only pay for what you import.
+- **~10KB or bust.** `index.css` is 2.1KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 8.6KB gzipped. Per-component entry points mean you only pay for what you import.
 - **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
-- **JS-free.** Dropdowns are `<details>`, modals are `<dialog>` (one line of native JS to open) or the Popover API (zero JS), accordions are `<details name>`. Optional tiny JS modules add tabs, Esc-close, and menu keyboard nav — opt-in, zero deps.
+- **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
 - **No "Bootstrap look."** Neutral by default: ink on paper, thin borders, no shadows, no gradients. The design is yours — we just supply the muscle.
 
@@ -47,11 +47,12 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 41.80KB | **8.04KB** | 7.09KB |
-| `index.css` | 7.36KB | **2.08KB** | 1.78KB |
+| `full.css` | 46.12KB | **8.60KB** | 7.55KB |
+| `index.css` | 7.58KB | **2.12KB** | 1.83KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
-| `components/forms.css` | 7.92KB | **1.80KB** | 1.54KB |
+| `components/forms.css` | 8.20KB | **1.83KB** | 1.57KB |
 | `js/popover-anchor.js` | 3.80KB | **1.60KB** | 1.34KB |
+| `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
 | `js/details-tabindex.js` | 2.61KB | **1.26KB** | 1.03KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
@@ -61,35 +62,39 @@ npm install barefoot-css
 | `js/details-close.js` | 1.63KB | **0.84KB** | 0.69KB |
 | `js/lifecycle.js` | 1.57KB | **0.82KB** | 0.67KB |
 | `components/stepper.css` | 2.62KB | **0.69KB** | 0.57KB |
+| `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
 | `components/buttons.css` | 2.02KB | **0.59KB** | 0.47KB |
-| `components/popover.css` | 1.76KB | **0.59KB** | 0.50KB |
+| `components/table.css` | 1.44KB | **0.57KB** | 0.48KB |
 | `components/carousel.css` | 1.29KB | **0.52KB** | 0.43KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
 | `components/dropdown.css` | 1.23KB | **0.50KB** | 0.39KB |
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
 | `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
 | `components/accordion.css` | 1.42KB | **0.48KB** | 0.38KB |
-| `components/table.css` | 0.97KB | **0.42KB** | 0.34KB |
+| `components/segmented.css` | 1.12KB | **0.46KB** | 0.34KB |
 | `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
 | `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
 | `js/alert-dismiss.js` | 0.61KB | **0.35KB** | 0.28KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
+| `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `components/pagination.css` | 0.75KB | **0.33KB** | 0.25KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `components/skeleton.css` | 0.52KB | **0.30KB** | 0.25KB |
+| `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
+| `js/barefoot.js` | 0.56KB | **0.30KB** | 0.25KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
-| `js/barefoot.js` | 0.51KB | **0.28KB** | 0.26KB |
 | `components/grid.css` | 0.99KB | **0.28KB** | 0.22KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
+| `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
-| `components/code.css` | 0.48KB | **0.25KB** | 0.20KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
+| `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
 | `components/divider.css` | 0.35KB | **0.22KB** | 0.16KB |
 | `components/menu-items.css` | 0.36KB | **0.21KB** | 0.14KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
@@ -121,8 +126,8 @@ src/
                        accordion, tabs, carousel, grid, nav, alert,
                        skeleton, table, code, card, badge,
                        breadcrumbs, pagination
-  js/                  opt-in modules: tabs, details-close, details-tabindex, popover-menu, barefoot
-  themes/              editorial, dashboard, playful, custom template
+  js/                  opt-in modules: tabs, table-sort, popover-menu, nav, barefoot, …
+  themes/              editorial, dashboard, playful, forest, sunset, custom template
   utilities.css        opt-in helpers
 demo/index.html        conformance page (keyboard walkthroughs)
 demo/gallery.html      theme gallery — every starter rendered live

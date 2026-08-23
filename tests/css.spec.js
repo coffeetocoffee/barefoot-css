@@ -411,6 +411,14 @@ test.describe("themes & OS accessibility settings", () => {
     expect(after).toBe("rgb(47, 107, 79)");
   });
 
+  test("sunset theme flips the accent to warm coral", async ({ page }) => {
+    await gotoDemo(page);
+    await page.locator("html").evaluate((el) => {
+      el.dataset.bfTheme = "sunset";
+    });
+    expect(await tokenColor(page, "--bf-primary")).toBe("rgb(154, 52, 18)");
+  });
+
   test("prefers-contrast: more forces black-on-white tokens", async ({ page }) => {
     await page.emulateMedia({ contrast: "more" });
     await gotoDemo(page);
@@ -652,7 +660,7 @@ test.describe("v1.7 feedback & status", () => {
     expect(anim).toBe("none");
   });
 
-  test("toast: popover opens declaratively, Esc closes, pinned to bottom edge", async ({ page }) => {
+  test("toast: opens and closes declaratively, pinned to bottom edge", async ({ page }) => {
     await gotoDemo(page);
     const toast = page.locator(DEMOS.demoToast);
     await expect(toast).toBeHidden();
@@ -665,7 +673,8 @@ test.describe("v1.7 feedback & status", () => {
     });
     expect(pos.vh - pos.bottom).toBeLessThan(100); // pinned near the viewport bottom
 
-    await page.keyboard.press("Escape");
+    // Manual lifetime: its own Close button dismisses it — still zero JS.
+    await toast.getByRole("button", { name: "Close" }).click();
     await expect(toast).toBeHidden();
   });
 
@@ -1346,11 +1355,11 @@ test.describe("shared component recipes (ADR-0007)", () => {
 });
 
 test.describe("theme gallery (live preview cards)", () => {
-  test("six themes render side by side, each with its own accent", async ({ page }) => {
+  test("seven themes render side by side, each with its own accent", async ({ page }) => {
     await gotoGallery(page);
     // Each card scopes data-bf-theme on itself, so tokens resolve inside
     // the card subtree. Same probe trick as tokenColor(), but scoped:
-    // six cards must resolve six distinct --bf-primary values live —
+    // seven cards must resolve seven distinct --bf-primary values live —
     // no screenshots needed to prove the previews are real.
     const colors = await page.evaluate(() =>
       [...document.querySelectorAll(".gallery-card")].map((card) => {
@@ -1362,11 +1371,11 @@ test.describe("theme gallery (live preview cards)", () => {
         return resolved;
       })
     );
-    expect(colors).toHaveLength(6);
+    expect(colors).toHaveLength(7);
     expect(
       new Set(colors).size,
-      `expected six distinct live accents, got: ${colors.join(", ")}`
-    ).toBe(6);
+      `expected seven distinct live accents, got: ${colors.join(", ")}`
+    ).toBe(7);
   });
 
   test("cards carry real theme scoping, not just styling", async ({ page }) => {
@@ -1382,7 +1391,185 @@ test.describe("theme gallery (live preview cards)", () => {
       "editorial",
       "forest",
       "playful",
+      "sunset",
     ]);
+  });
+});
+
+test.describe("v3.3 growth batch", () => {
+  test("segmented control: native radio hidden, segments drawn by the component", async ({ page }) => {
+    await gotoDemo(page);
+    const group = page.locator(DEMOS.demoSegmented);
+    const checked = group.locator('input:checked');
+    const checkedLabel = group.locator('label:has(input:checked)');
+
+    // The drawing is ours; the semantics are the platform's.
+    const input = await checked.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { opacity: s.opacity, position: s.position };
+    });
+    expect(input).toEqual({ opacity: "0", position: "absolute" });
+    await expect(checked).toHaveAccessibleName("Day"); // real radio, real name
+
+    // Selected segment: raised surface on the tinted track.
+    await expect(checkedLabel).toHaveCSS(
+      "background-color",
+      await tokenColor(page, "--bf-surface")
+    );
+    // Unselected segments stay muted.
+    const unchecked = group.locator('label:has(input:not(:checked)):not(:has(input:disabled))').first();
+    await expect(unchecked).toHaveCSS("color", await tokenColor(page, "--bf-muted"));
+
+    // Legend names the group for AT, clipped from sight.
+    const legend = await group
+      .locator("legend")
+      .evaluate((el) => getComputedStyle(el).clipPath);
+    expect(legend).toBe("inset(50%)");
+  });
+
+  test("segmented control: keyboard moves the painted selection", async ({ page }) => {
+    await gotoDemo(page);
+    const group = page.locator(DEMOS.demoSegmented);
+    await page.keyboard.press("Tab"); // land somewhere in the form…
+    // Focus the first segment radio directly, then arrow through.
+    const first = group.locator('input[value="day"]');
+    await first.focus();
+    await page.keyboard.press("ArrowRight");
+    const weekLabel = group.locator('label:has(input[value="week"])');
+    await expect(group.locator('input[value="week"]')).toBeChecked();
+    await expect(weekLabel).toHaveCSS(
+      "background-color",
+      await tokenColor(page, "--bf-surface")
+    );
+  });
+
+  test("datalist field reserves space for the engine's picker affordance", async ({ page }) => {
+    await gotoDemo(page);
+    // Same reserved inline-end as the select skin — typed text never
+    // slides under the native arrow. Compare against the select rather
+    // than freezing a px value.
+    const inputPad = await page
+      .locator(DEMOS.framework)
+      .evaluate((el) => getComputedStyle(el).paddingInlineEnd);
+    const selectPad = await page
+      .locator(DEMOS.country)
+      .evaluate((el) => getComputedStyle(el).paddingInlineEnd);
+    expect(inputPad).toBe(selectPad);
+    expect(inputPad).not.toBe("0px");
+  });
+
+  test("kbd keycaps ship with the core (base layer), not a component opt-in", async ({ page }) => {
+    await gotoDemo(page);
+    const kbd = page.locator("#typography kbd").first();
+    await expect(kbd).toHaveCSS("border-top-width", "1px");
+    await expect(kbd).toHaveCSS("border-bottom-width", "2px"); // keycap lip
+    await expect(kbd).toHaveCSS(
+      "background-color",
+      await tokenColor(page, "--bf-surface-alt")
+    );
+  });
+
+  test("timeline: dots on a spine, plain ol underneath", async ({ page }) => {
+    await gotoDemo(page);
+    const list = page.locator(DEMOS.demoTimeline);
+    await expect(list).toHaveCSS("list-style-type", "none");
+
+    const dot = await list
+      .locator("li")
+      .first()
+      .evaluate((el) => {
+        const s = getComputedStyle(el, "::before");
+        return { content: s.content, position: s.position, border: s.borderTopColor };
+      });
+    expect(dot.content).toBe('""');
+    expect(dot.position).toBe("absolute");
+    expect(dot.border).toBe(await tokenColor(page, "--bf-primary"));
+
+    // Spine connects every entry except the last.
+    const [spine, last] = await page.evaluate((sel) => {
+      const items = document.querySelectorAll(`${sel} > li`);
+      const spineEl = getComputedStyle(items[0], "::after");
+      const lastEl = getComputedStyle(items[items.length - 1], "::after");
+      return [spineEl.backgroundColor, lastEl.content];
+    }, DEMOS.demoTimeline);
+    expect(spine).toBe(await tokenColor(page, "--bf-border"));
+    expect(last).toBe("none");
+  });
+
+  test("empty state: dashed centered panel with a decorative glyph slot", async ({ page }) => {
+    await gotoDemo(page);
+    const panel = page.locator(DEMOS.demoEmptyState);
+    await expect(panel).toHaveCSS("border-style", "dashed");
+    await expect(panel).toHaveCSS("text-align", "center");
+    await expect(panel).toHaveCSS("flex-direction", "column");
+    // Glyph is decoration; meaning lives in the heading.
+    await expect(panel.locator("> span").first()).toHaveAttribute("aria-hidden", "true");
+    await expect(panel.getByRole("heading")).toBeVisible();
+  });
+
+  test("toast stacking: sibling toasts lift into a column instead of overlapping", async ({ page }) => {
+    await gotoDemo(page);
+    const first = page.locator(DEMOS.demoToast);
+    const second = page.locator(DEMOS.demoToastUpload);
+    const third = page.locator(DEMOS.demoToastError);
+
+    await page.locator(DEMOS.toastTrigger).click();
+    await expect(first).toBeVisible();
+    // A lone toast sits at its pinned spot — no offset.
+    expect(await first.evaluate((el) => getComputedStyle(el).translate)).toBe("none");
+
+    await page.locator(DEMOS.toastUploadTrigger).click();
+    await page.locator(DEMOS.toastErrorTrigger).click();
+    await expect(second).toBeVisible();
+    await expect(third).toBeVisible();
+
+    // Transitions lift each toast into place — wait until they've landed.
+    await expect
+      .poll(() =>
+        page.evaluate((sel) => {
+          const rs = [...document.querySelector(sel).children]
+            .filter((el) => el.matches(":popover-open"))
+            .map((el) => el.getBoundingClientRect());
+          return rs.every(
+            (r, i) => i === 0 || r.top >= rs[i - 1].bottom - 0.5
+          );
+        }, DEMOS.demoToastStack)
+      )
+      .toBe(true);
+
+    const rects = await page.evaluate((stackSel) => {
+      return [...document.querySelector(stackSel).children]
+        .filter((el) => el.matches(":popover-open"))
+        .map((el) => {
+          const r = el.getBoundingClientRect();
+          return { top: r.top, bottom: r.bottom, translate: getComputedStyle(el).translate };
+        });
+    }, DEMOS.demoToastStack);
+
+    expect(rects).toHaveLength(3);
+    // Newest last in the DOM → oldest highest on screen.
+    for (let i = 1; i < rects.length; i++) {
+      expect(rects[i].top).toBeGreaterThanOrEqual(rects[i - 1].bottom - 0.5);
+    }
+    // Only toasts with an open sibling after them carry an offset.
+    expect(rects[2].translate).toBe("none");
+    expect(rects[0].translate).not.toBe("none");
+
+    // Clean up so later sections aren't covered by open popovers.
+    await page.evaluate((stackSel) => {
+      for (const el of document.querySelectorAll(`${stackSel} [popover]`)) el.hidePopover();
+    }, DEMOS.demoToastStack);
+  });
+
+  test("sortable table: header buttons inherit the th voice, indicator glyph present", async ({ page }) => {
+    await gotoDemo(page);
+    const btn = page.locator(`${DEMOS.demoSortTable} thead th button`).nth(2); // Points
+    await expect(btn).toHaveCSS("min-height", "0px"); // beats the global button chrome
+    await expect(btn).toHaveCSS("color", await tokenColor(page, "--bf-muted"));
+    const glyph = await btn.evaluate((el) => getComputedStyle(el, "::after").content);
+    expect(glyph).toBe('"↕"');
+    // No sort yet → th carries no aria-sort.
+    await expect(page.locator(`${DEMOS.demoSortTable} th[aria-sort]`)).toHaveCount(0);
   });
 });
 

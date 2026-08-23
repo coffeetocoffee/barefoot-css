@@ -91,6 +91,19 @@
     padding-inline: 0.15em;
   }
 
+  /* Keycaps ship with the core import — keyboard walkthroughs are part
+     of Barefoot's own docs voice (every page says "press <kbd>Esc</kbd>"),
+     so the element is base-layer, not a component opt-in. */
+  kbd {
+    font-family: var(--bf-font-mono);
+    font-size: 0.875em;
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-block-end-width: 2px;
+    border-radius: var(--bf-radius-sm);
+    padding: 0.15em 0.4em;
+  }
+
   figure {
     margin-block: var(--bf-space-5);
   }

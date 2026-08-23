@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../dist/themes/dashboard.css">
   <link rel="stylesheet" href="../dist/themes/playful.css">
   <link rel="stylesheet" href="../dist/themes/forest.css">
+  <link rel="stylesheet" href="../dist/themes/sunset.css">
   <link rel="stylesheet" href="../dist/components/view-transition.css">
   <style>
     /* Page chrome only — the card styling is all Barefoot. Bundled
@@ -63,7 +64,7 @@
   <header class="bf-container gallery-hero">
     <p class="bf-overline">Barefoot CSS</p>
     <h1>Theme gallery</h1>
-    <p>Five starter themes and the neutral default, each rendered
+    <p>Six starter themes and the neutral default, each rendered
        <strong>live</strong> below — every card carries its own
        <code>data-bf-theme</code>, so what you see is what you ship. No
        screenshots: each preview is real components reading the same
@@ -79,6 +80,7 @@
       <button type="button" data-bf-theme-btn="dashboard">Dashboard</button>
       <button type="button" data-bf-theme-btn="playful">Playful</button>
       <button type="button" data-bf-theme-btn="forest">Forest</button>
+      <button type="button" data-bf-theme-btn="sunset">Sunset</button>
     </div>
   </header>
 
@@ -142,6 +144,18 @@
           <button type="button" data-variant="ghost">Ghost</button>
           <input type="text" placeholder="Search…" aria-label="Sample text input">
           <span class="badge">Calm</span>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="gallery-sunset" data-bf-theme="sunset" aria-labelledby="gallery-sunset-title">
+        <h2 id="gallery-sunset-title">Sunset</h2>
+        <p class="bf-muted">Warm coral daylight, amber dusk, a rounder
+           corner. The warmest voice of the set.</p>
+        <div class="gallery-strip">
+          <button type="button" data-variant="primary">Primary</button>
+          <button type="button" data-variant="ghost">Ghost</button>
+          <input type="text" placeholder="Golden hour…" aria-label="Sample text input">
+          <span class="badge">Warm</span>
         </div>
       </article>
 

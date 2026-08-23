@@ -4,6 +4,63 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] — 2026-08-23
+
+The growth batch — proof the thesis still scales. Six new surfaces,
+one new opt-in module, one new theme, and the demo dialog goes fully
+declarative. Nothing deprecated changes.
+
+### Added
+
+- **Segmented control** (`components/segmented.css`) — `data-segmented`
+  on a `<fieldset>` of radio buttons renders a button group. Radios
+  become invisible overlays filling their labels (semantics, focus
+  ring, arrow-key roving stay native); `label:has(input:checked)`
+  paints the raised segment; the legend names the group for screen
+  readers and is clipped from sight automatically.
+- **`<datalist>` affordance** (forms.css) — `input[list]` reserves
+  inline-end space for the engine's picker arrow, themed like the
+  select chevron. The popup itself stays engine-drawn everywhere;
+  documented honestly.
+- **`<kbd>` keycaps ship with the core** — promoted from code.css to
+  the base layer, so `index.css` importers get keycap styling too.
+  `code.css` now owns only `code`, `samp`, `pre`.
+- **Timeline** (`components/timeline.css`) — `ol[data-timeline]`
+  draws entries on a spine: a dot per entry, connecting line on all
+  but the last; native list semantics untouched.
+- **Empty state** (`components/empty-state.css`) — `.empty-state`, a
+  centered dashed panel for "nothing here yet" with a decorative
+  first-child glyph slot.
+- **Toast stacking** (popover.css) — open toasts that share a parent
+  stack upward via enumerated `:has(~ …)` chains (five deep): each
+  lifts above open siblings after it in DOM order, animating on the
+  `translate` property so it composes with the shared entrance.
+  Non-siblings degrade to today's overlap behavior.
+- **Sortable tables** (`js/table-sort.js`) — `data-bf-sort` +
+  real `<button>` triggers in header cells; click for ascending,
+  again for descending. Numeric-aware compare (whole column must
+  parse; whitespace/thousands commas tolerated), case-insensitive
+  `localeCompare` otherwise. Maintains `aria-sort`; moves rows by
+  re-appending nodes. No-JS first: without it nothing sorts. Tenth
+  module in the barrel.
+- **Sunset starter theme** (`themes/sunset.css`) — warm coral daylight,
+  amber dusk, rounder corners. Sixth starter; gallery card + axe sweep
+  included.
+- **Demo dialog is declarative** — buttons carry `command` /
+  `commandfor` (Invoker Commands API); the demo script binds its
+  `showModal()` fallback only where that's unsupported.
+
+### Docs
+
+- components.md: Forms gains segmented control + datalist bullets,
+  Dialog documents the invoker-commands path, Toast documents manual
+  lifetime + stacking, Table documents sortable headers, Code notes
+  kbd's base-layer home; new Timeline and Empty state sections.
+- javascript.md: table-sort section (#9), module count ten.
+- api.md: `data-segmented`, `data-timeline`, `data-bf-sort` rows;
+  `sunset` joins the theme attribute values.
+- theming.md: Sunset joins the starter-theme list (six).
+
 ## [3.2.0] — 2026-08-23
 
 The first real run of the deprecation policy. Three surfaces are

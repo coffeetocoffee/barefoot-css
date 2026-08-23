@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../dist/themes/dashboard.css">
   <link rel="stylesheet" href="../dist/themes/playful.css">
   <link rel="stylesheet" href="../dist/themes/forest.css">
+  <link rel="stylesheet" href="../dist/themes/sunset.css">
   <link rel="stylesheet" href="../dist/components/view-transition.css">
   <style>
     /* Page chrome only — the demo styling is all Barefoot.
@@ -60,6 +61,7 @@
       <button type="button" data-bf-theme-btn="dashboard">Dashboard</button>
       <button type="button" data-bf-theme-btn="playful">Playful</button>
       <button type="button" data-bf-theme-btn="forest">Forest</button>
+      <button type="button" data-bf-theme-btn="sunset">Sunset</button>
     </div>
     <p class="bf-muted bf-mt-3">Comparing themes? Every starter renders live, side by side, on the <a href="gallery.html">theme gallery</a>.</p>
   </header>
@@ -78,6 +80,8 @@
         <tbody>
           <tr><td>Button</td><td class="wcag">AA</td><td><kbd>Tab</kbd> to focus → <kbd>Enter</kbd>/<kbd>Space</kbd> to activate. Focus ring always visible.</td></tr>
           <tr><td>Form controls</td><td class="wcag">AA</td><td><kbd>Tab</kbd> between controls → type → <kbd>Tab</kbd> past. Invalid state announced by browser.</td></tr>
+          <tr><td>Segmented control</td><td class="wcag">AA</td><td>Native radios: <kbd>Tab</kbd> into the group → arrow keys move the selection. Group named by its <code>&lt;legend&gt;</code>.</td></tr>
+          <tr><td>Datalist</td><td class="wcag">AA</td><td>Type → native suggestions appear → arrows pick. The input is a plain text field.</td></tr>
           <tr><td>Dialog</td><td class="wcag">AA</td><td>Focus moves in; <kbd>Esc</kbd> closes; focus returns to trigger. Focus is trapped.</td></tr>
           <tr><td>Popover</td><td class="wcag">A</td><td><kbd>Tab</kbd> to trigger → <kbd>Enter</kbd> opens → <kbd>Esc</kbd> or click-away closes.</td></tr>
           <tr><td>Dropdown (<code>details</code>)</td><td class="wcag">AA</td><td><kbd>Enter</kbd> toggles → <kbd>Tab</kbd> through items. (Esc-close is browser-dependent — use the popover menu for guaranteed Esc.)</td></tr>
@@ -85,6 +89,9 @@
           <tr><td>Tabs (opt-in JS)</td><td class="wcag">AA</td><td>Tab into tablist → <kbd>←</kbd>/<kbd>→</kbd> switch, <kbd>Home</kbd>/<kbd>End</kbd> jump, <kbd>Tab</kbd> into the panel. Via <code>js/tabs.js</code>.</td></tr>
           <tr><td>Carousel</td><td class="wcag">A</td><td><kbd>Tab</kbd> to scroller → arrow keys scroll → snaps.</td></tr>
           <tr><td>Table</td><td class="wcag">AA</td><td>Screen reader: headers announced via <code>&lt;th&gt;</code>. Hover affordance only.</td></tr>
+          <tr><td>Sortable table</td><td class="wcag">AA</td><td>Header triggers are real <code>&lt;button&gt;</code>s: <kbd>Tab</kbd> → <kbd>Enter</kbd> sorts; <code>aria-sort</code> announces the active column and direction. Via <code>js/table-sort.js</code>.</td></tr>
+          <tr><td>Timeline</td><td class="wcag">AA</td><td>A plain <code>&lt;ol&gt;</code>: reading order is the chronology, nothing interactive.</td></tr>
+          <tr><td>Empty state</td><td class="wcag">AA</td><td>Real text content — heading + explanation + action. The glyph is decorative (<code>aria-hidden</code>).</td></tr>
           <tr><td>Breadcrumbs</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; current page announced via <code>aria-current="page"</code>.</td></tr>
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
           <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>. Hamburger: toggle carries <code>aria-expanded</code>; <kbd>Esc</kbd> closes and restores focus.</td></tr>
@@ -266,6 +273,24 @@
             <label><input type="checkbox" data-switch name="night" checked> Night mode (switch)</label>
           </fieldset>
 
+          <fieldset data-segmented id="demo-segmented">
+            <legend>View</legend>
+            <label><input type="radio" name="view" value="day" checked> Day</label>
+            <label><input type="radio" name="view" value="week"> Week</label>
+            <label><input type="radio" name="view" value="month"> Month</label>
+            <label><input type="radio" name="view" value="year" disabled> Year</label>
+          </fieldset>
+
+          <label for="framework">Framework (datalist)</label>
+          <input id="framework" name="framework" list="framework-list" placeholder="Type to see suggestions…" autocomplete="off">
+          <datalist id="framework-list">
+            <option value="Barefoot"></option>
+            <option value="Bootstrap"></option>
+            <option value="Bulma"></option>
+            <option value="Pico"></option>
+            <option value="Tailwind"></option>
+          </datalist>
+
           <label for="amount">Amount</label>
           <input id="amount" name="amount" type="range" min="0" max="100" value="40">
           <output id="amount-out">40</output>
@@ -433,15 +458,15 @@
     </section>
     <section id="dialog" aria-labelledby="dialog-title">
       <h2 id="dialog-title">Dialog</h2>
-      <p>Native <code>&lt;dialog&gt;</code>. Focus trap + <kbd>Esc</kbd>-to-close are built in. Opening a <em>modal</em> dialog is the one place Barefoot needs a single line of JS (<code>showModal()</code>) — the Popover below is the fully JS-free alternative.</p>
-      <button type="button" id="open-dialog">Open dialog</button>
+      <p>Native <code>&lt;dialog&gt;</code>. Focus trap + <kbd>Esc</kbd>-to-close are built in. The triggers below use the Invoker Commands API (<code>command</code>/<code>commandfor</code>) where the engine supports it — fully declarative opening and closing; engines without it fall back to the same one native line of JS (<code>showModal()</code>). The Popover below is the fully JS-free alternative.</p>
+      <button type="button" id="open-dialog" command="show-modal" commandfor="demo-dialog">Open dialog</button>
 
       <dialog id="demo-dialog" aria-labelledby="dialog-title">
         <header>Confirm deletion</header>
         <p>This is a native dialog. Try <kbd>Tab</kbd>: focus is trapped inside. Press <kbd>Esc</kbd> to close.</p>
         <footer>
-          <button type="button" id="cancel-dialog">Cancel</button>
-          <button type="button" data-variant="danger" id="confirm-dialog">Delete</button>
+          <button type="button" id="cancel-dialog" command="close" commandfor="demo-dialog">Cancel</button>
+          <button type="button" data-variant="danger" id="confirm-dialog" command="close" commandfor="demo-dialog">Delete</button>
         </footer>
       </dialog>
     </section>
@@ -589,6 +614,63 @@
             <tr><td>Laces</td><td>Ken</td><td>Done</td></tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- Sortable table -->
+    <section id="sortable-table" aria-labelledby="sortable-table-title">
+      <h2 id="sortable-table-title">Sortable table (opt-in JS)</h2>
+      <p>Add <code>data-bf-sort</code> to a table and put a real <code>&lt;button&gt;</code> inside each sortable <code>&lt;th&gt;</code>, then load <code>js/table-sort.js</code>. The module reorders <code>&lt;tbody&gt;</code> rows and maintains <code>aria-sort</code>; numeric columns (Points below) compare numerically, text compares locale-aware. No-JS first: without the module the buttons are inert and the table stays plain but valid.</p>
+      <table data-bf-sort id="demo-sort-table">
+        <caption>Sprint tasks</caption>
+        <thead>
+          <tr>
+            <th scope="col"><button type="button">Task</button></th>
+            <th scope="col"><button type="button">Owner</button></th>
+            <th scope="col"><button type="button">Points</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ship segmented control</td><td>Ada</td><td>3</td></tr>
+          <tr><td>Audit contrast pairs</td><td>Grace</td><td>12</td></tr>
+          <tr><td>Draft migration notes</td><td>Lin</td><td>5</td></tr>
+          <tr><td>Regen visual baselines</td><td>Radia</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Timeline -->
+    <section id="timeline" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">Timeline</h2>
+      <p>Add <code>data-timeline</code> to an ordered list: each entry gets a dot on a connecting spine. The chronology is the native reading order — screen readers hear a plain list.</p>
+      <ol data-timeline id="demo-timeline">
+        <li>
+          <h3>v3.3 — growth batch</h3>
+          <p>Segmented control, datalist skin, timeline, empty state, toast stacking, sortable tables, Sunset theme.</p>
+        </li>
+        <li>
+          <h3>v3.2 — deprecation wave</h3>
+          <p>The first run of the api.md policy: three surfaces announced, once-per-page notices.</p>
+        </li>
+        <li>
+          <h3>v3.1 — platform primitives</h3>
+          <p>Scroll-driven animations, hint popovers, anchor positioning — all @supports-gated.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Empty state -->
+    <section id="empty-state" aria-labelledby="empty-state-title">
+      <h2 id="empty-state-title">Empty state</h2>
+      <p>A class, because there is no native element: <code>.empty-state</code> centers a decorative glyph (<code>aria-hidden</code> — the heading carries the meaning), a muted explanation, and the action out of the emptiness.</p>
+      <div class="empty-state" id="demo-empty-state">
+        <span aria-hidden="true">&#9744;</span>
+        <h3>No projects yet</h3>
+        <p>Create your first project, or import one from a template.</p>
+        <div class="bf-row bf-gap-2">
+          <button type="button" data-variant="primary">New project</button>
+          <button type="button" data-variant="ghost">Import…</button>
+        </div>
       </div>
     </section>
 
@@ -808,10 +890,27 @@
     <!-- Toast -->
     <section id="toast" aria-labelledby="toast-title">
       <h2 id="toast-title">Toast</h2>
-      <p>A status notice pinned to the bottom edge, built on the Popover API — declarative, JS-free. The trigger opens it; <kbd>Esc</kbd> or click-away closes it. Use <code>role="status"</code> for non-urgent, <code>role="alert"</code> for urgent.</p>
-      <button type="button" id="toast-trigger" popovertarget="demo-toast">Show toast</button>
-      <div popover id="demo-toast" data-kind="toast" data-variant="success" role="status">
-        <p>Saved successfully.</p>
+      <p>A status notice pinned to the bottom edge, built on the Popover API — declarative, JS-free. Toasts are <code>popover="manual"</code>: they don't light-dismiss, so an app opens them when work finishes and closes them on a timer or their Close button — exactly how several stay open at once. Use <code>role="status"</code> for non-urgent, <code>role="alert"</code> for urgent. Sibling toasts stack upward: each open one lifts above the open siblings after it (pure CSS; engines without the pieces used simply overlap, newest on top).</p>
+      <div class="bf-row bf-gap-2">
+        <button type="button" id="toast-trigger" popovertarget="demo-toast">Show save toast</button>
+        <button type="button" id="toast-upload-trigger" popovertarget="demo-toast-upload">Show upload toast</button>
+        <button type="button" id="toast-error-trigger" popovertarget="demo-toast-error">Show error toast</button>
+      </div>
+      <!-- Sibling group — sharing a parent is what enables stacking.
+           Manual lifetime, declarative close buttons. -->
+      <div id="demo-toast-stack">
+        <div popover="manual" id="demo-toast" data-kind="toast" data-variant="success" role="status">
+          <p>Saved successfully.</p>
+          <button type="button" popovertarget="demo-toast">Close</button>
+        </div>
+        <div popover="manual" id="demo-toast-upload" data-kind="toast" data-variant="info" role="status">
+          <p>Uploading assets…</p>
+          <button type="button" popovertarget="demo-toast-upload">Close</button>
+        </div>
+        <div popover="manual" id="demo-toast-error" data-kind="toast" data-variant="danger" role="alert">
+          <p>Upload failed — try again.</p>
+          <button type="button" popovertarget="demo-toast-error">Close</button>
+        </div>
       </div>
     </section>
 
@@ -838,18 +937,25 @@
       btn.addEventListener("click", () => applyTheme(btn.dataset.bfThemeBtn));
     }
 
-    // Dialog — the ONE place the framework needs JS, and it's the
-    // element's native method, not a library. Everything else above
-    // is declarative HTML.
+    // Dialog. The buttons carry command/commandfor (Invoker Commands
+    // API) — engines that support it open and close declaratively and
+    // this script stays out of the way. Engines without it get the
+    // one native line Barefoot has always required: showModal().
     const dlg = document.getElementById("demo-dialog");
-    document.getElementById("open-dialog").addEventListener("click", () => dlg.showModal());
-    document.getElementById("cancel-dialog").addEventListener("click", () => dlg.close());
-    document.getElementById("confirm-dialog").addEventListener("click", () => dlg.close());
+    const commandsNative =
+      typeof HTMLButtonElement !== "undefined" &&
+      "commandForElement" in HTMLButtonElement.prototype;
+    if (!commandsNative) {
+      document.getElementById("open-dialog").addEventListener("click", () => dlg.showModal());
+      document.getElementById("cancel-dialog").addEventListener("click", () => dlg.close());
+      document.getElementById("confirm-dialog").addEventListener("click", () => dlg.close());
+    }
   </script>
 
   <script type="module">
-    // Barefoot opt-in JS extras: tabs + Esc-close for details + popover
-    // menu keyboard support. None of this ships in the CSS.
+    // Barefoot opt-in JS extras: tabs, details Esc-close, popover menu
+    // keyboard support, hamburger nav, sortable tables, … None of this
+    // ships in the CSS.
     import "../dist/js/barefoot.js";
   </script>
 </body>

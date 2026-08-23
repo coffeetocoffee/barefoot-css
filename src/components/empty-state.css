@@ -1,0 +1,52 @@
+/* Barefoot — empty state.
+   A class, because there is no native <empty>. The "nothing here yet"
+   panel: centered content on a dashed surface, with a slot for a
+   decorative glyph, a heading, a muted explanation, and the action
+   that gets the user out of the emptiness.
+
+   <div class="empty-state">
+     <span aria-hidden="true">◌</span>
+     <h3>No projects yet</h3>
+     <p>Create your first project to get started.</p>
+     <button data-variant="primary">New project</button>
+   </div>
+
+   Keep the glyph decorative (aria-hidden) — the heading carries the
+   meaning; Barefoot never invents roles. */
+@layer components {
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--bf-space-2);
+    padding: var(--bf-space-8) var(--bf-space-5);
+    text-align: center;
+    color: var(--bf-muted);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) dashed var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+  }
+
+  /* Glyph slot — whatever leads the panel (an svg, an emoji) reads as
+     an illustration, sized from the type scale rather than fixed px. */
+  .empty-state > :where(:first-child) {
+    font-size: var(--bf-type-xl);
+    line-height: 1;
+  }
+
+  .empty-state :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 0;
+    color: var(--bf-text);
+  }
+
+  .empty-state p {
+    max-width: 40ch;
+    margin-block: 0;
+  }
+
+  /* Action row breathes above the explanation; buttons keep their own
+     component styling. */
+  .empty-state > :where(.bf-row, button, a) {
+    margin-block-start: var(--bf-space-3);
+  }
+}

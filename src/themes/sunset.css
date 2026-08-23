@@ -1,0 +1,20 @@
+/* Barefoot starter theme — Sunset.
+   Warm coral daylight, amber dusk. Changes ~8 variables.
+   Apply with <html data-bf-theme="sunset">. */
+@layer tokens {
+  [data-bf-theme="sunset"] {
+    color-scheme: light dark;
+
+    --bf-primary: light-dark(#9a3412, #fdba74);
+    --bf-primary-fg: light-dark(#ffffff, #431407);
+    --bf-surface: light-dark(#fffbf4, #201914);
+    --bf-surface-alt: light-dark(#f7eee0, #2b211a);
+    --bf-text: light-dark(#292524, #f0e7dd);
+    --bf-muted: light-dark(#5d544b, #bfae9e);
+    --bf-border: light-dark(#e8dcc9, #46392c);
+    --bf-focus-ring: light-dark(#9a3412, #fdba74);
+
+    --bf-radius: 0.5rem;
+    --bf-shadow-lifted: 0 2px 10px rgb(154 52 18 / 0.12);
+  }
+}

@@ -1,18 +1,14 @@
-/* Barefoot — code, kbd, pre. Monospace treatment for the base layer. */
+/* Barefoot — code, samp, pre. Monospace treatment for inline code and
+   blocks. (<kbd> keycaps live in the base layer — they ship with the
+   core import.) */
 @layer components {
   code,
-  kbd,
   samp {
     font-family: var(--bf-font-mono);
     font-size: 0.875em;
     background: var(--bf-surface-alt);
     border-radius: var(--bf-radius-sm);
     padding: 0.15em 0.4em;
-  }
-
-  kbd {
-    border: var(--bf-border-width) solid var(--bf-border);
-    border-block-end-width: 2px;
   }
 
   pre {

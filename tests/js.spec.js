@@ -653,6 +653,80 @@ test.describe("opt-in JS: deprecation notices (3.2 wave)", () => {
   });
 });
 
+test.describe("opt-in JS: sortable tables", () => {
+  const rows = (page) =>
+    page.locator(`${DEMOS.demoSortTable} tbody tr`).evaluateAll((trs) =>
+      trs.map((tr) => [...tr.cells].map((td) => td.textContent.trim()))
+    );
+
+  test("numeric column sorts by value, not lexicographically", async ({ page }) => {
+    await gotoDemo(page);
+    const pointsBtn = page.locator(`${DEMOS.demoSortTable} thead th button`).nth(2);
+
+    // 3, 12, 5, 1 in source order — a string sort would put 12 after 1.
+    await pointsBtn.click();
+    expect(await rows(page)).toEqual([
+      ["Regen visual baselines", "Radia", "1"],
+      ["Ship segmented control", "Ada", "3"],
+      ["Draft migration notes", "Lin", "5"],
+      ["Audit contrast pairs", "Grace", "12"],
+    ]);
+    await expect(
+      page.locator(`${DEMOS.demoSortTable} thead th`).nth(2)
+    ).toHaveAttribute("aria-sort", "ascending");
+
+    // Same header again → descending.
+    await pointsBtn.click();
+    expect((await rows(page)).map((r) => r[2])).toEqual(["12", "5", "3", "1"]);
+    await expect(
+      page.locator(`${DEMOS.demoSortTable} thead th`).nth(2)
+    ).toHaveAttribute("aria-sort", "descending");
+  });
+
+  test("switching columns moves aria-sort, never two at once", async ({ page }) => {
+    await gotoDemo(page);
+    const heads = page.locator(`${DEMOS.demoSortTable} thead th`);
+    await page.locator(`${DEMOS.demoSortTable} thead th button`).first().click();
+    await expect(heads.nth(0)).toHaveAttribute("aria-sort", "ascending");
+    await page.locator(`${DEMOS.demoSortTable} thead th button`).nth(1).click();
+    await expect(heads.nth(0)).not.toHaveAttribute("aria-sort");
+    await expect(heads.nth(1)).toHaveAttribute("aria-sort", "ascending");
+
+    // Text comparison for a text column.
+    const owners = await rows(page);
+    expect(owners.map((r) => r[1])).toEqual([...owners.map((r) => r[1])].sort((a, b) => a.localeCompare(b)));
+  });
+
+  test("no-JS-first contract: without the module, nothing sorts", async ({ page }) => {
+    // Minimal page on the dev-server origin with ONLY the table —
+    // no barefoot.js import. Rows must stay put; nothing arms.
+    await page.route("**/barefoot-sort-fixture.html", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: `<!doctype html><html><head><link rel="stylesheet" href="/dist/full.css"></head><body>
+          <table id="fx" data-bf-sort>
+            <thead><tr><th><button type="button">Points</button></th></tr></thead>
+            <tbody><tr><td>2</td></tr><tr><td>10</td></tr><tr><td>1</td></tr></tbody>
+          </table></body></html>`,
+      })
+    );
+    await page.goto("/barefoot-sort-fixture.html");
+    await page.locator("#fx thead button").click();
+    const order = await page
+      .locator("#fx tbody tr")
+      .evaluateAll((trs) => trs.map((tr) => tr.cells[0].textContent.trim()));
+    expect(order).toEqual(["2", "10", "1"]); // untouched
+
+    // Importing the module arms it retroactively — progressive enhancement.
+    await page.evaluate(() => import("/dist/js/table-sort.js"));
+    await page.locator("#fx thead button").click();
+    const sorted = await page
+      .locator("#fx tbody tr")
+      .evaluateAll((trs) => trs.map((tr) => tr.cells[0].textContent.trim()));
+    expect(sorted).toEqual(["1", "2", "10"]);
+  });
+});
+
 test.describe("opt-in JS barrel completeness", () => {
   test("barefoot.js imports every shipped behavior module (and only those)", () => {
     const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");

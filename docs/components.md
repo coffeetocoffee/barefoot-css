@@ -31,6 +31,13 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 <label for="country">Country</label>
 <select id="country">…</select>
 
+<label for="framework">Framework</label>
+<input id="framework" list="framework-list">
+<datalist id="framework-list">
+  <option value="Barefoot"></option>
+  <option value="Bootstrap"></option>
+</datalist>
+
 <label for="bio">Bio (auto-grows)</label>
 <textarea id="bio" rows="3" data-autogrow>…</textarea>
 
@@ -38,8 +45,14 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
   <input type="text" required>
 </label>
 
-<input type="checkbox"> <input type="radio">
-<input type="color"> <input type="file">
+<fieldset data-segmented>
+  <legend>View</legend>
+  <label><input type="radio" name="view" checked> Day</label>
+  <label><input type="radio" name="view"> Week</label>
+  <label><input type="radio" name="view"> Month</label>
+</fieldset>
+
+<input type="checkbox"> <input type="color"> <input type="file">
 <input type="range"> <progress max="100" value="60">
 <output>40</output>
 ```
@@ -52,6 +65,16 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 - **`<select>`** gets a themed chevron (`appearance: none` + a
   `currentColor` arrow); the dropdown list itself stays native.
   `[multiple]` / `[size]` selects keep the browser's control.
+- **`<datalist>`** — the field reserves space for the engine's picker
+  affordance (`input[list]`), styled with the same tokens as the select
+  chevron. The suggestion popup itself is engine-drawn and not
+  author-stylable anywhere; Barefoot doesn't pretend otherwise.
+- **Segmented control** — `data-segmented` on a `<fieldset>` of radio
+  buttons turns it into a button group. The radios become invisible
+  overlays (semantics, focus and arrow-key roving stay native); labels
+  paint as segments, `label:has(input:checked)` is the raised one,
+  disabled options dim. The legend names the group for screen readers
+  and is clipped from sight automatically.
 - **`input[type="file"]`** — the button is skinned via
   `::file-selector-button` with the button tokens; it stays a native file
   input.
@@ -79,21 +102,27 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 ## Dialog (modal)
 
 ```html
-<dialog aria-labelledby="title">
+<dialog id="confirm" aria-labelledby="title">
   <header>Title</header>
   <p>…</p>
-  <footer><button>Cancel</button><button data-variant="danger">Delete</button></footer>
+  <footer>
+    <button command="close" commandfor="confirm">Cancel</button>
+    <button data-variant="danger" command="close" commandfor="confirm">Delete</button>
+  </footer>
 </dialog>
 ```
 
 ```js
-// The one native line Barefoot requires anywhere:
+// Engines without Invoker Commands support need the one native line
+// Barefoot requires anywhere:
 document.querySelector("dialog").showModal();
 ```
 
 - `::backdrop` blurred dim; entrance animation via `@starting-style`.
 - `data-width="sm|lg"` for sizing.
-- **JS:** `showModal()` to open — one native method, no library.
+- **JS:** none where the Invoker Commands API exists (`command` /
+  `commandfor` on buttons open and close declaratively); otherwise
+  `showModal()` to open — one native method, no library.
 - **A11y:** focus trap and `Esc` come from `<dialog>`.
 - **Entrance fallback:** engines without `allow-discrete`/`@starting-style`
   get a keyframe entrance (via `@supports not (transition-behavior:
@@ -508,13 +537,24 @@ support, carousel controls + autoplay) and their markup.
 
 ```html
 <button type="button" popovertarget="toast">Show toast</button>
-<div popover id="toast" data-kind="toast" data-variant="success"
-     role="status"><p>Saved successfully.</p></div>
+<div popover="manual" id="toast" data-kind="toast" data-variant="success" role="status">
+  <p>Saved successfully.</p>
+  <button type="button" popovertarget="toast">Close</button>
+</div>
 ```
 
 - **`[popover][data-kind="toast"]`** — a status notice pinned to the
-  bottom edge, built on the Popover API: declarative, JS-free. The
-  trigger opens it; <kbd>Esc</kbd> or click-away closes it.
+  bottom edge, built on the Popover API: declarative, JS-free.
+  Toasts are usually `popover="manual"` — no light-dismiss, so an app
+  opens them when work finishes and closes them on a timer or their
+  Close button (both declarative with `popovertarget`). Plain `popover`
+  works too if you want Esc/click-away lifetime instead.
+- **Stacking** — toasts that share a parent (siblings in one wrapper)
+  stack upward: each open toast lifts above open siblings that follow
+  it in the DOM. Append newest last and the column grows, oldest on
+  top; closing one lets the rest settle back down. Not siblings?
+  They simply overlap, newest on top. Pure CSS (`:has(~ …)` chains,
+  enumerated five deep).
 - **`data-variant="success|info|warning|danger"`** tints the edge from
   the status tokens.
 - **`role="status"`** for non-urgent, **`role="alert"`** for urgent
@@ -612,10 +652,60 @@ support, carousel controls + autoplay) and their markup.
   <thead><tr><th>…</th></tr></thead>
   <tbody>…</tbody>
 </table>
+
+<!-- Sortable (opt-in JS) -->
+<table data-bf-sort>
+  <thead><tr>
+    <th><button type="button">Task</button></th>
+    <th><button type="button">Points</button></th>
+  </tr></thead>
+  <tbody>…</tbody>
+</table>
 ```
 
 - `data-striped` opts into zebra rows; hover highlight on by default.
-- **A11y:** `<th>`/`<caption>` do the work for screen readers.
+- **Sortable** — put real `<button>`s in the header cells and add
+  `data-bf-sort` (with `js/table-sort.js`, see
+  [JavaScript](javascript.md)); the buttons are re-skinned to inherit
+  the th voice, with ↕/↑/↓ indicators following the module's
+  maintained `aria-sort`. Without JS nothing sorts — a plain table.
+- **A11y:** `<th>`/`<caption>` do the work for screen readers; sorting
+  state is announced via `aria-sort`.
+
+## Timeline
+
+```html
+<ol data-timeline>
+  <li><time>3.3</time> Segmented control, sortable tables…</li>
+  <li><time>3.2</time> Deprecation sweep…</li>
+</ol>
+```
+
+- **`[data-timeline]`** — an ordered list drawn as entries on a spine:
+  each `li` gets a dot (`::before`) aligned to its first line, and all
+  but the last get the connecting line (`::after`). Spacing comes from
+  padding, so it collapses like normal list margins.
+- The list keeps its native semantics — numbered, navigable, announced
+  as a list.
+- **JS:** none. **A11y:** plain list; content is yours.
+
+## Empty state
+
+```html
+<div class="empty-state">
+  <span aria-hidden="true">∅</span>
+  <h2>No projects yet</h2>
+  <p class="bf-muted">Create one to get started.</p>
+  <button type="button" data-variant="primary">New project</button>
+</div>
+```
+
+- **`.empty-state`** — a centered dashed panel for "nothing here yet":
+  flex column, generous padding, muted border. A class because there's
+  no native element for it.
+- First-child glyph slots are decorative by convention — mark them
+  `aria-hidden`; meaning belongs in the heading.
+- **JS:** none. **A11y:** heading + copy carry the message.
 
 ## Code
 
@@ -623,7 +713,8 @@ support, carousel controls + autoplay) and their markup.
 <code>inline</code> <kbd>Ctrl</kbd> <pre><code>block</code></pre>
 ```
 
-- Monospace stack, tinted background, kbd gets a keycap border.
+- Monospace stack, tinted background. Keycaps (`<kbd>`) live in the
+  base layer, so they ship with the core import — no component opt-in.
 
 ## Card & badge
 

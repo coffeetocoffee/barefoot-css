@@ -6,6 +6,7 @@
 @import "./index.css";
 @import "./components/buttons.css";
 @import "./components/forms.css";
+@import "./components/segmented.css";
 @import "./components/dialog.css";
 @import "./components/popover.css";
 @import "./components/dropdown.css";
@@ -22,6 +23,8 @@
 @import "./components/divider.css";
 @import "./components/table.css";
 @import "./components/code.css";
+@import "./components/timeline.css";
+@import "./components/empty-state.css";
 @import "./components/card.css";
 @import "./components/badge.css";
 @import "./components/chip.css";

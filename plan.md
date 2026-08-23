@@ -1,40 +1,37 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-23 — v3.2.0_
+_Last updated: 2026-08-23 — v3.3.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.2.0` (2026-08-23) — the first real run
-  of the deprecation policy: `<details data-menu>` announced with the
-  Popover-API menu as replacement (dies in 4.0 together with
-  `js/details-close.js`), and both engine-gap shims
-  (`js/details-tabindex.js`, `js/popover-anchor.js`) flagged as
-  baseline-gated removal candidates. Each affected module warns once
-  per page when its markup is present (new `warnOnce` seam in
-  `lifecycle.js`; silent otherwise); api.md gained the deprecation
-  table; `npm run migrate:v4` (`build/codemod-4.mjs`) detects usage,
-  `--write` deferred to 3.5. Zero behavior change in 3.x.
-- **Next:** **3.3** — growth proves the thesis still scales:
-  segmented control as a skinned radio group (`[data-segmented]`),
-  `<datalist>` skinning, `<kbd>` base styling, a timeline list variant,
-  an empty-state pattern, toast stacking, sortable tables as opt-in JS
-  (`js/table-sort.js`), one new starter theme, demo adopts
-  `command`/`commandfor`.
+- **Current:** `barefoot-css@3.3.0` (2026-08-23) — the growth batch:
+  segmented control (`fieldset[data-segmented]`, native radios kept
+  invisible-but-functional), `<datalist>` field affordance, `<kbd>`
+  promoted to the base layer, `ol[data-timeline]` spine variant,
+  `.empty-state`, pure-CSS toast stacking (`:has(~ …)` sibling chains),
+  sortable tables as opt-in JS (`js/table-sort.js` + `data-bf-sort`,
+  numeric-aware, maintains `aria-sort`), the **sunset** starter theme
+  (#6), and the demo dialog now declarative via `command`/`commandfor`
+  with the `showModal()` line as fallback.
+- **Next:** **3.4** — theming depth & global correctness: density
+  tokens, a logical-property audit so RTL mirrors correctly with an
+  i18n test page, and an audit of remaining `@media` breakpoints
+  converting any that have a container boundary.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
   0001–0007). v2.8 added no new runtime machinery; it pinned docs to
   code instead (api.md audit, token-table parity).
-- **Tests:** Chromium 146 (20 a11y / 37 JS / 86 CSS / 3 visual) ·
-  Firefox 122 run, 4 skipped · WebKit 123 run, 3 skipped — all
+- **Tests:** Chromium 146 (20 a11y / 40 JS / 97 CSS / 3 visual) ·
+  Firefox 138 run, 4 skipped · WebKit 138 run, 3 skipped — all
   green; skips are engine-gated (interest invokers, SDA), and every
   engine runs its own visual baselines. Specs address the demo only
   through `tests/helpers.js`. In CI the visual specs are Windows-only
   (win32 baselines): Chromium in `visual`, Firefox+WebKit in
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
-- **Build:** `index.css` 2.08KB gzip · `full.css` 8.04KB gzip (10KB
-  budget → PASS). Unchanged by 3.2 — the wave is JS + docs only.
-- **Done:** milestones 0.1 → 3.2. Full history: `CHANGELOG.md`.
+- **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
+  budget → PASS).
+- **Done:** milestones 0.1 → 3.3. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -239,7 +236,7 @@ and `.bf-*` utilities.
   surfaces; deprecation table in api.md; `build/codemod-4.mjs`
   detection pass as `npm run migrate:v4` (`--write` comes at 3.5).
   Shipped as `barefoot-css@3.2.0` (2026-08-23).
-- [ ] **3.3** — growth proves the thesis still scales: segmented
+- [x] **3.3** — growth proves the thesis still scales: segmented
   control as a skinned native radio group (`[data-segmented]` — same
   precedent as the switch: native semantics kept, drawing is ours),
   `<datalist>` autocomplete skinning, `<kbd>` base styling, a timeline
@@ -253,6 +250,7 @@ and `.bf-*` utilities.
   one new starter theme (~6 token overrides; gallery card + axe sweep
   on arrival); demo adopts `command`/`commandfor` where supported with
   the `showModal()` line kept as fallback.
+  Shipped as `barefoot-css@3.3.0` (2026-08-23).
 - [ ] **3.4** — theming depth & global correctness: density tokens
   (`data-density="compact"` mapping to the spacing/radius tokens —
   themes gain a second axis without new palettes), a logical-property

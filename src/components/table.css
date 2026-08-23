@@ -33,6 +33,49 @@
     background: var(--bf-surface-alt);
   }
 
+  /* ---- Sortable tables (opt-in js/table-sort.js) ----
+     A real <button> lives inside each sortable <th>; the module sorts
+     <tbody> rows on click and keeps aria-sort truthful on the active
+     column. Without the module the buttons are inert — plain tables
+     stay valid. The button inherits the th's voice (uppercase, muted,
+     semibold) so the header reads as one line of text until hovered;
+     the arrow is decorative — aria-sort is what gets announced. */
+  thead th button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bf-space-1);
+    min-height: 0;
+    padding: 0;
+
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    border-radius: var(--bf-radius-sm);
+
+    cursor: pointer;
+    text-align: inherit;
+  }
+
+  thead th button:hover {
+    color: var(--bf-text);
+  }
+
+  thead th button::after {
+    content: "↕";
+    opacity: 0.4;
+  }
+
+  thead th[aria-sort="ascending"] button::after {
+    content: "↑";
+    opacity: 1;
+  }
+
+  thead th[aria-sort="descending"] button::after {
+    content: "↓";
+    opacity: 1;
+  }
+
   /* Striping must not out-specify hover (:where() drops the attribute
      and nth-child counts so tr:hover always wins). Values coincide
      today — both use --bf-surface-alt — but the precedence should not

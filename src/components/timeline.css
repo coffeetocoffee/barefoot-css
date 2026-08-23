@@ -1,0 +1,64 @@
+/* Barefoot — timeline.
+   An ordered list drawn as a vertical timeline: a dot per entry on a
+   connecting spine. Native <ol> semantics carry the story; the
+   drawing is ours.
+
+   <ol data-timeline>
+     <li><h3>2026-08-23</h3><p>Shipped 3.3.</p></li>
+     <li><h3>2026-08-22</h3><p>Shipped 3.2.</p></li>
+   </ol>
+*/
+@layer components {
+  ol[data-timeline] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* The spine is drawn per-item and spans to the next dot; padding
+     (not margins) keeps the ::after line continuous across entries. */
+  ol[data-timeline] > li {
+    position: relative;
+    padding-inline-start: var(--bf-space-6);
+    padding-block-end: var(--bf-space-5);
+  }
+
+  ol[data-timeline] > li:last-child {
+    padding-block-end: 0;
+  }
+
+  /* Dot — a surface-filled circle with a primary ring, aligned to the
+     first text line. */
+  ol[data-timeline] > li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: calc((var(--bf-space-6) - 0.75rem) / 2);
+    inset-block-start: 0.35em;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) solid var(--bf-primary);
+  }
+
+  /* Spine — from below the dot down to the item's padded edge, where
+     the next item's dot continues it. */
+  ol[data-timeline] > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: calc(var(--bf-space-6) / 2);
+    inset-block: calc(0.35em + 0.75rem + var(--bf-space-2)) 0;
+    width: var(--bf-border-width);
+    background: var(--bf-border);
+  }
+
+  /* Content inside an entry stacks tight; headings open the entry
+     like any section, so only the trailing padding sets the pace. */
+  ol[data-timeline] > li > :first-child {
+    margin-block-start: 0;
+  }
+
+  ol[data-timeline] > li > :last-child {
+    margin-block-end: 0;
+  }
+}

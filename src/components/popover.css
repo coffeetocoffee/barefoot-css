@@ -91,6 +91,17 @@
     border: var(--bf-border-width) solid var(--bf-border);
     border-inline-start: 3px solid var(--bf-border);
     z-index: var(--bf-z-toast);
+
+    /* Stacking geometry + motion for it (see "Toast stacking" below).
+       translate, not transform — the shared entrance animates
+       transform, and the two compose. */
+    --bf-toast-step: calc(100% + var(--bf-space-3));
+    transition:
+      opacity var(--bf-transition),
+      transform var(--bf-transition),
+      translate var(--bf-transition),
+      display var(--bf-transition) allow-discrete,
+      overlay var(--bf-transition) allow-discrete;
   }
 
   [popover][data-kind="toast"]:popover-open {
@@ -111,6 +122,42 @@
 
   [popover][data-kind="toast"][data-variant="danger"] {
     border-inline-start-color: var(--bf-danger);
+  }
+
+  /* ---- Toast stacking ----
+     Open toasts render in the top layer at the same pinned spot, so a
+     second one would perfectly cover the first. When toasts share a
+     parent (siblings — put them in one wrapper div), each open toast
+     lifts itself above every open sibling that follows it in the DOM:
+     append newest last and the stack grows upward, oldest on top.
+     Enumerated to five; deeper stacks reuse the deepest offset.
+     Not siblings? Nothing moves — today's overlap behavior is the
+     graceful degradation, not a broken layout. */
+  [popover][data-kind="toast"]:popover-open:has(~ [popover][data-kind="toast"]:popover-open) {
+    translate: 0 calc(-1 * var(--bf-toast-step));
+  }
+
+  [popover][data-kind="toast"]:popover-open:has(
+    ~ [popover][data-kind="toast"]:popover-open ~ [popover][data-kind="toast"]:popover-open
+  ) {
+    translate: 0 calc(-2 * var(--bf-toast-step));
+  }
+
+  [popover][data-kind="toast"]:popover-open:has(
+    ~ [popover][data-kind="toast"]:popover-open
+    ~ [popover][data-kind="toast"]:popover-open
+    ~ [popover][data-kind="toast"]:popover-open
+  ) {
+    translate: 0 calc(-3 * var(--bf-toast-step));
+  }
+
+  [popover][data-kind="toast"]:popover-open:has(
+    ~ [popover][data-kind="toast"]:popover-open
+    ~ [popover][data-kind="toast"]:popover-open
+    ~ [popover][data-kind="toast"]:popover-open
+    ~ [popover][data-kind="toast"]:popover-open
+  ) {
+    translate: 0 calc(-4 * var(--bf-toast-step));
   }
 
   /* Item rows live in menu-items.css — shared verbatim with
