@@ -78,9 +78,9 @@ test.describe("accessibility conformance (axe-core)", () => {
     expect(results.violations).toEqual([]);
   });
 
-  test("dropdown open has no violations", async ({ page }) => {
+  test("popover menu open has no violations", async ({ page }) => {
     await gotoDemo(page);
-    await page.locator('details[data-menu] summary').click();
+    await page.getByRole("button", { name: "Popover menu" }).click();
     const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
@@ -139,26 +139,6 @@ test.describe("visible focus + keyboard contract", () => {
       getComputedStyle(el).outlineWidth
     );
     expect(outlineWidth).not.toBe("0px");
-  });
-
-  test("details dropdown: Enter toggles, items focusable", async ({ page }) => {
-    await gotoDemo(page);
-    const summary = page.locator('details[data-menu] summary');
-    const panel = page.locator('details[data-menu] > :not(summary)');
-
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(panel).toBeVisible();
-
-    await page.keyboard.press("Tab");
-    await expect(page.locator('details[data-menu] a').first()).toBeFocused();
-
-    // NOTE: Esc-to-close on <details> is browser-dependent (Chrome closes
-    // only when focus is inside the panel). For guaranteed Esc + click-away,
-    // the documented answer is the Popover menu — asserted below.
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(panel).toBeHidden();
   });
 
   test("popover menu: opens declaratively, Esc closes", async ({ page }) => {

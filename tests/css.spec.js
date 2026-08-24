@@ -970,7 +970,7 @@ test.describe("v2.2 tokens, motion & print safety", () => {
     expect(badgeRadius).toBe("999px");
   });
 
-  test("z-index scale orders dropdown < sticky < dialog < toast", async ({ page }) => {
+  test("z-index scale orders sticky < dialog < toast", async ({ page }) => {
     await gotoDemo(page);
     const root = page.locator("html");
     const z = async (name) =>
@@ -980,16 +980,8 @@ test.describe("v2.2 tokens, motion & print safety", () => {
           name
         )
       );
-    expect(await z("--bf-z-dropdown")).toBeLessThan(await z("--bf-z-sticky"));
     expect(await z("--bf-z-sticky")).toBeLessThan(await z("--bf-z-dialog"));
     expect(await z("--bf-z-dialog")).toBeLessThan(await z("--bf-z-toast"));
-
-    // The dropdown panel consumes its rung of the ladder.
-    const panelZ = await page
-      .locator("details[data-menu] > :not(summary)")
-      .first()
-      .evaluate((el) => getComputedStyle(el).zIndex);
-    expect(panelZ).toBe("10");
   });
 
   test("prefers-reduced-motion: reduce neutralizes motion", async ({ page }) => {
@@ -1246,29 +1238,21 @@ test.describe("tokens: no typed-property registrations (ADR-0005)", () => {
 });
 
 test.describe("menu items (shared recipe, ADR-0007)", () => {
-  test("popover and dropdown menu items render identically", async ({ page }) => {
+  test("popover menu items render with correct styling", async ({ page }) => {
     await gotoDemo(page);
 
     await page.locator(DEMOS.helpTrigger).click();
     const popLink = page.locator(`${DEMOS.helpPop} a`).first();
     await expect(popLink).toBeVisible();
 
-    await page.locator("[data-menu] > summary").click();
-    const ddLink = page.locator("[data-menu] a").first();
-    await expect(ddLink).toBeVisible();
-
-    // The copies had drifted: popover links kept base.css's underline
-    // and accent color while dropdown links were clean. One recipe
-    // now styles both — assert what it paints.
+    // The recipe styles popover menu items — assert what it paints.
     const expectedColor = await tokenColor(page, "--bf-text");
-    for (const link of [popLink, ddLink]) {
-      const s = await link.evaluate((el) => {
-        const cs = getComputedStyle(el);
-        return { deco: cs.textDecorationLine, color: cs.color };
-      });
-      expect(s.deco).toBe("none");
-      expect(s.color).toBe(expectedColor);
-    }
+    const s = await popLink.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { deco: cs.textDecorationLine, color: cs.color };
+    });
+    expect(s.deco).toBe("none");
+    expect(s.color).toBe(expectedColor);
   });
 });
 
@@ -1301,18 +1285,12 @@ test.describe("shared component recipes (ADR-0007)", () => {
       path.join(rootDir, "src/components/menu-items.css"),
       "utf8"
     );
-    expect(shared).toContain("details[data-menu]");
     expect(shared).toContain('[popover][data-kind="menu"]');
     expect(shared).toContain("text-decoration: none");
-    for (const f of ["dropdown.css", "popover.css"]) {
-      const src = fs.readFileSync(path.join(rootDir, "src/components", f), "utf8");
-      expect(src, `${f} re-implements the shared item recipe`).not.toContain(
-        "text-align: start"
-      );
-      expect(src, `${f} should point at the shared recipe`).toContain(
-        "menu-items.css"
-      );
-    }
+    const popover = fs.readFileSync(path.join(rootDir, "src/components/popover.css"), "utf8");
+    expect(popover, `popover.css re-implements the shared item recipe`).not.toContain(
+      "text-align: start"
+    );
     const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
     expect(full).toContain("./components/menu-items.css");
   });

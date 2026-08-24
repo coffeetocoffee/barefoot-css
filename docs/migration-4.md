@@ -2,8 +2,8 @@
 
 v4.0 is the first Barefoot major that actually deletes. It raises the
 browser baseline to 2026 evergreen (Chrome 125+, Firefox 128+, Safari
-26.2+), removes the three surfaces deprecated in 3.2, adopts `@scope`
-for prose/code scoping, and tightens the size budget.
+26.2+), removes the three surfaces deprecated in 3.2, and tightens
+the size budget.
 
 If your app targets 2026 evergreen browsers and doesn't use any
 deprecated surface, the upgrade is a version bump with no code changes.
@@ -112,13 +112,7 @@ import "barefoot/js/popover-anchor.js";
 
 ## What changed
 
-### 5. `@scope` for prose/code scoping
-
-Where Barefoot used long `:where()` chains to scope prose and code
-styles, v4.0 adopts `@scope` for cleaner isolation. This is a
-internal implementation change — no consumer markup or classes change.
-
-### 6. Size budget tightened
+### 5. Size budget tightened
 
 The removal of deprecated surfaces and dead code lets Barefoot tighten
 the enforced size budget. The exact number is set at release; it will

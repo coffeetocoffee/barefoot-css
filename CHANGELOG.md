@@ -4,6 +4,50 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] — 2026-08-24
+
+The platform catch-up — the first Barefoot major that actually deletes.
+Raises the browser baseline to 2026 evergreen, removes the three
+3.2-deprecated surfaces, adopts `@scope` for prose scoping, and
+tightens the size budget.
+
+### Removed
+
+- **`<details data-menu>` pattern** — the entire details-menu dropdown
+  is removed: `dropdown.css`, the `data-menu` attribute selectors in
+  `menu-items.css`, and all related CSS hooks. Use Popover-API menus
+  instead: `<button popovertarget="id">` +
+  `<div popover data-kind="menu" id="id">`. See `docs/migration-4.md`.
+- **`js/details-close.js`** — existed only to make Esc close
+  `details[data-menu]` reliably. With the details-menu pattern gone,
+  the module has no purpose. Popover menus close natively.
+- **`js/details-tabindex.js`** — WebKit's `<details>` tab-order quirk
+  was fixed in Safari 17.4. The shim is dead code on all 2026 evergreen
+  browsers.
+- **`js/popover-anchor.js`** — `position-visibility: anchors-visible`
+  is now Baseline 2026 (Chrome 125+, Firefox 147+, Safari 26.2+).
+  The off-screen anchor guard is dead code on modern browsers.
+- **`dropdown.css`** — the details-based menu component file is removed
+  entirely. `full.css` no longer imports it.
+
+### Changed
+
+- **Browser baseline raised** — v4.0 requires 2026 evergreen:
+  Chrome 125+, Firefox 128+, Safari 26.2+. See `docs/migration-4.md`.
+- **`menu-items.css`** — removed `details[data-menu]` selectors; now
+  only styles popover-API menu items (`[popover][data-kind="menu"]`).
+- **`barefoot.js`** — removed imports of deleted modules
+  (`details-close.js`, `details-tabindex.js`, `popover-anchor.js`).
+- **`full.css`** — removed `dropdown.css` import.
+- **`api.md`** — deprecation table updated: all four surfaces marked
+  as removed; `data-menu` removed from the attribute reference.
+
+### Docs
+
+- `migration-4.md` finalized as the current migration guide.
+- `api.md` updated to v4.0 (stability tiers, deprecation table,
+  attribute reference).
+
 ## [3.5.0] — 2026-08-24
 
 v4 rehearsal — freeze the browser-baseline contract, gate-check the

@@ -1,21 +1,14 @@
-/* Barefoot — menu items (shared recipe).
-   One item recipe for BOTH menu containers: <details data-menu>
-   (styled in dropdown.css) and <div popover data-kind="menu">
-   (styled in popover.css). These rules used to be copy-pasted in
-   both files and had already drifted — popover menus rendered their
-   links underlined and accent-colored while dropdown menus were
-   clean, because base.css styles `a` without resetting it. This file
-   is now the single source; keep each container's panel chrome in
-   its own component file.
+/* Barefoot — menu items.
+   Item recipe for popover-API menus: <div popover data-kind="menu">
+   (styled in popover.css).
 
-    <details data-menu>              <div popover data-kind="menu">
-      <summary>Actions</summary>       <a href="…">Item</a>
-      <div> <a href="…">Item</a> </div>
-    </details>
+    <div popover data-kind="menu">
+      <a href="…">Item</a>
+    </div>
 
-   Decision recorded in docs/adr/0007. */
+   Decision recorded in docs/adr/0007.
+   The details-based dropdown pattern (dropdown.css) was removed in 4.0. */
 @layer components {
-  details[data-menu] :is(a, button),
   [popover][data-kind="menu"] :is(a, button) {
     display: block;
     width: 100%;
@@ -26,7 +19,6 @@
     color: var(--bf-text);
   }
 
-  details[data-menu] :is(a, button):hover,
   [popover][data-kind="menu"] :is(a, button):hover {
     background: var(--bf-surface-alt);
   }

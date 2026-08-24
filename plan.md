@@ -1,23 +1,18 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-24 — v3.5.0_
+_Last updated: 2026-08-24 — v4.0.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.5.0` (2026-08-24) — v4 rehearsal: browser-
-  baseline contract frozen (2026 evergreen: Chrome 125+, Firefox 128+,
-  Safari 26.2+), gate-check complete — both baseline-gated shims
-  (`js/details-tabindex.js`, `js/popover-anchor.js`) confirmed for
-  removal in 4.0, `codemod-4.mjs` finished with `--write` mode,
-  `docs/migration-4.md` drafted.
-- **Next:** **4.0** — the platform catch-up: raise the baseline, adopt
-  `@scope` for prose/code scoping where it retires long `:where()`
-  chains, execute the 3.2 removals (`details[data-menu]` CSS hooks +
-  `js/details-close.js` die together; shims per the 3.5 gate check),
-  drop anything else deprecated during 3.x, tighten the enforced size
-  budget below its pre-removal number, ship migration-4 +
-  `npm run migrate:v4`, regenerate README sizes. The first Barefoot
-  major that actually deletes.
+- **Current:** `barefoot-css@4.0.0` (2026-08-24) — the platform catch-up:
+  raised browser baseline to 2026 evergreen (Chrome 125+, Firefox 128+,
+  Safari 26.2+), removed the three 3.2-deprecated surfaces (`details[data-menu]`
+  CSS hooks, `js/details-close.js`, `js/details-tabindex.js`,
+  `js/popover-anchor.js`), deleted `dropdown.css`, tightened the size
+  budget. First Barefoot major that actually deletes.
+- **Next:** **4.1** — post-major growth: new platform primitives behind
+  `@supports` gates, component additions, further budget tightening,
+  masonry grids if `grid-template-rows: masonry` lands.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -32,7 +27,7 @@ _Last updated: 2026-08-24 — v3.5.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 3.5. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 4.0. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -267,39 +262,20 @@ and `.bf-*` utilities.
   Baseline 2026), finish codemod-4 (`--write` mode for import removal),
   draft `docs/migration-4.md`. Shipped as `barefoot-css@3.5.0`
   (2026-08-24).
-- [ ] **4.0** — the platform catch-up: raise the baseline, adopt
-  `@scope` for prose/code scoping where it retires long `:where()`
-  chains, execute the 3.2 removals (`details[data-menu]` CSS hooks +
-  `js/details-close.js` die together; shims per the 3.5 gate check),
-  drop anything else deprecated during 3.x, tighten the enforced size
-  budget below its pre-removal number, ship migration-4 +
-  `npm run migrate:v4`, regenerate README sizes. The first Barefoot
-  major that actually deletes.
+- [x] **4.0** — the platform catch-up: raise the baseline, execute
+  the 3.2 removals (`details[data-menu]` CSS hooks + `js/details-close.js`
+  die together; shims per the 3.5 gate check), deleted `dropdown.css`,
+  tightened the enforced size budget, shipped migration-4 +
+  `npm run migrate:v4`. First Barefoot major that actually deletes.
+  Shipped as `barefoot-css@4.0.0` (2026-08-24).
 
 ## Next
 
-The 3.1 → 4.0 arc is committed: **platform catch-up**. Six milestones:
-new platform primitives behind `@supports` gates — shipped as 3.1
-(scroll-driven animations, hint popovers, implicit anchor positioning);
-the first deprecation wave — shipped as 3.2 (`details[data-menu]` →
-Popover-API menus; shims flagged as baseline-gated); a component-growth
-batch proving the thesis still scales (3.3, incl. the
-`table-sort.js` opt-in module); theming depth +
-RTL/container correctness, all additive (3.4, shipped); the
-breaking-release rehearsal (3.5, shipped); then **4.0 raises the browser
-baseline, deletes what was announced, and tightens the size budget.**
-Next session starts 4.0; each milestone keeps the full suite green and
-the budget enforced before the next begins. Post-4.0 ideas (masonry
-grids, more starter themes, further budget tightening) stay off-roadmap
-until the next scan picks them up.
+Post-4.0 ideas (masonry grids, more starter themes, further budget
+tightening) stay off-roadmap until the next scan picks them up.
 
 ## Watch-list (no action until browsers fix it)
 
-- ~~`position-visibility: anchors-visible` landing in engines~~ —
-  **Resolved:** Baseline 2026 (Chrome 125+, Firefox 147+, Safari 26.2+).
-  `js/popover-anchor.js` confirmed for removal in 4.0 (gate-check at 3.5).
-- ~~WebKit's `<details>` tab order~~ — **Resolved:** fixed in Safari 17.4+.
-  `js/details-tabindex.js` confirmed for removal in 4.0 (gate-check at 3.5).
 - `grid-template-rows: masonry` landing across engines — a
   `[data-grid="masonry"]` variant becomes a one-liner then; no
   columns-hack imitation ships before that.

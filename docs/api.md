@@ -1,17 +1,17 @@
-# Barefoot — API Reference (v2.0 Frozen)
+# Barefoot — API Reference (v4.0)
 
-As of v2.0.0, Barefoot's public API is frozen. This document defines
+As of v4.0.0, Barefoot's public API is frozen. This document defines
 what is stable, what may change, and the deprecation policy.
 
 ## Stability tiers
 
-### Stable — will not break in 2.x
+### Stable — will not break in 4.x
 
 These are the contracts consumers build on:
 
 - **`--bf-*` tokens.** Every token listed in [theming.md](theming.md)
-  is part of the public API. New tokens may be added in minor releases;
-  existing tokens will not be renamed or removed in 2.x.
+   is part of the public API. New tokens may be added in minor releases;
+   existing tokens will not be renamed or removed in 4.x.
 - **`data-*` component attributes.** The attribute names and their
   enumerated values (e.g. `[data-variant]`, `[data-grid]`,
   `[data-bf-theme]`, `[data-switch]`, `[data-menu]`) are frozen.
@@ -20,7 +20,7 @@ These are the contracts consumers build on:
   `barefoot-css/utilities.css`, `barefoot-css/components/*`,
   `barefoot-css/themes/*`, `barefoot-css/js/*`.
 - **JS module API.** Each `js/*.js` module exports an `init*` function
-  for dynamic content. The function signatures will not change in 2.x.
+  for dynamic content. The function signatures will not change in 4.x.
 - **Cascade layer order.** `@layer reset, tokens, base, components,
   utilities` is the declared and frozen order.
 
@@ -64,17 +64,17 @@ Barefoot promises **no silent breaks.**
 
 ## Deprecations
 
-| Deprecated | Announced | Removal | Replacement |
-|---|---|---|---|
-| `<details data-menu>` dropdowns — the `dropdown.css` styles, the details half of `menu-items.css` | 3.2 | 4.0 | Popover-API menus: `<button popovertarget>` + `<div popover data-kind="menu">` — same look, reliable Esc and light-dismiss |
-| `js/details-close.js` | 3.2 | 4.0 | Dies together with the details-menu pattern; popover menus close natively and `js/popover-menu.js` adds arrow keys |
-| `js/details-tabindex.js` | 3.2 | 4.0 | None needed — WebKit tab-order fixed in Safari 17.4+; **gate-check: REMOVE** |
-| `js/popover-anchor.js` | 3.2 | 4.0 | None needed — `position-visibility: anchors-visible` is Baseline 2026 (Chrome 125+, Firefox 147+, Safari 26.2+); **gate-check: REMOVE** |
+All previously deprecated surfaces have been removed in 4.0:
 
-**Gate-check complete (3.5):** both baseline-gated shims are confirmed
-for removal in 4.0. The engine gaps they papered over are fixed in
-2026 evergreen browsers. `npm run migrate:v4` removes the imports
-automatically. See [migration-4.md](migration-4.md).
+| Deprecated | Announced | Removed | Replacement |
+|---|---|---|---|
+| `<details data-menu>` dropdowns | 3.2 | **4.0** | Popover-API menus: `<button popovertarget>` + `<div popover data-kind="menu">` |
+| `js/details-close.js` | 3.2 | **4.0** | Dies with the details-menu pattern; popover menus close natively |
+| `js/details-tabindex.js` | 3.2 | **4.0** | None needed — WebKit tab-order fixed in Safari 17.4+ |
+| `js/popover-anchor.js` | 3.2 | **4.0** | None needed — `position-visibility: anchors-visible` is Baseline 2026 |
+
+All deprecated surfaces have been removed in 4.0. See
+[migration-4.md](migration-4.md) for the full migration guide.
 
 ## Export map
 
@@ -114,7 +114,6 @@ All component attributes and their valid values:
 | `data-table` | `<table>` | `stack` | 1.1 |
 | `data-nav` | `<header>`, `<footer>` | `header`, `footer` | 1.6 |
 | `data-switch` | `input[type="checkbox"]` | (boolean) | 1.1 |
-| `data-menu` | `<details>` | (boolean) | 0.1 |
 | `data-accordion` | `<details>` | (boolean) | 0.1 |
 | `data-autogrow` | `<textarea>` | (boolean) | 1.5 |
 | `data-stepper` | `<ol>` | (boolean) | 1.9 |
@@ -151,10 +150,6 @@ All component attributes and their valid values:
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
 | `data-bf-theme-btn` | theme switcher buttons | theme name | — |
-
-`data-menu` is announced deprecated since 3.2 (removed in 4.0 with the
-whole details-menu pattern) — see [Deprecations](#deprecations). It
-keeps working through 3.x and stays in this table until then.
 
 ### Internal markers (not consumer API)
 

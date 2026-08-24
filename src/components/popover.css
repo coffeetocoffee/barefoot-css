@@ -160,8 +160,7 @@
     translate: 0 calc(-4 * var(--bf-toast-step));
   }
 
-  /* Item rows live in menu-items.css — shared verbatim with
-     details[data-menu] (ADR-0007). */
+  /* Item rows live in menu-items.css — shared recipe (ADR-0007). */
 
   /* ---- Anchoring ----
      Browsers with anchor positioning (Chromium 125+, Firefox 147+,

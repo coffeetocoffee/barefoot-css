@@ -491,16 +491,14 @@
 
     <!-- Dropdown -->
     <section id="dropdown" aria-labelledby="dropdown-title">
-      <h2 id="dropdown-title">Dropdown (details/summary)</h2>
-      <p>A native <code>&lt;details data-menu&gt;</code>. Open with <kbd>Enter</kbd>, move with <kbd>Tab</kbd>, close with <kbd>Esc</kbd>.</p>
-      <details data-menu>
-        <summary>Actions</summary>
-        <div>
-          <a href="#">Edit</a>
-          <a href="#">Share</a>
-          <a href="#">Export…</a>
-        </div>
-      </details>
+      <h2 id="dropdown-title">Dropdown (Popover-API menu)</h2>
+      <p>A native popover menu via <code>&lt;button popovertarget&gt;</code>. Open with <kbd>Enter</kbd>, move with <kbd>Tab</kbd>, close with <kbd>Esc</kbd>.</p>
+      <button popovertarget="demo-menu-1">Actions</button>
+      <div popover data-kind="menu" id="demo-menu-1">
+        <a href="#">Edit</a>
+        <a href="#">Share</a>
+        <a href="#">Export…</a>
+      </div>
     </section>
 
     <!-- Accordion -->

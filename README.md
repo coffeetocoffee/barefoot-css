@@ -47,27 +47,23 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 46.54KB | — | — |
+| `full.css` | 45.26KB | — | — |
 | `components/forms.css` | 8.39KB | — | — |
 | `index.css` | 7.84KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
-| `js/popover-anchor.js` | 3.80KB | — | — |
 | `js/table-sort.js` | 3.28KB | — | — |
 | `utilities.css` | 3.18KB | — | — |
 | `js/nav.js` | 2.78KB | — | — |
 | `components/popover.css` | 2.74KB | — | — |
 | `components/stepper.css` | 2.67KB | — | — |
-| `js/details-tabindex.js` | 2.61KB | — | — |
 | `js/tabs.js` | 2.51KB | — | — |
 | `js/popover-menu.js` | 2.25KB | — | — |
 | `js/roving-index.js` | 2.10KB | — | — |
 | `components/buttons.css` | 2.02KB | — | — |
-| `js/details-close.js` | 1.63KB | — | — |
 | `js/lifecycle.js` | 1.57KB | — | — |
 | `components/table.css` | 1.44KB | — | — |
 | `components/accordion.css` | 1.44KB | — | — |
 | `components/nav.css` | 1.29KB | — | — |
-| `components/dropdown.css` | 1.23KB | — | — |
 | `components/carousel.css` | 1.19KB | — | — |
 | `components/dialog.css` | 1.13KB | — | — |
 | `components/segmented.css` | 1.12KB | — | — |
@@ -87,7 +83,6 @@ npm install barefoot-css
 | `themes/playful.css` | 0.59KB | — | — |
 | `themes/editorial.css` | 0.58KB | — | — |
 | `components/empty-state.css` | 0.57KB | — | — |
-| `js/barefoot.js` | 0.56KB | — | — |
 | `components/skeleton.css` | 0.52KB | — | — |
 | `components/breadcrumbs.css` | 0.51KB | — | — |
 | `themes/dashboard.css` | 0.50KB | — | — |
@@ -95,11 +90,12 @@ npm install barefoot-css
 | `themes/custom.css` | 0.45KB | — | — |
 | `themes/sunset.css` | 0.44KB | — | — |
 | `components/code.css` | 0.40KB | — | — |
-| `components/menu-items.css` | 0.36KB | — | — |
+| `js/barefoot.js` | 0.39KB | — | — |
 | `components/divider.css` | 0.36KB | — | — |
 | `components/card.css` | 0.33KB | — | — |
 | `components/reveal.css` | 0.32KB | — | — |
 | `components/prose.css` | 0.30KB | — | — |
+| `components/menu-items.css` | 0.29KB | — | — |
 | `components/view-transition.css` | 0.28KB | — | — |
 <!-- SIZES:END -->
 

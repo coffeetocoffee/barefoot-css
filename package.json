@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "3.5.0",
+  "version": "4.0.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",

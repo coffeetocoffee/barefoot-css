@@ -13,6 +13,6 @@ die at the `npm whoami` preflight).
 3. `npm run check` + the full matrix green — `npm test` (Chromium), then
    `npm run test:ff` and `npm run test:webkit` (run suites one at a time;
    they collide on the `localhost:4173` preview port).
-4. Commit in repo style: `feat: v1.7.0 — short description`.
+4. Commit in repo style: `feat: v4.0.0 — short description`.
 5. Push `main`, create the `v*` tag, push it — the workflow runs, tests,
    and publishes to npm. GitHub Release auto-creates from the tag.

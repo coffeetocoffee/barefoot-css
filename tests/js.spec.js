@@ -1,8 +1,8 @@
 /* Barefoot — opt-in JS modules.
    Tests every enhancement shipped in dist/js/ (loaded by the demo):
-   WAI-ARIA tabs, details Esc-close + tab order, popover-menu keyboard,
-   carousel autoplay + controls, chips, nav hamburger — plus the
-   lifecycle seam itself and barrel completeness.
+   WAI-ARIA tabs, popover-menu keyboard, carousel autoplay + controls,
+   chips, nav hamburger — plus the lifecycle seam itself and barrel
+   completeness.
 
    npm run test:js */
 import { test, expect } from "@playwright/test";
@@ -80,83 +80,6 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
   });
 });
 
-test.describe("opt-in JS: details Esc-close", () => {
-  test("Esc from inside a details menu closes it and returns focus to summary", async ({ page }) => {
-    await gotoDemo(page);
-    const summary = page.locator('details[data-menu] summary');
-    const panel = page.locator('details[data-menu] > :not(summary)');
-
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(panel).toBeVisible();
-
-    await page.keyboard.press("Tab");
-    await expect(page.locator('details[data-menu] a').first()).toBeFocused();
-
-    await page.keyboard.press("Escape");
-    await expect(panel).toBeHidden();
-    await expect(summary).toBeFocused();
-  });
-});
-
-test.describe("opt-in JS: details tab order (WebKit shim)", () => {
-  test("open panel descendants get tabindex=0 and are reachable by Tab in every engine", async ({ page }) => {
-    await gotoDemo(page);
-    const summary = page.locator('details[data-menu] summary');
-    const link = page.locator('details[data-menu] a').first();
-
-    await expect(link).not.toHaveAttribute("tabindex", /.*/);
-
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(link).toHaveAttribute("tabindex", "0");
-
-    // Tab lands on the panel link — the WebKit-skipped case is the point.
-    await summary.focus();
-    await page.keyboard.press("Tab");
-    await expect(link).toBeFocused();
-  });
-
-  test("already-open details are fixed at init; closed ones stay untouched", async ({ page }) => {
-    const markup = `
-      <details open>
-        <summary>Open</summary>
-        <a href="#">inside one</a>
-      </details>
-      <details>
-        <summary>Closed</summary>
-        <a href="#">inside two</a>
-      </details>`;
-    await mountFixture(page, markup);
-    // The demo's autoload already cached the module — invoke the named
-    // export to initialize this fresh fixture.
-    await page.evaluate(async () => {
-      const m = await import("/dist/js/details-tabindex.js");
-      m.initDetailsTabIndex();
-    });
-
-    await expect(page.locator('details[open] a')).toHaveAttribute("tabindex", "0");
-    await expect(page.locator("details:not([open]) a")).not.toHaveAttribute("tabindex", /.*/);
-  });
-
-  test("deliberate tabindex=-1 is preserved", async ({ page }) => {
-    const markup = `
-      <details open>
-        <summary>Open</summary>
-        <a href="#">normal</a>
-        <a href="#" tabindex="-1">removed</a>
-      </details>`;
-    await mountFixture(page, markup);
-    await page.evaluate(async () => {
-      const m = await import("/dist/js/details-tabindex.js");
-      m.initDetailsTabIndex();
-    });
-
-    await expect(page.locator('a:has-text("normal")')).toHaveAttribute("tabindex", "0");
-    await expect(page.locator('a:has-text("removed")')).toHaveAttribute("tabindex", "-1");
-  });
-});
-
 test.describe("opt-in JS: popover menu keyboard support", () => {
   test("opens focus-first, arrows move, Esc closes and focus returns to trigger", async ({ page }) => {
     await gotoDemo(page);
@@ -212,51 +135,6 @@ test.describe("opt-in JS: popover menu keyboard support", () => {
     await page.keyboard.press("Tab");
     await expect(pop).toBeHidden();
     await expect(trigger).toBeFocused();
-  });
-});
-
-test.describe("opt-in JS: anchored popover off-screen guard", () => {
-  test("script-open with the trigger off-screen closes the popover (no viewport-edge clamp)", async ({ page }) => {
-    await gotoDemo(page);
-    const trigger = page.locator(DEMOS.helpTrigger);
-    const pop = page.locator(DEMOS.helpPop);
-
-    // Scroll the trigger fully below the viewport (its top edge just past
-    // the bottom). `behavior: "instant"` matters — the page scrolls smooth.
-    await trigger.evaluate((el) => {
-      const r = el.getBoundingClientRect();
-      window.scrollTo({
-        top: window.scrollY + r.top - (window.innerHeight + 100),
-        behavior: "instant",
-      });
-    });
-
-    await page.evaluate((pop) => document.querySelector(pop).showPopover(), DEMOS.helpPop);
-
-    // The guard closes it immediately, so it can't be clamped to the
-    // viewport edge (Firefox 153) or pinned off-screen (Chromium/WebKit).
-    await expect(pop).not.toBeVisible();
-    await expect
-      .poll(() =>
-        page.evaluate((pop) => document.querySelector(pop).matches(":popover-open"), DEMOS.helpPop)
-      )
-      .toBe(false);
-  });
-
-  test("a trigger in view still opens its popover (guard doesn't over-hide)", async ({ page }) => {
-    await gotoDemo(page);
-    const trigger = page.locator(DEMOS.helpTrigger);
-    const pop = page.locator(DEMOS.helpPop);
-
-    // Normal click-to-open, trigger in view — untouched by the guard.
-    await trigger.click();
-    await expect(pop).toBeVisible();
-
-    // Programmatic open with the trigger scrolled into view — also kept.
-    await pop.evaluate((el) => el.hidePopover());
-    await trigger.evaluate((el) => el.scrollIntoView({ block: "center" }));
-    await page.evaluate((pop) => document.querySelector(pop).showPopover(), DEMOS.helpPop);
-    await expect(pop).toBeVisible();
   });
 });
 
@@ -496,20 +374,17 @@ test.describe("opt-in JS: lifecycle seam", () => {
 
     // Every behavior module re-inits itself against already-wired markup;
     // bindOnce guards must make each call a no-op (no stacked listeners,
-    // no double state flips). Demo markup is complete, so the 3.2
-    // deprecation notices fired once at autoload — they are the only
-    // allowed warnings; anything else means double-binding noise.
+    // no double state flips). Demo markup is complete — anything that
+    // produces warnings means double-binding noise.
     await page.evaluate(async () => {
       for (const name of [
         "tabs",
-        "details-close",
-        "details-tabindex",
         "popover-menu",
-        "popover-anchor",
         "carousel",
         "alert-dismiss",
         "chips",
         "nav",
+        "table-sort",
       ]) {
         const m = await import(`/dist/js/${name}.js`);
         for (const fn of Object.values(m)) {
@@ -526,95 +401,12 @@ test.describe("opt-in JS: lifecycle seam", () => {
 
     expect(
       warnings.filter((w) => !w.includes("[barefoot-css]")),
-      "re-init must stay silent apart from the one-time deprecation notices"
+      "re-init must stay silent"
     ).toEqual([]);
   });
 });
 
-test.describe("opt-in JS: deprecation notices (3.2 wave)", () => {
-  const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-  // A minimal page served from the dev-server origin so /dist/js/*
-  // resolve, with exactly the deprecated markup under test (or none).
-  function fixtureRoute(page, body) {
-    return page.route("**/barefoot-deprecation-fixture.html", (route) =>
-      route.fulfill({
-        contentType: "text/html",
-        body: `<!doctype html><html><head><script type="module">
-            Promise.all([
-              import("/dist/js/details-close.js"),
-              import("/dist/js/details-tabindex.js"),
-              import("/dist/js/popover-anchor.js"),
-            ]).then(() => { window.__modulesReady = true; });
-          </scr` + `ipt></head><body>${body}</body></html>`,
-      })
-    );
-  }
-
-  const DEPRECATED_MARKUP = `
-    <details data-menu open>
-      <summary>Actions</summary>
-      <div><a href="#">Edit</a></div>
-    </details>
-    <button type="button" popovertarget="fixture-pop">Open</button>
-    <div id="fixture-pop" popover>…</div>`;
-
-  async function collectWarnings(page, body) {
-    await fixtureRoute(page, body);
-    const warnings = [];
-    page.on("console", (msg) => {
-      if (msg.type() === "warning") warnings.push(msg.text());
-    });
-    await page.goto("/barefoot-deprecation-fixture.html");
-    await page.waitForFunction(() => window.__modulesReady === true);
-    return warnings;
-  }
-
-  test("arming against every announced surface warns once per module", async ({ page }) => {
-    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
-
-    for (const module of [
-      "js/details-close.js",
-      "js/details-tabindex.js",
-      "js/popover-anchor.js",
-    ]) {
-      expect(
-        warnings.filter((w) => w.includes(module)),
-        `exactly one notice from ${module}`
-      ).toHaveLength(1);
-    }
-    expect(warnings.filter((w) => w.includes("[barefoot-css]"))).toHaveLength(3);
-  });
-
-  test("notices name the removal version and the replacement", async ({ page }) => {
-    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
-
-    const close = warnings.find((w) => w.includes("details-close"));
-    expect(close).toContain("v4.0");
-    expect(close).toContain("popover");
-
-    for (const w of [warnings.find((x) => x.includes("tabindex")), warnings.find((x) => x.includes("popover-anchor"))]) {
-      expect(w).toContain("Removal candidate");
-      expect(w).toContain("v4.0");
-    }
-  });
-
-  test("a fresh copy of a module stays silent — notices are once per page", async ({ page }) => {
-    const warnings = await collectWarnings(page, DEPRECATED_MARKUP);
-
-    // Cache-busted import runs the module again on the same document;
-    // the shared lifecycle Set (relative ./lifecycle.js resolves without
-    // the query) keeps every key at one warning per page.
-    await page.evaluate(() => import("/dist/js/details-close.js?once-per-page"));
-
-    expect(warnings.filter((w) => w.includes("[barefoot-css]"))).toHaveLength(3);
-  });
-
-  test("a page using none of the announced surfaces stays fully silent", async ({ page }) => {
-    const warnings = await collectWarnings(page, "<p>nothing deprecated here</p>");
-    expect(warnings).toEqual([]);
-  });
-
+test.describe("opt-in JS: warnOnce seam", () => {
   test("warnOnce fires at most once per page per key, prefixed", async ({ page }) => {
     await gotoDemo(page);
     const fired = await page.evaluate(async () => {
@@ -632,24 +424,6 @@ test.describe("opt-in JS: deprecation notices (3.2 wave)", () => {
       return seen;
     });
     expect(fired).toEqual(["[barefoot-css] first", "[barefoot-css] other key"]);
-  });
-
-  test("notices stay scoped to the three announced modules", () => {
-    const affected = new Set(["details-close", "details-tabindex", "popover-anchor"]);
-    const files = fs
-      .readdirSync(path.join(rootDir, "src/js"))
-      .filter((f) => f.endsWith(".js") && f !== "lifecycle.js" && f !== "barefoot.js");
-    for (const f of files) {
-      const src = fs.readFileSync(path.join(rootDir, "src/js", f), "utf8");
-      const name = f.replace(/\.js$/, "");
-      if (affected.has(name)) {
-        expect(src, `${f} must announce its deprecation`).toContain("warnOnce(");
-      } else {
-        expect(src, `${f} is not part of the 3.2 wave — no notice`).not.toContain(
-          "warnOnce("
-        );
-      }
-    }
   });
 });
 
@@ -808,7 +582,7 @@ test.describe("opt-in JS: keyboard seams", () => {
     // The containment guard is the semantic core: never steal focus
     // from wherever the user went after closing.
     expect(rf).toContain("contains(document.activeElement)");
-    for (const name of ["nav", "details-close", "popover-menu"]) {
+    for (const name of ["nav", "popover-menu"]) {
       const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
       expect(src, `${name}.js delegates close-refocus`).toContain(
         'from "./return-focus.js"'
