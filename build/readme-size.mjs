@@ -21,11 +21,14 @@ try {
 }
 
 const rows = Object.entries(report)
-  .sort((a, b) => b[1].gzip - a[1].gzip)
+  .sort((a, b) => (b[1].gzip || b[1].raw) - (a[1].gzip || a[1].raw))
   .map(([file, s]) => {
     const gzip = (s.gzip / 1024).toFixed(2);
     const raw = (s.raw / 1024).toFixed(2);
     const brotli = (s.brotli / 1024).toFixed(2);
+    if (s.gzip === 0) {
+      return `| \`${file}\` | ${raw}KB | — | — |`;
+    }
     return `| \`${file}\` | ${raw}KB | **${gzip}KB** | ${brotli}KB |`;
   })
   .join("\n");

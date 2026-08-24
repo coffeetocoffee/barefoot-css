@@ -20,9 +20,12 @@ if (!index) {
   console.error("dist/sizes.json has no index.css entry — run `npm run build` first.");
   process.exit(1);
 }
-const ok = index.gzip <= GZIP_BUDGET;
+const budget = index.gzip > 0 ? GZIP_BUDGET : GZIP_BUDGET * 3;
+const measured = index.gzip > 0 ? index.gzip : index.raw;
+const unit = index.gzip > 0 ? "gzip" : "raw";
+const ok = measured <= budget;
 console.log(
-  `dist/index.css ${(index.gzip / 1024).toFixed(2)}KB gzip ` +
-    `(limit ${(GZIP_BUDGET / 1024).toFixed(2)}KB) → ${ok ? "PASS" : "FAIL"}`
+  `dist/index.css ${(measured / 1024).toFixed(2)}KB ${unit} ` +
+    `(limit ${(budget / 1024).toFixed(2)}KB) → ${ok ? "PASS" : "FAIL"}`
 );
 process.exit(ok ? 0 : 1);
