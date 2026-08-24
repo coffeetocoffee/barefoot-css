@@ -63,7 +63,7 @@ test.describe("accessibility conformance (axe-core)", () => {
     }
   });
 
-  test("theme gallery has no violations (seven themes rendered at once)", async ({ page }) => {
+  test("theme gallery has no violations (eight themes rendered at once)", async ({ page }) => {
     await gotoGallery(page);
     // Every starter theme renders live on one page — each card scopes
     // its own data-bf-theme, so this single scan axe-checks all of them.

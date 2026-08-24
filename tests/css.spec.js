@@ -1333,11 +1333,11 @@ test.describe("shared component recipes (ADR-0007)", () => {
 });
 
 test.describe("theme gallery (live preview cards)", () => {
-  test("seven themes render side by side, each with its own accent", async ({ page }) => {
+  test("eight themes render side by side, each with its own accent", async ({ page }) => {
     await gotoGallery(page);
     // Each card scopes data-bf-theme on itself, so tokens resolve inside
     // the card subtree. Same probe trick as tokenColor(), but scoped:
-    // seven cards must resolve seven distinct --bf-primary values live —
+    // eight cards must resolve eight distinct --bf-primary values live —
     // no screenshots needed to prove the previews are real.
     const colors = await page.evaluate(() =>
       [...document.querySelectorAll(".gallery-card")].map((card) => {
@@ -1349,11 +1349,11 @@ test.describe("theme gallery (live preview cards)", () => {
         return resolved;
       })
     );
-    expect(colors).toHaveLength(7);
+    expect(colors).toHaveLength(8);
     expect(
       new Set(colors).size,
-      `expected seven distinct live accents, got: ${colors.join(", ")}`
-    ).toBe(7);
+      `expected eight distinct live accents, got: ${colors.join(", ")}`
+    ).toBe(8);
   });
 
   test("cards carry real theme scoping, not just styling", async ({ page }) => {
@@ -1364,6 +1364,7 @@ test.describe("theme gallery (live preview cards)", () => {
       .locator(".gallery-card[data-bf-theme]")
       .evaluateAll((els) => els.map((el) => el.dataset.bfTheme));
     expect(themed.sort()).toEqual([
+      "coastal",
       "contrast",
       "dashboard",
       "editorial",
