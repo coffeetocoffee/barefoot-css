@@ -249,7 +249,7 @@ tokens — you never "reset" anything.
 
 ## Starter themes
 
-Six built-in demos of how far a few variables go. See the files in
+Seven built-in demos of how far a few variables go. See the files in
 `src/themes/`:
 
 - **Editorial** — serif, paper tones, square corners.
@@ -257,6 +257,7 @@ Six built-in demos of how far a few variables go. See the files in
 - **Playful** — rounded, saturated, bouncier transitions.
 - **Forest** — deep greens on warm paper.
 - **Sunset** — warm coral daylight, amber dusk, rounder corners.
+- **Coastal** — ocean blues, sandy warmth, relaxed rhythm.
 - **Custom** — a copy-and-rename template for your own theme.
 
 They are the marketing proof: *a handful of variables, completely

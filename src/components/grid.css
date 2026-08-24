@@ -17,7 +17,13 @@
      [data-grid="auto-fill"] → repeat(auto-fill, minmax(--bf-grid-min, 1fr))
        The track count flows with the row itself — no container query
        needed; --bf-grid-min (14rem) is the minimum track size.
-     data-gap="0|1…8"        → gap from the spacing scale (default 4). */
+     data-gap="0|1…8"        → gap from the spacing scale (default 4).
+
+   Variants (v4.1):
+     [data-grid="masonry"]   → grid-lanes where supported, auto-fill fallback.
+       Items of unequal height pack into rows without equalizing.
+       @supports (display: grid-lanes) gates the enhanced layout;
+       engines without it fall back to a standard auto-fill grid. */
 @layer components {
   [data-grid] {
     display: grid;
@@ -61,4 +67,24 @@
   [data-grid][data-gap="6"] { gap: var(--bf-space-6); }
   [data-grid][data-gap="7"] { gap: var(--bf-space-7); }
   [data-grid][data-gap="8"] { gap: var(--bf-space-8); }
+
+  /* ---- Masonry variant (v4.1) ----
+     Grid Lanes (display: grid-lanes) lets items of unequal height pack
+     tightly into rows, like a waterfall / Pinterest layout. The feature
+     ships behind @supports so unsupported engines never see the
+     declaration — they fall back to a standard auto-fill grid where
+     every row equalizes to the tallest item.
+
+     browsers: Firefox 155+ (flag → default), Safari TP 163+,
+     Chrome 140+ (flag → default). Not Baseline yet. */
+  [data-grid="masonry"] {
+    grid-template-columns: repeat(auto-fill, minmax(var(--bf-grid-min, 14rem), 1fr));
+  }
+
+  @supports (display: grid-lanes) {
+    [data-grid="masonry"] {
+      display: grid-lanes;
+      grid-template-columns: repeat(auto-fill, minmax(var(--bf-grid-min, 14rem), 1fr));
+    }
+  }
 }

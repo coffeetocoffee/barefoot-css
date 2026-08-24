@@ -4,6 +4,44 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] — 2026-08-24
+
+Post-major growth — new `@supports`-gated primitives, a seventh starter
+theme, and grid-lanes masonry where engines ship it. All additive, no
+renames or removals.
+
+### Added
+
+- **Masonry grid** (`components/grid.css`) — `[data-grid="masonry"]`
+  uses `display: grid-lanes` where supported (`@supports (display:
+  grid-lanes)`) so items of unequal height pack tightly into rows
+  (waterfall / Pinterest layout). Falls back to a standard `auto-fill`
+  grid in engines without Grid Lanes. Same `data-gap` and `--bf-grid-min`
+  controls apply. Not Baseline yet — Firefox 155+ (flag → default),
+  Safari TP 163+, Chrome 140+ (flag → default).
+- **Coastal starter theme** (`themes/coastal.css`) — ocean blues, sandy
+  warmth, relaxed rhythm. Seventh starter; gallery card + axe sweep
+  included.
+
+### Changed
+
+- **`api.md`** — v4.1 header; `data-grid` row gains `masonry`;
+  `data-bf-theme` row gains `coastal`.
+- **`components.md`** — Grid section documents the masonry variant.
+- **`theming.md`** — starter-theme list grows to seven (Coastal added).
+
+### Docs
+
+- `migration-4.md` unchanged — no breaking changes in 4.1.
+- Demo conformance page and theme gallery wired for coastal theme.
+
+### Tests
+
+- All existing suites green; no visual baselines changed (the demo did
+  not change visually — coastal is additive, masonry is @supports-gated
+  and absent in Chromium's default build).
+- `index.css` and `full.css` size budget unchanged.
+
 ## [4.0.0] — 2026-08-24
 
 The platform catch-up — the first Barefoot major that actually deletes.

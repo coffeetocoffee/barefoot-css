@@ -1,18 +1,15 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-24 — v4.0.0_
+_Last updated: 2026-08-24 — v4.1.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.0.0` (2026-08-24) — the platform catch-up:
-  raised browser baseline to 2026 evergreen (Chrome 125+, Firefox 128+,
-  Safari 26.2+), removed the three 3.2-deprecated surfaces (`details[data-menu]`
-  CSS hooks, `js/details-close.js`, `js/details-tabindex.js`,
-  `js/popover-anchor.js`), deleted `dropdown.css`, tightened the size
-  budget. First Barefoot major that actually deletes.
-- **Next:** **4.1** — post-major growth: new platform primitives behind
-  `@supports` gates, component additions, further budget tightening,
-  masonry grids if `grid-template-rows: masonry` lands.
+- **Current:** `barefoot-css@4.1.0` (2026-08-24) — post-major growth:
+  masonry grid (`[data-grid="masonry"]`) via `@supports (display:
+  grid-lanes)`, coastal starter theme, grid-lanes fallback to auto-fill
+  in unsupported engines. All additive, no renames or removals.
+- **Next:** **4.2** — toast auto-dismiss, hover tooltip fallback, docs
+  rot cleanup, skeleton shape variants, token/contrast fixes.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -27,7 +24,7 @@ _Last updated: 2026-08-24 — v4.0.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 4.0. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 4.1. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -267,12 +264,88 @@ and `.bf-*` utilities.
   die together; shims per the 3.5 gate check), deleted `dropdown.css`,
   tightened the enforced size budget, shipped migration-4 +
   `npm run migrate:v4`. First Barefoot major that actually deletes.
-  Shipped as `barefoot-css@4.0.0` (2026-08-24).
+   Shipped as `barefoot-css@4.0.0` (2026-08-24).
+- [x] **4.1** — post-major growth: masonry grid
+  (`[data-grid="masonry"]`) via `@supports (display: grid-lanes)` with
+  auto-fill fallback, coastal starter theme (ocean blues, sandy warmth).
+  All additive, no renames. Shipped as `barefoot-css@4.1.0`
+  (2026-08-24).
 
 ## Next
 
-Post-4.0 ideas (masonry grids, more starter themes, further budget
-tightening) stay off-roadmap until the next scan picks them up.
+Post-4.1 ideas (further budget tightening, more starter themes,
+additional @supports-gated primitives) stay off-roadmap until the next
+scan picks them up.
+
+## 4.2 — JS gaps, docs rot, token fixes
+
+Target: 2026-08-25. All additive, no breaking changes.
+
+### Added
+
+- **Toast auto-dismiss** (`js/toast.js`) — timed auto-dismiss with
+  configurable duration, pause-on-hover, visible progress indicator,
+  respects `prefers-reduced-motion`. Follows the existing pattern: one
+  `data-*` attribute (`data-duration`), zero dependencies, self-invokes
+  at load. Adds `auto-dismiss` row to `docs/javascript.md` table.
+- **Hover tooltip fallback** (`js/tooltip.js`) — `pointerenter` /
+  `pointerleave` hover-to-show for `popover="hint"` in engines without
+  interest invokers (Firefox, Safari). Chromium 139+ uses native
+  `interestinvoker` and skips the JS path. Same pattern: `data-tooltip`
+  already in use, the module adds the missing hover gesture. Adds
+  `tooltip` row to `docs/javascript.md` table.
+- **Skeleton shape variants** — `[data-shape="circle|text|card"]` on
+  `.skeleton` in `components/skeleton.css`. Circle for avatars, text for
+  multi-line placeholders (varied widths), card for composite loading
+  states. All pure CSS, no new JS.
+
+### Changed
+
+- **`docs/javascript.md`** — remove dead entries for deleted modules
+  (details-close, details-tabindex, popover-anchor); fix module count
+  (currently says "ten", should be seven + two new = nine); add
+  `toast.js` and `tooltip.js` rows.
+- **`docs/components.md`** — collapse "Dropdown (details/summary)"
+  section to a one-line pointer to popover menus; remove stale
+  `js/popover-anchor.js` reference.
+- **`docs/accessibility.md`** — remove references to deleted shims in
+  "Honest exceptions" section; update conformance table (remove
+  dropdown row).
+- **`demo/index.html`** — toast auto-dismiss demo + tooltip hover demo
+  added to conformance page.
+- **`barefoot.js`** — new imports for `toast.js` and `tooltip.js`.
+
+### Fix
+
+- **Contrast mode `--bf-muted` collapse** — in `tokens.css`, the
+  `prefers-contrast: more` block forces `--bf-muted` to the same value
+  as `--bf-primary` (both pure B/W), making muted text invisible. Give
+  `--bf-muted` a distinct contrast value that preserves the visual
+  hierarchy (e.g., 70% opacity B/W).
+- **Missing `-darken` / `-subtle` status tokens** — add
+  `--bf-success-darken`, `--bf-info-darken`, `--bf-warning-darken` and
+  `--bf-success-subtle`, `--bf-info-subtle`, `--bf-warning-subtle` to
+  `tokens.css` for hover states and tinted backgrounds on status
+  elements.
+
+### Docs
+
+- Dead docs cleanup across `javascript.md`, `components.md`,
+  `accessibility.md` (see Changed section above).
+
+### Tests
+
+- All existing suites green; no visual baselines changed.
+- New test: toast auto-dismiss timeout (CSS: `page.evaluate()` on
+  duration attribute, JS: verify dismiss fires after duration).
+- New test: tooltip hover show/hide (JS: pointerenter/leave
+  simulation).
+- New test: skeleton shape variants (CSS: computed border-radius
+  for circle, line-count for text).
+
+### Build
+
+- `index.css` and `full.css` size budget unchanged.
 
 ## Watch-list (no action until browsers fix it)
 

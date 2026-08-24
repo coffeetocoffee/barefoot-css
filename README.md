@@ -47,7 +47,7 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 45.26KB | — | — |
+| `full.css` | 45.50KB | — | — |
 | `components/forms.css` | 8.39KB | — | — |
 | `index.css` | 7.84KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
@@ -64,10 +64,10 @@ npm install barefoot-css
 | `components/table.css` | 1.44KB | — | — |
 | `components/accordion.css` | 1.44KB | — | — |
 | `components/nav.css` | 1.29KB | — | — |
+| `components/grid.css` | 1.23KB | — | — |
 | `components/carousel.css` | 1.19KB | — | — |
 | `components/dialog.css` | 1.13KB | — | — |
 | `components/segmented.css` | 1.12KB | — | — |
-| `components/grid.css` | 0.99KB | — | — |
 | `components/badge.css` | 0.94KB | — | — |
 | `components/media.css` | 0.92KB | — | — |
 | `components/alert.css` | 0.85KB | — | — |
@@ -88,6 +88,7 @@ npm install barefoot-css
 | `themes/dashboard.css` | 0.50KB | — | — |
 | `themes/forest.css` | 0.47KB | — | — |
 | `themes/custom.css` | 0.45KB | — | — |
+| `themes/coastal.css` | 0.44KB | — | — |
 | `themes/sunset.css` | 0.44KB | — | — |
 | `components/code.css` | 0.40KB | — | — |
 | `js/barefoot.js` | 0.39KB | — | — |

@@ -1,0 +1,20 @@
+/* Barefoot starter theme — Coastal.
+   Ocean blues, sandy warmth. Changes ~8 variables.
+   Apply with <html data-bf-theme="coastal">. */
+@layer tokens {
+  [data-bf-theme="coastal"] {
+    color-scheme: light dark;
+
+    --bf-primary: light-dark(#0369a1, #7dd3fc);
+    --bf-primary-fg: light-dark(#ffffff, #0c4a6e);
+    --bf-surface: light-dark(#f8fafc, #0c1929);
+    --bf-surface-alt: light-dark(#e0f2fe, #162a3d);
+    --bf-text: light-dark(#0f172a, #e0f2fe);
+    --bf-muted: light-dark(#475569, #94a3b8);
+    --bf-border: light-dark(#bae6fd, #1e3a5f);
+    --bf-focus-ring: light-dark(#0369a1, #7dd3fc);
+
+    --bf-radius: 0.5rem;
+    --bf-shadow-lifted: 0 2px 10px rgb(3 105 161 / 0.10);
+  }
+}

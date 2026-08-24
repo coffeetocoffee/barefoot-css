@@ -1,4 +1,4 @@
-# Barefoot — API Reference (v4.0)
+# Barefoot — API Reference (v4.1)
 
 As of v4.0.0, Barefoot's public API is frozen. This document defines
 what is stable, what may change, and the deprecation policy.
@@ -106,10 +106,10 @@ All component attributes and their valid values:
 
 | Attribute | Element(s) | Values | Since |
 |---|---|---|---|
-| `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `sunset`, `custom` | 0.1 |
+| `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `sunset`, `coastal`, `custom` | 0.1 |
 | `data-variant` | `<button>` | `primary`, `danger`, `ghost` | 0.1 |
 | `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
-| `data-grid` | any container | `auto-fit`, `auto-fill`, `1`–`4` (column count) | 0.1 |
+| `data-grid` | any container | `auto-fit`, `auto-fill`, `masonry`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
 | `data-table` | `<table>` | `stack` | 1.1 |
 | `data-nav` | `<header>`, `<footer>` | `header`, `footer` | 1.6 |

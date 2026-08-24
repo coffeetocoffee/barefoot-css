@@ -306,6 +306,11 @@ support, carousel controls + autoplay) and their markup.
 - **`data-gap="0|1…8"`** — tunes the gap from the spacing scale
   (default `4` → `--bf-space-4`). Override `--bf-grid-gap` for a global
   default.
+- **`[data-grid="masonry"]`** (v4.1) — items of unequal height pack
+  tightly into rows (waterfall / Pinterest layout). Uses `display:
+  grid-lanes` where supported (`@supports`-gated); falls back to a
+  standard `auto-fill` grid in engines without it. Same `data-gap` and
+  `--bf-grid-min` controls apply.
 - **JS:** none.
 - **A11y:** document order is visual order; cards are `<article>`s.
 
