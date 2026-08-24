@@ -67,15 +67,14 @@ Barefoot promises **no silent breaks.**
 | Deprecated | Announced | Removal | Replacement |
 |---|---|---|---|
 | `<details data-menu>` dropdowns — the `dropdown.css` styles, the details half of `menu-items.css` | 3.2 | 4.0 | Popover-API menus: `<button popovertarget>` + `<div popover data-kind="menu">` — same look, reliable Esc and light-dismiss |
-| `js/details-close.js` | 3.2 | 4.0 | Dies together with the details-menu pattern it exists for; popover menus close natively (`Esc`, light dismiss) and `js/popover-menu.js` adds arrow keys |
-| `js/details-tabindex.js` | 3.2 | 4.0, baseline-gated | None needed — native tab order covers open panels once WebKit ships the fix; drop the import when your baseline includes it |
-| `js/popover-anchor.js` | 3.2 | 4.0, baseline-gated | None needed — `position-visibility: anchors-visible` turns the guard into dead code; drop the import when your baseline includes it |
+| `js/details-close.js` | 3.2 | 4.0 | Dies together with the details-menu pattern; popover menus close natively and `js/popover-menu.js` adds arrow keys |
+| `js/details-tabindex.js` | 3.2 | 4.0 | None needed — WebKit tab-order fixed in Safari 17.4+; **gate-check: REMOVE** |
+| `js/popover-anchor.js` | 3.2 | 4.0 | None needed — `position-visibility: anchors-visible` is Baseline 2026 (Chrome 125+, Firefox 147+, Safari 26.2+); **gate-check: REMOVE** |
 
-**Baseline-gated** shims are removal *candidates*, not certainties:
-a shim is deleted in 4.0 only if upstream actually fixed the engine gap,
-verified at the 3.5 gate-check. While the gap exists the shim is
-load-bearing — it ships and warns once per page, silently doing nothing
-on engines that no longer need it.
+**Gate-check complete (3.5):** both baseline-gated shims are confirmed
+for removal in 4.0. The engine gaps they papered over are fixed in
+2026 evergreen browsers. `npm run migrate:v4` removes the imports
+automatically. See [migration-4.md](migration-4.md).
 
 ## Export map
 

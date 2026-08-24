@@ -4,6 +4,39 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] — 2026-08-24
+
+v4 rehearsal — freeze the browser-baseline contract, gate-check the
+shims, finish the codemod, and draft the migration guide. All additive
+in src/; no runtime changes.
+
+### Added
+
+- **Browser-baseline contract** — v4.0 requires 2026 evergreen:
+  Chrome 125+, Firefox 128+, Safari 26.2+. Documented in
+  `docs/migration-4.md`.
+- **`docs/migration-4.md`** — full v3.x → v4.0 migration guide:
+  what's removed (details-menu pattern, three JS shims), what changes
+  (`@scope` for prose/code, tighter size budget), codemod usage, and
+  a manual checklist.
+- **`codemod-4.mjs --write` mode** — the `--write` flag now removes
+  deprecated import lines automatically (`js/details-close.js`,
+  `js/details-tabindex.js`, `js/popover-anchor.js`). HTML/CSS patterns
+  (`<details data-menu>`, `details[data-menu]`) are flagged for manual
+  migration with guidance.
+
+### Changed
+
+- **`api.md` deprecation table** — gate-check verdicts added:
+  `js/details-tabindex.js` (WebKit tab-order fixed in Safari 17.4+)
+  and `js/popover-anchor.js` (`position-visibility: anchors-visible`
+  is Baseline 2026) are both confirmed for removal in 4.0.
+
+### Docs
+
+- `migration-4.md` created with the full v3→v4 migration guide.
+- `api.md` deprecation table updated with gate-check results.
+
 ## [3.4.0] — 2026-08-23
 
 Theming depth & global correctness — density tokens for a second

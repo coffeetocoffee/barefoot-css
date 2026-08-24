@@ -1,25 +1,23 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-23 — v3.4.0_
+_Last updated: 2026-08-24 — v3.5.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@3.4.0` (2026-08-23) — theming depth &
-  global correctness: density tokens (`data-density="compact"` remaps
-  spacing/radius/control-height for a compact axis), a logical-property
-  audit converting all remaining physical properties to logical
-  equivalents (`margin-inline`, `padding-block`, `inset-inline-start`,
-  `text-align: start`, logical `border-radius`) so RTL mirrors correctly,
-  and an i18n test page (`demo/i18n.html`) validating Arabic RTL
-  rendering of every affected component. The `@media` breakpoint audit
-  found zero candidates — the codebase is already 100% container queries
-  and intrinsic CSS.
-- **Next:** **3.5** — v4 rehearsal: freeze the raised browser-baseline
-  contract (2026 evergreen + explicit required-feature list), rehearse
-  every announced removal on a branch and re-derive the size budget
-  from what survives, draft `docs/migration-4.md`, finish codemod-4
-  (`--write`), and gate-check the shims — whatever upstream has *not*
-  fixed by then stays in 4.0 and returns to the watch-list.
+- **Current:** `barefoot-css@3.5.0` (2026-08-24) — v4 rehearsal: browser-
+  baseline contract frozen (2026 evergreen: Chrome 125+, Firefox 128+,
+  Safari 26.2+), gate-check complete — both baseline-gated shims
+  (`js/details-tabindex.js`, `js/popover-anchor.js`) confirmed for
+  removal in 4.0, `codemod-4.mjs` finished with `--write` mode,
+  `docs/migration-4.md` drafted.
+- **Next:** **4.0** — the platform catch-up: raise the baseline, adopt
+  `@scope` for prose/code scoping where it retires long `:where()`
+  chains, execute the 3.2 removals (`details[data-menu]` CSS hooks +
+  `js/details-close.js` die together; shims per the 3.5 gate check),
+  drop anything else deprecated during 3.x, tighten the enforced size
+  budget below its pre-removal number, ship migration-4 +
+  `npm run migrate:v4`, regenerate README sizes. The first Barefoot
+  major that actually deletes.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -34,7 +32,7 @@ _Last updated: 2026-08-23 — v3.4.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 3.4. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 3.5. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -262,12 +260,13 @@ and `.bf-*` utilities.
   `@media` breakpoints converting any that have a container boundary
   into container-based variants; all additive, no renames.
   Shipped as `barefoot-css@3.4.0` (2026-08-23).
-- [ ] **3.5** — v4 rehearsal: freeze the raised browser-baseline
-  contract (2026 evergreen + explicit required-feature list), rehearse
-  every announced removal on a branch and re-derive the size budget
-  from what survives, draft `docs/migration-4.md`, finish codemod-4
-  (`--write`), and gate-check the shims — whatever upstream has *not*
-  fixed by then stays in 4.0 and returns to the watch-list.
+- [x] **3.5** — v4 rehearsal: freeze the raised browser-baseline
+  contract (2026 evergreen: Chrome 125+, Firefox 128+, Safari 26.2+),
+  gate-check the shims (both confirmed for removal: WebKit tab-order
+  fixed in Safari 17.4+, `position-visibility: anchors-visible` is
+  Baseline 2026), finish codemod-4 (`--write` mode for import removal),
+  draft `docs/migration-4.md`. Shipped as `barefoot-css@3.5.0`
+  (2026-08-24).
 - [ ] **4.0** — the platform catch-up: raise the baseline, adopt
   `@scope` for prose/code scoping where it retires long `:where()`
   chains, execute the 3.2 removals (`details[data-menu]` CSS hooks +
@@ -287,23 +286,20 @@ Popover-API menus; shims flagged as baseline-gated); a component-growth
 batch proving the thesis still scales (3.3, incl. the
 `table-sort.js` opt-in module); theming depth +
 RTL/container correctness, all additive (3.4, shipped); the
-breaking-release rehearsal (3.5); then **4.0 raises the browser
+breaking-release rehearsal (3.5, shipped); then **4.0 raises the browser
 baseline, deletes what was announced, and tightens the size budget.**
-Next session starts 3.5; each milestone keeps the full suite green and
+Next session starts 4.0; each milestone keeps the full suite green and
 the budget enforced before the next begins. Post-4.0 ideas (masonry
 grids, more starter themes, further budget tightening) stay off-roadmap
 until the next scan picks them up.
 
 ## Watch-list (no action until browsers fix it)
 
-- `position-visibility: anchors-visible` landing in engines — when it
-  does, the 1.3.1 `popover-anchor.js` guard becomes a no-op and can be
-  dropped. (The Firefox off-screen clamp itself is upstream, re-verified
-  in Firefox 153, 2026-08-18.)
-- WebKit's `<details>` tab order (the gap `js/details-tabindex.js`
-  papers over) — same rule: lands upstream → shim deleted at the next
-  major. Both shims are formally flagged as baseline-gated removal
-  candidates in the 3.2 deprecation wave.
+- ~~`position-visibility: anchors-visible` landing in engines~~ —
+  **Resolved:** Baseline 2026 (Chrome 125+, Firefox 147+, Safari 26.2+).
+  `js/popover-anchor.js` confirmed for removal in 4.0 (gate-check at 3.5).
+- ~~WebKit's `<details>` tab order~~ — **Resolved:** fixed in Safari 17.4+.
+  `js/details-tabindex.js` confirmed for removal in 4.0 (gate-check at 3.5).
 - `grid-template-rows: masonry` landing across engines — a
   `[data-grid="masonry"]` variant becomes a one-liner then; no
   columns-hack imitation ships before that.
