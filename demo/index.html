@@ -86,7 +86,6 @@
           <tr><td>Datalist</td><td class="wcag">AA</td><td>Type → native suggestions appear → arrows pick. The input is a plain text field.</td></tr>
           <tr><td>Dialog</td><td class="wcag">AA</td><td>Focus moves in; <kbd>Esc</kbd> closes; focus returns to trigger. Focus is trapped.</td></tr>
           <tr><td>Popover</td><td class="wcag">A</td><td><kbd>Tab</kbd> to trigger → <kbd>Enter</kbd> opens → <kbd>Esc</kbd> or click-away closes.</td></tr>
-          <tr><td>Dropdown (<code>details</code>)</td><td class="wcag">AA</td><td><kbd>Enter</kbd> toggles → <kbd>Tab</kbd> through items. (Esc-close is browser-dependent — use the popover menu for guaranteed Esc.)</td></tr>
           <tr><td>Accordion</td><td class="wcag">AA</td><td><kbd>Tab</kbd> between summaries → <kbd>Enter</kbd> toggles. One open at a time via <code>name</code>.</td></tr>
           <tr><td>Tabs (opt-in JS)</td><td class="wcag">AA</td><td>Tab into tablist → <kbd>←</kbd>/<kbd>→</kbd> switch, <kbd>Home</kbd>/<kbd>End</kbd> jump, <kbd>Tab</kbd> into the panel. Via <code>js/tabs.js</code>.</td></tr>
           <tr><td>Carousel</td><td class="wcag">A</td><td><kbd>Tab</kbd> to scroller → arrow keys scroll → snaps.</td></tr>
@@ -890,11 +889,12 @@
     <!-- Toast -->
     <section id="toast" aria-labelledby="toast-title">
       <h2 id="toast-title">Toast</h2>
-      <p>A status notice pinned to the bottom edge, built on the Popover API — declarative, JS-free. Toasts are <code>popover="manual"</code>: they don't light-dismiss, so an app opens them when work finishes and closes them on a timer or their Close button — exactly how several stay open at once. Use <code>role="status"</code> for non-urgent, <code>role="alert"</code> for urgent. Sibling toasts stack upward: each open one lifts above the open siblings after it (pure CSS; engines without the pieces used simply overlap, newest on top).</p>
+      <p>A status notice pinned to the bottom edge, built on the Popover API — declarative, JS-free. Toasts are <code>popover="manual"</code>: they don't light-dismiss, so an app opens them when work finishes and closes them on a timer or their Close button — exactly how several stay open at once. Use <code>role="status"</code> for non-urgent, <code>role="alert"</code> for urgent. Sibling toasts stack upward: each open one lifts above the open siblings after it (pure CSS; engines without the pieces used simply overlap, newest on top). Add <code>data-duration</code> for auto-dismiss (opt-in <code>js/toast.js</code>).</p>
       <div class="bf-row bf-gap-2">
         <button type="button" id="toast-trigger" popovertarget="demo-toast">Show save toast</button>
         <button type="button" id="toast-upload-trigger" popovertarget="demo-toast-upload">Show upload toast</button>
         <button type="button" id="toast-error-trigger" popovertarget="demo-toast-error">Show error toast</button>
+        <button type="button" id="toast-auto-trigger" popovertarget="demo-toast-auto">Show auto-dismiss toast</button>
       </div>
       <!-- Sibling group — sharing a parent is what enables stacking.
            Manual lifetime, declarative close buttons. -->
@@ -910,6 +910,10 @@
         <div popover="manual" id="demo-toast-error" data-kind="toast" data-variant="danger" role="alert">
           <p>Upload failed — try again.</p>
           <button type="button" popovertarget="demo-toast-error">Close</button>
+        </div>
+        <div popover="manual" id="demo-toast-auto" data-kind="toast" data-variant="success" data-duration="3000" role="status">
+          <p>Auto-dismissing toast (3s). Hover to pause.</p>
+          <button type="button" popovertarget="demo-toast-auto">Close</button>
         </div>
       </div>
     </section>

@@ -1,15 +1,15 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-24 — v4.1.0_
+_Last updated: 2026-08-24 — v4.2.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.1.0` (2026-08-24) — post-major growth:
-  masonry grid (`[data-grid="masonry"]`) via `@supports (display:
-  grid-lanes)`, coastal starter theme, grid-lanes fallback to auto-fill
-  in unsupported engines. All additive, no renames or removals.
-- **Next:** **4.2** — toast auto-dismiss, hover tooltip fallback, docs
-  rot cleanup, skeleton shape variants, token/contrast fixes.
+- **Current:** `barefoot-css@4.2.0` (2026-08-24) — JS gaps, docs rot,
+  token fixes: toast auto-dismiss (`js/toast.js`), hover tooltip fallback
+  (`js/tooltip.js`), skeleton shape variants, contrast-mode `--bf-muted`
+  fix, missing status tokens (`-darken`/`-subtle`). All additive, no
+  breaking changes.
+- **Next:** **4.3** — (candidates from the next architecture scan)
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -24,7 +24,7 @@ _Last updated: 2026-08-24 — v4.1.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 4.1. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 4.2. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -270,16 +270,21 @@ and `.bf-*` utilities.
   auto-fill fallback, coastal starter theme (ocean blues, sandy warmth).
   All additive, no renames. Shipped as `barefoot-css@4.1.0`
   (2026-08-24).
+- [x] **4.2** — JS gaps, docs rot, token fixes: toast auto-dismiss
+  (`js/toast.js`), hover tooltip fallback (`js/tooltip.js`), skeleton
+  shape variants, contrast-mode `--bf-muted` fix, missing status tokens
+  (`-darken`/`-subtle`). Shipped as `barefoot-css@4.2.0`
+  (2026-08-24).
 
 ## Next
 
-Post-4.1 ideas (further budget tightening, more starter themes,
+Post-4.2 ideas (further budget tightening, more starter themes,
 additional @supports-gated primitives) stay off-roadmap until the next
 scan picks them up.
 
-## 4.2 — JS gaps, docs rot, token fixes
+## 4.3 — (candidates from the next architecture scan)
 
-Target: 2026-08-25. All additive, no breaking changes.
+Target: TBD. All additive, no breaking changes.
 
 ### Added
 

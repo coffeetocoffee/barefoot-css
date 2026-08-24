@@ -198,33 +198,6 @@ document.querySelector("dialog").showModal();
 - **Difference from dialog:** popover is non-modal (no focus trap) — right
   for menus/tooltips, not for blocking actions.
 
-## Dropdown (details/summary)
-
-> **Deprecated since 3.2, removed in 4.0.** Use the [popover
-> menu](#popover-fully-js-free-modal-like-layer) instead — same look,
-> reliable `Esc` and light-dismiss everywhere. The markup below keeps
-> working through 3.x; see [api.md → Deprecations](api.md#deprecations).
-
-```html
-<details data-menu>
-  <summary>Actions</summary>
-  <div><a href="#">Edit</a><a href="#">Share</a></div>
-</details>
-```
-
-- Custom chevron marker; panel floats below the summary.
-- **JS:** none.
-- **A11y:** native disclosure; `Enter` toggles, `Tab` moves.
-- **Esc caveat:** closing on `Esc` is browser-dependent for `<details>`
-  (Chrome closes only when focus is inside the panel). If guaranteed
-  Esc + click-away dismiss matters, use the **popover menu** below
-  (`[popover][data-kind="menu"]`) — same look, reliable platform behavior.
-- **Safari tab-order quirk:** WebKit does not include the contents of an
-  open `<details>` in the sequential tab order (a long-standing Safari
-  behavior), so Tab skips past its links there. Items stay clickable and
-  focusable; keyboard users on Safari can reach them via the "next form
-  control" key or by closing the panel first.
-
 ## Accordion / tabs (details, one-at-a-time)
 
 ```html
@@ -511,11 +484,22 @@ support, carousel controls + autoplay) and their markup.
 
 ```html
 <div class="skeleton" style="height: 1rem; width: 60%"></div>
+
+<!-- Shape variants -->
+<div class="skeleton" data-shape="circle" style="width: 2.5rem; height: 2.5rem"></div>
+<div class="skeleton" data-shape="text" style="height: 1rem"></div>
+<div class="skeleton" data-shape="text" style="height: 1rem"></div>
+<div class="skeleton" data-shape="text" style="height: 1rem"></div>
+<div class="skeleton" data-shape="card"></div>
 ```
 
 - **`.skeleton`** — a pure-CSS loading placeholder: a surface-alt bar
   with a shimmering highlight sweeping left→right. Set the size to
   match the content it will replace (text lines ≈ 1rem tall).
+- **`data-shape="circle"`** — round shape for avatar placeholders.
+- **`data-shape="text"`** — multi-line text placeholder; consecutive
+  text skeletons get varied widths (100%, 80%, 60%) for a natural look.
+- **`data-shape="card"`** — composite loading state for card placeholders.
 - **`prefers-reduced-motion`** — the shimmer stops; the placeholder
   stays static.
 - **JS:** none.
@@ -552,6 +536,13 @@ support, carousel controls + autoplay) and their markup.
   <p>Saved successfully.</p>
   <button type="button" popovertarget="toast">Close</button>
 </div>
+
+<!-- Auto-dismiss (opt-in JS) -->
+<div popover="manual" id="toast-auto" data-kind="toast" data-duration="3000" role="status">
+  <p>Saved successfully.</p>
+  <div data-toast-progress></div>
+  <button type="button" popovertarget="toast-auto">Close</button>
+</div>
 ```
 
 - **`[popover][data-kind="toast"]`** — a status notice pinned to the
@@ -570,9 +561,11 @@ support, carousel controls + autoplay) and their markup.
   the status tokens.
 - **`role="status"`** for non-urgent, **`role="alert"`** for urgent
   announcements.
-- **Honest note:** auto-dismiss after N seconds needs a timer, i.e. JS.
-  Barefoot keeps toasts user-dismissible by default; bring your own
-  timeout if you want one.
+- **Auto-dismiss (opt-in JS):** add `data-duration="ms"` (default 3000)
+  to auto-dismiss after N milliseconds. The timer pauses on hover and
+  keyboard focus. Respects `prefers-reduced-motion` — under reduced
+  motion the toast stays open until manually closed. Load
+  `js/toast.js` to enable.
 - **JS:** none.
 - **A11y:** role/`aria-live` come from your markup.
 

@@ -4,6 +4,11 @@
 
      <div class="skeleton" style="height: 1rem"></div>
 
+   Shape variants:
+     data-shape="circle" — round (avatars)
+     data-shape="text" — multi-line placeholder (varied widths)
+     data-shape="card" — composite loading state
+
    A shimmer travels left→right over the base surface. prefers-reduced-
    motion swaps the shimmer for a static bar — the placeholder stays, the
    motion goes. */
@@ -47,5 +52,27 @@
     .skeleton::after {
       animation: none;
     }
+  }
+
+  /* Shape variants */
+  .skeleton[data-shape="circle"] {
+    border-radius: var(--bf-radius-full);
+  }
+
+  .skeleton[data-shape="text"] {
+    min-height: auto;
+  }
+
+  .skeleton[data-shape="text"] + .skeleton[data-shape="text"] {
+    width: 80%;
+  }
+
+  .skeleton[data-shape="text"] + .skeleton[data-shape="text"] + .skeleton[data-shape="text"] {
+    width: 60%;
+  }
+
+  .skeleton[data-shape="card"] {
+    min-height: 8rem;
+    border-radius: var(--bf-radius);
   }
 }

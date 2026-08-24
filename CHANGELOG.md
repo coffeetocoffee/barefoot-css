@@ -4,6 +4,69 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0] — 2026-08-24
+
+JS gaps, docs rot, token fixes — toast auto-dismiss, hover tooltip
+fallback, skeleton shape variants, and contrast-mode token corrections.
+All additive, no breaking changes.
+
+### Added
+
+- **Toast auto-dismiss** (`js/toast.js`) — timed auto-dismiss with
+  configurable duration (`data-duration="ms"`, default 3000ms),
+  pause-on-hover, and visible progress indicator. Respects
+  `prefers-reduced-motion` — under reduced motion the toast stays open
+  until manually closed. Follows the existing pattern: one `data-*`
+  attribute, zero dependencies, self-invokes at load. Adds `toast`
+  row to `docs/javascript.md` table.
+- **Hover tooltip fallback** (`js/tooltip.js`) — `pointerenter` /
+  `pointerleave` hover-to-show for `popover="hint"` in engines without
+  interest invokers (Firefox, Safari). Chromium 139+ uses native
+  `interestinvoker` and skips the JS path. Same pattern: `data-tooltip`
+  already in use, the module adds the missing hover gesture. Adds
+  `tooltip` row to `docs/javascript.md` table.
+- **Skeleton shape variants** — `[data-shape="circle|text|card"]` on
+  `.skeleton` in `components/skeleton.css`. Circle for avatars, text for
+  multi-line placeholders (varied widths), card for composite loading
+  states. All pure CSS, no new JS.
+
+### Changed
+
+- **`docs/javascript.md`** — removed dead entries for deleted modules
+  (details-close, details-tabindex, popover-anchor); fixed module count
+  (ten → nine); added `toast.js` and `tooltip.js` rows.
+- **`docs/components.md`** — collapsed "Dropdown (details/summary)"
+  section (removed in 4.0); documented skeleton shape variants; updated
+  toast section with auto-dismiss docs.
+- **`docs/accessibility.md`** — removed references to deleted shims in
+  "Honest exceptions" section; removed Dropdown row from conformance
+  table.
+- **`demo/index.html`** — toast auto-dismiss demo added to conformance
+  page; Dropdown row removed from conformance table.
+- **`barefoot.js`** — new imports for `toast.js` and `tooltip.js`.
+
+### Fixed
+
+- **Contrast mode `--bf-muted` collapse** — in `tokens.css`, the
+  `prefers-contrast: more` block and `[data-bf-theme="contrast"]` now
+  give `--bf-muted` a distinct value (`#404040` / `#c0c0c0`) instead of
+  forcing it to the same B/W as `--bf-primary`, preserving the visual
+  hierarchy in high-contrast mode.
+- **Missing status tokens** — added `--bf-success-darken`,
+  `--bf-info-darken`, `--bf-warning-darken` and `--bf-success-subtle`,
+  `--bf-info-subtle`, `--bf-warning-subtle` to `tokens.css` for hover
+  states and tinted backgrounds on status elements.
+
+### Docs
+
+- Dead docs cleanup across `javascript.md`, `components.md`,
+  `accessibility.md` (see Changed section above).
+
+### Tests
+
+- All existing suites green; no visual baselines changed.
+- `index.css` and `full.css` size budget unchanged.
+
 ## [4.1.0] — 2026-08-24
 
 Post-major growth — new `@supports`-gated primitives, a seventh starter

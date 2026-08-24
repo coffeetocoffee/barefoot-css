@@ -1,22 +1,21 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-ten small opt-in modules add the missing behavior. Each is a single
+nine small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Adds |
 |---|---|
 | `js/tabs.js` | WAI-ARIA tabs: roving tabindex, arrow-key nav |
-| `js/details-close.js` | Reliable Esc-close for `details[data-menu]` — **deprecated 3.2** |
-| `js/details-tabindex.js` | WebKit tab-order fix for open `<details>` panels — **removal candidate 4.0** |
 | `js/popover-menu.js` | Arrow-key nav + focus restore for popover menus |
-| `js/popover-anchor.js` | Closes anchored popovers whose trigger is off-screen — **removal candidate 4.0** |
 | `js/carousel.js` | Carousel autoplay + prev/next controls |
 | `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
 | `js/chips.js` | Removes `[data-chip]` tags on × click |
 | `js/nav.js` | Responsive header nav: hamburger toggle, Esc-close |
 | `js/table-sort.js` | Sorts `table[data-bf-sort]` rows from header buttons |
-| `js/barefoot.js` | All ten in one import |
+| `js/toast.js` | Toast auto-dismiss: timed, pause-on-hover |
+| `js/tooltip.js` | Hover tooltip fallback for engines without interest invokers |
+| `js/barefoot.js` | All nine in one import |
 
 Deprecated surfaces keep working through 3.x and warn once per page
 when their markup is present; the full table with replacements lives
@@ -28,7 +27,7 @@ here, so this page can't drift from the bytes.
 ## Loading
 
 ```html
-<!-- all ten -->
+<!-- all nine -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -49,7 +48,7 @@ import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
 
-All ten share two internal primitives from `js/lifecycle.js`
+All nine share two internal primitives from `js/lifecycle.js`
 (`onDomReady`, `bindOnce`) — not public API, just plumbing that makes
 every `init*` call idempotent: re-running an init on markup that was
 already wired changes nothing. The two removal behaviors (chips,
@@ -291,6 +290,44 @@ maintains `aria-sort` on the active column's `th`.
   but valid, buttons inert. Header-button styles (muted voice, ↕/↑/↓
   indicator) live in `components/table.css`.
 - For dynamic content: `import { initTableSort } from "barefoot-css/js/table-sort.js"`.
+
+## 10. Toast auto-dismiss (`js/toast.js`)
+
+Adds timed auto-dismiss to `[popover][data-kind="toast"]` elements with
+configurable duration, pause-on-hover, and visible progress indicator.
+
+```html
+<div popover="manual" id="toast" data-kind="toast" data-duration="3000" role="status">
+  <p>Saved successfully.</p>
+  <button type="button" popovertarget="toast">Close</button>
+</div>
+```
+
+- `data-duration="ms"` (default 3000ms) sets the auto-dismiss timer.
+- Pauses on hover and keyboard focus; resumes when the pointer leaves or
+  focus moves away.
+- Respects `prefers-reduced-motion` — under reduced motion, the toast
+  stays open until manually closed.
+- **No-JS first:** without the module toasts stay open until manually
+  closed via `popovertarget` or `Esc`.
+
+## 11. Hover tooltip fallback (`js/tooltip.js`)
+
+`pointerenter` / `pointerleave` hover-to-show for `popover="hint"` in
+engines without interest invokers (Firefox, Safari). Chromium 139+ uses
+native `interestinvoker` and skips the JS path entirely.
+
+```html
+<button data-tooltip interestfor="tip" popovertarget="tip" popovertargetaction="show">?</button>
+<div popover="hint" id="tip" data-kind="tooltip">Help text</div>
+```
+
+- The module adds hover and focus gestures to `[data-tooltip]` triggers
+  that have a `popovertarget` pointing at a `popover="hint"` element.
+- Shows on `pointerenter` / `focus`, hides on `pointerleave` / `blur`.
+- **No-JS first:** without the module tooltips show only on click (via
+  `popovertarget`) in engines without interest invokers — the three-tier
+  model still works.
 
 ## Why no bundle
 

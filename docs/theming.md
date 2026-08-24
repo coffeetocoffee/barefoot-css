@@ -120,8 +120,14 @@ the base token and every ramp follows.
 | `--bf-danger-darken` | `color-mix(in oklab, var(--bf-danger), #000000 8%)` | hover darken for danger fills |
 | `--bf-danger-muted` | `color-mix(in oklab, var(--bf-danger), transparent 75%)` | light danger tint (focus rings) |
 | `--bf-success-muted` | `color-mix(in oklab, var(--bf-success), transparent 75%)` | light success tint (focus rings) |
+| `--bf-success-darken` | `color-mix(in oklab, var(--bf-success), #000000 8%)` | hover darken for success fills |
+| `--bf-success-subtle` | `color-mix(in oklab, var(--bf-success), transparent 88%)` | very light success tint |
 | `--bf-info-muted` | `color-mix(in oklab, var(--bf-info), transparent 75%)` | light info tint (focus rings) |
+| `--bf-info-darken` | `color-mix(in oklab, var(--bf-info), #000000 8%)` | hover darken for info fills |
+| `--bf-info-subtle` | `color-mix(in oklab, var(--bf-info), transparent 88%)` | very light info tint |
 | `--bf-warning-muted` | `color-mix(in oklab, var(--bf-warning), transparent 75%)` | light warning tint (focus rings) |
+| `--bf-warning-darken` | `color-mix(in oklab, var(--bf-warning), #000000 8%)` | hover darken for warning fills |
+| `--bf-warning-subtle` | `color-mix(in oklab, var(--bf-warning), transparent 88%)` | very light warning tint |
 | `--bf-border-strong` | `color-mix(in oklab, var(--bf-border), var(--bf-text) 20%)` | stronger border on hover |
 | `--bf-transition` | `150ms ease` | default motion |
 | `--bf-transition-slow` | `250ms ease` | slower motion |
@@ -170,7 +176,7 @@ the base token and every ramp follows.
 | `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
 | `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
 | `--bf-text` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-muted` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-muted` | `light-dark(#404040, #c0c0c0)` |  |
 | `--bf-border` | `light-dark(#000000, #ffffff)` |  |
 | `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
 | `--bf-danger` | `light-dark(#000000, #ffffff)` |  |
@@ -186,7 +192,7 @@ the base token and every ramp follows.
 | `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
 | `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
 | `--bf-text` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-muted` | `light-dark(#000000, #ffffff)` |  |
+| `--bf-muted` | `light-dark(#404040, #c0c0c0)` |  |
 | `--bf-border` | `light-dark(#000000, #ffffff)` |  |
 | `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
 | `--bf-danger` | `light-dark(#000000, #ffffff)` |  |

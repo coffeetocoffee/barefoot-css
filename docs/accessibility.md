@@ -70,23 +70,10 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 - **WAI-ARIA tabs** (arrow-key navigation) needs JS — it's the opt-in
   `js/tabs.js` module. Without it, `details[name]` gives you the
   one-at-a-time disclosure, or every panel just stays visible.
-- **`<details>` Esc-to-close is browser-dependent by default.** Chrome
-  closes on Escape only when focus is *inside the panel*; Firefox closes
-  from the summary. Options: use the **Popover API** for menus (Esc +
-  click-away is part of the platform — the recommended path, since the
-  details-menu pattern is deprecated as of 3.2), or load the opt-in
-  `js/details-close.js` (deprecated with it) to make Esc close
-  `details[data-menu]` reliably and return focus to the summary.
 - **Popover menus** are non-modal by design (roving focus, not a modal
   trap) — correct for menus, wrong for blocking actions; use dialog for
   those. The opt-in `js/popover-menu.js` adds arrow-key nav + focus
   restore.
-- **Safari doesn't tab into open `<details>` content** (a long-standing
-  WebKit behavior): links inside an open `<details>` are skipped by the
-  sequential tab order in Safari. They stay clickable and programmatically
-  focusable; load the opt-in `js/details-tabindex.js` shim (a
-  baseline-gated removal candidate for 4.0) to give open
-  `<details>` panels a real tab stop in every engine.
 
 ## Conformance matrix (from demo/index.html)
 
@@ -96,7 +83,6 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 | Form controls | AA | Tab → type |
 | Dialog | AA | Esc closes, focus trapped |
 | Popover | A | Enter opens, Esc/click-away closes |
-| Dropdown | AA | Enter toggles, Tab through items |
 | Accordion | AA | Tab between, Enter toggles |
 | Tabs (opt-in JS) | AA | Tab into tablist, arrows switch, Home/End jump |
 | Carousel | A | Tab, then arrow keys |

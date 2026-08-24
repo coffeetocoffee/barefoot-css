@@ -1,4 +1,4 @@
-# Barefoot — API Reference (v4.1)
+# Barefoot — API Reference (v4.2)
 
 As of v4.0.0, Barefoot's public API is frozen. This document defines
 what is stable, what may change, and the deprecation policy.
@@ -143,6 +143,9 @@ All component attributes and their valid values:
 | `data-segmented` | `<fieldset>` | (boolean) | 3.3 |
 | `data-timeline` | `<ol>` | (boolean) | 3.3 |
 | `data-density` | `<html>` | `compact` | 3.4 |
+| `data-shape` | `.skeleton` | `circle`, `text`, `card` | 4.2 |
+| `data-duration` | `[popover][data-kind="toast"]` | `ms` value (default 3000) | 4.2 |
+| `data-toast-progress` | child of `[data-toast]` | (boolean) | 4.2 |
 | `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-step-circle` | child of `[data-step]` | (boolean) | 1.9 |
 | `data-step-label` | child of `[data-step]` | (boolean) | 1.9 |
