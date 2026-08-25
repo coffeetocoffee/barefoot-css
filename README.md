@@ -47,8 +47,8 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 47.99KB | — | — |
-| `index.css` | 8.40KB | — | — |
+| `full.css` | 49.92KB | — | — |
+| `index.css` | 8.54KB | — | — |
 | `components/forms.css` | 8.39KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
 | `js/table-sort.js` | 3.28KB | — | — |
@@ -59,6 +59,7 @@ npm install barefoot-css
 | `components/stepper.css` | 2.67KB | — | — |
 | `js/tabs.js` | 2.51KB | — | — |
 | `js/popover-menu.js` | 2.25KB | — | — |
+| `components/reveal.css` | 2.11KB | — | — |
 | `js/roving-index.js` | 2.10KB | — | — |
 | `components/buttons.css` | 2.02KB | — | — |
 | `js/tooltip.js` | 1.86KB | — | — |
@@ -73,6 +74,7 @@ npm install barefoot-css
 | `components/segmented.css` | 1.12KB | — | — |
 | `components/badge.css` | 0.94KB | — | — |
 | `components/media.css` | 0.92KB | — | — |
+| `js/reveal.js` | 0.88KB | — | — |
 | `components/alert.css` | 0.85KB | — | — |
 | `components/skeleton.css` | 0.85KB | — | — |
 | `js/remove-on-click.js` | 0.85KB | — | — |
@@ -87,9 +89,9 @@ npm install barefoot-css
 | `themes/playful.css` | 0.59KB | — | — |
 | `themes/editorial.css` | 0.58KB | — | — |
 | `components/empty-state.css` | 0.57KB | — | — |
+| `js/barefoot.js` | 0.52KB | — | — |
 | `components/breadcrumbs.css` | 0.51KB | — | — |
 | `themes/dashboard.css` | 0.50KB | — | — |
-| `js/barefoot.js` | 0.48KB | — | — |
 | `themes/forest.css` | 0.47KB | — | — |
 | `themes/custom.css` | 0.45KB | — | — |
 | `themes/coastal.css` | 0.44KB | — | — |
@@ -97,7 +99,6 @@ npm install barefoot-css
 | `components/code.css` | 0.40KB | — | — |
 | `components/divider.css` | 0.36KB | — | — |
 | `components/card.css` | 0.33KB | — | — |
-| `components/reveal.css` | 0.32KB | — | — |
 | `components/prose.css` | 0.30KB | — | — |
 | `components/menu-items.css` | 0.29KB | — | — |
 | `components/view-transition.css` | 0.28KB | — | — |

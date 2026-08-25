@@ -2,7 +2,8 @@
    Tabs (WAI-ARIA), popover-menu keyboard support,
    carousel autoplay + controls, alert dismiss, removable chips,
    responsive header nav (hamburger), sortable tables,
-   toast auto-dismiss, hover tooltip fallback.
+   toast auto-dismiss, hover tooltip fallback,
+   staggered reveal groups.
  */
 import "./tabs.js";
 import "./popover-menu.js";
@@ -13,3 +14,4 @@ import "./nav.js";
 import "./table-sort.js";
 import "./toast.js";
 import "./tooltip.js";
+import "./reveal.js";

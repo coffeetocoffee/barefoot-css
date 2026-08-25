@@ -1,16 +1,15 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-25 — v4.3.0_
+_Last updated: 2026-08-25 — v4.4.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.3.0` (2026-08-25) — layout primitives:
-  CSS Grid app shell (`[data-layout="sidebar"]`), sidebar collapse via
-  `@container`, nested scroll regions, layout tokens. All additive, no
-  breaking changes.
-- **Next:** **4.4** — scroll-driven motion system: directional reveal
-  variants, staggered reveal groups, generic scroll-progress bar,
-  parallax, motion tokens.
+- **Current:** `barefoot-css@4.4.0` (2026-08-25) — scroll-driven motion
+  system: directional reveal variants, staggered reveal groups, generic
+  scroll-progress bar, parallax, motion tokens. All @supports-gated,
+  falls back to static. All additive, no breaking changes.
+- **Next:** TBD — post-4.4 ideas stay off-roadmap until the next scan
+  picks them up.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -25,7 +24,7 @@ _Last updated: 2026-08-25 — v4.3.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 4.3. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 4.4. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -281,11 +280,12 @@ and `.bf-*` utilities.
   nested scroll regions, layout tokens (`--bf-layout-sidebar-width`,
   `--bf-layout-header-height`, etc.). All additive, no breaking changes.
   Shipped as `barefoot-css@4.3.0` (2026-08-25).
-- [ ] **4.4** — scroll-driven motion system: directional reveal
+- [x] **4.4** — scroll-driven motion system: directional reveal
   variants (`[data-reveal="left|right|up|down|fade"]`), staggered
   reveal groups, generic scroll-progress bar (`[data-progress]`),
   parallax (`[data-parallax]`), motion tokens. All `@supports`
   gated, falls back to static. All additive.
+  Shipped as `barefoot-css@4.4.0` (2026-08-25).
 
 ## Next
 

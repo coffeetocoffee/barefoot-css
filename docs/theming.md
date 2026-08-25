@@ -168,6 +168,16 @@ the base token and every ramp follows.
 | `--bf-layout-sidebar-collapsed` | `4rem` | narrow sidebar |
 | `--bf-layout-header-height` | `3.5rem` | header bar |
 | `--bf-layout-gap` | `var(--bf-space-4)` | gap between grid areas |
+
+### Motion (v4.4: scroll-driven)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-reveal-distance` | `var(--bf-space-4)` | translate offset for reveal |
+| `--bf-reveal-duration` | `600ms` | animation length |
+| `--bf-reveal-stagger` | `100ms` | inter-child delay in stagger group |
+| `--bf-progress-height` | `3px` | scroll-progress bar thickness |
+| `--bf-progress-color` | `var(--bf-primary)` | scroll-progress bar color |
 | `--bf-space-1` | `0.125rem` |  |
 | `--bf-space-2` | `0.25rem` |  |
 | `--bf-space-3` | `0.5rem` |  |

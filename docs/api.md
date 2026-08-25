@@ -148,6 +148,10 @@ All component attributes and their valid values:
 | `data-collapse` | `[data-layout="sidebar"]` | (boolean) | 4.3 |
 | `data-collapsed` | `[data-layout="sidebar"]` | (boolean) | 4.3 |
 | `data-shape` | `.skeleton` | `circle`, `text`, `card` | 4.2 |
+| `data-reveal` | any element | `left`, `right`, `up`, `down`, `fade` (boolean = up) | 3.1, 4.4 |
+| `data-reveal-group` | container | (boolean) | 4.4 |
+| `data-progress` | scroll container | `top`, `bottom` (boolean = bottom) | 4.4 |
+| `data-parallax` | decorative element | (boolean) | 4.4 |
 | `data-duration` | `[popover][data-kind="toast"]` | `ms` value (default 3000) | 4.2 |
 | `data-toast-progress` | child of `[data-toast]` | (boolean) | 4.2 |
 | `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |

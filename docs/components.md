@@ -841,13 +841,20 @@ support, carousel controls + autoplay) and their markup.
 
 ```html
 <section data-reveal>…</section>
+<section data-reveal="left">…</section>
+<section data-reveal="right">…</section>
+<section data-reveal="down">…</section>
+<section data-reveal="fade">…</section>
 ```
 
 - Opt-in scroll-entry motion (`components/reveal.css`): the element
-  fades from 0 and rises `--bf-space-4` into place as it enters the
-  viewport. A scroll-driven animation (`animation-timeline: view()`)
-  ties progress to the element's own position — scrolling back re-hides
-  it, and there is no IntersectionObserver or JS anywhere.
+  fades and slides into place as it enters the viewport. A scroll-driven
+  animation (`animation-timeline: view()`) ties progress to the
+  element's own position — scrolling back re-hides it, and there is no
+  IntersectionObserver or JS anywhere.
+- **Direction variants** (v4.4): `data-reveal="left|right|up|down|fade"`.
+  Each maps to a distinct `@keyframes` using `translate` on one axis
+  or `opacity` only. Default is `up` (fade + rise).
 - **Two gates, both load-bearing:** engines without scroll-driven
   animations never apply the rule (the start state lives only inside
   the animation, so content is simply visible); and
@@ -857,6 +864,55 @@ support, carousel controls + autoplay) and their markup.
   reduced-motion users.
 - **Placement:** don't put `data-reveal` inside horizontal scrollers;
   `view()` tracks the nearest scroll container's block axis by default.
+
+## Staggered reveal (v4.4)
+
+```html
+<div data-reveal-group>
+  <article data-reveal>…</article>
+  <article data-reveal>…</article>
+  <article data-reveal>…</article>
+</div>
+```
+
+- `data-reveal-group` on a container staggers its children's reveal
+  animations sequentially. `js/reveal.js` sets `--bf-reveal-index`
+  (0, 1, 2, …) on each child; the CSS applies
+  `animation-delay: calc(var(--bf-reveal-index) * var(--bf-reveal-stagger))`.
+- Without JS, all children animate simultaneously — the stagger degrades
+  gracefully. Tokens: `--bf-reveal-stagger` (100ms),
+  `--bf-reveal-duration` (600ms).
+
+## Scroll-progress bar (v4.4)
+
+```html
+<div data-progress>…</div>
+<div data-progress="top">…</div>
+```
+
+- `data-progress` on any scroll container draws a thin bar that fills
+  as you scroll. Uses the ANONYMOUS scroll timeline pattern from the
+  carousel: `animation-timeline: scroll(nearest block)` on the
+  container's own `::after`. `@supports (animation-timeline: scroll())`
+  gated. `data-progress="top"` pins to top; default is bottom.
+- Tokens: `--bf-progress-height` (3px), `--bf-progress-color`
+  (var(--bf-primary)).
+- **JS:** none. Live under `prefers-reduced-motion` (position feedback,
+  not animation).
+
+## Parallax (v4.4)
+
+```html
+<img data-parallax src="…">
+```
+
+- `data-parallax` on a decorative element makes it scroll at a
+  different speed for a subtle depth effect. Pure CSS via
+  `animation-timeline: scroll()` with `animation-range` tuned for a
+  20-30% offset. `@supports`-gated; falls back to static position.
+- **Placement:** don't put `data-parallax` inside horizontal scrollers.
+- **A11y:** decorative only — content order and announcements unchanged.
+  Motion stops under `prefers-reduced-motion`.
 
 ## Utilities
 

@@ -1,33 +1,63 @@
 /* Barefoot — reveal.
-   Opt-in scroll-entry motion: an element with [data-reveal] fades and
-   rises into place as it enters the viewport. Pure CSS — a
-   scroll-driven animation (animation-timeline: view()) ties progress
-   to the element's own position, so scrolling back re-hides it and no
+   Opt-in scroll-entry motion: elements fade and slide into place as they
+   enter the viewport. Pure CSS — scroll-driven animations tie progress
+   to the element's own position, so scrolling back re-hides them and no
    JS or IntersectionObserver exists to remove.
 
-   <section data-reveal> … </section>
+   <section data-reveal> … </section>              fade-up (default)
+   <section data-reveal="left"> … </section>       slide from left
+   <section data-reveal="right"> … </section>      slide from right
+   <section data-reveal="down"> … </section>       slide from below
+   <section data-reveal="fade"> … </section>       fade only (no translate)
 
-   Import alongside the core:
+   Staggered reveals — children animate sequentially:
 
-     @import "barefoot-css/components/reveal.css";
+     <div data-reveal-group>
+       <article data-reveal>…</article>
+       <article data-reveal>…</article>
+       <article data-reveal>…</article>
+     </div>
+
+   js/reveal.js sets --bf-reveal-index (0, 1, 2, …) on each child;
+   without JS all children animate simultaneously (graceful degradation).
+
+   Generic scroll-progress bar — any scroll container:
+
+     <div data-progress>…</div>                     bar at bottom (default)
+     <div data-progress="top">…</div>               bar at top
+
+   Uses the ANONYMOUS scroll timeline pattern from the carousel:
+   animation-timeline: scroll(nearest block) on the container's ::after.
+
+   Parallax — decorative elements scroll at a different speed:
+
+     <img data-parallax src="…">
+
+   Uses animation-timeline: scroll() with a reduced range for a subtle
+   20-30% offset effect.
 
    Two gates, both load-bearing:
-   - @supports (animation-timeline: view()) — engines without
-     scroll-driven animations never apply the rule, so the element is
-     simply visible (the start state lives only inside the animation).
-   - @media (prefers-reduced-motion: no-preference) — required because
-     base.css's motion kill-switch clamps *durations*, which a scroll
-     timeline ignores; without this gate reduced-motion users would
-     still see content animate in.
+   - @supports (animation-timeline: view()) for reveal/parallax
+   - @supports (animation-timeline: scroll()) for progress bar
+   - @media (prefers-reduced-motion: no-preference) for reveal/parallax
 
-   Keep [data-reveal] out of horizontal scrollers: view() tracks the
-   nearest scroll container's block axis by default. */
+   Keep [data-reveal] and [data-parallax] out of horizontal scrollers:
+   view() tracks the nearest scroll container's block axis by default. */
 @layer components {
+  /* ---- Direction variants (v4.4) ---- */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       [data-reveal] {
-        animation: bf-reveal linear both;
+        animation-name: bf-reveal-up;
+        animation-duration: var(--bf-reveal-duration);
+        animation-timing-function: linear;
+        animation-fill-mode: both;
       }
+
+      [data-reveal="left"]  { animation-name: bf-reveal-left; }
+      [data-reveal="right"] { animation-name: bf-reveal-right; }
+      [data-reveal="down"]  { animation-name: bf-reveal-down; }
+      [data-reveal="fade"]  { animation-name: bf-reveal-fade; }
 
       /* The doubled [data-reveal][data-reveal] is load-bearing: the
          minifier merges same-selector rules and folds their
@@ -39,14 +69,135 @@
         animation-range: entry 0% cover 25%;
       }
 
-      @keyframes bf-reveal {
+      @keyframes bf-reveal-up {
         from {
           opacity: 0;
-          translate: 0 var(--bf-space-4);
+          translate: 0 var(--bf-reveal-distance);
         }
         to {
           opacity: 1;
           translate: none;
+        }
+      }
+
+      @keyframes bf-reveal-left {
+        from {
+          opacity: 0;
+          translate: calc(-1 * var(--bf-reveal-distance)) 0;
+        }
+        to {
+          opacity: 1;
+          translate: none;
+        }
+      }
+
+      @keyframes bf-reveal-right {
+        from {
+          opacity: 0;
+          translate: var(--bf-reveal-distance) 0;
+        }
+        to {
+          opacity: 1;
+          translate: none;
+        }
+      }
+
+      @keyframes bf-reveal-down {
+        from {
+          opacity: 0;
+          translate: 0 calc(-1 * var(--bf-reveal-distance));
+        }
+        to {
+          opacity: 1;
+          translate: none;
+        }
+      }
+
+      @keyframes bf-reveal-fade {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+    }
+  }
+
+  /* ---- Staggered reveals (v4.4) ----
+     [data-reveal-group] on a container. Each child with [data-reveal]
+     receives a sequential animation-delay via --bf-reveal-index (set by
+     js/reveal.js). Without JS, all children animate simultaneously. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-reveal-group] [data-reveal] {
+        animation-delay: calc(var(--bf-reveal-index, 0) * var(--bf-reveal-stagger));
+      }
+    }
+  }
+
+  /* ---- Generic scroll-progress bar (v4.4) ----
+     [data-progress] on any scroll container. Draws a ::after pseudo as
+     a thin bar pinned to the top or bottom. Uses the ANONYMOUS scroll
+     timeline pattern from the carousel. */
+  @supports (animation-timeline: scroll()) {
+    [data-progress] {
+      position: relative;
+    }
+
+    [data-progress]::after {
+      content: "";
+      position: sticky;
+      inset-inline-start: 0;
+      display: block;
+      block-size: var(--bf-progress-height);
+      border-radius: var(--bf-radius-full);
+      background-color: var(--bf-border);
+      background-image: linear-gradient(var(--bf-progress-color), var(--bf-progress-color));
+      background-repeat: no-repeat;
+      background-position: inline-start;
+      background-size: 0% 100%;
+      animation: bf-progress linear both;
+      z-index: var(--bf-z-sticky);
+    }
+
+    [data-progress="top"]::after {
+      align-self: flex-start;
+    }
+
+    [data-progress="bottom"]::after,
+    [data-progress]::after {
+      align-self: flex-end;
+    }
+
+    /* The doubled attributes keep this selector text distinct — see
+       above for why: same-selector rules get merged and re-folded
+       into an `animation` shorthand Chromium can't parse. */
+    [data-progress][data-progress]::after {
+      animation-timeline: scroll(nearest block);
+    }
+
+    @keyframes bf-progress {
+      from { background-size: 0% 100%; }
+      to   { background-size: 100% 100%; }
+    }
+  }
+
+  /* ---- Parallax (v4.4) ----
+     [data-parallax] on an image or decorative element. Uses
+     animation-timeline: scroll() with animation-range tuned for a
+     subtle 20-30% offset (element scrolls at ~70-80% of the
+     surrounding content speed). Falls back to static position. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-parallax] {
+        animation: bf-parallax linear both;
+        animation-timeline: scroll();
+        animation-range: entry 100% exit 0%;
+      }
+
+      @keyframes bf-parallax {
+        from {
+          translate: 0 calc(-1 * var(--bf-reveal-distance));
+        }
+        to {
+          translate: 0 var(--bf-reveal-distance);
         }
       }
     }

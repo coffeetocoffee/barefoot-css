@@ -4,6 +4,63 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.4.0] — 2026-08-25
+
+Scroll-driven motion system — directional reveal variants, staggered
+reveal groups, generic scroll-progress bar, parallax, and motion tokens.
+All `@supports`-gated, falls back to static. All additive, no breaking
+changes.
+
+### Added
+
+- **Direction variants** (`components/reveal.css`) — extend
+  `[data-reveal]` with five entry motions: `[data-reveal="left"]`,
+  `[data-reveal="right"]`, `[data-reveal="up"]` (default),
+  `[data-reveal="down"]`, `[data-reveal="fade"]`. Each maps to a
+  distinct `@keyframes` using `translate` on one axis or `opacity`
+  only. All gated behind `@supports (animation-timeline: view())` +
+  `@media (prefers-reduced-motion: no-preference)`.
+- **Staggered reveals** — `[data-reveal-group]` on a container. Each
+  child with `[data-reveal]` receives a sequential `animation-delay`
+  via the CSS custom property `--bf-reveal-index`. A self-invoking
+  `js/reveal.js` sets this property on each child at load
+  (`--bf-reveal-index: 0, 1, 2, ...`). Without JS, all children
+  animate simultaneously — the stagger degrades gracefully.
+- **Generic scroll-progress bar** — `[data-progress]` on any scroll
+  container. Draws a `::after` pseudo-element as a thin bar pinned to
+  the top or bottom (`data-progress="top|bottom"`, default `bottom`).
+  Uses the ANONYMOUS scroll timeline pattern from the carousel:
+  `animation-timeline: scroll(nearest block)` on the container's own
+  `::after`. `@supports (animation-timeline: scroll())` gated.
+- **Parallax** — `[data-parallax]` on an image or decorative element.
+  Uses `animation-timeline: scroll()` with `animation-range` tuned for
+  a subtle 20–30% offset (element scrolls at ~70–80% of the surrounding
+  content speed). The `translate` is applied via `@keyframes` — no JS,
+  no IntersectionObserver. `@supports` gated; falls back to static
+  position.
+- **Motion tokens** (`tokens.css`):
+  - `--bf-reveal-distance: var(--bf-space-4)` (translate offset)
+  - `--bf-reveal-duration: 600ms` (animation length)
+  - `--bf-reveal-stagger: 100ms` (inter-child delay)
+  - `--bf-progress-height: 3px` (scroll-progress bar thickness)
+  - `--bf-progress-color: var(--bf-primary)` (progress bar color)
+- **`js/reveal.js`** — stagger module that sets `--bf-reveal-index` on
+  each `[data-reveal]` child in a `[data-reveal-group]`. Zero deps,
+  self-invokes at load.
+
+### Changed
+
+- **`docs/components.md`** — "Reveal" section expanded: direction
+  variants, stagger group, generic progress bar, parallax.
+- **`demo/index.html`** — reveal demos (all five directions), stagger
+  group demo (cards in a grid), scroll-progress demo, parallax demo.
+- **`js/barefoot.js`** — new import for `reveal.js`.
+
+### Tests
+
+- All existing suites green; no visual baselines changed.
+- `index.css` and `full.css` size budget unchanged.
+
 ## [4.3.0] — 2026-08-25
 
 Layout primitives — CSS Grid app shell, sidebar collapse, nested scroll

@@ -226,7 +226,7 @@ test.describe("platform primitives (@supports-gated)", () => {
       const s = getComputedStyle(el);
       return { name: s.animationName, timeline: s.animationTimeline };
     });
-    expect(anim.name).toBe("bf-reveal");
+    expect(anim.name).toBe("bf-reveal-up");
     expect(anim.timeline).toContain("view()");
   });
 
