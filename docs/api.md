@@ -143,6 +143,10 @@ All component attributes and their valid values:
 | `data-segmented` | `<fieldset>` | (boolean) | 3.3 |
 | `data-timeline` | `<ol>` | (boolean) | 3.3 |
 | `data-density` | `<html>` | `compact` | 3.4 |
+| `data-layout` | wrapper div | `sidebar` | 4.3 |
+| `data-area` | child of `[data-layout]` | `header`, `nav`, `main`, `aside`, `footer` | 4.3 |
+| `data-collapse` | `[data-layout="sidebar"]` | (boolean) | 4.3 |
+| `data-collapsed` | `[data-layout="sidebar"]` | (boolean) | 4.3 |
 | `data-shape` | `.skeleton` | `circle`, `text`, `card` | 4.2 |
 | `data-duration` | `[popover][data-kind="toast"]` | `ms` value (default 3000) | 4.2 |
 | `data-toast-progress` | child of `[data-toast]` | (boolean) | 4.2 |

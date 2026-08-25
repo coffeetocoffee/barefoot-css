@@ -1,0 +1,115 @@
+/* Barefoot — layout.
+   CSS Grid app shell: sidebar + header + main + footer. The grid
+   primitive for admin panels, SaaS dashboards, and CMS layouts.
+
+   <div data-layout="sidebar">
+     <header data-area="header">…</header>
+     <nav data-area="nav">…</nav>
+     <main>…</main>
+     <aside data-area="aside">…</aside>
+     <footer data-area="footer">…</footer>
+   </div>
+
+   Direct-child semantic elements (<header>, <nav>, <main>, <aside>,
+   <footer>) auto-map to named grid areas without [data-area] attributes.
+   Explicit [data-area="header|nav|main|aside|footer"] overrides the
+   auto-mapping for non-semantic markup.
+
+   Variants:
+     [data-collapse]        → enables sidebar collapse toggle
+     [data-collapsed]       → shrinks sidebar to collapsed width
+
+   Tokens:
+     --bf-layout-sidebar-width       (16rem)
+     --bf-layout-sidebar-collapsed   (4rem)
+     --bf-layout-header-height       (3.5rem)
+     --bf-layout-gap                 (var(--bf-space-4)) */
+@layer components {
+  /* ---- App shell grid ---- */
+  [data-layout="sidebar"] {
+    display: grid;
+    min-block-size: 100dvh;
+    grid-template:
+      var(--bf-layout-header-height) "header header"
+      auto                      "nav    main"
+      1fr                       "aside  main"
+      auto                      "footer footer"
+      / var(--bf-layout-sidebar-width) 1fr;
+    gap: var(--bf-layout-gap);
+  }
+
+  /* ---- Auto-map semantic elements to grid areas ---- */
+  [data-layout="sidebar"] > header {
+    grid-area: header;
+  }
+
+  [data-layout="sidebar"] > nav {
+    grid-area: nav;
+  }
+
+  [data-layout="sidebar"] > main {
+    grid-area: main;
+    min-block-size: 0; /* prevent grid blowout */
+  }
+
+  [data-layout="sidebar"] > aside {
+    grid-area: aside;
+  }
+
+  [data-layout="sidebar"] > footer {
+    grid-area: footer;
+  }
+
+  /* ---- Explicit area overrides ---- */
+  [data-layout="sidebar"] > [data-area="header"] { grid-area: header; }
+  [data-layout="sidebar"] > [data-area="nav"]    { grid-area: nav; }
+  [data-layout="sidebar"] > [data-area="main"] {
+    grid-area: main;
+    min-block-size: 0;
+  }
+  [data-layout="sidebar"] > [data-area="aside"]  { grid-area: aside; }
+  [data-layout="sidebar"] > [data-area="footer"] { grid-area: footer; }
+
+  /* ---- Nested scroll regions ---- */
+  [data-layout="sidebar"] > nav,
+  [data-layout="sidebar"] > [data-area="nav"] {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-block-size: calc(100dvh - var(--bf-layout-header-height));
+    overflow-y: auto;
+  }
+
+  [data-layout="sidebar"] > main,
+  [data-layout="sidebar"] > [data-area="main"] {
+    overflow-y: auto;
+    max-block-size: calc(100dvh - var(--bf-layout-header-height));
+  }
+
+  /* ---- Sidebar collapse ---- */
+  [data-layout="sidebar"][data-collapse] {
+    container-type: inline-size;
+  }
+
+  [data-layout="sidebar"][data-collapsed] {
+    grid-template-columns: var(--bf-layout-sidebar-collapsed) 1fr;
+  }
+
+  /* Hide nav labels when collapsed */
+  [data-layout="sidebar"][data-collapsed] nav > * > span,
+  [data-layout="sidebar"][data-collapsed] [data-area="nav"] > * > span {
+    display: none;
+  }
+
+  /* ---- Auto-collapse at narrow container widths ---- */
+  @container (max-width: 48rem) {
+    [data-layout="sidebar"]:not([data-collapsed]) {
+      grid-template-columns: var(--bf-layout-sidebar-collapsed) 1fr;
+    }
+
+    [data-layout="sidebar"]:not([data-collapsed]) nav > * > span,
+    [data-layout="sidebar"]:not([data-collapsed]) [data-area="nav"] > * > span {
+      display: none;
+    }
+  }
+}

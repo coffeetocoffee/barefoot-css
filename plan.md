@@ -1,15 +1,16 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-24 — v4.2.0_
+_Last updated: 2026-08-25 — v4.3.0_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.2.0` (2026-08-24) — JS gaps, docs rot,
-  token fixes: toast auto-dismiss (`js/toast.js`), hover tooltip fallback
-  (`js/tooltip.js`), skeleton shape variants, contrast-mode `--bf-muted`
-  fix, missing status tokens (`-darken`/`-subtle`). All additive, no
+- **Current:** `barefoot-css@4.3.0` (2026-08-25) — layout primitives:
+  CSS Grid app shell (`[data-layout="sidebar"]`), sidebar collapse via
+  `@container`, nested scroll regions, layout tokens. All additive, no
   breaking changes.
-- **Next:** **4.3** — (candidates from the next architecture scan)
+- **Next:** **4.4** — scroll-driven motion system: directional reveal
+  variants, staggered reveal groups, generic scroll-progress bar,
+  parallax, motion tokens.
 - **Upkeep:** the 2026-08-21 architecture scan (candidates C1–C7)
   completed in v2.7 — lifecycle/keyboard/removal seams, shared CSS
   recipes, palette-parity guard, test fixture harness (ADRs
@@ -24,7 +25,7 @@ _Last updated: 2026-08-24 — v4.2.0_
   `visual-cross`; the ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.12KB gzip · `full.css` 8.60KB gzip (10KB
   budget → PASS).
-- **Done:** milestones 0.1 → 4.2. Full history: `CHANGELOG.md`.
+- **Done:** milestones 0.1 → 4.3. Full history: `CHANGELOG.md`.
 
 ## Vision
 
@@ -273,84 +274,202 @@ and `.bf-*` utilities.
 - [x] **4.2** — JS gaps, docs rot, token fixes: toast auto-dismiss
   (`js/toast.js`), hover tooltip fallback (`js/tooltip.js`), skeleton
   shape variants, contrast-mode `--bf-muted` fix, missing status tokens
-  (`-darken`/`-subtle`). Shipped as `barefoot-css@4.2.0`
-  (2026-08-24).
+   (`-darken`/`-subtle`). Shipped as `barefoot-css@4.2.0`
+   (2026-08-24).
+- [x] **4.3** — layout primitives: CSS Grid app shell
+  (`[data-layout="sidebar"]`), sidebar collapse via `@container`,
+  nested scroll regions, layout tokens (`--bf-layout-sidebar-width`,
+  `--bf-layout-header-height`, etc.). All additive, no breaking changes.
+  Shipped as `barefoot-css@4.3.0` (2026-08-25).
+- [ ] **4.4** — scroll-driven motion system: directional reveal
+  variants (`[data-reveal="left|right|up|down|fade"]`), staggered
+  reveal groups, generic scroll-progress bar (`[data-progress]`),
+  parallax (`[data-parallax]`), motion tokens. All `@supports`
+  gated, falls back to static. All additive.
 
 ## Next
 
-Post-4.2 ideas (further budget tightening, more starter themes,
-additional @supports-gated primitives) stay off-roadmap until the next
-scan picks them up.
+Post-4.4 ideas stay off-roadmap until the next scan picks them up.
 
-## 4.3 — (candidates from the next architecture scan)
+## 4.3 — layout primitives
 
 Target: TBD. All additive, no breaking changes.
 
+### Motivation
+
+Barefoot currently ships `.bf-sidebar` (a flex-wrap utility that
+splits a row into a fixed-width first child and a fluid remainder)
+and `.bf-container` (a max-width centered wrapper). Neither codifies
+the **app shell** — the sidebar + header + main + footer grid that
+every admin panel, SaaS dashboard, and CMS builds on day one. Today
+users compose `.bf-sidebar` + `.bf-sticky` + `.bf-container` by hand,
+which is fragile: scroll regions don't隔离, header spanning requires
+manual grid placement, and sidebar collapse has no built-in pattern.
+
 ### Added
 
-- **Toast auto-dismiss** (`js/toast.js`) — timed auto-dismiss with
-  configurable duration, pause-on-hover, visible progress indicator,
-  respects `prefers-reduced-motion`. Follows the existing pattern: one
-  `data-*` attribute (`data-duration`), zero dependencies, self-invokes
-  at load. Adds `auto-dismiss` row to `docs/javascript.md` table.
-- **Hover tooltip fallback** (`js/tooltip.js`) — `pointerenter` /
-  `pointerleave` hover-to-show for `popover="hint"` in engines without
-  interest invokers (Firefox, Safari). Chromium 139+ uses native
-  `interestinvoker` and skips the JS path. Same pattern: `data-tooltip`
-  already in use, the module adds the missing hover gesture. Adds
-  `tooltip` row to `docs/javascript.md` table.
-- **Skeleton shape variants** — `[data-shape="circle|text|card"]` on
-  `.skeleton` in `components/skeleton.css`. Circle for avatars, text for
-  multi-line placeholders (varied widths), card for composite loading
-  states. All pure CSS, no new JS.
+- **App shell layout** (`components/layout.css`) — CSS Grid-based
+  layout primitive. Ships as `[data-layout="sidebar"]` on a wrapper
+  element with named grid areas (`"header header" / "nav main" /
+  "footer footer"`). Direct-child semantic elements (`<header>`,
+  `<nav>`, `<main>`, `<aside>`, `<footer>`) auto-map to their
+  corresponding areas without `[data-area]` attributes. Explicit
+  `[data-area="header|nav|main|aside|footer"]` overrides the
+  auto-mapping for non-semantic markup.
+
+- **Sidebar collapse** — `[data-layout="sidebar"][data-collapse]`
+  enables a wide↔narrow toggle. The sidebar defaults to
+  `--bf-layout-sidebar-width` (16rem); when `[data-collapsed]` is
+  present on the wrapper, it shrinks to
+  `--bf-layout-sidebar-collapsed` (4rem) and child labels hide via
+  `:has([data-collapsed]) nav > * > span`. Collapse is triggered by
+  `js/nav.js` (hamburger toggle) or a CSS-only checkbox hack. A
+  `@container` query on the layout wrapper auto-collapses at narrow
+  container widths (independent of viewport).
+
+- **Nested scroll regions** — sidebar gets `overflow-y: auto` +
+  `position: sticky; top: 0` by default; main content scrolls
+  independently via `overflow-y: auto` on the `<main>` area. This
+  isolates scroll positions: scrolling the sidebar does not move the
+  header or main content. Override with
+  `--bf-layout-sidebar-scroll: visible` to disable independent
+  scrolling.
+
+- **Tokens** — `tokens.css` gains:
+  - `--bf-layout-sidebar-width: 16rem` (wide sidebar)
+  - `--bf-layout-sidebar-collapsed: 4rem` (narrow sidebar)
+  - `--bf-layout-header-height: 3.5rem` (header bar)
+  - `--bf-layout-gap: var(--bf-space-4)` (gap between grid areas)
 
 ### Changed
 
-- **`docs/javascript.md`** — remove dead entries for deleted modules
-  (details-close, details-tabindex, popover-anchor); fix module count
-  (currently says "ten", should be seven + two new = nine); add
-  `toast.js` and `tooltip.js` rows.
-- **`docs/components.md`** — collapse "Dropdown (details/summary)"
-  section to a one-line pointer to popover menus; remove stale
-  `js/popover-anchor.js` reference.
-- **`docs/accessibility.md`** — remove references to deleted shims in
-  "Honest exceptions" section; update conformance table (remove
-  dropdown row).
-- **`demo/index.html`** — toast auto-dismiss demo + tooltip hover demo
-  added to conformance page.
-- **`barefoot.js`** — new imports for `toast.js` and `tooltip.js`.
-
-### Fix
-
-- **Contrast mode `--bf-muted` collapse** — in `tokens.css`, the
-  `prefers-contrast: more` block forces `--bf-muted` to the same value
-  as `--bf-primary` (both pure B/W), making muted text invisible. Give
-  `--bf-muted` a distinct contrast value that preserves the visual
-  hierarchy (e.g., 70% opacity B/W).
-- **Missing `-darken` / `-subtle` status tokens** — add
-  `--bf-success-darken`, `--bf-info-darken`, `--bf-warning-darken` and
-  `--bf-success-subtle`, `--bf-info-subtle`, `--bf-warning-subtle` to
-  `tokens.css` for hover states and tinted backgrounds on status
-  elements.
-
-### Docs
-
-- Dead docs cleanup across `javascript.md`, `components.md`,
-  `accessibility.md` (see Changed section above).
+- **`docs/components.md`** — new "Layout" section: app shell anatomy,
+  sidebar collapse, named grid areas, nav integration.
+- **`docs/api.md`** — `data-layout` row (`sidebar` value), `data-area`
+  row, `data-collapsed` row, layout token table.
+- **`demo/index.html`** — dashboard demo: sidebar with nav items,
+  header with search, main with card grid, footer.
+- **`full.css`** — `@import "./components/layout.css"` added.
+- **`index.css`** — unchanged (layout is opt-in).
 
 ### Tests
 
 - All existing suites green; no visual baselines changed.
-- New test: toast auto-dismiss timeout (CSS: `page.evaluate()` on
-  duration attribute, JS: verify dismiss fires after duration).
-- New test: tooltip hover show/hide (JS: pointerenter/leave
-  simulation).
-- New test: skeleton shape variants (CSS: computed border-radius
-  for circle, line-count for text).
+- New CSS test: `grid-template-areas` computed on
+  `[data-layout="sidebar"]`.
+- New CSS test: sidebar width toggles between `--bf-layout-sidebar-width`
+  and `--bf-layout-sidebar-collapsed` when `data-collapsed` is present.
+- New JS test: scrolling `<main>` does not change sidebar `scrollTop`.
+- New CSS test: `@container` query triggers collapse at narrow widths.
+- New a11y test: axe finds `nav`, `main`, `banner`, `contentinfo`
+  landmarks in the layout.
 
 ### Build
 
-- `index.css` and `full.css` size budget unchanged.
+- `index.css` unchanged.
+- `full.css` may grow ~0.5KB gzip. Headroom: 1.4KB → ~0.9KB.
+
+## 4.4 — scroll-driven motion system
+
+Target: TBD. All additive, no breaking changes.
+
+### Motivation
+
+`reveal.css` (54 lines) does one thing: fade-up on scroll via
+`animation-timeline: view()`. Scroll-driven animations are the
+hottest CSS feature landing across engines right now, and Barefoot
+is positioned to own this space — no other CSS framework ships a
+proper scroll-motion system without JS. The carousel progress bar
+(3.1) proved the pattern works; this extends it into a composable
+motion layer.
+
+### Added
+
+- **Direction variants** (`components/reveal.css`) — extend
+  `[data-reveal]` with five entry motions:
+  `[data-reveal="left"]`, `[data-reveal="right"]`,
+  `[data-reveal="up"]` (default), `[data-reveal="down"]`,
+  `[data-reveal="fade"]`. Each maps to a distinct `@keyframes`
+  using `translate` on one axis or `opacity` only. All gated behind
+  `@supports (animation-timeline: view())` +
+  `@media (prefers-reduced-motion: no-preference)` — engines without
+  scroll-driven animations see a static element (start state is
+  inside the animation, never applied outside it).
+
+- **Staggered reveals** — `[data-reveal-group]` on a container.
+  Each child with `[data-reveal]` receives a sequential
+  `animation-delay` via the CSS custom property `--bf-reveal-index`.
+  A 10-line self-invoking `js/reveal.js` sets this property on each
+  child at load (`--bf-reveal-index: 0, 1, 2, ...`). Without JS,
+  all children animate simultaneously — the stagger degrades
+  gracefully. The delay formula:
+  `animation-delay: calc(var(--bf-reveal-index) * var(--bf-reveal-stagger))`.
+
+- **Generic scroll-progress bar** — `[data-progress]` on any scroll
+  container. Draws a `::after` pseudo-element as a thin bar pinned
+  to the top or bottom (`data-progress="top|bottom"`, default
+  `bottom`). Uses the ANONYMOUS scroll timeline pattern from the
+  carousel: `animation-timeline: scroll(nearest inline)` on the
+  container's own `::after`. `@supports (animation-timeline: scroll())`
+  gated. This generalizes the carousel progress bar into a reusable
+  primitive.
+
+- **Parallax** — `[data-parallax]` on an image or decorative element.
+  Uses `animation-timeline: scroll()` with `animation-range` tuned
+  for a subtle 20–30% offset (element scrolls at ~70–80% of the
+  surrounding content speed). The `translate` is applied via
+  `@keyframes` — no JS, no IntersectionObserver. `@supports` gated;
+  falls back to static position. Keep `[data-parallax]` out of
+  horizontal scrollers (same constraint as `[data-reveal]`).
+
+- **View-transition hooks** — documented integration with
+  `@view-transition` for page navigation animations. Not a new
+  component; rather, a section in `docs/components.md` showing how
+  `[data-reveal]` directions compose with `::view-transition-*`
+  pseudo-elements for enter/exit page transitions. The existing
+  `components/view-transition.css` already ships the cross-fade;
+  this adds the directional variant guidance.
+
+- **Tokens** — `tokens.css` gains:
+  - `--bf-reveal-distance: var(--bf-space-4)` (translate offset)
+  - `--bf-reveal-duration: 600ms` (animation length)
+  - `--bf-reveal-stagger: 100ms` (inter-child delay)
+  - `--bf-progress-height: 3px` (scroll-progress bar thickness)
+  - `--bf-progress-color: var(--bf-primary)` (progress bar color)
+
+### Changed
+
+- **`docs/components.md`** — "Reveal" section expanded: direction
+  variants, stagger group, generic progress bar, parallax, view-
+  transition composition.
+- **`docs/performance.md`** — scroll-driven animation section expanded:
+  motion system overview, `@supports` fallback behavior, ANONYMOUS vs
+  named timeline guidance, `prefers-reduced-motion` contract.
+- **`demo/index.html`** — reveal demos (all five directions), stagger
+  group demo (cards in a grid), scroll-progress demo (long prose
+  section), parallax demo (hero image).
+- **`full.css`** — reveal.css already imported; no new import needed.
+- **`index.css`** — unchanged.
+
+### Tests
+
+- All existing suites green; no visual baselines changed.
+- New CSS test: directional reveals resolve to correct
+  `animation-name` for each `data-reveal` value.
+- New JS test: `js/reveal.js` sets `--bf-reveal-index` on each child
+  in a `[data-reveal-group]`.
+- New CSS test: scroll-progress `::after` width updates at different
+  scroll positions (computed `width` at 0%, 50%, 100% scroll).
+- New CSS test: `[data-parallax]` computes a non-zero `translate`
+  at mid-scroll, zero at top.
+- New reduced-motion test: all reveal/parallax animations are
+  `0.01ms` duration or `animation: none`.
+
+### Build
+
+- `index.css` unchanged.
+- `full.css` may grow ~0.3KB gzip (additional keyframes + selectors).
+  Headroom: ~0.9KB → ~0.6KB.
 
 ## Watch-list (no action until browsers fix it)
 

@@ -19,6 +19,7 @@ export const DEMOS = Object.freeze({
   demoAlertInfo: "#demo-alert-info",
   demoAlertSuccess: "#demo-alert-success",
   demoAlertWarning: "#demo-alert-warning",
+  demoAppShell: "#demo-app-shell",
   demoAvatar: "#demo-avatar",
   demoAvatarGroup: "#demo-avatar-group",
   demoAvatarSm: "#demo-avatar-sm",

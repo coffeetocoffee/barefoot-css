@@ -287,6 +287,43 @@ support, carousel controls + autoplay) and their markup.
 - **JS:** none.
 - **A11y:** document order is visual order; cards are `<article>`s.
 
+## App shell layout (v4.3)
+
+```html
+<div data-layout="sidebar">
+  <header>…</header>           <!-- auto-maps to "header" area -->
+  <nav aria-label="Primary">…</nav>  <!-- auto-maps to "nav" area -->
+  <main>…</main>               <!-- auto-maps to "main" area -->
+  <footer>…</footer>           <!-- auto-maps to "footer" area -->
+</div>
+
+<div data-layout="sidebar" data-collapse data-collapsed>
+  <header>…</header>
+  <nav data-area="nav">…</nav>  <!-- explicit override for non-semantic -->
+  <main>…</main>
+  <footer>…</footer>
+</div>
+```
+
+- **`[data-layout="sidebar"]`** — CSS Grid app shell with named areas:
+  `"header header" / "nav main" / "footer footer"`. Direct-child semantic
+  elements (`<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>`) auto-map
+  to their grid areas. Use `[data-area="header|nav|main|aside|footer"]` to
+  override for non-semantic markup.
+- **Nested scroll regions** — the sidebar (`<nav>`) gets `position: sticky`
+  + `overflow-y: auto` by default; main scrolls independently via
+  `overflow-y: auto`. Override with `--bf-layout-sidebar-scroll: visible`.
+- **`[data-collapse]`** — enables sidebar collapse. Add `[data-collapsed]`
+  to shrink to `--bf-layout-sidebar-collapsed` (4rem) and hide nav labels.
+  Collapse is triggered by `js/nav.js` or a CSS-only checkbox hack. A
+  `@container` query auto-collapses at narrow widths.
+- **Tokens** — `--bf-layout-sidebar-width` (16rem),
+  `--bf-layout-sidebar-collapsed` (4rem), `--bf-layout-header-height`
+  (3.5rem), `--bf-layout-gap` (var(--bf-space-4)).
+- **JS:** none (collapse can be CSS-only or use `js/nav.js`).
+- **A11y:** semantic elements carry native landmarks; `nav` is a named
+  landmark. Independent scroll regions are keyboard-navigable.
+
 ## Carousel (scroll-snap)
 
 ```html

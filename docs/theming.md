@@ -159,6 +159,15 @@ the base token and every ramp follows.
 | Token | Default | Purpose |
 |---|---|---|
 | `--bf-avatar-size` | `2.5rem` | edge of .bf-avatar (matches control height) |
+
+### Layout (v4.3: app shell)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-layout-sidebar-width` | `16rem` | wide sidebar |
+| `--bf-layout-sidebar-collapsed` | `4rem` | narrow sidebar |
+| `--bf-layout-header-height` | `3.5rem` | header bar |
+| `--bf-layout-gap` | `var(--bf-space-4)` | gap between grid areas |
 | `--bf-space-1` | `0.125rem` |  |
 | `--bf-space-2` | `0.25rem` |  |
 | `--bf-space-3` | `0.5rem` |  |

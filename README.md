@@ -47,9 +47,9 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 46.25KB | — | — |
+| `full.css` | 47.99KB | — | — |
+| `index.css` | 8.40KB | — | — |
 | `components/forms.css` | 8.39KB | — | — |
-| `index.css` | 8.26KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
 | `js/table-sort.js` | 3.28KB | — | — |
 | `utilities.css` | 3.18KB | — | — |
@@ -62,6 +62,7 @@ npm install barefoot-css
 | `js/roving-index.js` | 2.10KB | — | — |
 | `components/buttons.css` | 2.02KB | — | — |
 | `js/tooltip.js` | 1.86KB | — | — |
+| `components/layout.css` | 1.62KB | — | — |
 | `js/lifecycle.js` | 1.57KB | — | — |
 | `components/table.css` | 1.44KB | — | — |
 | `components/accordion.css` | 1.44KB | — | — |

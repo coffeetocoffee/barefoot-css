@@ -97,6 +97,7 @@
           <tr><td>Pagination</td><td class="wcag">AA</td><td>Current page is a <code>span</code>, not a link; links announce their labels.</td></tr>
           <tr><td>Navigation</td><td class="wcag">AA</td><td>Named <code>nav</code> landmark; <kbd>Tab</kbd> through links; current page announced via <code>aria-current="page"</code>. Hamburger: toggle carries <code>aria-expanded</code>; <kbd>Esc</kbd> closes and restores focus.</td></tr>
           <tr><td>Layout</td><td class="wcag">AA</td><td>Sidebar splits aside + main and stacks when narrow; <code>.bf-sticky</code> pins while scrolling.</td></tr>
+          <tr><td>App shell layout</td><td class="wcag">AA</td><td>Semantic landmarks (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>) auto-map to grid areas; sidebar scrolls independently; main scrolls independently.</td></tr>
           <tr><td>Alerts</td><td class="wcag">AA</td><td><code>role="alert"</code> announces errors; <code>aria-live="polite"</code> announces updates; dismiss button is a focusable <code>button</code>.</td></tr>
           <tr><td>Skeleton</td><td class="wcag">AA</td><td>Decorative placeholder — real content must follow; no motion under <code>prefers-reduced-motion</code>.</td></tr>
           <tr><td>Toast</td><td class="wcag">AA</td><td><code>role="status"</code> announces politely; <kbd>Esc</kbd> or click-away closes.</td></tr>
@@ -778,6 +779,35 @@
           <p>Everything after the first child flows beside it. The main column grows to fill the row; when the row can't fit the sidebar plus at least 60% main, the whole split wraps to a single column — the classic sidebar pattern, zero media queries.</p>
           <p>There is no dedicated sticky section to try; the pinned badge above only demonstrates the utility's <code>position: sticky</code> + <code>--bf-sticky-top</code> contract.</p>
         </div>
+      </div>
+    </section>
+
+    <!-- App shell layout (v4.3) -->
+    <section id="app-shell" aria-labelledby="app-shell-title">
+      <h2 id="app-shell-title">App shell layout</h2>
+      <p><code>[data-layout="sidebar"]</code> is a CSS Grid app shell: header, sidebar nav, main content, and footer in a named grid. Semantic elements (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>) auto-map to their grid areas. The sidebar gets independent scroll via <code>position: sticky</code> + <code>overflow-y: auto</code>; main scrolls independently.</p>
+      <div data-layout="sidebar" id="demo-app-shell" style="max-height: 24rem; overflow: hidden; border: var(--bf-border-width) solid var(--bf-border); border-radius: var(--bf-radius);">
+        <header data-area="header" style="padding: var(--bf-space-3) var(--bf-space-4); border-block-end: var(--bf-border-width) solid var(--bf-border); display: flex; align-items: center; gap: var(--bf-space-3);">
+          <strong>Dashboard</strong>
+          <span class="bf-muted" style="margin-inline-start: auto;">Header</span>
+        </header>
+        <nav data-area="nav" aria-label="Demo sidebar" style="padding: var(--bf-space-3); border-inline-end: var(--bf-border-width) solid var(--bf-border);">
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--bf-space-1);">
+            <li><a href="#app-shell" aria-current="page">Dashboard</a></li>
+            <li><a href="#app-shell">Analytics</a></li>
+            <li><a href="#app-shell">Settings</a></li>
+            <li><a href="#app-shell">Users</a></li>
+            <li><a href="#app-shell">Billing</a></li>
+          </ul>
+        </nav>
+        <div data-area="main" style="padding: var(--bf-space-4);">
+          <h3>Main content</h3>
+          <p>This area scrolls independently from the sidebar. The grid uses named areas: <code>"header header" / "nav main" / "footer footer"</code>.</p>
+          <p>Semantic elements auto-map to their areas — no <code>[data-area]</code> needed when you use real <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>.</p>
+        </div>
+        <footer data-area="footer" style="padding: var(--bf-space-3) var(--bf-space-4); border-block-start: var(--bf-border-width) solid var(--bf-border); color: var(--bf-muted); font-size: var(--bf-type-sm);">
+          Footer
+        </footer>
       </div>
     </section>
 

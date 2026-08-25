@@ -4,6 +4,66 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0] — 2026-08-25
+
+Layout primitives — CSS Grid app shell, sidebar collapse, nested scroll
+regions, and layout tokens. All additive, no breaking changes.
+
+### Added
+
+- **App shell layout** (`components/layout.css`) — CSS Grid-based
+  layout primitive. Ships as `[data-layout="sidebar"]` on a wrapper
+  element with named grid areas (`"header header" / "nav main" /
+  "footer footer"`). Direct-child semantic elements (`<header>`,
+  `<nav>`, `<main>`, `<aside>`, `<footer>`) auto-map to their
+  corresponding areas without `[data-area]` attributes. Explicit
+  `[data-area="header|nav|main|aside|footer"]` overrides the
+  auto-mapping for non-semantic markup.
+- **Sidebar collapse** — `[data-layout="sidebar"][data-collapse]`
+  enables a wide↔narrow toggle. The sidebar defaults to
+  `--bf-layout-sidebar-width` (16rem); when `[data-collapsed]` is
+  present on the wrapper, it shrinks to
+  `--bf-layout-sidebar-collapsed` (4rem) and child labels hide via
+  `:has([data-collapsed]) nav > * > span`. Collapse is triggered by
+  `js/nav.js` (hamburger toggle) or a CSS-only checkbox hack. A
+  `@container` query on the layout wrapper auto-collapses at narrow
+  container widths (independent of viewport).
+- **Nested scroll regions** — sidebar gets `overflow-y: auto` +
+  `position: sticky; top: 0` by default; main content scrolls
+  independently via `overflow-y: auto` on the `<main>` area. This
+  isolates scroll positions: scrolling the sidebar does not move the
+  header or main content. Override with
+  `--bf-layout-sidebar-scroll: visible` to disable independent
+  scrolling.
+- **Layout tokens** (`tokens.css`):
+  - `--bf-layout-sidebar-width: 16rem` (wide sidebar)
+  - `--bf-layout-sidebar-collapsed: 4rem` (narrow sidebar)
+  - `--bf-layout-header-height: 3.5rem` (header bar)
+  - `--bf-layout-gap: var(--bf-space-4)` (gap between grid areas)
+
+### Changed
+
+- **`docs/components.md`** — new "Layout" section: app shell anatomy,
+  sidebar collapse, named grid areas, nav integration.
+- **`docs/api.md`** — `data-layout` row (`sidebar` value), `data-area`
+  row, `data-collapsed` row, layout token table.
+- **`demo/index.html`** — dashboard demo: sidebar with nav items,
+  header with search, main with card grid, footer.
+- **`full.css`** — `@import "./components/layout.css"` added.
+- **`index.css`** — unchanged (layout is opt-in).
+
+### Tests
+
+- All existing suites green; no visual baselines changed.
+- New CSS test: `grid-template-areas` computed on
+  `[data-layout="sidebar"]`.
+- New CSS test: sidebar width toggles between `--bf-layout-sidebar-width`
+  and `--bf-layout-sidebar-collapsed` when `data-collapsed` is present.
+- New JS test: scrolling `<main>` does not change sidebar `scrollTop`.
+- New CSS test: `@container` query triggers collapse at narrow widths.
+- New a11y test: axe finds `nav`, `main`, `banner`, `contentinfo`
+  landmarks in the layout.
+
 ## [4.2.0] — 2026-08-24
 
 JS gaps, docs rot, token fixes — toast auto-dismiss, hover tooltip

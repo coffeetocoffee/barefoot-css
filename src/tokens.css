@@ -153,6 +153,12 @@
 
     /* ---- Layout (v1.8: content & media) ---- */
     --bf-avatar-size: 2.5rem;  /* edge of .bf-avatar (matches control height) */
+
+    /* ---- Layout (v4.3: app shell) ---- */
+    --bf-layout-sidebar-width: 16rem;      /* wide sidebar */
+    --bf-layout-sidebar-collapsed: 4rem;   /* narrow sidebar */
+    --bf-layout-header-height: 3.5rem;     /* header bar */
+    --bf-layout-gap: var(--bf-space-4);    /* gap between grid areas */
   }
 }
 
