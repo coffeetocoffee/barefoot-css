@@ -68,14 +68,19 @@ headline (ADR-0008). All additive, no breaking changes.
   staying core-clean; a live pair-page smoke asserting both sides carry
   `view-transition-name: bf-demo-hero`; and live wiring through
   `pagereveal` — navigating demo → pair page creates a real transition
-  (`event.viewTransition` non-null), while emulated reduced motion
-  navigates plainly. The live pair skip cleanly where the events don't
-  exist.
+  (`event.viewTransition` non-null) across up to three observed
+  navigations, while emulated reduced motion navigates plainly. The
+  live pair skips cleanly in three cases: no `pageswap`/`pagereveal`,
+  or events present without transition activation (Firefox ships the
+  events but navigates plainly — degrade by omission holds, so that
+  outcome is a named skip, not a failure); a lost `pagereveal` event
+  still fails loudly.
 - Visual baselines regenerated deliberately for all three engines (the
   demo gained a section).
 - Chromium: 19 a11y / 29 JS / 109 CSS (2 engine-gated skips) / 3
   visual — green. Firefox 132 passed, 7 skipped · WebKit 137 passed,
-  4 skipped (cross-doc VT lives gated on `pageswap`/`pagereveal`).
+  4 skipped (cross-doc VT lives gated on `pageswap`/`pagereveal`
+  presence *and* actual activation).
 - Sizes (gzip level 9, hand-measured): `index.css` 2.31 → 2.32KB ·
   `full.css` 9.55 → 9.61KB, frozen.
 
