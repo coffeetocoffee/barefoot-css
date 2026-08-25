@@ -253,6 +253,15 @@
           <label for="country">Country</label>
           <select id="country" name="country">
             <option>Pick one…</option>
+            <optgroup label="Warm">
+              <option>Portugal</option>
+              <option>Bali</option>
+              <option>Oaxaca</option>
+            </optgroup>
+            <optgroup label="Cold">
+              <option>Norway</option>
+              <option>Iceland</option>
+            </optgroup>
             <option>Everywhere</option>
             <option>Nowhere</option>
           </select>
@@ -653,6 +662,31 @@
             <tr><td>Barefoot</td><td>Ada</td><td>Active</td></tr>
             <tr><td>Heel</td><td>Lin</td><td>Blocked</td></tr>
             <tr><td>Laces</td><td>Ken</td><td>Done</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="sticky-table-title">Sticky header &amp; column</h3>
+      <p>Add <code>data-table="sticky-head"</code> or <code>data-table="sticky-col"</code> — they compose (<code>"sticky-head sticky-col"</code>) — and wrap the table in a scroll container with a bounded height/width; that scroller is what the cells stick against. Give the wrapper <code>tabindex="0"</code> (plus a name) so keyboard users can scroll it — tables hold no focusable content of their own. Sticky cells carry an opaque surface so scrolled rows don't show through.</p>
+      <div id="demo-sticky-table" role="region" aria-label="Quarterly ledger, scrollable" tabindex="0" style="max-height: 16rem; max-width: 36rem; overflow: auto;">
+        <table data-table="sticky-head sticky-col" style="min-width: 48rem">
+          <caption>Quarterly ledger</caption>
+          <thead>
+            <tr><th>Month</th><th>Revenue</th><th>Costs</th><th>Net</th><th>Margins</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Jan</th><td>12,400</td><td>8,100</td><td>4,300</td><td>35%</td><td>Launch</td></tr>
+            <tr><th scope="row">Feb</th><td>11,900</td><td>7,950</td><td>3,950</td><td>33%</td><td></td></tr>
+            <tr><th scope="row">Mar</th><td>14,200</td><td>8,400</td><td>5,800</td><td>41%</td><td>Price change</td></tr>
+            <tr><th scope="row">Apr</th><td>13,800</td><td>8,350</td><td>5,450</td><td>39%</td><td></td></tr>
+            <tr><th scope="row">May</th><td>15,600</td><td>9,100</td><td>6,500</td><td>42%</td><td>Expansion</td></tr>
+            <tr><th scope="row">Jun</th><td>16,100</td><td>9,300</td><td>6,800</td><td>42%</td><td></td></tr>
+            <tr><th scope="row">Jul</th><td>15,750</td><td>9,250</td><td>6,500</td><td>41%</td><td>Summer dip</td></tr>
+            <tr><th scope="row">Aug</th><td>16,400</td><td>9,400</td><td>7,000</td><td>43%</td><td></td></tr>
+            <tr><th scope="row">Sep</th><td>18,200</td><td>10,050</td><td>8,150</td><td>45%</td><td>Back to school</td></tr>
+            <tr><th scope="row">Oct</th><td>19,300</td><td>10,400</td><td>8,900</td><td>46%</td><td></td></tr>
+            <tr><th scope="row">Nov</th><td>22,700</td><td>11,900</td><td>10,800</td><td>48%</td><td>Holiday push</td></tr>
+            <tr><th scope="row">Dec</th><td>25,100</td><td>12,800</td><td>12,300</td><td>49%</td><td>Peak</td></tr>
           </tbody>
         </table>
       </div>

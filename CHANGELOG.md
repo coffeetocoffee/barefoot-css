@@ -4,6 +4,47 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0] — 2026-08-25
+
+Customizable select and sticky table variants. All `@supports`-gated
+or attribute opt-in; degrade by omission. All additive, no breaking
+changes.
+
+### Added
+
+- **Customizable select skin** (`components/forms.css`) — inside
+  `@supports (appearance: base-select)` (Chromium 135+, WebKit):
+  single selects upgrade from the chevron skin to a fully themed
+  control. The open picker becomes a stylable panel
+  (`::picker(select)`: surface, hairline, radius, lifted shadow),
+  options get token hover/`:checked` states with a primary
+  `option::checkmark`, `optgroup` labels read muted, the closed field
+  swaps the SVG chevron for the themed `::picker-icon`, and picker
+  entry animates via `@starting-style` + `allow-discrete` (with its
+  own reduced-motion guard — the top-layer pseudo is unreachable by
+  base.css's kill switch). Engines without support keep exactly the
+  chevron skin: degrade by omission, no polyfill.
+- **Sticky table variants** (`components/table.css`) —
+  `data-table="sticky-head"` pins the header row,
+  `data-table="sticky-col"` pins the leading column (logical
+  inline-start; RTL mirrors). Values compose
+  (`"sticky-head sticky-col"`). Sticky cells carry an opaque
+  `--bf-surface` background and `z-index: var(--bf-z-sticky)`. Wrap
+  in a scroll container and give it `tabindex="0"` + a name — tables
+  hold no focusable content, and keyboard users must be able to
+  scroll it (WCAG 2.1.1).
+
+### Changed
+
+- **`docs/components.md`** — Select section documents the
+  base-select upgrade and fallback; Table section documents the
+  sticky variants and wrapper requirements.
+- **`docs/api.md`** — `data-table` values gain `sticky-head`,
+  `sticky-col`; note that picker styles apply only under `@supports`.
+- **`demo/index.html`** — select demo gains optgroups + checkmarks;
+  table demo gains a composed sticky-head/sticky-col example over a
+  focusable scroll wrapper.
+
 ## [4.4.0] — 2026-08-25
 
 Scroll-driven motion system — directional reveal variants, staggered

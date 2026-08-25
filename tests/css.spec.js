@@ -429,8 +429,11 @@ test.describe("themes & OS accessibility settings", () => {
 });
 
 test.describe("v1.5 form completion", () => {
-  test("select gets a themed chevron (appearance none + reserved padding)", async ({ page }) => {
+  test("select falls back to the chevron skin where base-select is unsupported", async ({ page, browserName }) => {
     await gotoDemo(page);
+    // Engines with customizable select (v4.5) upgrade past this skin.
+    if (await page.evaluate(() => CSS.supports("appearance", "base-select")))
+      test.skip(true, "engine upgrades to base-select (see v4.5 suite)");
     const sel = page.locator(DEMOS.country);
     await expect(sel).toHaveCSS("appearance", "none");
     const arrow = await sel.evaluate((el) => getComputedStyle(el).backgroundImage);
@@ -1549,6 +1552,97 @@ test.describe("v3.3 growth batch", () => {
     expect(glyph).toBe('"↕"');
     // No sort yet → th carries no aria-sort.
     await expect(page.locator(`${DEMOS.demoSortTable} th[aria-sort]`)).toHaveCount(0);
+  });
+});
+
+test.describe("v4.5 customizable select & sticky tables", () => {
+  const supportsBaseSelect = (page) =>
+    page.evaluate(() => CSS.supports("appearance", "base-select"));
+
+  test("single select upgrades to base-select; the SVG chevron retires", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsBaseSelect(page)))
+      test.skip(true, "customizable select unsupported here");
+
+    const sel = page.locator(DEMOS.country);
+    await expect(sel).toHaveCSS("appearance", "base-select");
+    // The chevron skin's background-image is gone; ::picker-icon draws.
+    expect(await sel.evaluate((el) => getComputedStyle(el).backgroundImage)).toBe("none");
+    // Multiple/size selects keep the browser's control (same exclusion
+    // as the fallback skin) — asserted via a standalone fixture, since
+    // blockification rules don't apply to selects and the demo has none.
+    const multi = await sel.evaluate(() => {
+      const el = document.createElement("select");
+      el.multiple = true;
+      document.body.append(el);
+      const appearance = getComputedStyle(el).appearance;
+      el.remove();
+      return appearance;
+    });
+    expect(multi).not.toBe("base-select");
+  });
+
+  test("picker surface uses tokens (::picker)", async ({ page }) => {
+    await gotoDemo(page);
+    if (!(await supportsBaseSelect(page)))
+      test.skip(true, "customizable select unsupported here");
+
+    const picker = await page.locator(DEMOS.country).evaluate((el) => {
+      const s = getComputedStyle(el, "::picker(select)");
+      return { bg: s.backgroundColor, border: s.borderTopColor };
+    });
+    expect(picker.bg).toBe(await tokenColor(page, "--bf-surface"));
+    expect(picker.border).toBe(await tokenColor(page, "--bf-border"));
+  });
+
+  test("reduced-motion collapses the picker entry transition", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await gotoDemo(page);
+    if (!(await supportsBaseSelect(page)))
+      test.skip(true, "customizable select unsupported here");
+
+    // ::picker() is a top-layer pseudo the global * kill switch can't
+    // reach — forms.css carries its own guard; this pins it.
+    const dur = await page.locator(DEMOS.country).evaluate(
+      (el) => getComputedStyle(el, "::picker(select)").transitionDuration
+    );
+    for (const d of dur.split(", ")) expect(parseFloat(d)).toBeLessThanOrEqual(0.01);
+  });
+
+  test("sticky-head keeps the header row pinned and opaque", async ({ page }) => {
+    await gotoDemo(page);
+    const th = page.locator(`${DEMOS.demoStickyTable} thead th`).first();
+    await expect(th).toHaveCSS("position", "sticky");
+    await expect(th).toHaveCSS("top", "0px");
+    // Opaque on purpose: transparent sticky headers show rows through.
+    expect(
+      await th.evaluate((el) => getComputedStyle(el).backgroundColor)
+    ).toBe(await tokenColor(page, "--bf-surface"));
+    const zToken = await page.locator("html").evaluate((el) =>
+      parseInt(getComputedStyle(el).getPropertyValue("--bf-z-sticky").trim())
+    );
+    expect(parseInt(await th.evaluate((el) => getComputedStyle(el).zIndex))).toBe(zToken);
+  });
+
+  test("sticky-col pins the first column on the logical start edge", async ({ page }) => {
+    await gotoDemo(page);
+    // Corner cell composes both variants; body row headers (<th>) stick too.
+    const corner = page.locator(`${DEMOS.demoStickyTable} thead th`).first();
+    const rowHead = page.locator(`${DEMOS.demoStickyTable} tbody th`).first();
+    await expect(corner).toHaveCSS("position", "sticky");
+    await expect(rowHead).toHaveCSS("position", "sticky");
+    expect(
+      await rowHead.evaluate((el) => getComputedStyle(el).insetInlineStart)
+    ).toBe("0px");
+    expect(
+      await rowHead.evaluate((el) => getComputedStyle(el).backgroundColor)
+    ).toBe(await tokenColor(page, "--bf-surface"));
+  });
+
+  test("non-sticky tables keep static cells", async ({ page }) => {
+    await gotoDemo(page);
+    const stackTh = page.locator('table[data-table="stack"] thead th').first();
+    await expect(stackTh).toHaveCSS("position", "static");
   });
 });
 

@@ -5,6 +5,10 @@
       true,
       { "ignoreAtRules": ["starting-style"] }
     ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      { "ignorePseudoElements": ["picker", "picker-icon", "checkmark"] }
+    ],
     "property-no-unknown": [
       true,
       {

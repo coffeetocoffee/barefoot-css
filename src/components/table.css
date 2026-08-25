@@ -84,6 +84,33 @@
     background: var(--bf-surface-alt);
   }
 
+  /* ---- Sticky header / column variants ----
+     Both stick against the nearest scroll container, so put the table
+     inside a wrapper with overflow:auto and a bounded height (sticky-
+     head) or width (sticky-col). Values compose:
+     data-table="sticky-head sticky-col". Backgrounds are opaque on
+     purpose — a transparent sticky cell shows scrolled rows through
+     itself; cells paint their own surface, so striping/hover stay
+     behind them without a precedence fight. The column edge is
+     logical inline-start, so RTL tables mirror for free. */
+  table[data-table~="sticky-head"] thead th {
+    position: sticky;
+    top: 0;
+    z-index: var(--bf-z-sticky);
+
+    background: var(--bf-surface);
+  }
+
+  table[data-table~="sticky-col"] thead th:first-child,
+  table[data-table~="sticky-col"] tbody th:first-child,
+  table[data-table~="sticky-col"] tbody td:first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--bf-z-sticky);
+
+    background: var(--bf-surface);
+  }
+
   /* Stackable tables — table[data-table="stack"].
      The table stacks into cards when its *nearest query container* is
      narrow (<40rem). Wrap it in a container — e.g. .bf-contain, the

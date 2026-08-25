@@ -51,6 +51,7 @@ export const DEMOS = Object.freeze({
   demoStepperH: "#demo-stepper-h",
   demoStepperV: "#demo-stepper-v",
   demoSticky: "#demo-sticky",
+  demoStickyTable: "#demo-sticky-table",
   demoTimeline: "#demo-timeline",
   demoToast: "#demo-toast",
   demoToastError: "#demo-toast-error",

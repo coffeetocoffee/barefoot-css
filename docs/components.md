@@ -71,6 +71,15 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
 - **`<select>`** gets a themed chevron (`appearance: none` + a
   `currentColor` arrow); the dropdown list itself stays native.
   `[multiple]` / `[size]` selects keep the browser's control.
+  Where an engine ships *customizable select* (`appearance: base-select`,
+  Chromium 135+), single selects upgrade automatically, no markup
+  change: the open picker becomes a themed panel — `::picker(select)`
+  with the popover recipe (surface, hairline border, radius, lifted
+  shadow) — options get token hover/checked states and a primary
+  `::checkmark`, group labels read muted, and the closed field swaps
+  the SVG chevron for the themed `::picker-icon`. Engines without
+  support keep exactly the chevron skin above: degrade by omission,
+  no polyfill.
 - **`<datalist>`** — the field reserves space for the engine's picker
   affordance (`input[list]`), styled with the same tokens as the select
   chevron. The suggestion popup itself is engine-drawn and not
@@ -694,6 +703,14 @@ support, carousel controls + autoplay) and their markup.
   <tbody>…</tbody>
 </table>
 
+<!-- Sticky header + column, over a scroll wrapper -->
+<div style="max-height: 16rem; overflow: auto;">
+  <table data-table="sticky-head sticky-col">
+    <thead><tr><th>…</th><th>…</th></tr></thead>
+    <tbody>…</tbody>
+  </table>
+</div>
+
 <!-- Sortable (opt-in JS) -->
 <table data-bf-sort>
   <thead><tr>
@@ -705,13 +722,25 @@ support, carousel controls + autoplay) and their markup.
 ```
 
 - `data-striped` opts into zebra rows; hover highlight on by default.
+- **Sticky header / column** — `data-table="sticky-head"` pins the
+  header row; `data-table="sticky-col"` pins the leading column
+  (logical `inline-start`, so RTL mirrors). Values compose:
+  `"sticky-head sticky-col"`. Wrap the table in a scroll container with
+  a bounded height/width (`overflow: auto`) — that scroller is what the
+  cells stick against. Give the wrapper `tabindex="0"` and an
+  accessible name: tables hold no focusable content, so without it
+  keyboard users can't scroll (WCAG 2.1.1; axe's
+  `scrollable-region-focusable` flags it). Sticky cells get an opaque
+  `--bf-surface` background (transparent ones show rows through) and
+  `z-index: var(--bf-z-sticky)`.
 - **Sortable** — put real `<button>`s in the header cells and add
   `data-bf-sort` (with `js/table-sort.js`, see
   [JavaScript](javascript.md)); the buttons are re-skinned to inherit
   the th voice, with ↕/↑/↓ indicators following the module's
   maintained `aria-sort`. Without JS nothing sorts — a plain table.
 - **A11y:** `<th>`/`<caption>` do the work for screen readers; sorting
-  state is announced via `aria-sort`.
+  state is announced via `aria-sort`; sticky variants are purely
+  presentational and change no semantics.
 
 ## Timeline
 

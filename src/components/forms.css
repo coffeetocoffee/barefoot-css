@@ -84,6 +84,90 @@
     background-size: 1rem;
   }
 
+  /* ---- Customizable select (@supports-gated) ----
+     Where an engine ships appearance:base-select (Chromium 135+),
+     single selects upgrade from the chevron skin above to a fully
+     themed control: the open list becomes ::picker(select) — a
+     stylable box with native <option> semantics untouched. Engines
+     without it drop this whole block and keep the chevron skin:
+     degrade by omission, no polyfill, no imitation. */
+  @supports (appearance: base-select) {
+    select:not([multiple]):not([size]) {
+      appearance: base-select;
+      background-image: none; /* the SVG chevron retires; ::picker-icon draws */
+    }
+
+    select::picker-icon {
+      color: currentColor;
+    }
+
+    /* Picker surface — the [popover] recipe: surface, hairline, radius,
+       lifted shadow. Geometry beyond that stays UA-owned: the engine
+       sizes, anchors and light-dismisses the picker. */
+    select::picker(select) {
+      padding: var(--bf-space-1);
+
+      background-color: var(--bf-surface);
+      border: var(--bf-border-width) solid var(--bf-border);
+      border-radius: var(--bf-radius);
+      box-shadow: var(--bf-shadow-lifted);
+
+      transition:
+        opacity var(--bf-transition),
+        transform var(--bf-transition),
+        display var(--bf-transition) allow-discrete,
+        overlay var(--bf-transition) allow-discrete;
+    }
+
+    @starting-style {
+      select::picker(select) {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+      }
+    }
+
+    /* ::picker() lives in the top layer — unreachable by base.css's *
+       kill switch (same shape as ::view-transition-*), so it carries
+       its own reduced-motion guard. */
+    @media (prefers-reduced-motion: reduce) {
+      select::picker(select) {
+        transition: none;
+      }
+    }
+
+    /* Option rows: token hover/checked states, themed checkmark.
+       Options/checkmarks/optgroups are the select's own DOM — styled
+       from the element, not through ::picker(), which Lightning CSS
+       (correctly, per old syntax) refuses to let carry descendants. */
+    select:not([multiple]):not([size]) option {
+      padding: var(--bf-space-2) var(--bf-space-3);
+      border-radius: var(--bf-radius-sm);
+
+      color: var(--bf-text); /* re-declared: optgroup labels mute themselves */
+    }
+
+    select:not([multiple]):not([size]) option:hover,
+    select:not([multiple]):not([size]) option:focus-visible {
+      background: var(--bf-surface-alt);
+    }
+
+    select:not([multiple]):not([size]) option:checked {
+      background: var(--bf-primary-subtle);
+    }
+
+    select:not([multiple]):not([size]) option::checkmark {
+      color: var(--bf-primary);
+    }
+
+    /* Group labels read muted; options re-declare text above. */
+    select:not([multiple]):not([size]) optgroup {
+      padding-block-start: var(--bf-space-2);
+
+      color: var(--bf-muted);
+      font-size: 0.8125rem;
+    }
+  }
+
   /* ---- Datalist (native autocomplete) ----
      The suggestion popup is engine-drawn and not stylable anywhere —
      same honesty as <select>'s native list. What Barefoot skins is

@@ -111,7 +111,7 @@ All component attributes and their valid values:
 | `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `masonry`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
-| `data-table` | `<table>` | `stack` | 1.1 |
+| `data-table` | `<table>` | `stack`, `sticky-head`, `sticky-col` (compose, e.g. `"sticky-head sticky-col"`) | 1.1 |
 | `data-nav` | `<header>`, `<footer>` | `header`, `footer` | 1.6 |
 | `data-switch` | `input[type="checkbox"]` | (boolean) | 1.1 |
 | `data-accordion` | `<details>` | (boolean) | 0.1 |
@@ -161,6 +161,11 @@ All component attributes and their valid values:
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
 | `data-bf-theme-btn` | theme switcher buttons | theme name | — |
+
+Platform-gated styling carries no attribute of its own: single
+`<select>`s pick up the `::picker(select)` skin only where the engine
+supports `appearance: base-select` (`@supports`-gated, Chromium 135+);
+everywhere else the chevron fallback applies.
 
 ### Internal markers (not consumer API)
 

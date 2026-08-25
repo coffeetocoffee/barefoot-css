@@ -9,7 +9,7 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 2.1KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 8.6KB gzipped. Per-component entry points mean you only pay for what you import.
+- **~10KB or bust.** `index.css` is 2.3KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 9.3KB gzipped. Per-component entry points mean you only pay for what you import.
 - **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
 - **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
@@ -47,9 +47,9 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 49.92KB | — | — |
+| `full.css` | 51.49KB | — | — |
+| `components/forms.css` | 9.61KB | — | — |
 | `index.css` | 8.54KB | — | — |
-| `components/forms.css` | 8.39KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
 | `js/table-sort.js` | 3.28KB | — | — |
 | `utilities.css` | 3.18KB | — | — |
@@ -63,9 +63,9 @@ npm install barefoot-css
 | `js/roving-index.js` | 2.10KB | — | — |
 | `components/buttons.css` | 2.02KB | — | — |
 | `js/tooltip.js` | 1.86KB | — | — |
+| `components/table.css` | 1.80KB | — | — |
 | `components/layout.css` | 1.62KB | — | — |
 | `js/lifecycle.js` | 1.57KB | — | — |
-| `components/table.css` | 1.44KB | — | — |
 | `components/accordion.css` | 1.44KB | — | — |
 | `components/nav.css` | 1.29KB | — | — |
 | `components/grid.css` | 1.23KB | — | — |
