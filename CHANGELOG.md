@@ -4,6 +4,81 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.0] — 2026-08-25
+
+The Navigation Release — cross-document view transitions as a first-
+class, zero-JS MPA capability, plus the structural decision the size
+budget forced: `full.css` freezes and per-component becomes the
+headline (ADR-0008). All additive, no breaking changes.
+
+### Added
+
+- **Cross-document navigation transitions**
+  (`components/view-transition.css`) — importing the file now opts
+  every same-origin MPA navigation into a root crossfade
+  (`@view-transition { navigation: auto }`): SPA-feel page transitions
+  with two lines of HTML and zero JS. Both pages must import the file;
+  engines without support ignore the unknown at-rule entirely —
+  degrade by omission, no polyfill.
+- **Shared-element morphs** — give an element the same author-authored
+  `view-transition-name` on both pages and it flies between layouts
+  while everything else crossfades. Naming stays in consumers' hands
+  (CSS cannot mint unique names); every named group's geometry is
+  timed by the new motion tokens.
+- **Motion tokens** (`tokens.css`, `--bf-vt-*` family):
+  - `--bf-vt-duration: 250ms` (named-group morph length)
+  - `--bf-vt-easing: ease` (named-group timing)
+  The root snapshot keeps its existing pace (`--bf-transition-slow`
+  fade).
+- **Reduced-motion guard for both tiers** — same-document snapshots
+  render statically (existing behavior), and cross-document
+  navigations opt back out entirely (`@view-transition { navigation:
+  none }`). The guards live in view-transition.css because top-layer
+  pseudos are out of reach of base.css's duration clamp; the kill
+  switch covers `::view-transition-group(*)` morphs too.
+- **Demo pair page** (`demo/vt.html`) — the second document of the
+  transition pair: the conformance demo's named card flies to its twin,
+  everything else crossfades. Demo gains a "Navigation transitions"
+  section and conformance-matrix row linking to it.
+
+### Changed
+
+- **`full.css` frozen (ADR-0008)** — the bundle stops gaining imports;
+  its `@import` list is pinned verbatim by a source-parse test. Existing
+  component files keep evolving under the same budget check (this
+  release itself nudges it +0.06KB gzip via view-transition.css).
+  Headline numbers pivot to `index.css` + per-component imports across
+  README, docs/performance.md, docs/api.md, and the docs site stat
+  cards.
+- **`docs/components.md`** — View transitions section rewritten around
+  the two tiers (same-document hooks, cross-document navigation),
+  morph convention, token timing, and the load-bearing reduced-motion
+  guards.
+- **`docs/api.md`** — version header v4.6; export-map table marks
+  `full.css` as frozen with a pointer to ADR-0008.
+- **`.stylelintrc.json`** — `view-transition` at-rule and its
+  `navigation` descriptor whitelisted.
+
+### Tests
+
+- New "v4.6 navigation transitions" describe (8 specs): source-parse
+  pins for the opt-in rule, the nested reduced-motion opt-out (and that
+  it covers group morphs), `--bf-vt-*` token definition/consumption
+  parity, the verbatim full.css import freeze (ADR-0008), and index.css
+  staying core-clean; a live pair-page smoke asserting both sides carry
+  `view-transition-name: bf-demo-hero`; and live wiring through
+  `pagereveal` — navigating demo → pair page creates a real transition
+  (`event.viewTransition` non-null), while emulated reduced motion
+  navigates plainly. The live pair skip cleanly where the events don't
+  exist.
+- Visual baselines regenerated deliberately for all three engines (the
+  demo gained a section).
+- Chromium: 19 a11y / 29 JS / 109 CSS (2 engine-gated skips) / 3
+  visual — green. Firefox 132 passed, 7 skipped · WebKit 137 passed,
+  4 skipped (cross-doc VT lives gated on `pageswap`/`pagereveal`).
+- Sizes (gzip level 9, hand-measured): `index.css` 2.31 → 2.32KB ·
+  `full.css` 9.55 → 9.61KB, frozen.
+
 ## [4.5.0] — 2026-08-25
 
 Customizable select and sticky table variants. All `@supports`-gated

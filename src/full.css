@@ -1,8 +1,13 @@
 /* Barefoot — full bundle.
    Everything: reset, tokens, base, all components, utilities.
    Import this when you want the whole kit in one file
-   (≈3-4KB gzipped at time of writing).
-   For smaller payloads, import './index.css' and pick components. */
+   (~9.5KB gzipped at the 4.6 freeze).
+   For smaller payloads, import './index.css' and pick components.
+
+   FROZEN (v4.6, ADR-0008): this bundle stops gaining imports. New
+   components land as opt-in files only; existing files keep evolving
+   under the same budget check. The headline numbers are index.css +
+   per-component imports, not this convenience blob. */
 @import "./index.css";
 @import "./components/buttons.css";
 @import "./components/forms.css";

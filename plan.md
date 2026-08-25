@@ -1,30 +1,35 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-25 — v4.5.0 shipped_
+_Last updated: 2026-08-25 — v4.6.0 shipped_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.5.0` (2026-08-25) — customizable
-  `<select>` (`appearance: base-select` picker skin, `@supports`-gated,
-  degrade by omission) plus sticky table head/column variants. All
-  additive.
-- **Next:** TBD — post-4.5 ideas stay off-roadmap until the next scan
-  picks them up.
-- **Tests:** Chromium 146 (19 a11y / 29 JS / 101 CSS / 3 visual) ·
-  Firefox 138, 4 skipped · WebKit 138, 4 skipped — green; skips are
-  engine-gated (interest invokers, SDA, the base-select chevron
-  fallback). WebKit ships base-select too, so the picker specs run on
-  both Chromium and WebKit. Specs touch the demo only through
-  `tests/helpers.js`. Visual specs run Windows-only in CI (win32
-  baselines); ubuntu/macos jobs stay behavior-only.
-- **Build:** `index.css` 2.31KB gzip (unchanged) · `full.css` 9.55KB
-  gzip (+0.23KB, ~0.45KB headroom under the 10KB budget). Gzip is
-  measured by hand at level 9: since the zlib bypass on Node
-  26/Windows, `npm run check` enforces only the 3× raw fallback.
-- **History:** milestones 0.1 → 4.5 shipped; per-release detail lives
+- **Current:** `barefoot-css@4.6.0` (2026-08-25) — cross-document view
+  transitions (`@view-transition { navigation: auto }` behind the opt-in
+  view-transition.css import, token-driven morphs, reduced-motion opt-
+  out) plus the structural freeze of `full.css` (ADR-0008): no new
+  imports ever; per-component is the headline path.
+- **Next:** TBD — post-4.6 ideas stay off-roadmap until the next scan
+  picks them up. Candidate kept warm: OKLCH relative-color token engine
+  (own release; AA-guarantee risk needs its own gate-check).
+- **Tests:** Chromium (19 a11y / 29 JS / 109 CSS, 2 engine-gated
+  skips / 3 visual) · Firefox 132 passed, 7 skipped · WebKit 137
+  passed, 4 skipped — green. Skips are engine-gated (interest invokers,
+  SDA, base-select fallback; cross-doc VT lives gated on
+  `pageswap`/`pagereveal`, proven live on Chromium). Specs touch the
+  demo only through `tests/helpers.js`. Visual baselines are win32 and
+  were regenerated this release (demo gained a section); ubuntu/macos
+  jobs stay behavior-only.
+- **Build:** `index.css` 2.32KB gzip (2.31 → +tokens) · `full.css`
+  9.61KB gzip — **frozen at its 4.5 import set** (ADR-0008); existing
+  files still evolve under `npm run size`. Gzip is measured by hand at
+  level 9: since the zlib bypass on Node 26/Windows, `npm run check`
+  enforces only the 3× raw fallback.
+- **History:** milestones 0.1 → 4.6 shipped; per-release detail lives
   in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
   namespace cleanup + deprecation policy (3.x), platform catch-up +
-  layout + motion + selects/sticky tables (4.x).
+  layout + motion + selects/sticky tables (4.x), navigation
+  transitions + bundle freeze (4.6).
 
 ## Vision
 
@@ -132,7 +137,10 @@ Safari 26.2+.)
 
 ## Next
 
-Post-4.5 ideas stay off-roadmap until the next scan picks them up.
+Post-4.6 ideas stay off-roadmap until the next scan picks them up.
+The Navigation Release shipped as 4.6 (see CHANGELOG); its structural
+half — the full.css freeze — is recorded in ADR-0008 and pinned by
+test.
 
 ## Watch-list (no action until browsers fix it)
 
@@ -188,6 +196,11 @@ Live decisions only — history lives in CHANGELOG and docs/.
   container's own pseudos aren't its descendants, so `cqi` resolves
   against an ancestor); keep timeline longhands out of any rule an
   `animation` shorthand touches (see AGENTS.md).
+- **`full.css` is frozen; per-component is the headline.** Since 4.6
+  (ADR-0008) the bundle gains no imports — its list is pinned verbatim
+  by test — while existing files keep evolving under `npm run size`.
+  The advertised numbers are `index.css` + à-la-carte components;
+  growth is opt-in by construction.
 - **Deprecation notices warn on use, not on import.** `warnOnce` in
   lifecycle.js fires once per page, only when markup matches an
   announced surface; otherwise silent. Pinned by the lifecycle

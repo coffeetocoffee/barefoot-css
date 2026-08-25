@@ -9,7 +9,7 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 2.3KB gzipped. The *everything* bundle (`full.css` — every component, utility, and theme) is 9.3KB gzipped. Per-component entry points mean you only pay for what you import.
+- **~10KB or bust.** `index.css` is 2.3KB gzipped, and that's the headline — import the core plus only the component files you use. The *everything* bundle (`full.css`) is frozen at 4.6 (ADR-0008): it stops growing so per-component stays the real story.
 - **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
 - **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
@@ -47,9 +47,9 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 51.49KB | — | — |
+| `full.css` | 51.77KB | — | — |
 | `components/forms.css` | 9.61KB | — | — |
-| `index.css` | 8.54KB | — | — |
+| `index.css` | 8.58KB | — | — |
 | `js/carousel.js` | 4.66KB | — | — |
 | `js/table-sort.js` | 3.28KB | — | — |
 | `utilities.css` | 3.18KB | — | — |
@@ -90,6 +90,7 @@ npm install barefoot-css
 | `themes/editorial.css` | 0.58KB | — | — |
 | `components/empty-state.css` | 0.57KB | — | — |
 | `js/barefoot.js` | 0.52KB | — | — |
+| `components/view-transition.css` | 0.52KB | — | — |
 | `components/breadcrumbs.css` | 0.51KB | — | — |
 | `themes/dashboard.css` | 0.50KB | — | — |
 | `themes/forest.css` | 0.47KB | — | — |
@@ -101,7 +102,6 @@ npm install barefoot-css
 | `components/card.css` | 0.33KB | — | — |
 | `components/prose.css` | 0.30KB | — | — |
 | `components/menu-items.css` | 0.29KB | — | — |
-| `components/view-transition.css` | 0.28KB | — | — |
 <!-- SIZES:END -->
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.
@@ -120,7 +120,7 @@ Modern evergreen browsers only (2024+): Popover API, `light-dark()`, `@starting-
 ```
 src/
   index.css            core entry: layers, reset, tokens, base
-  full.css             everything in one file
+  full.css             everything in one file (frozen at 4.6, ADR-0008)
   layers.css           cascade layer order
   reset.css, tokens.css, base.css
   components/          buttons, forms, dialog, popover, dropdown,

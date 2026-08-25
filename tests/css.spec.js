@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, tokenColor } from "./helpers.js";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1643,6 +1643,137 @@ test.describe("v4.5 customizable select & sticky tables", () => {
     await gotoDemo(page);
     const stackTh = page.locator('table[data-table="stack"] thead th').first();
     await expect(stackTh).toHaveCSS("position", "static");
+  });
+});
+
+test.describe("v4.6 navigation transitions (cross-document view transitions)", () => {
+  // The transition renders in the top layer across two documents; a
+  // mid-navigation frame is not deterministically capturable, so the
+  // static contract is pinned source-side and the live wiring through
+  // the pagereveal event (the platform's own "did this navigation
+  // transition?" signal).
+
+  const vtSrc = () =>
+    fs.readFileSync(path.join(rootDir, "src/components/view-transition.css"), "utf8");
+
+  test("importing the file opts same-origin navigations in", () => {
+    expect(vtSrc()).toMatch(/@view-transition\s*\{\s*navigation:\s*auto/);
+  });
+
+  test("reduced motion opts back out entirely", () => {
+    const src = vtSrc();
+    const guard = src.slice(src.indexOf("(prefers-reduced-motion: reduce)"));
+    expect(guard).toMatch(/@view-transition\s*\{\s*navigation:\s*none/);
+    // Top-layer pseudos are out of base.css's reach — the in-file kill
+    // switch must cover the group morphs too, not just the snapshots.
+    expect(guard).toContain("::view-transition-group(*)");
+  });
+
+  test("--bf-vt-* tokens exist and are consumed by the component", () => {
+    const tokens = fs.readFileSync(path.join(rootDir, "src/tokens.css"), "utf8");
+    expect(tokens).toMatch(/--bf-vt-duration:/);
+    expect(tokens).toMatch(/--bf-vt-easing:/);
+    const src = vtSrc();
+    expect(src).toContain("var(--bf-vt-duration)");
+    expect(src).toContain("var(--bf-vt-easing)");
+  });
+
+  test("full.css stays frozen at its 4.5 import set (ADR-0008)", () => {
+    const src = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    const imports = [...src.matchAll(/@import\s+"([^"]+)"/g)].map((m) => m[1]);
+    expect(imports).toEqual([
+      "./index.css",
+      "./components/buttons.css",
+      "./components/forms.css",
+      "./components/segmented.css",
+      "./components/dialog.css",
+      "./components/popover.css",
+      "./components/menu-items.css",
+      "./components/accordion.css",
+      "./components/tabs.css",
+      "./components/carousel.css",
+      "./components/reveal.css",
+      "./components/grid.css",
+      "./components/layout.css",
+      "./components/nav.css",
+      "./components/alert.css",
+      "./components/skeleton.css",
+      "./components/spinner.css",
+      "./components/divider.css",
+      "./components/table.css",
+      "./components/code.css",
+      "./components/timeline.css",
+      "./components/empty-state.css",
+      "./components/card.css",
+      "./components/badge.css",
+      "./components/chip.css",
+      "./components/breadcrumbs.css",
+      "./components/pagination.css",
+      "./components/prose.css",
+      "./components/media.css",
+      "./components/stepper.css",
+      "./components/view-transition.css",
+      "./utilities.css",
+    ]);
+  });
+
+  test("the core stays core: index.css never enables navigation", () => {
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    expect(index).not.toContain("@view-transition");
+    expect(index).not.toContain("view-transition.css");
+  });
+
+  test("pair page carries the twin name and links home; demo names its side too", async ({ page }) => {
+    await gotoVtPair(page);
+    await expect(
+      page.getByRole("link", { name: /Back to the conformance demo/ })
+    ).toBeVisible();
+
+    if (await page.evaluate(() => CSS.supports("view-transition-name", "hero"))) {
+      await expect(page.locator("#vt-pair article")).toHaveCSS(
+        "view-transition-name",
+        "bf-demo-hero"
+      );
+    }
+
+    await gotoDemo(page);
+    await expect(page.locator(DEMOS.demoNavVt).locator("article").first()).toHaveCSS(
+      "view-transition-name",
+      "bf-demo-hero"
+    );
+  });
+
+  // Live wiring: pagereveal carries a ViewTransition object exactly when
+  // a cross-document transition was created for this navigation.
+  const supportsNavVt = (page) =>
+    page.evaluate(
+      () =>
+        typeof ViewTransition !== "undefined" &&
+        "onpageswap" in window &&
+        "onpagereveal" in window
+    );
+
+  async function revealState(page, { reducedMotion = false } = {}) {
+    if (reducedMotion) await page.emulateMedia({ reducedMotion: "reduce" });
+    await gotoDemo(page);
+    if (!(await supportsNavVt(page))) return "unsupported";
+    await page.addInitScript(() => {
+      window.__bfVtReveal = "pending";
+      addEventListener("pagereveal", (e) => {
+        window.__bfVtReveal = e.viewTransition ? "transitioned" : "plain";
+      });
+    });
+    await page.getByRole("link", { name: /Open the pair page/ }).click();
+    await page.waitForLoadState("load");
+    return page.evaluate(() => window.__bfVtReveal);
+  }
+
+  test("navigating between opting-in documents creates a transition", async ({ page }) => {
+    expect(await revealState(page)).toBe("transitioned");
+  });
+
+  test("reduced motion navigates plainly (no transition created)", async ({ page }) => {
+    expect(await revealState(page, { reducedMotion: true })).toBe("plain");
   });
 });
 

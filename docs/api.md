@@ -1,4 +1,4 @@
-# Barefoot — API Reference (v4.2)
+# Barefoot — API Reference (v4.6)
 
 As of v4.0.0, Barefoot's public API is frozen. This document defines
 what is stable, what may change, and the deprecation policy.
@@ -93,7 +93,7 @@ All deprecated surfaces have been removed in 4.0. See
 | Import specifier | What it resolves to |
 |---|---|
 | `"barefoot-css"` | Core: layers + reset + tokens + base |
-| `"barefoot-css/full.css"` | Everything: core + all components + utilities |
+| `"barefoot-css/full.css"` | Everything: core + all components + utilities. **Frozen at 4.6** (ADR-0008) — no new components join it; import per-component instead |
 | `"barefoot-css/utilities.css"` | Utility classes only |
 | `"barefoot-css/components/dialog.css"` | Any single component |
 | `"barefoot-css/themes/editorial.css"` | Any starter theme |

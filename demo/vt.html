@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — navigation transitions (pair page)</title>
+  <link rel="stylesheet" href="../dist/full.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    :root {
+      --bf-font: "Inter", system-ui, sans-serif;
+    }
+    .hero { padding-block: var(--bf-space-8); }
+    .hero p { max-width: 60ch; }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+  <header class="bf-container hero">
+    <p class="bf-overline">Barefoot CSS</p>
+    <h1>Navigation transitions — pair page</h1>
+    <p>This page imports the same <code>view-transition.css</code> as the conformance demo, so navigating here (and back) crossfades. The card below carries the same <code>view-transition-name: bf-demo-hero</code> as its twin — shared elements morph between pages instead of flashing.</p>
+    <p><a href="index.html">← Back to the conformance demo</a></p>
+  </header>
+
+  <main class="bf-container" id="main">
+    <section id="vt-pair" aria-labelledby="vt-pair-title">
+      <h2 id="vt-pair-title">The named twin</h2>
+      <article class="card" style="max-width: 24rem; view-transition-name: bf-demo-hero;">
+        <header>Named element</header>
+        <p>Navigate in either direction: this card flies between layouts while the rest of the page crossfades. Both documents opt in — that is the whole contract.</p>
+      </article>
+      <p class="bf-muted bf-mt-3">Under <code>prefers-reduced-motion</code> both tiers switch off: no crossfade, no morph, plain navigation.</p>
+    </section>
+  </main>
+
+  <footer class="bf-container bf-mt-8">
+    <p class="bf-muted">Barefoot — every visual is a variable. Make it yours.</p>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
+      btn.addEventListener("click", () => { root.dataset.bfTheme = btn.dataset.bfThemeBtn; });
+    }
+  </script>
+</body>
+</html>

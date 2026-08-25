@@ -111,6 +111,7 @@
           <tr><td>Staggered reveal</td><td class="wcag">AA</td><td>Sequential animation delays are visual only; content order and announcements unchanged.</td></tr>
           <tr><td>Scroll-progress bar</td><td class="wcag">A</td><td>Decorative position feedback; no interactive content. Live under <code>prefers-reduced-motion</code>.</td></tr>
           <tr><td>Parallax</td><td class="wcag">AA</td><td>Decorative motion stops under <code>prefers-reduced-motion</code>; element stays in place.</td></tr>
+          <tr><td>Navigation transitions</td><td class="wcag">AA</td><td>Nothing interactive — navigations work identically without the transition, and content renders fully. Crossfades and morphs stop under <code>prefers-reduced-motion</code>.</td></tr>
         </tbody>
       </table>
     </section>
@@ -619,6 +620,23 @@
         <div data-parallax style="height: 150%; background: linear-gradient(135deg, var(--bf-primary-muted), var(--bf-primary-subtle)); display: flex; align-items: center; justify-content: center;">
           <span class="badge" data-variant="primary">Parallax element</span>
         </div>
+      </div>
+    </section>
+
+    <!-- Navigation transitions (cross-document view transitions) -->
+    <section id="navigation-transitions" aria-labelledby="nav-vt-title">
+      <h2 id="nav-vt-title">Navigation transitions</h2>
+      <p>Importing <code>view-transition.css</code> opts every same-origin navigation into a root crossfade — MPA pages get SPA-feel transitions with zero JS (<code>@view-transition { navigation: auto }</code>). Shared elements morph when both pages give them the same <code>view-transition-name</code>: the first card below is named on both sides of the link. Engines without support navigate exactly as before.</p>
+      <div class="bf-row bf-gap-4" id="demo-nav-vt">
+        <article class="card" style="flex: 1 1 14rem; view-transition-name: bf-demo-hero;">
+          <header>Named element</header>
+          <p>This card carries <code>view-transition-name: bf-demo-hero</code>. Follow the link — it flies to its twin on the pair page.</p>
+        </article>
+        <article class="card" style="flex: 1 1 14rem;">
+          <header>Root crossfade</header>
+          <p>Everything else crossfades; reduced motion opts back out entirely.</p>
+          <p><a href="vt.html">Open the pair page →</a></p>
+        </article>
       </div>
     </section>
 

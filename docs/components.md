@@ -853,16 +853,39 @@ support, carousel controls + autoplay) and their markup.
 </script>
 ```
 
-- Opt-in hooks for the View Transitions API. Import
-  `components/view-transition.css` when you call
-  `document.startViewTransition()` (theme switches, SPA-ish page swaps):
-  the outgoing snapshot is dropped (`animation: none`) and the incoming
-  one fades in over `--bf-transition-slow`, instead of the default
+- Opt-in hooks for the View Transitions API, two tiers in one file.
+- **Same-document** (every engine with `startViewTransition()`): import
+  the file when you call it (theme switches, SPA-ish page swaps) — the
+  outgoing snapshot is dropped (`animation: none`) and the incoming one
+  fades in over `--bf-transition-slow`, instead of the default
   cross-fade flash.
-- **Reduced motion:** under `prefers-reduced-motion: reduce` both
-  snapshots render statically — no fade, no movement.
-- **JS:** yours — Barefoot ships only the `::view-transition-*` styling;
-  you decide when to call `startViewTransition()`.
+- **Cross-document navigation (v4.6):** importing the file also opts
+  every same-origin MPA navigation into a root crossfade
+  (`@view-transition { navigation: auto }`) — SPA-feel page transitions
+  with zero JS. Both pages must import the file; that is the whole
+  contract.
+- **Shared-element morphs:** give an element a name on *both* pages and
+  it flies between them while everything else crossfades:
+
+  ```html
+  <img src="hero.png" style="view-transition-name: hero">
+  ```
+
+  Naming stays author-authored (CSS cannot mint unique names). Every
+  named group's geometry is timed by the motion tokens:
+  `--bf-vt-duration` / `--bf-vt-easing`. The root snapshot keeps its own
+  pace (`--bf-transition-slow`).
+- **Reduced motion:** under `prefers-reduced-motion: reduce` both tiers
+  switch off — same-document snapshots render statically, and
+  cross-document navigations opt back out entirely
+  (`@view-transition { navigation: none }`). The guards live in this
+  file on purpose: `::view-transition-*` pseudos are top-layer and out
+  of reach of base.css's duration clamp.
+- **Degrade by omission:** engines without cross-document transitions
+  ignore the unknown at-rule and navigate exactly as before. No
+  polyfill, no JS imitation.
+- **JS:** yours for same-document calls — Barefoot ships only the
+  `::view-transition-*` styling; cross-document transitions need none.
 - **A11y:** motion-safe by default; without the media-query guard a
   theme flip would animate for everyone.
 

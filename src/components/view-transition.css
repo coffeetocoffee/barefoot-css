@@ -1,17 +1,54 @@
 /* Barefoot — view transitions.
-   Opt-in hooks for the View Transitions API. Includes this file when
-   you call document.startViewTransition() (e.g. for theme switches) so
-   snapshots fade in instead of flashing, and reduced-motion users get
-   no animation.
+   Opt-in hooks for the View Transitions API, two tiers:
 
-   <script>
-     if (document.startViewTransition) {
-       document.startViewTransition(() => { root.dataset.bfTheme = "dark"; });
-     } else {
-       root.dataset.bfTheme = "dark";
-     }
-   </script> */
+   Same-document (any engine with startViewTransition): snapshots used
+   for theme switches and SPA-ish swaps fade in instead of flashing.
+
+     <script>
+       if (document.startViewTransition) {
+         document.startViewTransition(() => { root.dataset.bfTheme = "dark"; });
+       } else {
+         root.dataset.bfTheme = "dark";
+       }
+     </script>
+
+   Cross-document (v4.6): importing this file also opts every same-origin
+   MPA navigation into a root crossfade — SPA-feel page transitions with
+   zero JS. Both pages must import the file. Engines without support
+   ignore the unknown at-rule entirely: degrade by omission, no polyfill.
+
+     <a href="next.html">next page</a>      → crossfades automatically
+
+   Shared-element morphs stay author-authored (CSS cannot mint unique
+   names); give the element a name on BOTH pages and it flies between
+   them, timed by the --bf-vt-* tokens:
+
+     <img src="hero.png" style="view-transition-name: hero">
+
+   The root snapshot keeps its own pace (--bf-transition-slow fade);
+   the --bf-vt-* tokens time the geometry of every named group.
+
+   Reduced motion kills both tiers: same-document snapshots render
+   statically, and cross-document navigations opt back out entirely.
+   (::view-transition-* pseudos live in the top layer, out of reach of
+   base.css's duration clamp — the guards here are load-bearing.) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
 @layer components {
+  /* Named groups (root included) morph on the v4.6 tokens. */
+  ::view-transition-group(*) {
+    animation-duration: var(--bf-vt-duration);
+    animation-timing-function: var(--bf-vt-easing);
+  }
+
   ::view-transition-old(root) {
     animation: none;
   }
@@ -27,6 +64,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
     ::view-transition-old(root),
     ::view-transition-new(root) {
       animation: none;

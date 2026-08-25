@@ -59,7 +59,9 @@ the cap on every run without rebuilding.
    @import "barefoot-css/components/dialog.css"; /* only what you use */
    ```
 
-   `full.css` (~8KB gzipped) exists for convenience, not obligation.
+   `full.css` is a convenience, not obligation — and frozen since 4.6
+   (ADR-0008): it stops gaining imports, so the à-la-carte path above is
+   also the *only* path for anything new.
 
 2. **Skip utilities you don't use.** `utilities.css` is opt-in layout
    help; element-first styling needs none of it to look right.

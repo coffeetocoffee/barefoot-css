@@ -178,6 +178,13 @@ the base token and every ramp follows.
 | `--bf-reveal-stagger` | `100ms` | inter-child delay in stagger group |
 | `--bf-progress-height` | `3px` | scroll-progress bar thickness |
 | `--bf-progress-color` | `var(--bf-primary)` | scroll-progress bar color |
+
+### Motion (v4.6: view transitions)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-vt-duration` | `250ms` | cross-document + morph transition length |
+| `--bf-vt-easing` | `ease` | view-transition group timing |
 | `--bf-space-1` | `0.125rem` |  |
 | `--bf-space-2` | `0.25rem` |  |
 | `--bf-space-3` | `0.5rem` |  |

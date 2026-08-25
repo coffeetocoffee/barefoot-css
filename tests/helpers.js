@@ -38,6 +38,7 @@ export const DEMOS = Object.freeze({
   demoNav: "#demo-nav",
   demoNavBurger: "#demo-nav-burger",
   demoNavMenu: "#demo-nav-menu",
+  demoNavVt: "#demo-nav-vt",
   demoParallax: "#demo-parallax",
   demoProse: "#demo-prose",
   demoResponsiveImg: "#demo-responsive-img",
@@ -92,6 +93,12 @@ export async function gotoDemo(page) {
    not the specs, knows where pages live. */
 export async function gotoGallery(page) {
   await page.goto("/demo/gallery.html");
+}
+
+/* Navigate to the navigation-transitions pair page (the other
+   document of the cross-document view-transition pair). */
+export async function gotoVtPair(page) {
+  await page.goto("/demo/vt.html");
 }
 
 /* Mount standalone fixture markup. setContent alone bases URLs at

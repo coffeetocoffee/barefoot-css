@@ -166,6 +166,10 @@
     --bf-reveal-stagger: 100ms;              /* inter-child delay in stagger group */
     --bf-progress-height: 3px;               /* scroll-progress bar thickness */
     --bf-progress-color: var(--bf-primary);  /* scroll-progress bar color */
+
+    /* ---- Motion (v4.6: view transitions) ---- */
+    --bf-vt-duration: 250ms;                 /* cross-document + morph transition length */
+    --bf-vt-easing: ease;                    /* view-transition group timing */
   }
 }
 
