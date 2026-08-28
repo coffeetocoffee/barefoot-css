@@ -4,6 +4,16 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.7.1] — 2026-08-28
+
+Patch — `4.7.0` was already published to npm, so the post-4.7.0 audit/visual fixes ship under `4.7.1` (npm 403 forbids republishing the same version). No new tokens or components.
+
+### Fixed
+
+- **API audit** (`docs/api.md` ↔ `src/`) — `data-command-hint` was implemented in `src/components/command.css:94` but missing from the `data-*` reference table, so `tests/css.spec.js:1860` (`everything implemented is documented`) failed. Added the `data-command-hint` row.
+- **Chip demo strict-locator** (`demo/index.html:653`) — Chroma demo duplicated the `css` chip (`aria-label="Remove css"`) from `tests/helpers.js:DEMOS.demoChips`, so `tests/js.spec.js:236` (`locator('[data-chip-remove][aria-label="Remove css"]')`) resolved to 2 elements and threw a strict-mode violation. Renamed the Chroma chip to `chroma` / `Remove chroma` — the global locator now matches exactly one.
+- **Visual baselines** (`tests/visual.spec.js-snapshots/*-win32.png`) — the v4.7 demo sections (Chroma/Icons/Command/Data-grid) grew the page, so the committed `light`/`dark` screenshots for `chromium`/`firefox`/`webkit` exceeded `maxDiffPixelRatio:0.02`. Regenerated all six win32 baselines deliberately via `npx playwright test --project=<browser> tests/visual.spec.js --update-snapshots`.
+
 ## [4.7.0] — 2026-08-28
 
 Barefoot Chroma — One Color, Infinite Theme. The theming promise made

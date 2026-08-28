@@ -1,10 +1,10 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-28 — v4.7.0 shipped_
+_Last updated: 2026-08-28 — v4.7.1 shipped (patch: api/docs + demo + baselines)_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.7.0` (2026-08-28) — **Barefoot Chroma**:
+- **Current:** `barefoot-css@4.7.1` (2026-08-28) — **Barefoot Chroma** 4.7.0 (OKLCH relative-color engine, Studio live builder, icons/command/data-grid opt-ins, AA guard, `full.css` frozen) plus 4.7.1 patch (api `data-command-hint`, demo chip strict-locator, win32 baselines for chromium/firefox/webkit).
   one color infinite theme via OKLCH relative-color engine
   (`oklch(from var(--bf-primary) …)` gated at `@supports`, hex
   fallbacks; hover/subtle/border/focus auto-derive from one hue),
@@ -29,7 +29,7 @@ _Last updated: 2026-08-28 — v4.7.0 shipped_
   level 9: since the zlib bypass on Node 26/Windows, `npm run check`
   enforces only the 3× raw fallback. New opt-in files
   (`icons`/`command`/`data-grid`) ship outside `full.css`.
-- **History:** milestones 0.1 → 4.7 shipped; per-release detail lives
+- **History:** milestones 0.1 → 4.7.1 shipped; per-release detail lives
   in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
   namespace cleanup + deprecation policy (3.x), platform catch-up +
   layout + motion + selects/sticky tables (4.x), navigation
