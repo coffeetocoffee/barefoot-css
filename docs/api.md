@@ -165,6 +165,7 @@ All component attributes and their valid values:
 | `data-command` | `<dialog>`, `[popover]` | (boolean) | 4.7 |
 | `data-command-list` | inside `[data-command]` | (boolean) | 4.7 |
 | `data-command-item` | child of `[data-command-list]` | (boolean) | 4.7 |
+| `data-command-hint` | inside `[data-command]` | (boolean) | 4.7 |
 | `data-selected` | `[data-command-item]`, `tr` in `table[data-grid]` | (boolean) | 4.7 |
 | `data-grid` | `<table>` (extends) | resizable columns via `resize: horizontal`, stacks at 40rem container | 4.7 |
 
