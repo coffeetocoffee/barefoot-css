@@ -125,6 +125,17 @@
     --bf-warning-subtle: color-mix(in oklab, var(--bf-warning), transparent 88%); /* very light warning tint */
     --bf-border-strong: color-mix(in oklab, var(--bf-border), var(--bf-text) 20%); /* stronger border on hover */
 
+    /* ---- Chroma: One Color Infinite Theme (v4.7) ----
+       Fallbacks for the relative-color engine below —
+       overridden with oklch(from var(--bf-primary) …) in the
+       @supports block that follows. Set --bf-primary to any
+       hex or oklch() value — hover/subtle/border/focus follow. */
+    --bf-primary-hover: color-mix(in oklab, var(--bf-primary), #000000 12%); /* hover fill — darken by 12% (oklch: calc(l - 0.08) ) */
+    --bf-primary-contrast: var(--bf-primary-fg); /* text/icon on primary — oklch contrast auto-switches l */
+    --bf-primary-border: color-mix(in oklab, var(--bf-primary), var(--bf-border) 40%); /* primary tinted border (oklch: 0.85 0.05 h) */
+    --bf-icon-size: 1.25rem; /* default icon square */
+    --bf-icon-stroke: 2px; /* icon stroke width for currentColor icons */
+
     --bf-transition: 150ms ease; /* default motion */
     --bf-transition-slow: 250ms ease; /* slower motion */
 
@@ -172,6 +183,29 @@
     --bf-vt-easing: ease;                    /* view-transition group timing */
   }
 }
+
+/* Chroma engine: relative-color derivations — auto-generates
+   hover/subtle/border/focus from one hue via oklch(from ...).
+   Pure CSS, no JS. @supports falls back to the color-mix
+   hex values above; engines without relative-color keep hex. */
+/* stylelint-disable lightness-notation, hue-degree-notation */
+@layer tokens {
+  @supports (color: oklch(from red l c h)) {
+    :root {
+      --bf-primary-hover: oklch(from var(--bf-primary) calc(l - 0.08) c h); /* hover — darker */
+      --bf-primary-subtle: oklch(from var(--bf-primary) 0.95 0.02 h); /* very light tint */
+      --bf-primary-contrast: oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0); /* AA text on primary */
+      --bf-primary-border: oklch(from var(--bf-primary) 0.88 0.04 h); /* tinted border */
+      --bf-primary-muted: oklch(from var(--bf-primary) 0.8 0.04 h / 0.55); /* muted focus ring */
+      --bf-primary-strong: oklch(from var(--bf-primary) calc(l - 0.03) calc(c * 1.05) h); /* strong tint */
+      --bf-primary-darken: oklch(from var(--bf-primary) calc(l - 0.06) c h); /* hover darken */
+      --bf-border-strong: oklch(from var(--bf-border) calc(l - 0.06) c h); /* stronger border */
+      --bf-surface-2: oklch(from var(--bf-surface) calc(l - 0.015) 0.005 h); /* subtle raised */
+      --bf-surface-3: oklch(from var(--bf-surface) calc(l - 0.03) 0.008 h); /* stronger raised */
+    }
+  }
+}
+/* stylelint-enable lightness-notation, hue-degree-notation */
 
 /* ---- Density presets (v3.4) ----
    data-density="compact" on <html> (or any subtree) remaps the spacing

@@ -1,4 +1,4 @@
-# Barefoot — API Reference (v4.6)
+# Barefoot — API Reference (v4.7)
 
 As of v4.0.0, Barefoot's public API is frozen. This document defines
 what is stable, what may change, and the deprecation policy.
@@ -108,7 +108,7 @@ All component attributes and their valid values:
 |---|---|---|---|
 | `data-bf-theme` | `<html>` | `auto`, `light`, `dark`, `contrast`, `editorial`, `dashboard`, `playful`, `forest`, `sunset`, `coastal`, `custom` | 0.1 |
 | `data-variant` | `<button>` | `primary`, `danger`, `ghost` | 0.1 |
-| `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]` | `sm`, `lg` | 0.1 |
+| `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]`, `[data-icon]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `masonry`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
 | `data-table` | `<table>` | `stack`, `sticky-head`, `sticky-col` (compose, e.g. `"sticky-head sticky-col"`) | 1.1 |
@@ -161,6 +161,12 @@ All component attributes and their valid values:
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
 | `data-bf-theme-btn` | theme switcher buttons | theme name | — |
+| `data-icon` | any element | `search`, `close`/`x`, `menu`, `check`, `chevron-down`, `chevron-right`, `plus`, `trash`, `star`, `heart`, `settings`/`gear`, `user` | 4.7 |
+| `data-command` | `<dialog>`, `[popover]` | (boolean) | 4.7 |
+| `data-command-list` | inside `[data-command]` | (boolean) | 4.7 |
+| `data-command-item` | child of `[data-command-list]` | (boolean) | 4.7 |
+| `data-selected` | `[data-command-item]`, `tr` in `table[data-grid]` | (boolean) | 4.7 |
+| `data-grid` | `<table>` (extends) | resizable columns via `resize: horizontal`, stacks at 40rem container | 4.7 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

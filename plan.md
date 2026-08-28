@@ -1,17 +1,20 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-25 — v4.6.0 shipped_
+_Last updated: 2026-08-28 — v4.7.0 shipped_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.6.0` (2026-08-25) — cross-document view
-  transitions (`@view-transition { navigation: auto }` behind the opt-in
-  view-transition.css import, token-driven morphs, reduced-motion opt-
-  out) plus the structural freeze of `full.css` (ADR-0008): no new
-  imports ever; per-component is the headline path.
-- **Next:** TBD — post-4.6 ideas stay off-roadmap until the next scan
-  picks them up. Candidate kept warm: OKLCH relative-color token engine
-  (own release; AA-guarantee risk needs its own gate-check).
+- **Current:** `barefoot-css@4.7.0` (2026-08-28) — **Barefoot Chroma**:
+  one color infinite theme via OKLCH relative-color engine
+  (`oklch(from var(--bf-primary) …)` gated at `@supports`, hex
+  fallbacks; hover/subtle/border/focus auto-derive from one hue),
+  AA contrast guard at `npm run check` (hard fail <4.5:1), Studio
+  live builder (`demo/studio.html` — iframe preview + 6-line export),
+  and three CSS-only primitives (`icons`/`command`/`data-grid`) as
+  opt-in files; `full.css` stays frozen at its 4.5 import set
+  (ADR-0008) — per-component is the headline path.
+- **Next:** TBD — post-4.7 ideas stay off-roadmap until the next scan
+  picks them up.
 - **Tests:** Chromium (19 a11y / 29 JS / 109 CSS, 2 engine-gated
   skips / 3 visual) · Firefox 132 passed, 7 skipped · WebKit 137
   passed, 4 skipped — green. Skips are engine-gated (interest invokers,
@@ -20,16 +23,18 @@ _Last updated: 2026-08-25 — v4.6.0 shipped_
   demo only through `tests/helpers.js`. Visual baselines are win32 and
   were regenerated this release (demo gained a section); ubuntu/macos
   jobs stay behavior-only.
-- **Build:** `index.css` 2.32KB gzip (2.31 → +tokens) · `full.css`
-  9.61KB gzip — **frozen at its 4.5 import set** (ADR-0008); existing
-  files still evolve under `npm run size`. Gzip is measured by hand at
+- **Build:** `index.css` ~2.3KB gzip · `full.css` 9.61KB gzip —
+  **frozen at its 4.5 import set** (ADR-0008); existing files still
+  evolve under `npm run size`. Gzip is measured by hand at
   level 9: since the zlib bypass on Node 26/Windows, `npm run check`
-  enforces only the 3× raw fallback.
-- **History:** milestones 0.1 → 4.6 shipped; per-release detail lives
+  enforces only the 3× raw fallback. New opt-in files
+  (`icons`/`command`/`data-grid`) ship outside `full.css`.
+- **History:** milestones 0.1 → 4.7 shipped; per-release detail lives
   in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
   namespace cleanup + deprecation policy (3.x), platform catch-up +
   layout + motion + selects/sticky tables (4.x), navigation
-  transitions + bundle freeze (4.6).
+  transitions + bundle freeze (4.6), one-color theming + Studio +
+  CSS-only primitives (4.7).
 
 ## Vision
 

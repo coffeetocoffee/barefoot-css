@@ -18,6 +18,7 @@ import {
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
+import { checkContrast } from "./contrast.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(root, "src");
@@ -118,6 +119,11 @@ function checkBudget(report) {
 const report = buildAll();
 printReport(report);
 checkBudget(report);
+
+// Chroma AA guard (warn here; hard fail is in size.mjs)
+const { warnings } = checkContrast({ strict: false });
+if (warnings.length === 0) console.log("contrast: AA 4.5:1 → PASS");
+else console.warn(`contrast: ${warnings.length} warning(s) — run npm run size for strict fail.`);
 
 writeFileSync(
   join(DIST, "sizes.json"),

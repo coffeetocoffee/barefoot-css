@@ -966,6 +966,57 @@ support, carousel controls + autoplay) and their markup.
 - **A11y:** decorative only — content order and announcements unchanged.
   Motion stops under `prefers-reduced-motion`.
 
+## Icons (v4.7)
+
+```html
+<span data-icon="search" aria-hidden="true"></span>
+<span data-icon="close" aria-hidden="true"></span>
+<span data-icon="star" data-size="lg" aria-hidden="true"></span>
+<button type="button" aria-label="Search"><span data-icon="search" aria-hidden="true"></span> Search</button>
+```
+
+- **`[data-icon]`** — CSS-only icons via `mask: url()` + `currentColor`, sized by `--bf-icon-size` (1.25rem; `data-size="sm"` → 1rem, `lg` → 1.5rem). The mask is an inline SVG data URL, so no sprite, no font, 0KB JS, and the glyph inherits `color` automatically — hover, theme, and `currentColor` just work.
+- Twelve glyphs: `search`, `close`/`x`, `menu`, `check`, `chevron-down`, `chevron-right`, `plus`, `trash`, `star`, `heart`, `settings`/`gear`, `user`. Add a new one by adding a `[data-icon="name"] { --bf-icon-url: url("data:image/svg+xml,…") }` rule — same pattern.
+- **A11y:** icons are decorative (`aria-hidden="true"`); where the icon is the only content, give the parent button a visible label or `aria-label`.
+
+## Command palette (v4.7)
+
+```html
+<button command="show-modal" commandfor="cmd">⌘K</button>
+<dialog id="cmd" data-command>
+  <form method="dialog">
+    <input type="search" list="cmd-list" placeholder="Type a command…" aria-label="Command">
+    <datalist id="cmd-list">
+      <option value="New file"></option>
+      <option value="Toggle theme"></option>
+    </datalist>
+  </form>
+  <div data-command-list>
+    <a href="#" data-command-item><span data-icon="search" aria-hidden="true"></span> Search docs</a>
+    <a href="#" data-command-item data-selected><span data-icon="plus" aria-hidden="true"></span> New project</a>
+  </div>
+  <p data-command-hint><kbd>↑</kbd><kbd>↓</kbd> navigate · <kbd>Enter</kbd> run · <kbd>Esc</kbd> close</p>
+</dialog>
+```
+
+- **`<dialog data-command>`** — a command palette built from `<dialog>` + `<input type="search" list>` + `popover` fallback. `command`/`commandfor` opens declaratively where the Invoker Commands API exists; elsewhere `dialog.showModal()` is one line.
+- The list is plain `<a data-command-item>` — hover or `data-selected` paints `var(--bf-primary-subtle)`. The hint bar uses real `<kbd>` elements. The whole palette is a modal (`<dialog>` traps focus, `Esc` closes); a `[popover][data-command]` variant is also styled for light-dismiss use.
+- **JS:** none.
+
+## Data grid (v4.7)
+
+```html
+<div class="bf-contain" style="overflow:auto; max-height:24rem">
+  <table data-table="sticky-head" data-grid>
+    <thead><tr><th>Project</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody><tr><td>…</td></tr></tbody>
+  </table>
+</div>
+```
+
+- Extends `components/table.css`: `data-grid` on a `<table>` makes each `<th>` `resize: horizontal` (drag the inline-end edge) and opts into a container-query stack at `≤40rem` (same breakpoint as `data-table="stack"`). Composes with `sticky-head` — header stays pinned while you resize.
+- **JS:** none. **A11y:** same as table — semantic `<th>`/`<caption>` plus optional `aria-sort` from `js/table-sort.js`; the resize handle is presentational.
+
 ## Utilities
 
 Layout-only, opt-in:

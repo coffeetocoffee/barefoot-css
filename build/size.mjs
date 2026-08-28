@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkContrast } from "./contrast.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const GZIP_BUDGET = 10 * 1024;
@@ -28,4 +29,13 @@ console.log(
   `dist/index.css ${(measured / 1024).toFixed(2)}KB ${unit} ` +
     `(limit ${(budget / 1024).toFixed(2)}KB) → ${ok ? "PASS" : "FAIL"}`
 );
-process.exit(ok ? 0 : 1);
+if (!ok) process.exit(1);
+
+// Chroma AA guard — fails the build if any text-on-background pair < 4.5:1
+const { failures } = checkContrast({ strict: true });
+if (failures.length > 0) {
+  console.error(`\ncontrast: ${failures.length} pair(s) below AA 4.5:1 — fix tokens before shipping.`);
+  process.exit(1);
+} else {
+  console.log("contrast: AA 4.5:1 → PASS");
+}

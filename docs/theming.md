@@ -129,6 +129,11 @@ the base token and every ramp follows.
 | `--bf-warning-darken` | `color-mix(in oklab, var(--bf-warning), #000000 8%)` | hover darken for warning fills |
 | `--bf-warning-subtle` | `color-mix(in oklab, var(--bf-warning), transparent 88%)` | very light warning tint |
 | `--bf-border-strong` | `color-mix(in oklab, var(--bf-border), var(--bf-text) 20%)` | stronger border on hover |
+| `--bf-primary-hover` | `color-mix(in oklab, var(--bf-primary), #000000 12%)` | hover fill — darken by 12% (oklch: calc(l - 0.08) ) |
+| `--bf-primary-contrast` | `var(--bf-primary-fg)` | text/icon on primary — oklch contrast auto-switches l |
+| `--bf-primary-border` | `color-mix(in oklab, var(--bf-primary), var(--bf-border) 40%)` | primary tinted border (oklch: 0.85 0.05 h) |
+| `--bf-icon-size` | `1.25rem` | default icon square |
+| `--bf-icon-stroke` | `2px` | icon stroke width for currentColor icons |
 | `--bf-transition` | `150ms ease` | default motion |
 | `--bf-transition-slow` | `250ms ease` | slower motion |
 | `--bf-disabled-opacity` | `0.5` | dimming for disabled buttons/inputs |
@@ -185,6 +190,16 @@ the base token and every ramp follows.
 |---|---|---|
 | `--bf-vt-duration` | `250ms` | cross-document + morph transition length |
 | `--bf-vt-easing` | `ease` | view-transition group timing |
+| `--bf-primary-hover` | `oklch(from var(--bf-primary) calc(l - 0.08) c h)` | hover — darker |
+| `--bf-primary-subtle` | `oklch(from var(--bf-primary) 0.95 0.02 h)` | very light tint |
+| `--bf-primary-contrast` | `oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0)` | AA text on primary |
+| `--bf-primary-border` | `oklch(from var(--bf-primary) 0.88 0.04 h)` | tinted border |
+| `--bf-primary-muted` | `oklch(from var(--bf-primary) 0.8 0.04 h / 0.55)` | muted focus ring |
+| `--bf-primary-strong` | `oklch(from var(--bf-primary) calc(l - 0.03) calc(c * 1.05) h)` | strong tint |
+| `--bf-primary-darken` | `oklch(from var(--bf-primary) calc(l - 0.06) c h)` | hover darken |
+| `--bf-border-strong` | `oklch(from var(--bf-border) calc(l - 0.06) c h)` | stronger border |
+| `--bf-surface-2` | `oklch(from var(--bf-surface) calc(l - 0.015) 0.005 h)` | subtle raised |
+| `--bf-surface-3` | `oklch(from var(--bf-surface) calc(l - 0.03) 0.008 h)` | stronger raised |
 | `--bf-space-1` | `0.125rem` |  |
 | `--bf-space-2` | `0.25rem` |  |
 | `--bf-space-3` | `0.5rem` |  |
@@ -340,6 +355,34 @@ html { transition: --bf-primary 300ms; }
 
 Everything that is "brand" — buttons, links, focus, selection, form
 accents — follows, in both light and dark.
+
+## Barefoot Chroma — One Color, Infinite Theme (v4.7)
+
+Set one variable and ship a whole accessible palette. Every brand-
+derived token is computed from `--bf-primary` via **OKLCH relative
+color** — pure CSS, no JS, no build step:
+
+```css
+:root { --bf-primary: #2563eb; } /* or oklch(0.62 0.19 260) */
+--bf-primary-hover: oklch(from var(--bf-primary) calc(l - 0.08) c h);
+--bf-primary-subtle: oklch(from var(--bf-primary) 0.95 0.02 h);
+--bf-primary-contrast: oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0);
+```
+
+The five Chroma derivations (`hover`/`subtle`/`border`/`muted`/`strong`
++ `surface-2/3`) live behind `@supports (color: oklch(from red l c h))`
+— engines without relative-color keep the `color-mix()` hex fallbacks
+above. `@property` is not needed (ADR-0005 stays).
+
+**AA guarantee:** `npm run check` measures every text-on-background
+pair (`--bf-primary-fg` on `--bf-primary`, `--bf-muted` on
+`--bf-surface`, status pairs, both schemes) and hard-fails below
+4.5:1 with a suggested `l` fix. This is what makes the headline
+literal: one variable, not six, and it stays accessible.
+
+Try it live in **[Studio](../demo/studio.html)** — colour picker +
+radius + font + density drive an `<iframe>` preview of the demo and
+export six lines to paste.
 
 ## Density axis (v3.4)
 

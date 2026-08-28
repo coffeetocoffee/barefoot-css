@@ -1,0 +1,129 @@
+/* Barefoot — command palette. <dialog> + <input type="search"> + popover, zero JS.
+   No boots thesis: the platform does the work — dialog traps focus,
+   popover + datalist suggest, dialog light-dismiss via Esc.
+
+   Markup:
+   <button command="show-modal" commandfor="cmd">⌘K</button>
+   <dialog id="cmd" data-command>
+     <form method="dialog">
+       <input type="search" list="cmd-list" placeholder="Type a command…"
+              aria-label="Command">
+       <datalist id="cmd-list">
+         <option value="New file"></option>
+         <option value="Toggle theme"></option>
+       </datalist>
+     </form>
+     <div data-command-list>
+       <a href="#" data-command-item><span data-icon="search" aria-hidden="true"></span> Search docs</a>
+       <a href="#" data-command-item data-selected><span data-icon="plus" aria-hidden="true"></span> New project</a>
+     </div>
+     <p data-command-hint><kbd>↑</kbd><kbd>↓</kbd> navigate · <kbd>Enter</kbd> run · <kbd>Esc</kbd> close</p>
+   </dialog>
+
+   Invoker Commands API (command/commandfor) opens declaratively where
+   supported; everywhere else dialog.showModal() is one line. */
+@layer components {
+  dialog[data-command] {
+    padding: 0;
+    width: min(36rem, calc(100vw - 2 * var(--bf-space-5)));
+    max-width: none;
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+    box-shadow: var(--bf-shadow-lifted);
+    overflow: hidden;
+  }
+
+  dialog[data-command] form {
+    display: flex;
+    align-items: center;
+    gap: var(--bf-space-3);
+    padding: var(--bf-space-3) var(--bf-space-4);
+    border-block-end: var(--bf-border-width) solid var(--bf-border);
+  }
+
+  dialog[data-command] input[type="search"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    padding: var(--bf-space-2) 0;
+    background: transparent;
+    font-size: var(--bf-type-base);
+    outline: 0;
+  }
+
+  dialog[data-command] input[type="search"]::placeholder {
+    color: var(--bf-muted);
+  }
+
+  /* Command list — plain links styled as menu items (reuse menu-items recipe). */
+  [data-command-list] {
+    display: flex;
+    flex-direction: column;
+    max-height: 18rem;
+    overflow-y: auto;
+    padding: var(--bf-space-2);
+    gap: 1px;
+  }
+
+  [data-command-item] {
+    display: flex;
+    align-items: center;
+    gap: var(--bf-space-3);
+    padding: var(--bf-space-2) var(--bf-space-3);
+    border-radius: var(--bf-radius-sm);
+    color: var(--bf-text);
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+
+  [data-command-item]:hover,
+  [data-command-item][data-selected] {
+    background: var(--bf-surface-alt);
+    color: var(--bf-text);
+  }
+
+  [data-command-item][data-selected] {
+    background: var(--bf-primary-subtle);
+  }
+
+  [data-command-item] [data-icon] {
+    --bf-icon-size: 1rem;
+    opacity: 0.7;
+  }
+
+  [data-command-hint] {
+    display: flex;
+    align-items: center;
+    gap: var(--bf-space-2);
+    padding: var(--bf-space-2) var(--bf-space-4);
+    margin: 0;
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
+    font-size: 0.75rem;
+    color: var(--bf-muted);
+    background: var(--bf-surface-alt);
+  }
+
+  [data-command-hint] kbd {
+    font-size: 0.7rem;
+    padding: 0.1em 0.3em;
+  }
+
+  /* Fallback popover variant: use <div popover> instead of <dialog>
+     when you want light-dismiss without modal trapping. Same internals. */
+  [popover][data-command] {
+    width: min(36rem, calc(100vw - 2 * var(--bf-space-5)));
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+    box-shadow: var(--bf-shadow-lifted);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  [popover][data-command] form {
+    display: flex;
+    align-items: center;
+    gap: var(--bf-space-3);
+    padding: var(--bf-space-3) var(--bf-space-4);
+    border-block-end: var(--bf-border-width) solid var(--bf-border);
+  }
+}

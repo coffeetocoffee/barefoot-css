@@ -12,6 +12,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkContrast } from "./contrast.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TOKENS = join(root, "src", "tokens.css");
@@ -104,3 +105,9 @@ console.log(
   `theming.md token tables regenerated (${groups.length} sections, ` +
     `${groups.reduce((n, g) => n + g.rows.length, 0)} tokens).`
 );
+
+// Chroma contrast guard — warn at doc-gen time; hard fail lives in size.mjs
+const { warnings } = checkContrast({ strict: false });
+if (warnings.length > 0) {
+  console.warn(`\ncontrast: ${warnings.length} pair(s) below AA — see warnings above. Suggested fix: oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0)`);
+}

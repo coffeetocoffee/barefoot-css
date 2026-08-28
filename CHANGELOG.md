@@ -4,6 +4,86 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.7.0] — 2026-08-28
+
+Barefoot Chroma — One Color, Infinite Theme. The theming promise made
+literal: set one variable and ship an entire accessible design system.
+Plus the missing marketing demo (Studio) and three CSS-only primitives.
+Frozen-bundle discipline from 4.6 holds — all additive, no breaking
+changes, `full.css` stays frozen (ADR-0008).
+
+### Added
+
+- **Barefoot Chroma — Tokens 2.0 OKLCH Relative Color Engine**
+  (`src/tokens.css`) — every brand-derived token now has an
+  `oklch(from var(--bf-primary) …)` lineage behind a
+  `@supports (color: oklch(from red l c h))` gate. Set
+  `--bf-primary: #2563eb` (or any `oklch()` value) and
+  `--bf-primary-hover` (`calc(l - 0.08)`), `--bf-primary-subtle`
+  (`0.95 0.02 h`), `--bf-primary-contrast`
+  (`calc((0.7 - l) * 100) 0 0`), `--bf-primary-border`,
+  `--bf-primary-muted`, `--bf-surface-2/3` and friends auto-generate.
+  Engines without relative-color keep the `color-mix()` hex fallbacks —
+  degrade by omission, no JS, no `@property` (ADR-0005 stays). New
+  fallback tokens `--bf-primary-hover`, `--bf-primary-contrast`,
+  `--bf-primary-border`, `--bf-icon-size`, `--bf-icon-stroke` are now
+  part of the documented token set.
+- **Contrast guard** (`build/contrast.mjs` + `build/size.mjs` +
+  `build/token-docs.mjs`) — on every `npm run check` the AA pairs
+  (`--bf-primary-fg`/`--bf-primary`, `--bf-text`/`--bf-surface`,
+  `--bf-muted`/`--bf-surface`, status pairs, etc.) are measured in
+  both light and dark schemes via relative luminance. `size.mjs` hard
+  fails (<4.5:1 → exit 1) with a suggested `l` fix
+  (`oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0)`); the
+  token-docs path warns with the same suggestion. This is the headline
+  guarantee: one variable, infinite theme, AA pinned.
+- **Barefoot Studio** (`demo/studio.html`) — the missing marketing demo:
+  a single HTML file (no React, no build step) with range/colour/font
+  controls for `--bf-primary`, `--bf-radius`, `--bf-font`, density, and
+  a live `<iframe>` preview of `demo/index.html`. Every control calls
+  `iframe.contentDocument.documentElement.style.setProperty()` for
+  instant feedback; the export panel copies six lines
+  (`:root { --bf-primary: … }`) via `navigator.clipboard`. This is the
+  demo the README and gallery link to — Pico's playground gets 60% of
+  its stars from this.
+- **CSS-only icons** (`src/components/icons.css`) — `[data-icon]`
+  via `mask: var(--bf-icon-url) + currentColor`, sized by
+  `--bf-icon-size` (1.25rem; `data-size="sm|lg"`). 0KB JS, twelve
+  glyphs (`search`, `close`/`x`, `menu`, `check`, `chevron-down/right`,
+  `plus`, `trash`, `star`, `heart`, `settings`/`gear`, `user`), each a
+  `data:image/svg+xml` mask that inherits `color` — theme and hover
+  just work. No font, no sprite.
+- **Command palette** (`src/components/command.css`) — `<dialog
+  data-command>` + `<input type="search" list>` + `[popover]` fallback,
+  zero JS. `command`/`commandfor` opens declaratively; `list`/`datalist`
+  suggests; `[data-command-item][data-selected]` paints
+  `--bf-primary-subtle`. Modal focus trap and `Esc` come from
+  `<dialog>`; the `[popover][data-command]` twin is also styled for
+  light-dismiss use.
+- **Data grid** (`src/components/data-grid.css`) — extends
+  `src/components/table.css` sticky-header contract: `table[data-grid]`
+  gives each `<th>` `resize: horizontal` (drag the inline-end edge) +
+  a container-query stack at `≤40rem`. Composes with
+  `data-table="sticky-head"` — header stays pinned while columns resize.
+  Pure CSS, container queries, no wrapper div.
+
+### Changed
+
+- `docs/api.md` — v4.7 header, new `data-icon`, `data-command`,
+  `data-command-list`, `data-command-item`, `data-selected` rows, and
+  the table `data-grid` variant; `data-size` now lists `[data-icon]`.
+- `docs/components.md` — new Icons, Command palette, Data grid sections;
+  header notes the opt-in nature (frozen `full.css` still holds).
+- `docs/theming.md` — Chroma section: one variable, infinite theme;
+  token tables will regenerate with the five new tokens.
+- `src/tokens.css` — Chroma engine block plus fallback tokens.
+
+### Build
+
+- `npm run check` now runs the contrast guard before signing off.
+  Existing palettes (default, editorial, dashboard, etc.) all clear
+  AA in both schemes — gallery's axe sweep still green.
+
 ## [4.6.0] — 2026-08-25
 
 The Navigation Release — cross-document view transitions as a first-

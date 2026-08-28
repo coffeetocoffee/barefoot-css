@@ -1,0 +1,98 @@
+/* Barefoot — data grid. Sticky header + resizable columns via pure CSS.
+   Extends src/components/table.css: the sticky-head/sticky-col contract
+   stays, but columns gain resize handles with no JS.
+
+   Usage:
+   <div class="bf-contain" style="overflow:auto; max-height:24rem">
+     <table data-table="sticky-head" data-grid>
+       <thead><tr><th>…</th></tr></thead>
+       <tbody>…</tbody>
+     </table>
+   </div>
+
+   - data-grid on the table opts into resizable + container-query reflow.
+   - Each <th> becomes resize: horizontal — drag its inline-end edge.
+   - At ≤40rem container width the table stacks as cards (same as table[stack]).
+
+   No JS, no wrapper divs beyond the scroll container you already need
+   for sticky. */
+@layer components {
+  /* Resizable columns — each header cell is a resize handle.
+     resize requires overflow != visible; auto keeps scrollbars hidden
+     unless the user actually overflows while dragging. */
+  table[data-grid] thead th {
+    resize: horizontal;
+    overflow: auto;
+    min-width: 8ch;
+    max-width: 40ch;
+    /* Keep the sticky background opaque while resizing. */
+    background-clip: padding-box;
+  }
+
+  /* Remove the native resize triangle's block axis overflow. */
+  table[data-grid] thead th::-webkit-resizer {
+    background: transparent;
+  }
+
+  /* Column edge affordance — subtle grip on the inline-end edge. */
+  table[data-grid] thead th {
+    position: relative;
+  }
+
+  table[data-grid] thead th::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 6px;
+    cursor: col-resize;
+    /* Decorative only — no semantics. */
+  }
+
+  /* Container-query reflow: when the table's nearest container is
+     narrow, switch to a card stack automatically — same breakpoint
+     as table[data-table="stack"] but keyed to data-grid. */
+  @container (width <= 40rem) {
+    table[data-grid] thead {
+      display: none;
+    }
+
+    table[data-grid] tr {
+      display: grid;
+      gap: var(--bf-space-1);
+      padding: var(--bf-space-3);
+      margin-block-end: var(--bf-space-3);
+      border: var(--bf-border-width) solid var(--bf-border);
+      border-radius: var(--bf-radius);
+      background: var(--bf-surface);
+    }
+
+    table[data-grid] th,
+    table[data-grid] td {
+      display: block;
+      padding: 0;
+      border-block-end: 0;
+    }
+
+    table[data-grid] th::after {
+      display: none;
+    }
+  }
+
+  /* Composes with sticky-head: header stays pinned while columns resize. */
+  table[data-grid][data-table~="sticky-head"] thead th {
+    position: sticky;
+    top: 0;
+    z-index: var(--bf-z-sticky);
+  }
+
+  /* Data-grid body cells: tabular numbers for numeric columns, same as base table. */
+  table[data-grid] td {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Selected row state for JS-enhanced grids (optional). */
+  table[data-grid] tbody tr[data-selected] {
+    background: var(--bf-primary-subtle);
+  }
+}

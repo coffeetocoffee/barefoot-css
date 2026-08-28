@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="../dist/themes/sunset.css">
   <link rel="stylesheet" href="../dist/themes/coastal.css">
   <link rel="stylesheet" href="../dist/components/view-transition.css">
+  <link rel="stylesheet" href="../dist/components/icons.css">
+  <link rel="stylesheet" href="../dist/components/command.css">
+  <link rel="stylesheet" href="../dist/components/data-grid.css">
   <style>
     /* Page chrome only — the demo styling is all Barefoot.
        Bundled webfonts (OFL) keep the demo pixel-identical on every
@@ -637,6 +640,82 @@
           <p>Everything else crossfades; reduced motion opts back out entirely.</p>
           <p><a href="vt.html">Open the pair page →</a></p>
         </article>
+      </div>
+    </section>
+
+    <!-- Chroma — One Color Infinite Theme (v4.7) -->
+    <section id="chroma" aria-labelledby="chroma-title">
+      <h2 id="chroma-title">Barefoot Chroma — One Color, Infinite Theme</h2>
+      <p>Set <code>--bf-primary</code> once and every brand token — hover, subtle, border, focus — auto-generates via <code>oklch(from var(--bf-primary) …)</code> behind an <code>@supports</code> gate. Try the live builder: <a href="studio.html">Barefoot Studio →</a></p>
+      <div class="bf-row bf-gap-3" id="demo-chroma">
+        <button type="button" data-variant="primary">Primary</button>
+        <span class="badge" data-variant="primary">Primary badge</span>
+        <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
+        <span data-icon="star" aria-hidden="true" style="color: var(--bf-primary)"></span>
+        <span data-icon="heart" aria-hidden="true" style="color: var(--bf-primary)"></span>
+      </div>
+      <p class="bf-muted">Change <code>--bf-primary</code> in Studio and these re-tint instantly — AA is checked at build time.</p>
+    </section>
+
+    <!-- Icons (v4.7) -->
+    <section id="icons" aria-labelledby="icons-title">
+      <h2 id="icons-title">Icons — CSS-only</h2>
+      <p><code>[data-icon]</code> via <code>mask: url() + currentColor</code>, sized by <code>--bf-icon-size</code>. 0KB JS, inherits colour.</p>
+      <div class="bf-row bf-gap-3" id="demo-icons" style="flex-wrap:wrap">
+        <span data-icon="search" aria-hidden="true"></span>
+        <span data-icon="close" aria-hidden="true"></span>
+        <span data-icon="menu" aria-hidden="true"></span>
+        <span data-icon="check" aria-hidden="true"></span>
+        <span data-icon="chevron-down" aria-hidden="true"></span>
+        <span data-icon="chevron-right" aria-hidden="true"></span>
+        <span data-icon="plus" aria-hidden="true"></span>
+        <span data-icon="trash" aria-hidden="true"></span>
+        <span data-icon="star" aria-hidden="true"></span>
+        <span data-icon="heart" aria-hidden="true"></span>
+        <span data-icon="settings" aria-hidden="true"></span>
+        <span data-icon="user" aria-hidden="true"></span>
+        <span data-icon="search" data-size="sm" aria-hidden="true"></span>
+        <span data-icon="search" data-size="lg" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <!-- Command palette (v4.7) -->
+    <section id="command" aria-labelledby="command-title">
+      <h2 id="command-title">Command palette — zero JS</h2>
+      <p><code>&lt;dialog data-command&gt;</code> + <code>&lt;input type="search" list&gt;</code> + <code>popover</code> fallback. Opens with <code>command</code>/<code>commandfor</code> declaratively.</p>
+      <button type="button" command="show-modal" commandfor="demo-command" data-variant="primary">⌘K Open palette</button>
+      <dialog id="demo-command" data-command aria-labelledby="command-dialog-title">
+        <form method="dialog">
+          <span data-icon="search" aria-hidden="true"></span>
+          <input type="search" list="cmd-list" placeholder="Type a command…" aria-label="Command">
+          <datalist id="cmd-list">
+            <option value="New file"></option>
+            <option value="Search docs"></option>
+            <option value="Toggle theme"></option>
+          </datalist>
+        </form>
+        <div data-command-list>
+          <a href="#" data-command-item><span data-icon="search" aria-hidden="true"></span> Search docs</a>
+          <a href="#" data-command-item data-selected><span data-icon="plus" aria-hidden="true"></span> New project</a>
+          <a href="#" data-command-item><span data-icon="settings" aria-hidden="true"></span> Toggle theme</a>
+        </div>
+        <p data-command-hint><kbd>↑</kbd><kbd>↓</kbd> navigate · <kbd>Enter</kbd> run · <kbd>Esc</kbd> close</p>
+      </dialog>
+    </section>
+
+    <!-- Data grid (v4.7) -->
+    <section id="data-grid" aria-labelledby="data-grid-title">
+      <h2 id="data-grid-title">Data grid — resizable columns</h2>
+      <p><code>table[data-grid]</code> extends the sticky-header table: each <code>&lt;th&gt;</code> is <code>resize: horizontal</code> (drag the inline-end edge). Wrap in a scroll container; stacks at ≤40rem via container query.</p>
+      <div id="demo-data-grid" role="region" aria-label="Resizable grid, scrollable" tabindex="0" style="max-height: 16rem; overflow:auto">
+        <table data-table="sticky-head" data-grid style="min-width: 32rem">
+          <thead><tr><th>Project</th><th>Owner</th><th>Status</th><th>Points</th></tr></thead>
+          <tbody>
+            <tr><td>Barefoot</td><td>Ada</td><td>Active</td><td>8</td></tr>
+            <tr><td>Heel</td><td>Lin</td><td>Blocked</td><td>5</td></tr>
+            <tr><td>Laces</td><td>Ken</td><td>Done</td><td>3</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
