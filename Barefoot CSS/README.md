@@ -9,10 +9,10 @@
 
 Barefoot is a CSS framework for people who are tired of shipping 200KB of stylesheet to get a button. It styles **native HTML elements**, needs **zero JavaScript**, and re-skins from a **handful of variables**.
 
-- **~10KB or bust.** `index.css` is 2.3KB gzipped, and that's the headline — import the core plus only the component files you use. The *everything* bundle (`full.css`) is frozen at 4.6 (ADR-0008): it stops growing so per-component stays the real story.
-- **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild.
-- **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
-- **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. Verified by an axe-core CI suite.
+- **~10KB or bust.** `index.css` is 2.54KB gzipped (measured, not estimated — see the table below), and that's the headline — import the core plus only the component files you use. The *everything* bundle (`full.css`) stopped gaining imports in v4.6 (ADR-0008) so per-component stays the real story.
+- **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild. Tokens also ship as a W3C DTCG `tokens.json` for Figma/iOS/Android sync.
+- **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Form validation is pure CSS — `:user-valid`/`:user-invalid` borders and icons. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
+- **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. `forced-colors` (Windows High Contrast) hardened. Verified by an axe-core CI suite.
 - **No "Bootstrap look."** Neutral by default: ink on paper, thin borders, no shadows, no gradients. The design is yours — we just supply the muscle.
 
 ## Quick start
@@ -47,64 +47,64 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 52.71KB | — | — |
-| `components/forms.css` | 9.61KB | — | — |
-| `index.css` | 9.52KB | — | — |
-| `js/carousel.js` | 4.66KB | — | — |
-| `components/icons.css` | 3.69KB | — | — |
-| `js/table-sort.js` | 3.28KB | — | — |
-| `utilities.css` | 3.18KB | — | — |
-| `js/nav.js` | 2.78KB | — | — |
-| `js/toast.js` | 2.75KB | — | — |
-| `components/popover.css` | 2.74KB | — | — |
-| `components/stepper.css` | 2.67KB | — | — |
-| `js/tabs.js` | 2.51KB | — | — |
-| `js/popover-menu.js` | 2.25KB | — | — |
-| `components/reveal.css` | 2.11KB | — | — |
-| `js/roving-index.js` | 2.10KB | — | — |
-| `components/buttons.css` | 2.02KB | — | — |
-| `components/command.css` | 1.95KB | — | — |
-| `js/tooltip.js` | 1.86KB | — | — |
-| `components/table.css` | 1.80KB | — | — |
-| `components/layout.css` | 1.62KB | — | — |
-| `js/lifecycle.js` | 1.57KB | — | — |
-| `components/accordion.css` | 1.44KB | — | — |
-| `components/nav.css` | 1.29KB | — | — |
-| `components/grid.css` | 1.23KB | — | — |
-| `components/carousel.css` | 1.19KB | — | — |
-| `components/dialog.css` | 1.13KB | — | — |
-| `components/segmented.css` | 1.12KB | — | — |
-| `components/data-grid.css` | 0.98KB | — | — |
-| `components/badge.css` | 0.94KB | — | — |
-| `components/media.css` | 0.92KB | — | — |
-| `js/reveal.js` | 0.88KB | — | — |
-| `components/alert.css` | 0.85KB | — | — |
-| `components/skeleton.css` | 0.85KB | — | — |
-| `js/remove-on-click.js` | 0.85KB | — | — |
-| `components/timeline.css` | 0.84KB | — | — |
-| `components/chip.css` | 0.81KB | — | — |
-| `components/tabs.css` | 0.78KB | — | — |
-| `components/pagination.css` | 0.75KB | — | — |
-| `js/chips.js` | 0.65KB | — | — |
-| `js/return-focus.js` | 0.65KB | — | — |
-| `components/spinner.css` | 0.61KB | — | — |
-| `js/alert-dismiss.js` | 0.61KB | — | — |
-| `themes/playful.css` | 0.59KB | — | — |
-| `themes/editorial.css` | 0.58KB | — | — |
-| `components/empty-state.css` | 0.57KB | — | — |
-| `js/barefoot.js` | 0.52KB | — | — |
-| `components/view-transition.css` | 0.52KB | — | — |
-| `components/breadcrumbs.css` | 0.51KB | — | — |
-| `themes/dashboard.css` | 0.50KB | — | — |
-| `themes/forest.css` | 0.47KB | — | — |
-| `themes/custom.css` | 0.45KB | — | — |
-| `themes/coastal.css` | 0.44KB | — | — |
-| `themes/sunset.css` | 0.44KB | — | — |
-| `components/code.css` | 0.40KB | — | — |
-| `components/divider.css` | 0.36KB | — | — |
-| `components/card.css` | 0.33KB | — | — |
-| `components/prose.css` | 0.30KB | — | — |
-| `components/menu-items.css` | 0.29KB | — | — |
+| `full.css` | 54.21KB | **10.01KB** | 8.75KB |
+| `index.css` | 9.52KB | **2.54KB** | 2.18KB |
+| `components/forms.css` | 10.74KB | **2.25KB** | 1.92KB |
+| `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
+| `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
+| `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
+| `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
+| `js/popover-menu.js` | 2.25KB | **1.12KB** | 0.95KB |
+| `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
+| `js/toast.js` | 2.75KB | **1.01KB** | 0.83KB |
+| `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
+| `js/lifecycle.js` | 1.57KB | **0.82KB** | 0.67KB |
+| `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
+| `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
+| `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
+| `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
+| `components/table.css` | 1.80KB | **0.64KB** | 0.54KB |
+| `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
+| `components/buttons.css` | 2.10KB | **0.62KB** | 0.50KB |
+| `components/command.css` | 2.05KB | **0.59KB** | 0.49KB |
+| `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
+| `components/segmented.css` | 1.23KB | **0.50KB** | 0.37KB |
+| `components/carousel.css` | 1.19KB | **0.50KB** | 0.41KB |
+| `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
+| `components/accordion.css` | 1.44KB | **0.49KB** | 0.38KB |
+| `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
+| `js/reveal.js` | 0.88KB | **0.46KB** | 0.38KB |
+| `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
+| `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
+| `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
+| `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
+| `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
+| `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
+| `components/pagination.css` | 0.86KB | **0.38KB** | 0.28KB |
+| `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
+| `js/alert-dismiss.js` | 0.61KB | **0.35KB** | 0.28KB |
+| `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
+| `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
+| `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
+| `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
+| `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
+| `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
+| `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |
+| `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
+| `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
+| `js/barefoot.js` | 0.52KB | **0.28KB** | 0.24KB |
+| `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
+| `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
+| `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
+| `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
+| `themes/coastal.css` | 0.44KB | **0.24KB** | 0.20KB |
+| `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
+| `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
+| `components/divider.css` | 0.36KB | **0.22KB** | 0.16KB |
+| `components/view-transition.css` | 0.52KB | **0.22KB** | 0.18KB |
+| `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
+| `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
+| `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
 <!-- SIZES:END -->
 
 Budget: `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if exceeded.

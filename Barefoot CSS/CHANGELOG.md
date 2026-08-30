@@ -4,6 +4,82 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.8.0] — 2026-08-30
+
+The zero-JS validation release. The last true zero-JS gap gets its
+finish (state icons, not just borders), Windows High Contrast stops
+being a blind spot, the gzip numbers become measured instead of
+hand-copied, and the tokens learn to leave the browser.
+
+### Added
+
+- **Validation icons** (`src/components/forms.css`) — once a textual
+  field (`text`/`email`/`tel`/`url`/`password`) is touched, it draws a
+  shape cue at its inline end: a check under `:user-valid`, a cross
+  under `:user-invalid`, with the inline-end padding reserved so text
+  never slides under the glyph. The SVG strokes with `currentColor` —
+  no palette baked into the data URI — so the state hue stays on the
+  border and theming/forced-colors keep working. Fields whose inline
+  end carries native chrome (select chevron, date/list/search pickers,
+  number spinner) are excluded so the two never collide; textareas are
+  excluded because their content scrolls under a fixed glyph.
+- **Forced-colors hardening** (`forms.css`, `pagination.css`,
+  `segmented.css`, `command.css`, `buttons.css`, `skeleton.css`) —
+  under `@media (forced-colors: active)` (Windows High Contrast &
+  friends) author colors map to the system palette and box-shadows are
+  removed, so every affordance that was hue- or shadow-only gains a
+  structural one: input focus regains a real outline (the halo is a
+  shadow), invalid fields switch to a *dashed* border (shape instead of
+  hue), the pagination current page, segmented selection, command
+  palette selection and skeleton placeholders gain a ring, and ghost
+  buttons state their boundary with `ButtonBorder`. Zero opt-ins — it
+  ships with the components.
+- **W3C DTCG design-token export** (`build/tokens-dtcg.mjs` →
+  `dist/tokens.json`, `npm run build`) — every `--bf-*` token exported
+  in the [W3C Design Tokens Format](https://tr.designtokens.org/) for
+  Figma/iOS/Android sync. Top-level `light`/`dark` groups hold the
+  color tokens resolved per scheme (light-dark pairs split, `var()`
+  aliases resolved, `color-mix()` fallbacks mixed out to real hex via
+  OKLab math — the same math the browser runs); `core` holds the
+  scheme-independent tokens with proper `$type`s (`duration`,
+  `fontWeight`, `shadow` objects, dimensions). Each token carries its
+  source comment as `$description` and its custom-property name under
+  `$extensions`. New export `"barefoot-css/tokens.json"`. Pinned by
+  source-parse tests in `tests/css.spec.js` (every token must export;
+  resolved values frozen as contracts).
+
+### Fixed
+
+- **gzip/brotli sizes are measured again** (`build/build.mjs`) —
+  `sizes()` had been stubbed to `gzip: 0` after a zlib failure on
+  Node 26/Windows, leaving the README table with `—` columns and
+  `npm run check` enforcing only the raw fallback. Compression now
+  runs in-process with a fresh-child-process fallback (same engine,
+  clean zlib state), so the table shows real level-9 gzip/brotli and
+  the 10KB gzip budget is enforced on gzip itself again. First
+  measured numbers: `index.css` 2.54KB gzip (was "~2.3KB" hand-copied
+  from an older toolchain — the numbers were honest, the method
+  wasn't reproducible).
+- **Token docs parse** (`build/token-docs.mjs`) — multi-line
+  `/* ---- Title ----` section headers never matched the section
+  regex, so the alpha-ramp, Chroma, font-weight, letter-spacing and
+  type-scale tokens all folded into the previous section's table, and
+  the `@supports` oklch re-declarations shipped as duplicate rows.
+  Headers may now span lines and first declaration wins; `theming.md`
+  regenerated (21 sections, 101 tokens, no duplicates). Shared fix in
+  the DTCG generator.
+
+### Docs
+
+- `docs/theming.md` gains the DTCG export section; `docs/components.md`
+  documents the validation icons + forced-colors behavior;
+  `docs/accessibility.md` adds the forced-colors guarantee;
+  `docs/api.md` adds the `tokens.json` export row and clarifies the
+  bundle-freeze wording ("frozen since v4.6", not "frozen at 4.6KB" —
+  the ambiguity this release's README table retires); `docs/index.html`
+  stat cards now carry the measured gzip numbers; README feature list
+  mentions validation icons and forced-colors.
+
 ## [4.7.1] — 2026-08-28
 
 Patch — `4.7.0` was already published to npm, so the post-4.7.0 audit/visual fixes ship under `4.7.1` (npm 403 forbids republishing the same version). No new tokens or components.

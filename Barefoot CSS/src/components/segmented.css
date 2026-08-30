@@ -91,4 +91,14 @@
     opacity: var(--bf-disabled-opacity);
     cursor: not-allowed;
   }
+
+  /* ---- Forced colors (v4.8) ----
+     The selected segment is a background-only cue; forced-colors maps
+     track and label to the same Canvas, so ring the selection. */
+  @media (forced-colors: active) {
+    [data-segmented] label:has(input:checked) {
+      outline: 1px solid;
+      outline-offset: -1px;
+    }
+  }
 }

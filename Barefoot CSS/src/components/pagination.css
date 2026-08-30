@@ -59,4 +59,15 @@
     color: var(--bf-muted);
     pointer-events: none;
   }
+
+  /* ---- Forced colors (v4.8) ----
+     The current page is a background-only cue; in forced-colors mode
+     backgrounds map to the same Canvas for every item, so ring the
+     current one instead. */
+  @media (forced-colors: active) {
+    [data-pagination] [aria-current="page"] {
+      outline: 1px solid;
+      outline-offset: -1px;
+    }
+  }
 }

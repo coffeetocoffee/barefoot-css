@@ -436,6 +436,57 @@
     box-shadow: 0 0 0 3px var(--bf-success-muted);
   }
 
+  /* ---- Validation icons (v4.8) ----
+     Once touched, a textual field draws a shape cue at its inline end:
+     a check when :user-valid, a cross when :user-invalid. The glyph
+     strokes with currentColor — no palette baked into the SVG, so
+     theming and forced-colors keep working; the state hue stays on the
+     border. Fields whose inline end has native chrome (select chevron,
+     date/list/search pickers, number spinner) are excluded so the two
+     never collide; textareas are excluded because their content scrolls
+     under a fixed glyph. */
+  input:user-valid:where(
+    [type="text"], [type="email"], [type="tel"], [type="url"], [type="password"]
+  ) {
+    padding-inline-end: calc(var(--bf-space-3) + 1.25rem);
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8 L6.5 11.5 L13 4.5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end var(--bf-space-3) center;
+  }
+
+  input:user-invalid:where(
+    [type="text"], [type="email"], [type="tel"], [type="url"], [type="password"]
+  ) {
+    padding-inline-end: calc(var(--bf-space-3) + 1.25rem);
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4 L12 12 M12 4 L4 12' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end var(--bf-space-3) center;
+  }
+
+  /* ---- Forced colors (v4.8) ----
+     Windows High Contrast & friends: author colors map to the system
+     palette and box-shadows are removed, so two things need restoring.
+     The focus halo above is a shadow — draw the outline it replaced —
+     and hue can no longer separate valid from invalid, so the invalid
+     border changes shape instead of color. */
+  @media (forced-colors: active) {
+    :is(input, select, textarea):focus-visible {
+      outline: 2px solid;
+      outline-offset: 1px;
+    }
+
+    :is(input, select, textarea):user-invalid,
+    [aria-invalid="true"] {
+      border-style: dashed;
+    }
+  }
+
   /* Required marker — only when the control is wrapped in its label
      (the accessible pattern). Screen readers already announce the
      `required` attribute; the asterisk is a visual affordance. */

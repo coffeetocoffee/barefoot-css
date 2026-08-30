@@ -121,4 +121,15 @@
     cursor: not-allowed;
     transform: none;
   }
+
+  /* ---- Forced colors (v4.8) ----
+     The ghost button removes its own border; whatever forced-colors
+     does with a transparent border-color varies by engine, so state
+     the visible boundary explicitly. System colors are exempt from
+     forcing and adapt to the user's scheme for free. */
+  @media (forced-colors: active) {
+    button[data-variant="ghost"] {
+      border-color: ButtonBorder;
+    }
+  }
 }

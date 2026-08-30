@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "4.7.1",
+  "version": "4.8.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",
@@ -10,6 +10,7 @@
     ".": "./dist/index.css",
     "./full.css": "./dist/full.css",
     "./utilities.css": "./dist/utilities.css",
+    "./tokens.json": "./dist/tokens.json",
     "./components/*": "./dist/components/*",
     "./themes/*": "./dist/themes/*",
     "./js/*": "./dist/js/*",

@@ -86,6 +86,7 @@ All deprecated surfaces have been removed in 4.0. See
   "./components/*": "./dist/components/*",
   "./themes/*": "./dist/themes/*",
   "./js/*": "./dist/js/*",
+  "./tokens.json": "./dist/tokens.json",
   "./src/*": "./src/*"
 }
 ```
@@ -93,11 +94,12 @@ All deprecated surfaces have been removed in 4.0. See
 | Import specifier | What it resolves to |
 |---|---|
 | `"barefoot-css"` | Core: layers + reset + tokens + base |
-| `"barefoot-css/full.css"` | Everything: core + all components + utilities. **Frozen at 4.6** (ADR-0008) — no new components join it; import per-component instead |
+| `"barefoot-css/full.css"` | Everything: core + all components + utilities. **Frozen since v4.6** (ADR-0008) — no new components join it; import per-component instead |
 | `"barefoot-css/utilities.css"` | Utility classes only |
 | `"barefoot-css/components/dialog.css"` | Any single component |
 | `"barefoot-css/themes/editorial.css"` | Any starter theme |
 | `"barefoot-css/js/barefoot.js"` | All JS modules bundled |
+| `"barefoot-css/tokens.json"` | The `--bf-*` tokens as a W3C DTCG design-token file (v4.8) |
 | `"barefoot-css/src/tokens.css"` | Raw source (unstable) |
 
 ## data-* attribute reference

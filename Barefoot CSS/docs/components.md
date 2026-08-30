@@ -111,6 +111,20 @@ Import from `dist/components/*.css` (or get everything with `full.css`).
   `aria-invalid="true"` / `"false"` — same painting, no interaction
   heuristic. Message helpers: `.bf-field-hint` (muted guidance),
   `.bf-field-error` (danger), `.bf-field-success` (success).
+- **Validation icons** (v4.8) — once touched, textual fields
+  (`text`/`email`/`tel`/`url`/`password`) also draw a shape cue at the
+  inline end: a check when valid, a cross when invalid. The glyph
+  strokes with `currentColor` — no palette baked into the SVG — and the
+  state hue stays on the border. Fields whose inline end carries native
+  chrome (select chevron, date/list/search pickers, number spinner) are
+  excluded so the two never collide.
+- **Forced colors** (v4.8) — under `forced-colors: active` (Windows High
+  Contrast & friends) the focus halo is replaced by a real outline and
+  invalid fields switch to a *dashed* border, since hue can no longer
+  separate states. Pagination's current page, the segmented selection,
+  the command palette selection, skeleton placeholders and ghost
+  buttons all state a visible boundary or ring. Nothing to opt into —
+  it ships with the components.
 - **JS:** none.
 - **A11y:** native controls + browser validation UX.
 

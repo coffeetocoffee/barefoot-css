@@ -1,12 +1,15 @@
 /* Barefoot build.
-   Bundles each entry point with Lightning CSS, minifies, then checks
-   the size budget (dist/index.css must stay under 10KB gzipped).
+   Bundles each entry point with Lightning CSS, minifies, measures
+   raw/gzip/brotli (gzip level 9 — the contract), then checks the size
+   budget (dist/index.css must stay under 10KB gzipped). Also emits
+   dist/tokens.json, the W3C DTCG export of the --bf-* tokens.
 
    Usage:  npm run build      (build + size check)
            npm run size       (size check only, no rebuild)
            npm run check      (both)
 */
 import { bundle } from "lightningcss";
+import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
   mkdirSync,
@@ -19,6 +22,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
 import { checkContrast } from "./contrast.mjs";
+import { buildDTCG } from "./tokens-dtcg.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(root, "src");
@@ -45,8 +49,52 @@ function collectEntries() {
   return entries;
 }
 
+/* Compress in a fresh child process. Some Node builds (observed on
+   Node 26/Windows) fail their in-process sync zlib calls; a child
+   process runs the same engine with clean zlib state. stdin carries
+   the buffer in, stdout carries the compressed bytes out as base64. */
+function compressInChild(buffer, algorithm) {
+  const compress =
+    algorithm === "gzip"
+      ? "zlib.gzipSync(b, { level: 9 })"
+      : "zlib.brotliCompressSync(b)";
+  const script =
+    `const zlib=require("node:zlib");const c=[];` +
+    `process.stdin.on("data",d=>c.push(d));` +
+    `process.stdin.on("end",()=>{` +
+    `try{const b=Buffer.concat(c);` +
+    `process.stdout.write(${compress}.toString("base64"));}` +
+    `catch{process.exit(1)}});`;
+  const res = spawnSync(process.execPath, ["-e", script], {
+    input: buffer,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  if (res.status !== 0 || !res.stdout || res.stdout.length === 0) return 0;
+  const out = Buffer.from(res.stdout.toString("utf8"), "base64");
+  return out.length > 0 ? out.length : 0;
+}
+
+function measure(buffer, algorithm) {
+  // 1) In-process — the fast path, used by default.
+  try {
+    const out =
+      algorithm === "gzip"
+        ? zlib.gzipSync(buffer, { level: 9 })
+        : zlib.brotliCompressSync(buffer);
+    if (out.length > 0) return out.length;
+  } catch {
+    // fall through to the child process
+  }
+  // 2) Child process — for engines where in-process zlib is broken.
+  return compressInChild(buffer, algorithm);
+}
+
 function sizes(buffer) {
-  return { raw: buffer.length, gzip: 0, brotli: 0 };
+  return {
+    raw: buffer.length,
+    gzip: measure(buffer, "gzip"),
+    brotli: measure(buffer, "brotli"),
+  };
 }
 
 export function fmt(bytes) {
@@ -130,4 +178,9 @@ writeFileSync(
   JSON.stringify(report, null, 2)
 );
 
-console.log("\nBuilt to dist/ — sizes.json written.");
+// W3C Design Tokens (DTCG) export — dist/tokens.json mirrors the
+// --bf-* tokens as light/dark/core groups for Figma/iOS/Android sync.
+const dtcg = buildDTCG();
+writeFileSync(join(DIST, "tokens.json"), JSON.stringify(dtcg, null, 2));
+
+console.log("\nBuilt to dist/ — sizes.json + tokens.json written.");

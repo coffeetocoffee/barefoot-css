@@ -1038,7 +1038,7 @@
     <!-- Field validation -->
     <section id="validation" aria-labelledby="validation-title">
       <h2 id="validation-title">Field validation</h2>
-      <p><code>:user-invalid</code> / <code>:user-valid</code> fire only after a control is touched — nothing flashes before it. Pair with <code>aria-invalid</code> for script-driven forms and <code>aria-describedby</code> for the message.</p>
+      <p><code>:user-invalid</code> / <code>:user-valid</code> fire only after a control is touched — nothing flashes before it. Touched textual fields also draw a shape cue at the inline end (check = valid, cross = invalid); the state hue stays on the border. Under <code>forced-colors: active</code> the invalid border goes dashed and focus regains a real outline. Pair with <code>aria-invalid</code> for script-driven forms and <code>aria-describedby</code> for the message.</p>
       <form id="demo-validation-form">
         <div class="bf-stack">
           <div>

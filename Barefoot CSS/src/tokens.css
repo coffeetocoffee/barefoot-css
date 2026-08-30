@@ -136,9 +136,11 @@
     --bf-icon-size: 1.25rem; /* default icon square */
     --bf-icon-stroke: 2px; /* icon stroke width for currentColor icons */
 
+    /* ---- Motion ---- */
     --bf-transition: 150ms ease; /* default motion */
     --bf-transition-slow: 250ms ease; /* slower motion */
 
+    /* ---- Disabled controls ---- */
     /* Disabled controls (buttons, inputs) dim by this much. */
     --bf-disabled-opacity: 0.5; /* dimming for disabled buttons/inputs */
 

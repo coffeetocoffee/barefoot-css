@@ -1,40 +1,46 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-28 — v4.7.1 shipped (patch: api/docs + demo + baselines)_
+_Last updated: 2026-08-30 — v4.8.0 shipped (validation icons + forced colors + DTCG export + real gzip numbers)_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.7.1` (2026-08-28) — **Barefoot Chroma** 4.7.0 (OKLCH relative-color engine, Studio live builder, icons/command/data-grid opt-ins, AA guard, `full.css` frozen) plus 4.7.1 patch (api `data-command-hint`, demo chip strict-locator, win32 baselines for chromium/firefox/webkit).
-  one color infinite theme via OKLCH relative-color engine
-  (`oklch(from var(--bf-primary) …)` gated at `@supports`, hex
-  fallbacks; hover/subtle/border/focus auto-derive from one hue),
-  AA contrast guard at `npm run check` (hard fail <4.5:1), Studio
-  live builder (`demo/studio.html` — iframe preview + 6-line export),
-  and three CSS-only primitives (`icons`/`command`/`data-grid`) as
-  opt-in files; `full.css` stays frozen at its 4.5 import set
+- **Current:** `barefoot-css@4.8.0` (2026-08-30) — **the zero-JS
+  validation release**: touched textual fields draw a check/cross
+  shape cue beside the `:user-valid`/`:user-invalid` border (pure CSS,
+  `currentColor` SVG — no palette baked in), `forced-colors: active`
+  is hardened across forms/pagination/segmented/command/ghost
+  buttons/skeleton (structure instead of hue: dashed invalid borders,
+  real focus outlines, rings on background-only cues), tokens export
+  as a W3C DTCG `tokens.json` (light/dark/core, `color-mix()` mixed
+  out to hex for Figma/iOS/Android), and gzip/brotli are measured by
+  the build again — child-process fallback included (Node 26/Windows
+  zlib bypass retired). `full.css` stays frozen at its 4.5 import set
   (ADR-0008) — per-component is the headline path.
-- **Next:** TBD — post-4.7 ideas stay off-roadmap until the next scan
+- **Next:** TBD — post-4.8 ideas stay off-roadmap until the next scan
   picks them up.
-- **Tests:** Chromium (19 a11y / 29 JS / 109 CSS, 2 engine-gated
-  skips / 3 visual) · Firefox 132 passed, 7 skipped · WebKit 137
-  passed, 4 skipped — green. Skips are engine-gated (interest invokers,
+- **Tests:** Chromium (19 a11y / 29 JS / 118 CSS, 2 engine-gated
+  skips / 3 visual) · Firefox 138 passed, 12 skipped · WebKit 143
+  passed, 7 skipped — green. Skips are engine-gated (interest invokers,
   SDA, base-select fallback; cross-doc VT lives gated on
-  `pageswap`/`pagereveal`, proven live on Chromium). Specs touch the
+  `pageswap`/`pagereveal`, proven live on Chromium; the v4.8
+  forced-colors tests are chromium-gated emulation). Specs touch the
   demo only through `tests/helpers.js`. Visual baselines are win32 and
-  were regenerated this release (demo gained a section); ubuntu/macos
-  jobs stay behavior-only.
-- **Build:** `index.css` ~2.3KB gzip · `full.css` 9.61KB gzip —
+  were regenerated this release (the validation-section prose grew);
+  ubuntu/macos jobs stay behavior-only.
+- **Build:** `index.css` 2.54KB gzip · `full.css` 10.01KB gzip —
   **frozen at its 4.5 import set** (ADR-0008); existing files still
-  evolve under `npm run size`. Gzip is measured by hand at
-  level 9: since the zlib bypass on Node 26/Windows, `npm run check`
-  enforces only the 3× raw fallback. New opt-in files
-  (`icons`/`command`/`data-grid`) ship outside `full.css`.
-- **History:** milestones 0.1 → 4.7.1 shipped; per-release detail lives
+  evolve under `npm run size`. Gzip (level 9) and brotli are measured
+  by the build again: in-process zlib with a fresh-child-process
+  fallback for the Node 26/Windows break, raw budget kept only as the
+  last resort. New DTCG export `dist/tokens.json` ships outside the
+  CSS payload.
+- **History:** milestones 0.1 → 4.8.0 shipped; per-release detail lives
   in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
   namespace cleanup + deprecation policy (3.x), platform catch-up +
   layout + motion + selects/sticky tables (4.x), navigation
   transitions + bundle freeze (4.6), one-color theming + Studio +
-  CSS-only primitives (4.7).
+  CSS-only primitives (4.7), validation finish + forced colors +
+  DTCG export + measured sizes (4.8).
 
 ## Vision
 
@@ -142,10 +148,13 @@ Safari 26.2+.)
 
 ## Next
 
-Post-4.6 ideas stay off-roadmap until the next scan picks them up.
-The Navigation Release shipped as 4.6 (see CHANGELOG); its structural
-half — the full.css freeze — is recorded in ADR-0008 and pinned by
-test.
+Post-4.8 ideas stay off-roadmap until the next scan picks them up.
+The v4.8 review menu (validation icons, forced colors + size-metric
+fix, table cards vs DTCG) shipped in one pass: the responsive table
+card pattern was already live as `table[data-table="stack"]`
+(container-query cards, shipped 4.x), so item three went to the DTCG
+export. The bundle freeze from 4.6 stays recorded in ADR-0008 and
+pinned by test.
 
 ## Watch-list (no action until browsers fix it)
 
@@ -210,6 +219,19 @@ Live decisions only — history lives in CHANGELOG and docs/.
   lifecycle.js fires once per page, only when markup matches an
   announced surface; otherwise silent. Pinned by the lifecycle
   re-init spec.
+- **Forced colors get structure, not color.** Under
+  `forced-colors: active` the system palette erases author hues and
+  box-shadows, so v4.8 restores affordances structurally — dashed
+  invalid borders, real focus outlines, rings on background-only
+  state cues — instead of re-asserting palette colors or reaching
+  for `forced-color-adjust: none`. Shape survives any system theme.
+- **The DTCG export resolves, it doesn't transcribe.** `tokens.json`
+  carries values a designer can paste, not the CSS source: light-dark
+  pairs split per scheme, aliases walked, `color-mix()` fallbacks
+  mixed out to hex with the browser's own OKLab math, the oklch
+  Chroma layer represented by its canonical fallbacks. Typed where
+  DTCG has a type; honestly untyped where it doesn't (`none`,
+  easing keywords). Pinned by source-parse tests.
 
 ## Non-goals
 

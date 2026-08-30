@@ -32,13 +32,28 @@ the base token and every ramp follows.
 | `--bf-font` | `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif` | body font |
 | `--bf-font-mono` | `ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace` | code font |
 | `--bf-line-height` | `1.6` | body leading |
+
+### Font weight (v2.6)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-font-weight-normal` | `400` | body, divider labels |
 | `--bf-font-weight-medium` | `500` | buttons, labels, summaries, tabs |
 | `--bf-font-weight-semibold` | `600` | headings, card/dialog headers, th, current states |
 | `--bf-font-weight-bold` | `700` | .bf-brand |
+
+### Letter spacing (v2.6)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-letter-spacing-tight` | `-0.01em` | display/brand tracking |
 | `--bf-letter-spacing-wide` | `0.05em` | uppercase labels (badge, th) |
 | `--bf-letter-spacing-wider` | `0.08em` | overlines |
+
+### Type scale (v1.8: fluid)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-type-xs` | `0.75rem` | tiny text (footnotes) |
 | `--bf-type-sm` | `0.875rem` | small text (figcaptions, hints) |
 | `--bf-type-base` | `1rem` | body text |
@@ -109,6 +124,11 @@ the base token and every ramp follows.
 | `--bf-shadow` | `none` | default shadow (neutral by default) |
 | `--bf-shadow-sm` | `0 1px 2px rgb(0 0 0 / 0.25)` | small shadow (thumbs, subtle depth) |
 | `--bf-shadow-lifted` | `0 1px 3px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.06)` | popovers, dialogs, [data-lifted] |
+
+### Alpha ramps (v2.0: color-mix)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-surface-2` | `color-mix(in oklab, var(--bf-surface), var(--bf-primary) 5%)` | subtle raised surface |
 | `--bf-surface-3` | `color-mix(in oklab, var(--bf-surface), var(--bf-primary) 10%)` | stronger raised surface |
 | `--bf-overlay` | `color-mix(in oklab, var(--bf-surface), transparent 20%)` | light overlay |
@@ -129,13 +149,28 @@ the base token and every ramp follows.
 | `--bf-warning-darken` | `color-mix(in oklab, var(--bf-warning), #000000 8%)` | hover darken for warning fills |
 | `--bf-warning-subtle` | `color-mix(in oklab, var(--bf-warning), transparent 88%)` | very light warning tint |
 | `--bf-border-strong` | `color-mix(in oklab, var(--bf-border), var(--bf-text) 20%)` | stronger border on hover |
+
+### Chroma: One Color Infinite Theme (v4.7)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-primary-hover` | `color-mix(in oklab, var(--bf-primary), #000000 12%)` | hover fill — darken by 12% (oklch: calc(l - 0.08) ) |
 | `--bf-primary-contrast` | `var(--bf-primary-fg)` | text/icon on primary — oklch contrast auto-switches l |
 | `--bf-primary-border` | `color-mix(in oklab, var(--bf-primary), var(--bf-border) 40%)` | primary tinted border (oklch: 0.85 0.05 h) |
 | `--bf-icon-size` | `1.25rem` | default icon square |
 | `--bf-icon-stroke` | `2px` | icon stroke width for currentColor icons |
+
+### Motion
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-transition` | `150ms ease` | default motion |
 | `--bf-transition-slow` | `250ms ease` | slower motion |
+
+### Disabled controls
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-disabled-opacity` | `0.5` | dimming for disabled buttons/inputs |
 
 ### Layout
@@ -145,6 +180,11 @@ the base token and every ramp follows.
 | `--bf-content-width` | `64ch` | max measure for prose |
 | `--bf-max-width` | `72rem` | .bf-container width |
 | `--bf-control-height` | `2.5rem` | buttons/inputs height |
+
+### Z-index scale (v2.2)
+
+| Token | Default | Purpose |
+|---|---|---|
 | `--bf-z-dropdown` | `10` | dropdown / menu panels |
 | `--bf-z-sticky` | `20` | .bf-sticky chrome |
 | `--bf-z-dialog` | `50` | dialogs (modal dialogs use the top layer) |
@@ -190,62 +230,6 @@ the base token and every ramp follows.
 |---|---|---|
 | `--bf-vt-duration` | `250ms` | cross-document + morph transition length |
 | `--bf-vt-easing` | `ease` | view-transition group timing |
-| `--bf-primary-hover` | `oklch(from var(--bf-primary) calc(l - 0.08) c h)` | hover — darker |
-| `--bf-primary-subtle` | `oklch(from var(--bf-primary) 0.95 0.02 h)` | very light tint |
-| `--bf-primary-contrast` | `oklch(from var(--bf-primary) calc((0.7 - l) * 100) 0 0)` | AA text on primary |
-| `--bf-primary-border` | `oklch(from var(--bf-primary) 0.88 0.04 h)` | tinted border |
-| `--bf-primary-muted` | `oklch(from var(--bf-primary) 0.8 0.04 h / 0.55)` | muted focus ring |
-| `--bf-primary-strong` | `oklch(from var(--bf-primary) calc(l - 0.03) calc(c * 1.05) h)` | strong tint |
-| `--bf-primary-darken` | `oklch(from var(--bf-primary) calc(l - 0.06) c h)` | hover darken |
-| `--bf-border-strong` | `oklch(from var(--bf-border) calc(l - 0.06) c h)` | stronger border |
-| `--bf-surface-2` | `oklch(from var(--bf-surface) calc(l - 0.015) 0.005 h)` | subtle raised |
-| `--bf-surface-3` | `oklch(from var(--bf-surface) calc(l - 0.03) 0.008 h)` | stronger raised |
-| `--bf-space-1` | `0.125rem` |  |
-| `--bf-space-2` | `0.25rem` |  |
-| `--bf-space-3` | `0.5rem` |  |
-| `--bf-space-4` | `0.75rem` |  |
-| `--bf-space-5` | `1rem` |  |
-| `--bf-space-6` | `1.5rem` |  |
-| `--bf-space-7` | `2rem` |  |
-| `--bf-space-8` | `3rem` |  |
-| `--bf-radius` | `0.25rem` |  |
-| `--bf-radius-sm` | `0.125rem` |  |
-| `--bf-radius-lg` | `0.5rem` |  |
-| `--bf-control-height` | `2rem` |  |
-| `--bf-primary` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-primary-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
-| `--bf-text` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-muted` | `light-dark(#404040, #c0c0c0)` |  |
-| `--bf-border` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-danger` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-danger-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-success` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-success-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-info` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-info-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-warning` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-warning-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-primary` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-primary-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-surface` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-surface-alt` | `light-dark(#f0f0f0, #101010)` |  |
-| `--bf-text` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-muted` | `light-dark(#404040, #c0c0c0)` |  |
-| `--bf-border` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-focus-ring` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-danger` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-danger-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-success` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-success-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-info` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-info-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-warning` | `light-dark(#000000, #ffffff)` |  |
-| `--bf-warning-fg` | `light-dark(#ffffff, #000000)` |  |
-| `--bf-shadow` | `none` |  |
-| `--bf-shadow-lifted` | `none` |  |
 
 <!-- TOKENS:END -->
 
@@ -309,6 +293,32 @@ Seven built-in demos of how far a few variables go. See the files in
 
 They are the marketing proof: *a handful of variables, completely
 different product.*
+
+## Design-token export (DTCG, v4.8)
+
+Every `--bf-*` token ships as a [W3C Design Tokens Format](https://tr.designtokens.org/)
+JSON file: `barefoot-css/tokens.json` (generated into `dist/` by
+`build/build.mjs` on every build — never edited by hand). It lets
+multi-platform design systems sync the same palette to Figma,
+iOS (SwiftUI) and Android (Compose).
+
+Structure:
+
+- **`light`** / **`dark`** — the color tokens resolved per color scheme.
+  `light-dark()` pairs are split, `var()` aliases resolved, and the
+  `color-mix()` fallbacks mixed out to real hex (alpha below 1 becomes
+  `#rrggbbaa`). The `oklch()` Chroma derivations are represented by
+  their canonical `color-mix()` fallbacks.
+- **`core`** — the scheme-independent tokens: spacing, radii, type,
+  motion (`--bf-transition: 150ms ease` becomes a `duration` token with
+  the easing kept in an extension), shadows (structured DTCG shadow
+  objects), and friends.
+
+Each token carries `$type`, `$value`, the trailing comment from
+`src/tokens.css` as `$description`, and its original custom-property
+name under `$extensions["com.barefoot-css.css-name"]`. Test coverage in
+`tests/css.spec.js` pins the generator: every token must export, and a
+handful of resolved values are frozen as contracts.
 
 ## OS accessibility settings
 

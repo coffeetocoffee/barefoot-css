@@ -20,7 +20,7 @@ const THEMING = join(root, "docs", "theming.md");
 const START = "<!-- TOKENS:START -->";
 const END = "<!-- TOKENS:END -->";
 
-const SECTION = /^\s*\/\*\s*-+\s*(.+?)\s*-+\s*\*\/\s*$/;
+const SECTION = /^\s*\/\*\s*-+\s*(.+?)\s*-+\s*(?:\*\/)?\s*$/;
 const CUSTOM_PROP = /^\s*(--bf-[a-z0-9-]+):/;
 
 function parseGroups(source) {
@@ -31,8 +31,16 @@ function parseGroups(source) {
   const groups = [];
   let current = null;
   let buffer = "";
+  let inHeader = false;
+  const seen = new Set();
 
   for (const line of body.split("\n")) {
+    // Multi-line `/* ---- Title ----` headers keep their description
+    // prose on the following lines — consume it, don't parse it.
+    if (inHeader) {
+      if (line.includes("*/")) inHeader = false;
+      continue;
+    }
     // A logical declaration may wrap; accumulate until the semicolon.
     if (buffer || CUSTOM_PROP.test(line)) {
       buffer += ` ${line.trim()}`;
@@ -40,16 +48,22 @@ function parseGroups(source) {
       const decl = buffer;
       buffer = "";
       const [, name] = decl.match(CUSTOM_PROP);
+      // First declaration of a name wins — the @supports oklch block
+      // re-declares the Chroma tokens; their color-mix fallbacks above
+      // are the documented defaults.
+      if (!current || seen.has(name)) continue;
+      seen.add(name);
       const value = decl
         .slice(decl.indexOf(":") + 1, decl.indexOf(";"))
         .replace(/\s+/g, " ")
         .trim();
       const purpose = decl.match(/;\s*\/\*\s*(.*?)\s*\*\//)?.[1] ?? "";
-      if (current) current.rows.push({ name, value, purpose });
+      current.rows.push({ name, value, purpose });
       continue;
     }
     const header = line.match(SECTION);
     if (header) {
+      if (!line.includes("*/")) inHeader = true;
       current = { title: header[1], rows: [] };
       groups.push(current);
     }

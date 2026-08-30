@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, tokenColor } from "./helpers.js";
+import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1888,5 +1889,120 @@ test.describe("API reference audit (docs/api.md ↔ src)", () => {
     const generated = theming.slice(start, end);
     const missing = [...defined].filter((t) => !generated.includes(`\`${t}\``));
     expect(missing, "tokens.css defines these but theming.md does not list them — run npm run docs:tokens").toEqual([]);
+  });
+});
+
+test.describe("v4.8 validation icons & forced colors", () => {
+  test("touched valid fields draw a check icon and reserve its space", async ({ page }) => {
+    await gotoDemo(page);
+    const email = page.locator(DEMOS.demoEmail);
+    const before = await email.evaluate((el) =>
+      parseFloat(getComputedStyle(el).paddingInlineEnd)
+    );
+    await email.fill("you@example.com");
+    await email.blur();
+    await expect(email).toHaveCSS("border-color", await tokenColor(page, "--bf-success"));
+    const style = await email.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { paddingInlineEnd: parseFloat(s.paddingInlineEnd), backgroundImage: s.backgroundImage };
+    });
+    expect(style.paddingInlineEnd).toBeGreaterThan(before);
+    expect(style.backgroundImage).toContain("svg");
+  });
+
+  test("touched invalid fields draw a cross icon and the danger border", async ({ page }) => {
+    await gotoDemo(page);
+    const user = page.locator(DEMOS.demoUser);
+    await user.fill("ab"); // minlength=3 → :user-invalid
+    await user.blur();
+    await expect(user).toHaveCSS("border-color", await tokenColor(page, "--bf-danger"));
+    const bg = await user.evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(bg).toContain("svg");
+    // The cross and the check are different glyphs.
+    const check = page.locator(DEMOS.demoEmail);
+    await check.fill("you@example.com");
+    await check.blur();
+    const cross = await user.evaluate((el) => getComputedStyle(el).backgroundImage);
+    const tick = await check.evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(cross).not.toBe(tick);
+  });
+
+  test("forced colors: invalid fields go dashed and focus regains an outline", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "forced-colors emulation is chromium-gated");
+    await gotoDemo(page);
+    await page.emulateMedia({ forcedColors: "active" });
+    const email = page.locator(DEMOS.demoEmail);
+    await email.fill("not-an-email");
+    await email.blur();
+    await expect(email).toHaveCSS("border-style", "dashed");
+    await email.focus();
+    await expect(email).toHaveCSS("outline-style", "solid");
+    await expect(email).toHaveCSS("outline-width", "2px");
+  });
+
+  test("forced colors: background-only state cues gain outlines", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "forced-colors emulation is chromium-gated");
+    await gotoDemo(page);
+    await page.emulateMedia({ forcedColors: "active" });
+    await expect(page.locator('[data-pagination] [aria-current="page"]')).toHaveCSS("outline-style", "solid");
+    await expect(page.locator(`${DEMOS.demoSegmented} label:has(input:checked)`)).toHaveCSS("outline-style", "solid");
+    await expect(page.locator(DEMOS.demoSkeletonLine)).toHaveCSS("outline-style", "solid");
+  });
+
+  test("forced colors: ghost buttons state their boundary", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "forced-colors emulation is chromium-gated");
+    await gotoDemo(page);
+    await page.emulateMedia({ forcedColors: "active" });
+    const ghost = page.locator('button[data-variant="ghost"]').first();
+    await expect(ghost).not.toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+  });
+});
+
+test.describe("v4.8 DTCG tokens.json export", () => {
+  // Source-parse tests: the generator runs in-node against src/tokens.css,
+  // no page and no dist/ needed.
+  const group = (mode, prefix) => Object.keys(mode).find((k) => k.startsWith(prefix));
+
+  test("every token exports with a value and a type", () => {
+    const dtcg = buildDTCG();
+    const all = [
+      ...Object.values(dtcg.light).flatMap((g) => Object.entries(g)),
+      ...Object.values(dtcg.dark).flatMap((g) => Object.entries(g)),
+      ...Object.values(dtcg.core).flatMap((g) => Object.entries(g)),
+    ];
+    expect(all.length).toBeGreaterThan(90);
+    for (const [name, entry] of all) {
+      expect(entry.$value, `${name} carries a value`).toBeDefined();
+      // Deliberately untyped: "none" (no DTCG shadow shape) and the
+      // easing keyword (no DTCG type exists for it).
+      if (entry.$value !== "none" && entry.$value !== "ease") {
+        expect(entry.$type, `${name} is typed`).toBeTruthy();
+      }
+    }
+  });
+
+  test("light-dark() pairs split into resolved scheme values", () => {
+    const dtcg = buildDTCG();
+    const primary = dtcg.light[group(dtcg.light, "Color")].primary;
+    expect(primary.$type).toBe("color");
+    expect(primary.$value).toBe("#1a1a1a");
+    expect(primary.$extensions["com.barefoot-css.css-name"]).toBe("--bf-primary");
+    expect(dtcg.dark[group(dtcg.dark, "Color")].primary.$value).toBe("#ececec");
+  });
+
+  test("color-mix() fallbacks mix out to real hex per scheme", () => {
+    const dtcg = buildDTCG();
+    const ramps = group(dtcg.light, "Alpha ramps");
+    expect(dtcg.light[ramps]["primary-muted"].$value).toBe("#1a1a1a40");
+    expect(dtcg.dark[ramps]["surface-2"].$value).toBe("#1f1f1f");
+  });
+
+  test("scheme-independent tokens land in core", () => {
+    const dtcg = buildDTCG();
+    const spacing = dtcg.core[group(dtcg.core, "Spacing scale")];
+    expect(spacing["space-1"].$type).toBe("dimension");
+    expect(spacing["space-1"].$value).toBe("0.25rem");
+    expect(dtcg.core[group(dtcg.core, "Motion")].transition.$type).toBe("duration");
+    expect(dtcg.core[group(dtcg.core, "Motion")].transition.$value).toBe("150ms");
   });
 });

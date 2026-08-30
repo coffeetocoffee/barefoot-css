@@ -126,4 +126,14 @@
     padding: var(--bf-space-3) var(--bf-space-4);
     border-block-end: var(--bf-border-width) solid var(--bf-border);
   }
+
+  /* ---- Forced colors (v4.8) ----
+     [data-selected] is a background-only cue; forced-colors flattens it
+     to Canvas, so ring the selection instead. */
+  @media (forced-colors: active) {
+    [data-command-item][data-selected] {
+      outline: 1px solid;
+      outline-offset: -1px;
+    }
+  }
 }

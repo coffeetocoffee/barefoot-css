@@ -75,4 +75,14 @@
     min-height: 8rem;
     border-radius: var(--bf-radius);
   }
+
+  /* ---- Forced colors (v4.8) ----
+     The placeholder is a background-only cue; forced-colors maps it to
+     the page surface and the box disappears entirely, so outline it. */
+  @media (forced-colors: active) {
+    .skeleton {
+      outline: 1px solid;
+      outline-offset: -1px;
+    }
+  }
 }

@@ -25,9 +25,18 @@ ARIA to the divs" — there are no divs.
   "Skip to content" — the WCAG 2.4.1 bypass-block pattern, free.
 - **Validation without JS.** `:user-invalid` / `:user-valid` /
   `[aria-invalid]` get a danger (invalid) or success (valid) border —
-  touched only, nothing flashes on page load. Labels that wrap a
+  touched only, nothing flashes on page load — plus a shape cue
+  (cross/check) at the field's inline end (v4.8). Labels that wrap a
   required control get an asterisk, and `form:has(:user-invalid)` draws
   a subtle ring around the whole form — all browser-driven, no script.
+- **Forced colors supported** (v4.8). Under `forced-colors: active`
+  (Windows High Contrast & friends) author colors map to the system
+  palette — so every affordance that was hue- or shadow-only gains a
+  structural one: input focus rings become real outlines, invalid
+  fields go dashed, and the current pagination page, segmented and
+  command selections, skeleton placeholders and ghost buttons get a
+  ring or border. Icons drawn via mask + `currentColor` inherit the
+  system text color automatically.
 - **Status feedback.** Alerts take their live-region semantics from
   *your* markup (`role="alert"`, `aria-live="polite"`); toasts (Popover
   API) pair `role="status"` / `role="alert"` with an open/close contract
