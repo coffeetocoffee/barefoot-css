@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-nine small opt-in modules add the missing behavior. Each is a single
+ten small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Adds |
@@ -15,7 +15,8 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/table-sort.js` | Sorts `table[data-bf-sort]` rows from header buttons |
 | `js/toast.js` | Toast auto-dismiss: timed, pause-on-hover |
 | `js/tooltip.js` | Hover tooltip fallback for engines without interest invokers |
-| `js/barefoot.js` | All nine in one import |
+| `js/theme.js` | Theme toggle + persistence for `[data-bf-theme-btn]` buttons |
+| `js/barefoot.js` | All ten in one import |
 
 Deprecated surfaces keep working through 3.x and warn once per page
 when their markup is present; the full table with replacements lives
@@ -27,7 +28,7 @@ here, so this page can't drift from the bytes.
 ## Loading
 
 ```html
-<!-- all nine -->
+<!-- all ten -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -48,7 +49,7 @@ import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
 
-All nine share two internal primitives from `js/lifecycle.js`
+All ten share two internal primitives from `js/lifecycle.js`
 (`onDomReady`, `bindOnce`) — not public API, just plumbing that makes
 every `init*` call idempotent: re-running an init on markup that was
 already wired changes nothing. The two removal behaviors (chips,
@@ -328,6 +329,51 @@ native `interestinvoker` and skips the JS path entirely.
 - **No-JS first:** without the module tooltips show only on click (via
   `popovertarget`) in engines without interest invokers — the three-tier
   model still works.
+
+## 12. Theme toggle + persistence (`js/theme.js`)
+
+The theme engine itself is pure CSS — `data-bf-theme` on `<html>`
+overrides `color-scheme` and every `light-dark()` pair follows
+([theming.md](theming.md)). This module adds the two things CSS cannot
+do: wiring switcher buttons and remembering the choice.
+
+```html
+<div role="group" aria-label="Theme">
+  <button type="button" data-bf-theme-btn="auto">Auto</button>
+  <button type="button" data-bf-theme-btn="light">Light</button>
+  <button type="button" data-bf-theme-btn="dark">Dark</button>
+  <button type="button" data-bf-theme-btn="my-theme">My theme</button>
+</div>
+```
+
+- Clicking a button sets `data-bf-theme` on `<html>` and stores the
+  choice under the `barefoot-theme` localStorage key; the next load
+  re-applies it at init. Any theme name the page's CSS defines works —
+  the built-ins, the starter themes, or your own.
+- `auto` (and no stored choice) follows the OS preference through
+  `light-dark()` — OS changes keep working with zero JS, before and
+  after an explicit choice.
+- Clicks crossfade via `startViewTransition` where supported; skipped
+  under `prefers-reduced-motion`.
+- Names are validated (lowercase kebab-case, like every variant value):
+  invalid names are warned once and ignored, and a corrupted stored
+  value never reaches the document.
+- **No-JS first:** without the module the buttons are inert and the OS
+  preference applies. To avoid a flash of the wrong theme on loads with
+  a stored choice, load the module in `<head>` (or before your content)
+  so it runs before first paint, or set the attribute from an inline
+  snippet before your stylesheet:
+
+```html
+<script>
+  try {
+    var t = localStorage.getItem("barefoot-theme");
+    if (t) document.documentElement.dataset.bfTheme = t;
+  } catch (e) {}
+</script>
+```
+
+- For dynamic content: `import { initTheme, setTheme } from "barefoot-css/js/theme.js"`.
 
 ## Why no bundle
 

@@ -1,32 +1,42 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-30 — v4.8.0 shipped (validation icons + forced colors + DTCG export + real gzip numbers)_
+_Last updated: 2026-08-30 — v4.9.0 shipped (theme toggle + persistence — `js/theme.js`)_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.8.0` (2026-08-30) — **the zero-JS
-  validation release**: touched textual fields draw a check/cross
+- **Current:** `barefoot-css@4.9.0` (2026-08-30) — **the theme
+  persistence release**: the one script every demo page hand-rolled is
+  now a first-party opt-in module. `js/theme.js` wires
+  `[data-bf-theme-btn]` buttons to `data-bf-theme` on `<html>`,
+  remembers the choice in localStorage (`barefoot-theme` key), re-applies
+  it at init, crossfades clicks through `startViewTransition` (skipped
+  under reduced motion), validates names like every variant value, and
+  hands control back to the OS on `auto` — `light-dark()` keeps
+  following system changes with zero JS. The 4.8 zero-JS validation
+  release stands beneath it: touched textual fields draw a check/cross
   shape cue beside the `:user-valid`/`:user-invalid` border (pure CSS,
   `currentColor` SVG — no palette baked in), `forced-colors: active`
   is hardened across forms/pagination/segmented/command/ghost
-  buttons/skeleton (structure instead of hue: dashed invalid borders,
-  real focus outlines, rings on background-only cues), tokens export
-  as a W3C DTCG `tokens.json` (light/dark/core, `color-mix()` mixed
-  out to hex for Figma/iOS/Android), and gzip/brotli are measured by
-  the build again — child-process fallback included (Node 26/Windows
-  zlib bypass retired). `full.css` stays frozen at its 4.5 import set
-  (ADR-0008) — per-component is the headline path.
-- **Next:** TBD — post-4.8 ideas stay off-roadmap until the next scan
+  buttons/skeleton (structure instead of hue), tokens export as a W3C
+  DTCG `tokens.json` (light/dark/core, `color-mix()` mixed out to hex
+  for Figma/iOS/Android), and gzip/brotli are measured by the build
+  again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
+  per-component is the headline path.
+- **Next:** TBD — post-4.9 ideas stay off-roadmap until the next scan
   picks them up.
-- **Tests:** Chromium (19 a11y / 29 JS / 118 CSS, 2 engine-gated
-  skips / 3 visual) · Firefox 138 passed, 12 skipped · WebKit 143
+- **Tests:** Chromium (19 a11y / 35 JS / 118 CSS, 2 engine-gated
+  skips / 3 visual) · Firefox 144 passed, 12 skipped · WebKit 148
   passed, 7 skipped — green. Skips are engine-gated (interest invokers,
   SDA, base-select fallback; cross-doc VT lives gated on
   `pageswap`/`pagereveal`, proven live on Chromium; the v4.8
-  forced-colors tests are chromium-gated emulation). Specs touch the
+  forced-colors tests are chromium-gated emulation). One WebKit flake
+  is known and pre-existing: the popover empty-roster Tab refocus test
+  (js.spec, ADR-0006) intermittently misses the focus return on win32
+  WebKit — it fails on a clean tree too. Specs touch the
   demo only through `tests/helpers.js`. Visual baselines are win32 and
-  were regenerated this release (the validation-section prose grew);
-  ubuntu/macos jobs stay behavior-only.
+  unchanged this arc (the theme switcher moved from the demo's inline
+  script to `js/theme.js` with identical behavior). ubuntu/macos jobs
+  stay behavior-only.
 - **Build:** `index.css` 2.54KB gzip · `full.css` 10.01KB gzip —
   **frozen at its 4.5 import set** (ADR-0008); existing files still
   evolve under `npm run size`. Gzip (level 9) and brotli are measured
@@ -34,13 +44,14 @@ _Last updated: 2026-08-30 — v4.8.0 shipped (validation icons + forced colors +
   fallback for the Node 26/Windows break, raw budget kept only as the
   last resort. New DTCG export `dist/tokens.json` ships outside the
   CSS payload.
-- **History:** milestones 0.1 → 4.8.0 shipped; per-release detail lives
+- **History:** milestones 0.1 → 4.9.0 shipped; per-release detail lives
   in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
   namespace cleanup + deprecation policy (3.x), platform catch-up +
   layout + motion + selects/sticky tables (4.x), navigation
   transitions + bundle freeze (4.6), one-color theming + Studio +
   CSS-only primitives (4.7), validation finish + forced colors +
-  DTCG export + measured sizes (4.8).
+  DTCG export + measured sizes (4.8), theme persistence as the
+  smallest honest opt-in JS (4.9).
 
 ## Vision
 
@@ -148,13 +159,18 @@ Safari 26.2+.)
 
 ## Next
 
-Post-4.8 ideas stay off-roadmap until the next scan picks them up.
-The v4.8 review menu (validation icons, forced colors + size-metric
-fix, table cards vs DTCG) shipped in one pass: the responsive table
-card pattern was already live as `table[data-table="stack"]`
-(container-query cards, shipped 4.x), so item three went to the DTCG
-export. The bundle freeze from 4.6 stays recorded in ADR-0008 and
-pinned by test.
+The v4.9 review menu is resolved: theme toggle + persistence shipped as
+`js/theme.js` (see Snapshot); the layout-primitives idea was already
+live since 4.x — `bf-container`/`bf-stack` in `utilities.css`, the
+container-driven `[data-grid]` in `components/grid.css`, and the
+`[data-layout]` app shell in `components/layout.css` — so nothing new
+was built there; the command-palette module, a starter repo, and the
+`@barefoot/core` vs `@barefoot/extended` package split were declined
+(the palette violates pillar #3 — opt-in JS only where no native
+primitive works; the starter is what `demo/` and the theme gallery
+already are; the split fights ADR-0008, where per-component imports +
+the frozen `full.css` already give the minimal path). The bundle freeze
+from 4.6 stays recorded in ADR-0008 and pinned by test.
 
 ## Watch-list (no action until browsers fix it)
 
@@ -171,6 +187,13 @@ Live decisions only — history lives in CHANGELOG and docs/.
   `js/table-sort.js`); semantics stay native; without JS pages stay
   valid. Popover menus get roving focus, not a modal trap — popovers
   are non-modal by design.
+- **Theme persistence is the smallest honest opt-in JS.** `light-dark()`
+  already follows the OS with zero script; what no native primitive does
+  is wire switcher buttons and remember a choice — so `js/theme.js` does
+  exactly that and nothing else: no `<theme-toggle>` custom element, no
+  `matchMedia` listener, no theme state machine. `data-bf-theme` on
+  `<html>` stays the single source of truth; the module validates names
+  like every variant value and treats storage as best-effort.
 - **Opt-in JS ships readable, not minified.** Auditable source is a
   feature of a zero-dependency framework.
 - **Custom checkbox/radio skins stay cut; the switch ships.**

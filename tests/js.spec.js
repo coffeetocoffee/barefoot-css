@@ -1,8 +1,8 @@
 /* Barefoot — opt-in JS modules.
    Tests every enhancement shipped in dist/js/ (loaded by the demo):
    WAI-ARIA tabs, popover-menu keyboard, carousel autoplay + controls,
-   chips, nav hamburger — plus the lifecycle seam itself and barrel
-   completeness.
+   chips, nav hamburger, theme persistence — plus the lifecycle seam
+   itself and barrel completeness.
 
    npm run test:js */
 import { test, expect } from "@playwright/test";
@@ -588,5 +588,78 @@ test.describe("opt-in JS: keyboard seams", () => {
         'from "./return-focus.js"'
       );
     }
+  });
+});
+
+test.describe("opt-in JS: theme persistence", () => {
+  test("click applies the theme, stores it, and reload restores the choice", async ({ page }) => {
+    await gotoDemo(page);
+    await page.getByRole("button", { name: "Dark" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "dark");
+    const stored = await page.evaluate(() =>
+      localStorage.getItem("barefoot-theme")
+    );
+    expect(stored).toBe("dark");
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "dark");
+  });
+
+  test("auto hands control back to the OS and the reset survives reload", async ({ page }) => {
+    await gotoDemo(page);
+    await page.getByRole("button", { name: "Forest" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "forest");
+    await page.getByRole("button", { name: "Auto", exact: true }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "auto");
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "auto");
+  });
+
+  test("re-init on armed markup changes nothing (bindOnce)", async ({ page }) => {
+    await gotoDemo(page);
+    await page.evaluate(async () => {
+      const { initTheme } = await import("/dist/js/theme.js");
+      initTheme();
+      initTheme();
+    });
+    await page.getByRole("button", { name: "Contrast" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "contrast");
+  });
+
+  test("setTheme warns on and ignores invalid names", async ({ page }) => {
+    await gotoDemo(page);
+    const warnings = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "warning") warnings.push(msg.text());
+    });
+    await page.evaluate(async () => {
+      const { setTheme } = await import("/dist/js/theme.js");
+      setTheme("not a theme!");
+    });
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "auto");
+    expect(warnings.some((text) => text.includes("[barefoot-css]"))).toBe(true);
+  });
+
+  test("a corrupted stored value is ignored; the markup default stands", async ({ page }) => {
+    await gotoDemo(page);
+    await page.evaluate(() =>
+      localStorage.setItem("barefoot-theme", "dark; alert(1)")
+    );
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-bf-theme", "auto");
+  });
+
+  test("no-JS first: fixture buttons stay inert without the module", async ({ page }) => {
+    await mountFixture(
+      page,
+      `<button type="button" data-bf-theme-btn="dark">Go dark</button>`
+    );
+    await page.getByRole("button", { name: "Go dark" }).click();
+    // The fixture document has no data-bf-theme attribute of its own —
+    // the contract is that clicking stays inert, so none appears.
+    await expect(page.locator("html")).not.toHaveAttribute("data-bf-theme", /.+/);
+    const stored = await page.evaluate(() =>
+      localStorage.getItem("barefoot-theme")
+    );
+    expect(stored).toBeNull();
   });
 });

@@ -162,7 +162,7 @@ All component attributes and their valid values:
 | `data-complete` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-width` | `<dialog>` | `sm`, `lg` | 0.1 |
 | `data-lifted` | any element | (boolean) | 0.1 |
-| `data-bf-theme-btn` | theme switcher buttons | theme name | — |
+| `data-bf-theme-btn` | theme switcher buttons | theme name | 4.9 |
 | `data-icon` | any element | `search`, `close`/`x`, `menu`, `check`, `chevron-down`, `chevron-right`, `plus`, `trash`, `star`, `heart`, `settings`/`gear`, `user` | 4.7 |
 | `data-command` | `<dialog>`, `[popover]` | (boolean) | 4.7 |
 | `data-command-list` | inside `[data-command]` | (boolean) | 4.7 |

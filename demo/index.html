@@ -1127,21 +1127,10 @@
     </footer>
 
   <script>
-    // Theme switcher — tiny demo script, not part of the framework.
-    // Wrapped in startViewTransition (see view-transition.css) so theme
-    // changes crossfade instead of flashing.
-    const root = document.documentElement;
-    const applyTheme = (t) => {
-      const set = () => { root.dataset.bfTheme = t; };
-      if (document.startViewTransition) {
-        document.startViewTransition(set);
-      } else {
-        set();
-      }
-    };
-    for (const btn of document.querySelectorAll("[data-bf-theme-btn]")) {
-      btn.addEventListener("click", () => applyTheme(btn.dataset.bfThemeBtn));
-    }
+    // Theme switcher: [data-bf-theme-btn] buttons are wired by the
+    // first-party opt-in module (js/theme.js, loaded below via
+    // barefoot.js) — attribute, persistence, crossfade. This script
+    // keeps only what has no module: the dialog fallback.
 
     // Dialog. The buttons carry command/commandfor (Invoker Commands
     // API) — engines that support it open and close declaratively and

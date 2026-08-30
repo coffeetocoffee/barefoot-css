@@ -11,7 +11,7 @@ Barefoot is a CSS framework for people who are tired of shipping 200KB of styles
 
 - **~10KB or bust.** `index.css` is 2.54KB gzipped (measured, not estimated — see the table below), and that's the headline — import the core plus only the component files you use. The *everything* bundle (`full.css`) stopped gaining imports in v4.6 (ADR-0008) so per-component stays the real story.
 - **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin by overriding six variables — no Sass, no recompile, no rebuild. Tokens also ship as a W3C DTCG `tokens.json` for Figma/iOS/Android sync.
-- **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Form validation is pure CSS — `:user-valid`/`:user-invalid` borders and icons. Optional tiny JS modules add tabs, sortable tables, and menu keyboard nav — opt-in, zero deps.
+- **JS-free.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>` (declarative with `command`/`commandfor`, otherwise one line of native JS), accordions are `<details name>`. Form validation is pure CSS — `:user-valid`/`:user-invalid` borders and icons. Optional tiny JS modules add tabs, sortable tables, menu keyboard nav, and theme persistence — opt-in, zero deps.
 - **Accessible out of the box.** Native elements ship focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere. AA contrast by default. `forced-colors` (Windows High Contrast) hardened. Verified by an axe-core CI suite.
 - **No "Bootstrap look."** Neutral by default: ink on paper, thin borders, no shadows, no gradients. The design is yours — we just supply the muscle.
 
@@ -52,6 +52,7 @@ npm install barefoot-css
 | `components/forms.css` | 10.74KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
+| `js/theme.js` | 2.80KB | **1.31KB** | 1.06KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
 | `js/popover-menu.js` | 2.25KB | **1.12KB** | 0.95KB |
@@ -90,9 +91,9 @@ npm install barefoot-css
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |
+| `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
 | `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
-| `js/barefoot.js` | 0.52KB | **0.28KB** | 0.24KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |

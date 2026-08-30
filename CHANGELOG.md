@@ -4,6 +4,36 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.9.0] — 2026-08-30
+
+The theme persistence release. The one script every demo page was
+hand-rolling becomes first-party: buttons wire, the choice remembers,
+and the OS stays in charge — all behind the framework's smallest opt-in
+module.
+
+### Added
+
+- **Theme toggle + persistence** (`src/js/theme.js`, opt-in) — the
+  first-party script every demo page was hand-rolling: buttons carrying
+  `data-bf-theme-btn="<theme>"` set `data-bf-theme` on `<html>`, the
+  choice persists under the `barefoot-theme` localStorage key and is
+  re-applied at init, clicks crossfade through `startViewTransition`
+  (skipped under `prefers-reduced-motion`), and `auto` hands control
+  back to the OS — `light-dark()` follows system changes with zero JS,
+  before and after an explicit choice. Names are validated like every
+  variant value (lowercase kebab-case): invalid names warn and are
+  ignored, corrupted stored values never reach the document. Exports
+  `initTheme(root)` / `setTheme(theme)` for dynamic content; wired into
+  `barefoot.js`, and the conformance demo now uses the module instead
+  of its inline script. `data-bf-theme-btn` graduates from the API
+  audit's demo-only allowlist to a real implementation (api.md row now
+  stamped `4.9`).
+- v4.9 scan note: the proposed layout primitives (`.bf-container`,
+  `.bf-stack`, a responsive CSS Grid system) were checked against the
+  codebase and found already shipped — `src/utilities.css`,
+  `components/grid.css` (container-driven `[data-grid]`), and
+  `components/layout.css` (app shell). No new surface needed.
+
 ## [4.8.0] — 2026-08-30
 
 The zero-JS validation release. The last true zero-JS gap gets its

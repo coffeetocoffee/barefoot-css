@@ -256,6 +256,12 @@ palettes.** The `[data-bf-theme]` attribute simply overrides `color-scheme`:
 | `data-bf-theme="contrast"` | force high-contrast colors |
 | `data-bf-theme="editorial"` etc. | starter themes (see below) |
 
+Toggling is markup plus opt-in JS: buttons carrying
+`data-bf-theme-btn="<theme>"` set the attribute, and `js/theme.js`
+remembers the choice in localStorage and re-applies it on the next load
+— `auto` always hands control back to the OS. See
+[javascript.md → Theme toggle](javascript.md#12-theme-toggle--persistence-jsthemejs).
+
 ## Making your own theme
 
 New to theming? Follow **[theming-tutorial.md](theming-tutorial.md)** —

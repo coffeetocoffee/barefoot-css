@@ -1809,10 +1809,11 @@ test.describe("API reference audit (docs/api.md ↔ src)", () => {
   // audit keeps it true in both directions (source-parse only — never
   // touches a page). Internal seams the JS modules set and their CSS
   // consumes are deliberately not consumer API and live in an explicit
-  // allowlist inside api.md itself; data-bf-theme-btn is the demo pages'
-  // switcher convention (docs + demo markup, no src/ implementation).
+  // allowlist inside api.md itself. DEMO_ONLY is currently empty:
+  // data-bf-theme-btn graduated from demo-page convention to the
+  // first-party module src/js/theme.js in 4.9.
   const INTERNAL_MARKERS = new Set(["data-bf-tabs-js", "data-nav-js", "data-open"]);
-  const DEMO_ONLY = new Set(["data-bf-theme-btn"]);
+  const DEMO_ONLY = new Set();
 
   function documentedAttributes() {
     const api = fs.readFileSync(path.join(rootDir, "docs/api.md"), "utf8");
