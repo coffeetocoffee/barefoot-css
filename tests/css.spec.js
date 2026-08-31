@@ -2188,6 +2188,25 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
     expect(narrow).toBe("flex"); // card-stack lays cells out as flex rows
   });
 
+  test("studio exports a pasteable theme incl. the generative seed (CSS + tokens.json)", async ({ page }) => {
+    await gotoStudio(page);
+    await page.locator("#studio-hue").evaluate((el) => {
+      el.value = 120;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("#studio-chroma").evaluate((el) => {
+      el.value = 0.2;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const css = await page.locator("#studio-output").textContent();
+    expect(css).toContain("--bf-seed-h: 120");
+    expect(css).toContain("--bf-seed-c: 0.2");
+    expect(css).toContain("--bf-primary");
+    const json = JSON.parse(await page.locator("#studio-json").textContent());
+    expect(json["--bf-seed-h"]).toBe(120);
+    expect(json["--bf-seed-c"]).toBe(0.2);
+  });
+
   test("opt-in theming-anim registers the seeds as animatable @property", () => {
     // ADR-0012 revisit: the default stays @property-free (byte budget +
     // the no-registration contract), but this opt-in shard registers the

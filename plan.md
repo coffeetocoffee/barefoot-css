@@ -547,7 +547,7 @@ ADR-0012 `@property` revisit).
       auto-wrap: let authors skip hand-placing `.bf-contain` via a
       `:has()`-based heuristic or a `data-adaptive` on the section — the
       "morphs its own box" rule is the one ergonomic wart.
-- [ ] **Studio → copy-paste theme.** `demo/studio.html` exports "six lines"
+- [x] **Studio → copy-paste theme.** `demo/studio.html` exports "six lines"
       today; make it emit a real `tokens.json` / CSS snippet so a designer
       can paste a generated theme into a project.
 

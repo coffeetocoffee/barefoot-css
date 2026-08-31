@@ -15,6 +15,12 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   `@property`-free per ADR-0005/0012. Gated on `prefers-reduced-motion:
   no-preference` so reduced-motion users get the instant swap.
 
+- **Studio exports a pasteable theme + `tokens.json`.** `demo/studio.html`
+  now emits a real `:root` theme — primary, radius, font, and the
+  generative `--bf-seed-h` / `--bf-seed-c` so the full 12-step ramp
+  reproduces — plus the same overrides as a `tokens.json` map for design
+  pipelines (replaces the old six-line snippet).
+
 ## [5.0.1] — 2026-08-31
 
 ### Fixed
