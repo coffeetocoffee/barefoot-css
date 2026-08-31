@@ -1,0 +1,318 @@
+/* Barefoot — forms, base.
+   Shared foundation + textual controls (text, email, tel, url, password,
+   search, date, number, textarea) and every validation/interaction state.
+   This is the part most forms need. The special controls — select,
+   checkbox/radio/switch, range, file, color, progress/meter — live in
+   their own opt-in shards (forms-select.css, forms-checks.css, …) that
+   build on this foundation. Import this alone for "text inputs only". */
+@layer components {
+  label {
+    display: block;
+    margin-block-end: var(--bf-space-1);
+    font-size: 0.875rem;
+    font-weight: var(--bf-font-weight-medium);
+    color: var(--bf-text);
+  }
+
+  /* :where() zeroes the specificity of this shared rule. The type
+     exclusions stay meaningful for matching, but they must not beat the
+     hover/focus/validation rules below (each :not() adds an attribute's
+     specificity — without :where() the five exclusions made this rule
+     (0,5,1) and silently out-specified :user-invalid/:user-valid/
+     [aria-invalid]/:hover/:focus-visible, so invalid borders and hover
+     hints never rendered. */
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+    select,
+    textarea
+  ) {
+    width: 100%;
+    min-height: var(--bf-control-height);
+    padding: var(--bf-space-2) var(--bf-space-3);
+
+    font-size: 0.9375rem;
+    color: var(--bf-text);
+    background: var(--bf-surface);
+
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+
+    transition:
+      border-color var(--bf-transition),
+      box-shadow var(--bf-transition);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--bf-muted);
+    opacity: 1;
+  }
+
+  /* State rules address the same three elements as the shared base
+     rule above; :is() keeps each a single selector. :is() takes the
+     highest specificity of its arguments — plain elements here, so it
+     stays as low as the old lists were. */
+  :is(input, select, textarea):hover:not(:disabled) {
+    border-color: var(--bf-border-strong);
+  }
+
+  :is(input, select, textarea):focus-visible {
+    border-color: var(--bf-focus-ring);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--bf-focus-ring), transparent 75%);
+  }
+
+  textarea {
+    min-height: calc(var(--bf-control-height) * 2);
+    resize: vertical;
+  }
+
+  /* Auto-grow textarea — opt in with [data-autogrow]. field-sizing is a
+     progressive enhancement: engines without it keep the fixed rows
+     (min-height still guarantees a usable box). */
+  textarea[data-autogrow] {
+    field-sizing: content;
+  }
+
+  /* ---- Datalist (native autocomplete) ----
+     The suggestion popup is engine-drawn and not stylable anywhere —
+     same honesty as <select>'s native list. What Barefoot skins is
+     the field: reserved inline-end space so typed text never slides
+     under the native picker arrow, themed indicator opacity where an
+     engine exposes one. */
+  input[list] {
+    padding-inline-end: var(--bf-space-6);
+  }
+
+  input[list]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--bf-transition);
+  }
+
+  input[list]:hover::-webkit-calendar-picker-indicator,
+  input[list]:focus-visible::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+
+  /* ---- Output (live region) ---- */
+  output {
+    display: inline-block;
+    font-weight: var(--bf-font-weight-semibold);
+    color: var(--bf-text);
+  }
+
+  /* Shared disabled state for textual controls and the base input/select/
+     textarea set. The switch re-declares a higher-specificity arm in
+     forms-checks.css (ADR-0007). */
+  :is(input, select, textarea):disabled {
+    opacity: var(--bf-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* ---- Validation without JS. ----
+     :user-invalid / :user-valid fire only after the user has interacted
+     with the control (not on page load), so nothing flashes red before
+     it's touched. [aria-invalid] covers script-driven forms; pairing
+     aria-invalid="false" with a filled field reads as valid. */
+  :is(input, select, textarea):user-invalid,
+  [aria-invalid="true"] {
+    border-color: var(--bf-danger);
+  }
+
+  :is(input, select, textarea):user-invalid:focus-visible,
+  [aria-invalid="true"]:focus-visible {
+    box-shadow: 0 0 0 3px var(--bf-danger-muted);
+  }
+
+  :is(input, select, textarea):user-valid,
+  [aria-invalid="false"] {
+    border-color: var(--bf-success);
+  }
+
+  :is(input, select, textarea):user-valid:focus-visible,
+  [aria-invalid="false"]:focus-visible {
+    box-shadow: 0 0 0 3px var(--bf-success-muted);
+  }
+
+  /* ---- Validation icons (v4.8) ----
+     Once touched, a textual field draws a shape cue at its inline end:
+     a check when :user-valid, a cross when :user-invalid. The glyph
+     strokes with currentColor — no palette baked into the SVG, so
+     theming and forced-colors keep working; the state hue stays on the
+     border. Fields whose inline end has native chrome (select chevron,
+     date/list/search pickers, number spinner) are excluded so the two
+     never collide; textareas are excluded because their content scrolls
+     under a fixed glyph. */
+  input:user-valid:where(
+    [type="text"], [type="email"], [type="tel"], [type="url"], [type="password"]
+  ) {
+    padding-inline-end: calc(var(--bf-space-3) + 1.25rem);
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8 L6.5 11.5 L13 4.5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end var(--bf-space-3) center;
+  }
+
+  input:user-invalid:where(
+    [type="text"], [type="email"], [type="tel"], [type="url"], [type="password"]
+  ) {
+    padding-inline-end: calc(var(--bf-space-3) + 1.25rem);
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4 L12 12 M12 4 L4 12' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 1rem;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end var(--bf-space-3) center;
+  }
+
+  /* ---- Forced colors (v4.8) ----
+     Windows High Contrast & friends: author colors map to the system
+     palette and box-shadows are removed, so two things need restoring.
+     The focus halo above is a shadow — draw the outline it replaced —
+     and hue can no longer separate valid from invalid, so the invalid
+     border changes shape instead of color. */
+  @media (forced-colors: active) {
+    :is(input, select, textarea):focus-visible {
+      outline: 2px solid;
+      outline-offset: 1px;
+    }
+
+    :is(input, select, textarea):user-invalid,
+    [aria-invalid="true"] {
+      border-style: dashed;
+    }
+  }
+
+  /* Required marker — only when the control is wrapped in its label
+     (the accessible pattern). Screen readers already announce the
+     `required` attribute; the asterisk is a visual affordance. */
+  label:has(> :is(input, select, textarea)[required])::after {
+    content: " *";
+    color: var(--bf-danger);
+  }
+
+  /* The whole form signals once any field has been touched and is
+     invalid. A subtle ring — pair fields with aria-describedby error
+     text for the full picture. */
+  form:has(:user-invalid) {
+    outline: var(--bf-border-width) solid color-mix(in oklab, var(--bf-danger), transparent 65%);
+    outline-offset: var(--bf-space-2);
+    border-radius: var(--bf-radius);
+  }
+
+  /* Help / error text. */
+  small,
+  .bf-field-hint {
+    color: var(--bf-muted);
+    font-size: 0.8125rem;
+  }
+
+  .bf-field-error {
+    color: var(--bf-danger);
+  }
+
+  .bf-field-success {
+    color: var(--bf-success);
+  }
+
+  fieldset {
+    display: grid;
+    gap: var(--bf-space-3);
+  }
+
+  legend {
+    font-weight: var(--bf-font-weight-semibold);
+    margin-block-end: var(--bf-space-2);
+  }
+
+  /* ---- Input groups (leading icon / affix) ----
+     Wrap an input + a leading element in [data-input-group].
+     The leading element (icon, currency, unit) gets a muted
+     background and the shared input border radius on the inner side. */
+  [data-input-group] {
+    display: flex;
+    width: 100%;
+  }
+
+  [data-input-group] > :first-child:not(input):not(select):not(textarea) {
+    display: grid;
+    place-items: center;
+    padding-inline: var(--bf-space-3);
+    color: var(--bf-muted);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-inline-end: none;
+    border-start-start-radius: var(--bf-radius);
+    border-end-start-radius: var(--bf-radius);
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    font-size: 0.9375rem;
+  }
+
+  [data-input-group] > :is(input, select, textarea) {
+    flex: 1;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: var(--bf-radius);
+    border-end-end-radius: var(--bf-radius);
+  }
+
+  [data-input-group]:has(> :is(input, select, textarea):focus-visible) > :first-child {
+    border-color: var(--bf-focus-ring);
+    color: var(--bf-focus-ring);
+  }
+
+  [data-input-group]:has(> :is(input, select, textarea):user-invalid) > :first-child,
+  [data-input-group]:has(> [aria-invalid="true"]) > :first-child {
+    border-color: var(--bf-danger);
+    color: var(--bf-danger);
+  }
+
+  [data-input-group]:has(> :is(input, select, textarea):user-valid) > :first-child,
+  [data-input-group]:has(> [aria-invalid="false"]) > :first-child {
+    border-color: var(--bf-success);
+    color: var(--bf-success);
+  }
+
+  /* ---- Date / number / email polish ----
+     The native pickers/spinners stay; we only theme the surface and
+     ensure the shared validation states apply. Every textual input
+     type (date, datetime-local, time, month, week, number, email,
+     tel, url, search, password) inherits the shared rule at the top
+     of this file — no type-specific overrides needed today, so no
+     empty selector list is kept "for documentation". */
+
+  /* Number input — hide the native spinner on hover/focus for a cleaner look;
+     the arrows reappear on active interaction (keyboard/mouse). */
+  input[type="number"] {
+    appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  /* Date/time inputs — ensure the native picker button is themed. */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator,
+  input[type="week"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--bf-transition);
+  }
+
+  input[type="date"]:hover::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]:hover::-webkit-calendar-picker-indicator,
+  input[type="time"]:hover::-webkit-calendar-picker-indicator,
+  input[type="month"]:hover::-webkit-calendar-picker-indicator,
+  input[type="week"]:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+}

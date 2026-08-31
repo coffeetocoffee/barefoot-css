@@ -1,0 +1,34 @@
+/* Barefoot — forms, file (opt-in shard).
+   The native file input; only its button is skinned (with the button
+   tokens via ::file-selector-button). The control stays a native file
+   input. */
+@layer components {
+  /* ---- File input ---- */
+  input[type="file"] {
+    font-size: 0.875rem;
+    color: var(--bf-muted);
+  }
+
+  input[type="file"]::file-selector-button {
+    margin-inline-end: var(--bf-space-3);
+    height: var(--bf-control-height);
+    padding-inline: var(--bf-space-3);
+
+    font: inherit;
+    font-weight: var(--bf-font-weight-medium);
+    color: var(--bf-text);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-sm);
+
+    cursor: pointer;
+    transition:
+      background var(--bf-transition),
+      border-color var(--bf-transition);
+  }
+
+  input[type="file"]::file-selector-button:hover {
+    background: var(--bf-surface);
+    border-color: var(--bf-border-strong);
+  }
+}

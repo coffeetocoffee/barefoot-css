@@ -4,8 +4,10 @@ _Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js
 
 ## Snapshot
 
-- **Current:** `barefoot-css@4.9.0` (2026-08-30) — **the theme
-  persistence release**: the one script every demo page hand-rolled is
+- **Current:** `barefoot-css@5.0.0` (2026-08-31) — **the component-is-the-breakpoint
+  release**: container-adaptive components, the zero-JS floor raise, and generative
+  theming 2.0. The 4.9 theme-persistence release (and 4.8 validation work) stands
+  beneath it: the one script every demo page hand-rolled is
   now a first-party opt-in module. `js/theme.js` wires
   `[data-bf-theme-btn]` buttons to `data-bf-theme` on `<html>`,
   remembers the choice in localStorage (`barefoot-theme` key), re-applies
@@ -22,8 +24,10 @@ _Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js
   for Figma/iOS/Android), and gzip/brotli are measured by the build
   again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
   per-component is the headline path.
-- **Next:** **v5.0 — "The component is the breakpoint."** The flagship
-  arc is phased in [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
+- **Next:** **v5.1+ — "land the deferred."** v5.0.0 ("The component is the
+  breakpoint") shipped 2026-08-31; the deferred and engine-gated work lands in the
+  [v5.1+ Roadmap](#v51-roadmap--after-the-v50-release) below. The v5.0 arc is phased in
+  [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
   below: container-adaptive components, the zero-JS floor raise, and
   generative theming 2.0. **Phase 0 recon done** — engine matrix verified
   (FF style queries shipped v151), ADR-0009 (adaptive contract) + ADR-0010
@@ -40,8 +44,13 @@ _Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js
    ADR-0012 reaffirms no typed @property; contrast gate tested in css.spec.
    **Phase 5 (hardening & release) done** — docs/adaptive.md + migration-5.md
    written, conformance demo WCAG-labelled + mobile-safe, full three-engine
-   suites run (css 369/21, a11y 19/19, js 104/105 with one WebKit popover
-   focus-return quirk), visual baselines regenerated; release tag pending.
+    suites run (css 369/21, a11y 19/19, js 104/105 with one WebKit popover
+    focus-return quirk),     visual baselines regenerated; released as `v5.0.0` (2026-08-31).
+- **Shipped in 5.0.0:** `forms.css` split into opt-in shards — `forms-base.css`
+  (text inputs + validation + states) plus `forms-select/checks/range/file/
+  color/meter.css`; `full.css` byte-identical (the barrel re-imports every
+  shard), but a text-only form now ships at ~1.4KB gzip. Documented in
+  CHANGELOG `[5.0.0]`.
 - **Tests:** Chromium (19 a11y / 105 JS / 369 CSS, 21 engine-gated skips /
    3 visual) · Firefox 369 CSS + 105 JS passed (skips engine-gated) · WebKit
    369 CSS + 104/105 JS passed — green except one WebKit-only pre-existing
@@ -512,6 +521,10 @@ items are already planned (base-select deferral, ADR-0012 `@property` revisit).
       does not restore focus to the trigger after a Tab-close on WebKit
       (pre-existing, not v5-caused). On `popover` `toggle` close, if focus
       would fall to `body`, refocus the invoker. Gets `js.spec` to 105/105.
+- [x] Ship the `forms.css` opt-in shard split in the `v5.0.0` tag. Source is
+      complete (`forms-base.css` + six control shards `forms-select/checks/
+      range/file/color/meter.css`; `full.css` byte-identical via the barrel) and
+      documented in CHANGELOG `[5.0.0]`. Consumers can now import text-inputs-only.
 
 ### v5.1 — "land the deferred"
 

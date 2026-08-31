@@ -1,0 +1,57 @@
+/* Barefoot — forms, range (opt-in shard).
+   Fully skinned track + thumb. Builds on forms-base.css for the shared
+   focus/disabled states. */
+@layer components {
+  /* ---- Range slider ----
+     Fully skinned: a themed track + thumb drawn with the standard
+     vendor pseudo-elements. Keep appearance:none on the element so no
+     native chrome leaks through; the thumb re-applies its own look. */
+  input[type="range"] {
+    appearance: none;
+    width: 100%;
+    height: var(--bf-control-height);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 0.375rem;
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    border: var(--bf-border-width) solid var(--bf-border);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: -0.4375rem; /* (track height − thumb height) / 2 */
+    border-radius: 50%;
+    border: 2px solid var(--bf-surface);
+    background: var(--bf-primary);
+    box-shadow: var(--bf-shadow-sm);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid var(--bf-surface);
+    background: var(--bf-primary);
+    box-shadow: var(--bf-shadow-sm);
+  }
+
+  input[type="range"]:hover:not(:disabled) {
+    background: transparent;
+  }
+
+  /* No :focus-visible rule here — range follows the shared input
+     focus treatment in forms-base.css: border-color + box-shadow halo. */
+}

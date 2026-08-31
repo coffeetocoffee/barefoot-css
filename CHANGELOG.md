@@ -2,7 +2,20 @@
 
 All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
-this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+   this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [5.0.0] — 2026-08-31
+
+### Changed
+
+- **`forms.css` split into opt-in shards.** `forms.css` is now a barrel that
+  re-imports `forms-base.css` (text inputs, validation, states — the part most
+  forms need) plus six opt-in shards: `forms-select.css`, `forms-checks.css`
+  (checkbox/radio/switch), `forms-range.css`, `forms-file.css`,
+  `forms-color.css`, `forms-meter.css`. Full import is byte-identical to before
+  (`full.css` unchanged), but consumers can now ship "text inputs only" without
+  the select/range/file/color/meter rules — roughly a 1.8KB gzip saving on a
+  text-only form. No selectors, tokens, or behavior changed.
 
 ## [5.0.0-beta.1] — 2026-08-31
 

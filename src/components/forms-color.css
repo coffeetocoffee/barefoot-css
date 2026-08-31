@@ -1,0 +1,27 @@
+/* Barefoot — forms, color (opt-in shard).
+   A themed swatch sized to the control height. Builds on forms-base.css
+   for the shared focus ring. */
+@layer components {
+  /* ---- Color input ----
+     A themed swatch: fixed control-sized box, radius, focus ring (the
+     shared input focus rule). */
+  input[type="color"] {
+    width: var(--bf-control-height);
+    height: var(--bf-control-height);
+    padding: 0;
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-sm);
+    background: var(--bf-surface);
+    cursor: pointer;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  input[type="color"]::-webkit-color-swatch,
+  input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--bf-radius-sm) - 1px);
+  }
+}

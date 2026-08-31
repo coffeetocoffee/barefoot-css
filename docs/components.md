@@ -157,6 +157,11 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   it ships with the components.
 - **JS:** none.
 - **A11y:** native controls + browser validation UX.
+- **Imports (granular):** `components/forms.css` pulls in everything. For a
+  smaller payload, import `forms-base.css` (text inputs + validation + states)
+  plus only the shards you use — `forms-select.css`, `forms-checks.css`,
+  `forms-range.css`, `forms-file.css`, `forms-color.css`, `forms-meter.css`.
+  Every shard builds on `forms-base.css`.
 
 ## Dialog (modal)
 

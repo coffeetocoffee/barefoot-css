@@ -1,0 +1,62 @@
+/* Barefoot — forms, checks (opt-in shard).
+   Checkboxes, radios, and the CSS-only switch. Builds on forms-base.css
+   (which supplies the shared disabled/validation states). */
+@layer components {
+  /* Checkboxes & radios — native look, themed color. Keeps focus
+     behavior free and keyboard-friendly for free. */
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--bf-primary);
+    width: 1.1em;
+    height: 1.1em;
+    margin-inline-end: var(--bf-space-2);
+    vertical-align: middle;
+  }
+
+  /* Switch — input[type="checkbox"][data-switch].
+     A CSS-only toggle. The track and thumb are drawn with background
+     layers on the element itself — no pseudo-elements, no wrapper
+     markup — so it stays a native checkbox: keyboard-focusable,
+     screen-reader-announced, and theme-aware for free. */
+  input[type="checkbox"][data-switch] {
+    appearance: none;
+    width: 2.5em;
+    height: 1.5em;
+    margin-inline-end: var(--bf-space-2);
+    vertical-align: middle;
+    cursor: pointer;
+
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-full);
+    background-color: var(--bf-surface-alt);
+    background-image: radial-gradient(circle, var(--bf-text) 42%, transparent 43%);
+    background-size: 1.05em 1.05em;
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-end 0.3em center;
+    background-repeat: no-repeat;
+
+    transition:
+      background-color var(--bf-transition),
+      background-position var(--bf-transition);
+  }
+
+  input[type="checkbox"][data-switch]:checked {
+    background-color: var(--bf-primary);
+    background-image: radial-gradient(circle, var(--bf-primary-fg) 42%, transparent 43%);
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    background-position: inline-start 0.3em center;
+  }
+
+  input[type="checkbox"][data-switch]:indeterminate {
+    background-position: center center;
+  }
+
+  /* Switch-specific disabled: the arm keeps (0,2,1) so not-allowed still
+     beats the switch's cursor: pointer above — the shared
+     :is(input,select,textarea):disabled in forms-base.css is (0,1,1) and
+     would lose that tiebreak (ADR-0007), so the switch re-declares it. */
+  input[type="checkbox"][data-switch]:disabled {
+    opacity: var(--bf-disabled-opacity);
+    cursor: not-allowed;
+  }
+}

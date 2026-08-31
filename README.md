@@ -70,11 +70,12 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 55.58KB | **10.37KB** | 9.08KB |
+| `full.css` | 55.64KB | **10.37KB** | 9.06KB |
 | `index.css` | 10.89KB | **2.88KB** | 2.46KB |
-| `components/forms.css` | 10.74KB | **2.25KB** | 1.92KB |
+| `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
+| `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/theme.js` | 2.80KB | **1.31KB** | 1.06KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
@@ -88,6 +89,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
 | `components/table.css` | 1.80KB | **0.64KB** | 0.54KB |
+| `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
 | `components/buttons.css` | 2.10KB | **0.62KB** | 0.50KB |
 | `components/command.css` | 2.05KB | **0.59KB** | 0.49KB |
@@ -101,6 +103,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
 | `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
 | `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
+| `components/forms-checks.css` | 1.07KB | **0.41KB** | 0.31KB |
 | `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
 | `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
@@ -115,10 +118,13 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |
+| `components/forms-range.css` | 0.91KB | **0.31KB** | 0.23KB |
 | `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
 | `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
 | `components/form-adaptive.css` | 0.54KB | **0.29KB** | 0.23KB |
+| `components/forms-file.css` | 0.60KB | **0.28KB** | 0.21KB |
+| `components/forms-meter.css` | 0.74KB | **0.28KB** | 0.23KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
@@ -130,6 +136,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/divider.css` | 0.36KB | **0.22KB** | 0.16KB |
 | `components/view-transition.css` | 0.52KB | **0.22KB** | 0.18KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
+| `components/forms-color.css` | 0.42KB | **0.21KB** | 0.16KB |
 | `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |

@@ -1,0 +1,50 @@
+/* Barefoot — forms, progress & meter (opt-in shard).
+   Themed bars where engines allow it. Builds on forms-base.css only
+   incidentally (no shared state needed). */
+@layer components {
+  /* ---- Progress & meter ----
+     Themed bar in Chromium/WebKit; Firefox renders the native meter and
+     respects accent-color. The container keeps a native appearance so
+     the bar pseudos can't be over-painted by UA chrome. */
+  progress,
+  meter {
+    width: 100%;
+    height: 0.75rem;
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius-full);
+    background: var(--bf-surface-alt);
+    accent-color: var(--bf-primary);
+    overflow: hidden;
+  }
+
+  progress::-webkit-progress-bar {
+    background: transparent;
+  }
+
+  progress::-webkit-progress-value {
+    background: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
+  }
+
+  progress::-moz-progress-bar {
+    background: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
+  }
+
+  meter::-webkit-meter-bar {
+    background: transparent;
+    border: none;
+  }
+
+  meter::-webkit-meter-optimum-value {
+    background: var(--bf-primary);
+  }
+
+  meter::-webkit-meter-suboptimum-value {
+    background: color-mix(in oklab, var(--bf-primary), var(--bf-danger) 35%);
+  }
+
+  meter::-webkit-meter-even-less-good-value {
+    background: var(--bf-danger);
+  }
+}
