@@ -1419,7 +1419,11 @@ test.describe("shared component recipes (ADR-0007)", () => {
       expect(src, `${f} hard-codes the disabled dimming`).not.toMatch(
         /opacity:\s*0\.5\b/
       );
-      if (f === "buttons.css" || f === "forms.css") {
+      if (
+        f === "buttons.css" ||
+        f === "forms-base.css" ||
+        f === "forms-checks.css"
+      ) {
         expect(src, `${f} should consume the shared token`).toContain(
           "var(--bf-disabled-opacity)"
         );
@@ -1710,7 +1714,7 @@ test.describe("v4.5 customizable select & sticky tables", () => {
       test.skip(true, "customizable select unsupported here");
 
     // ::picker() is a top-layer pseudo the global * kill switch can't
-    // reach — forms.css carries its own guard; this pins it.
+    // reach — forms-select.css carries its own guard; this pins it.
     const dur = await page.locator(DEMOS.country).evaluate(
       (el) => getComputedStyle(el, "::picker(select)").transitionDuration
     );
