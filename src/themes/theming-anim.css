@@ -1,0 +1,29 @@
+/* Barefoot — generative theming, animated (opt-in).
+   Registers the generative seed tokens with @property so a change to
+   --bf-seed-h / --bf-seed-c animates the derived 12-step OKLCH ramp
+   (built in tokens.css from these seeds) instead of snapping. Import
+   this in addition to tokens.css; it is opt-in so the default
+   no-registration contract (ADR-0005/0012) and the byte budget stay
+   intact. Under prefers-reduced-motion the seed swap stays instant.
+
+   import "barefoot/themes/theming-anim.css";   → morph on seed change */
+
+@property --bf-seed-h {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 250;
+}
+
+@property --bf-seed-c {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.13;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    transition:
+      --bf-seed-h var(--bf-vt-duration, 250ms) var(--bf-vt-easing, ease),
+      --bf-seed-c var(--bf-vt-duration, 250ms) var(--bf-vt-easing, ease);
+  }
+}

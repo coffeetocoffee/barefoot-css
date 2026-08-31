@@ -78,8 +78,8 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/theme.js` | 2.80KB | **1.31KB** | 1.06KB |
 | `js/nav.js` | 2.78KB | **1.29KB** | 1.07KB |
+| `js/popover-menu.js` | 2.46KB | **1.20KB** | 1.00KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
-| `js/popover-menu.js` | 2.25KB | **1.12KB** | 0.95KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
 | `js/toast.js` | 2.75KB | **1.01KB** | 0.83KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
@@ -139,6 +139,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/forms-color.css` | 0.42KB | **0.21KB** | 0.16KB |
 | `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
+| `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
 <!-- SIZES:END -->
 

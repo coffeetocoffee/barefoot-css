@@ -2187,4 +2187,38 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
     expect(wide).toBe("table-cell");
     expect(narrow).toBe("flex"); // card-stack lays cells out as flex rows
   });
+
+  test("opt-in theming-anim registers the seeds as animatable @property", () => {
+    // ADR-0012 revisit: the default stays @property-free (byte budget +
+    // the no-registration contract), but this opt-in shard registers the
+    // generative seeds so a seed change morphs the ramp instead of
+    // snapping. Source-parse: presence is the contract here.
+    const src = fs.readFileSync(
+      path.join(rootDir, "src/themes/theming-anim.css"),
+      "utf8"
+    );
+    for (const seed of ["--bf-seed-h", "--bf-seed-c"]) {
+      expect(src, `${seed} must be registered`).toContain(`@property ${seed}`);
+      expect(src, `${seed} must inherit`).toContain("inherits: true");
+    }
+    // The morph is gated on motion preference and transitions both seeds.
+    expect(src).toContain("prefers-reduced-motion: no-preference");
+    expect(src).toMatch(/transition:\s*[^;]*--bf-seed-h/);
+    expect(src).toMatch(/transition:\s*[^;]*--bf-seed-c/);
+  });
+
+  test("theming-anim wires the seed morph (transition present on :root)", async ({ page }) => {
+    await gotoDemo(page);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    const animCss = fs.readFileSync(
+      path.join(rootDir, "dist/themes/theming-anim.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: animCss });
+    const props = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).transitionProperty
+    );
+    expect(props).toContain("--bf-seed-h");
+    expect(props).toContain("--bf-seed-c");
+  });
 });

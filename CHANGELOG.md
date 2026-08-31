@@ -4,6 +4,17 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Opt-in animated generative theming (`theming-anim.css`).** Registers the
+  `--bf-seed-h` / `--bf-seed-c` generative seeds with `@property` so a seed
+  change *morphs* the 12-step OKLCH ramp instead of snapping. Opt-in by
+  import (`barefoot/themes/theming-anim.css`); the default build stays
+  `@property`-free per ADR-0005/0012. Gated on `prefers-reduced-motion:
+  no-preference` so reduced-motion users get the instant swap.
+
 ## [5.0.1] — 2026-08-31
 
 ### Fixed

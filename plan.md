@@ -535,7 +535,7 @@ ADR-0012 `@property` revisit).
       "too green to bet the release on"). Today it is `@supports`-gated
       (Chromium 135+ / Safari 27); flip the watch-list entry from
       "deferred" to "shipped" and remove the gated skip in `css.spec.js`.
-- [ ] **Generative theming v1.1 (ADR-0012 revisit).** Add an opt-in
+- [x] **Generative theming v1.1 (ADR-0012 revisit).** Add an opt-in
       `theming-anim.css` that registers `--bf-seed-h` / `--bf-seed-c` with
       `@property` so theme switches *morph* the 12-step ramp instead of
       crossfading. Default stays `@property`-free to protect the byte budget

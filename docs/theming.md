@@ -434,6 +434,24 @@ Try it live in **[Studio](../demo/studio.html)** — colour picker +
 radius + font + density drive an `<iframe>` preview of the demo and
 export six lines to paste.
 
+### Generative theming, animated (v5.1, opt-in)
+
+The generative tonal scale regenerates the 12-step ramp whenever
+`--bf-seed-h` / `--bf-seed-c` change — but by default it *snaps* (the
+seeds are plain custom properties). Import the opt-in `theming-anim.css`
+to *morph* the ramp instead: it registers both seed tokens with
+`@property` (`inherits: true`) and transitions them on `:root`:
+
+```css
+@import "barefoot/themes/theming-anim.css";
+```
+
+The default build stays `@property`-free (ADR-0005/0012 — protects the
+byte budget and the no-registration contract); only this opt-in file
+registers them. Under `prefers-reduced-motion: reduce` the seeds swap
+instantly, so the morph never fights a user's motion preference. The
+`--bf-vt-duration` / `--bf-vt-easing` tokens tune the morph length.
+
 ## Density axis (v3.4)
 
 Themes gain a second axis — **density** — without new palettes. Set
