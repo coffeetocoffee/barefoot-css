@@ -29,6 +29,14 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   parent via a `:has()` rule, so the hand-placed `.bf-contain` wrapper is
   optional (still supported). See docs/adaptive.md.
 
+- **`base-select` graduates (v5.1).** The customizable-select picker skin
+  (`::picker(select)`, themed options, `::checkmark`) is now a shipped
+  progressive-enhancement headline in the default bundle — single `<select>`s
+  upgrade automatically where the engine ships `appearance: base-select`
+  (Chromium 135+, Safari 27+) and fall back to the themed chevron skin
+  elsewhere (Firefox, still flagged, via `@supports`). No markup change.
+  Watch-list (ADR-0010) flipped from "deferred" to "shipped".
+
 ## [5.0.1] — 2026-08-31
 
 ### Fixed

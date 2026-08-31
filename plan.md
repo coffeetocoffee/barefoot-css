@@ -418,8 +418,10 @@ showpiece (table) → the rest parallelizes.
   Firefox 144 (Oct 25), Safari 26.2 (late 25).** Available for Phase 3
   declarative dialog/popover wiring.
 - base `<select>` (appearance: base-select) — **Chrome/Edge 135, Safari 27;
-  Firefox behind a flag (149–157), not shipped as of Aug 2026.** Deferred
-  to v5.1 per plan; not in the v5 floor.
+  Firefox behind a flag (149–157), not shipped as of Aug 2026.** Graduated
+  in v5.1 as a progressive-enhancement headline (ships in the default bundle,
+  `@supports`-gated); the `@supports` gate and the gated test skips stay
+  because Firefox still lags — Firefox users get the chevron fallback.
 
 ## Decision log
 
@@ -530,11 +532,17 @@ ADR-0012 `@property` revisit).
 
 ### v5.1 — "land the deferred"
 
-- [ ] **`base-select` graduates (headline).** Un-gate the picker skin once
-      Firefox ships `appearance: base-select` (flag dropped ~157; plan:
-      "too green to bet the release on"). Today it is `@supports`-gated
-      (Chromium 135+ / Safari 27); flip the watch-list entry from
-      "deferred" to "shipped" and remove the gated skip in `css.spec.js`.
+- [x] **`base-select` graduates (headline).** Shipped in v5.1 as a
+      progressive-enhancement headline: the picker skin (`::picker(select)`,
+      themed options, `::checkmark`) is in the default bundle and upgrades
+      every single `<select>` where the engine ships `appearance: base-select`
+      (Chromium 135+ / Safari 27+), falling back to the chevron skin elsewhere
+      (Firefox, via `@supports`). The ADR-0010 watch-list entry flipped from
+      "deferred" to "shipped". The gated test skips in `css.spec.js` stay
+      because Firefox still hasn't shipped base-select (flag 149–157, not
+      shipped as of Aug 2026) — graduation was never blocked on Firefox, only
+      the universal `@supports`-free gate was; the feature is no longer
+      "too green" or opt-in.
 - [x] **Generative theming v1.1 (ADR-0012 revisit).** Add an opt-in
       `theming-anim.css` that registers `--bf-seed-h` / `--bf-seed-c` with
       `@property` so theme switches *morph* the 12-step ramp instead of

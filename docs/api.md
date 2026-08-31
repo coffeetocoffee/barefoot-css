@@ -180,7 +180,8 @@ All component attributes and their valid values:
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine
-supports `appearance: base-select` (`@supports`-gated, Chromium 135+);
+supports `appearance: base-select` (`@supports`-gated; Chromium 135+ / Safari
+27+, Firefox pending — chevron fallback);
 everywhere else the chevron fallback applies.
 
 ### Internal markers (not consumer API)

@@ -16,7 +16,7 @@ was verified live on 2026-08-31 (caniuse July-2026 dataset + MDN):
 | Container **style** queries        | 111 (Mar 23)| **151 (Apr 26)**| 18.0 (Sep 24)|
 | Implicit anchor positioning        | 125 (May 24)| 147 (Jan 26)   | 26.0 (Sep 25)|
 | Command API (`command`/`commandfor`)| 135 (Apr 25)| 144 (Oct 25)   | 26.2 (late 25)|
-| base `<select>` (deferred to 5.1)  | 135 (Apr 25)| flag (149–157) | 27 (2026)    |
+| base `<select>` (shipped, progressive; FF pending) | 135 (Apr 25)| flag (149–157) | 27 (2026)    |
 | Interest invokers                  | 142 (Nov 25)| **none**       | **none**     |
 
 The binding constraint for the v5 *headline* (container-adaptive density via

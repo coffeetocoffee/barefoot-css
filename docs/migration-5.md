@@ -82,10 +82,13 @@ The Invoker Commands API is green across the floor, so dialog/popover wiring
 needs no module. `docs/javascript.md §13` shows the markup. This is the one
 place a script *used* to be implied — now it's pure markup.
 
-### `base <select>` — deferred to 5.1
+### `base <select>` — graduated in 5.1
 
-Customizable `<select>` is still opt-in / deferred: it remains behind a flag in
-Firefox and is too green to bet the release on. No migration action.
+Customizable `<select>` (`appearance: base-select`) ships in the default bundle
+as a progressive enhancement: where the engine supports it (Chromium 135+,
+Safari 27+) the picker is a themed panel, and everywhere else (Firefox, still
+behind a flag as of Aug 2026) it falls back cleanly to the themed chevron skin.
+No migration action — the upgrade is automatic, no markup change.
 
 ## No breaking changes to your markup
 

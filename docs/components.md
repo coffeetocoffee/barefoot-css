@@ -101,8 +101,9 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
 - **`<select>`** gets a themed chevron (`appearance: none` + a
   `currentColor` arrow); the dropdown list itself stays native.
   `[multiple]` / `[size]` selects keep the browser's control.
-  Where an engine ships *customizable select* (`appearance: base-select`,
-  Chromium 135+), single selects upgrade automatically, no markup
+  Where an engine ships *customizable select* (`appearance: base-select`;
+  Chromium 135+, Safari 27+, and any engine that adopts it), single selects
+  upgrade automatically, no markup
   change: the open picker becomes a themed panel — `::picker(select)`
   with the popover recipe (surface, hairline border, radius, lifted
   shadow) — options get token hover/checked states and a primary

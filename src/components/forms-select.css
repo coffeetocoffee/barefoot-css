@@ -1,8 +1,8 @@
-/* Barefoot — forms, select (opt-in shard).
-   Builds on forms-base.css. Single selects get a themed chevron; where an
-   engine ships appearance:base-select (Chromium 135+), they upgrade to a
+/* Barefoot — forms, select (shard; ships with forms.css in the default
+   bundle). Single selects get a themed chevron; where an engine ships
+   appearance:base-select (Chromium 135+, Safari 27+), they upgrade to a
    fully themed picker via ::picker(select). Multiple/size selects keep the
-   browser's native control. */
+   browser's native control. Graduated in v5.1 — no longer opt-in/deferred. */
 @layer components {
   /* ---- Select ----
      Custom chevron (currentColor → theme-aware) replaces the native
