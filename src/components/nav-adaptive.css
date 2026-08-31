@@ -1,0 +1,59 @@
+/* Barefoot — nav, adaptive: drawer by container (v5.1).
+   Opt-in: import this file and add data-nav="drawer" to a [data-nav]. When
+   the nav's CONTAINER is narrow (≤ --bf-adaptive-2, 40rem) the link list
+   becomes an off-canvas drawer, opened by the same [data-nav-js] hamburger
+   (js/nav.js) already used by the header collapse. In a wide container the
+   list stays an inline row — so a nav dropped into a sidebar collapses to a
+   drawer, while the same nav in a topbar stays inline. The nav self-containers,
+   so no .bf-contain is needed. Keyboard/ARIA are unchanged (the toggle is
+   author markup; js/nav.js only flips state).
+
+   <nav data-nav="drawer" data-nav-js aria-label="Primary">
+     <a class="bf-brand" href="/">Acme</a>
+     <button type="button" class="bf-nav-toggle"
+             aria-expanded="false" aria-controls="site-menu">Menu</button>
+     <ul id="site-menu"> … </ul>
+   </nav> */
+@layer components {
+  [data-nav="drawer"] {
+    /* Size container so the drawer collapse keys off the nav's own box
+       (its width equals the container it is dropped into). */
+    container-type: inline-size;
+    position: relative;
+  }
+
+  @container (max-width: 40rem) {
+    [data-nav="drawer"][data-nav-js] .bf-nav-toggle {
+      display: inline-flex;
+    }
+
+    /* Off-canvas panel: parked off-screen, slid in when [data-open].
+       Overrides the header collapse's display:none so it can animate. */
+    [data-nav="drawer"][data-nav-js] > ul {
+      display: block;
+      position: fixed;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: min(80vw, 18rem);
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--bf-space-2);
+      padding: var(--bf-space-4);
+      margin: 0;
+      background: var(--bf-surface);
+      border-inline-end: var(--bf-border-width) solid var(--bf-border);
+      box-shadow: var(--bf-shadow-lifted);
+      transform: translateX(-100%);
+      transition: transform var(--bf-vt-duration, 250ms) var(--bf-vt-easing, ease);
+      z-index: var(--bf-z-dialog);
+    }
+
+    [data-nav="drawer"][data-nav-js][data-open] > ul {
+      transform: translateX(0);
+    }
+
+    [data-nav="drawer"][data-nav-js] > ul a {
+      display: block;
+    }
+  }
+}

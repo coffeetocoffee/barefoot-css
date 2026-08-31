@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="../dist/components/segmented-adaptive.css">
   <link rel="stylesheet" href="../dist/components/form-adaptive.css">
   <link rel="stylesheet" href="../dist/components/card-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/tabs-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/nav-adaptive.css">
   <style>
     /* Page chrome only — the demo styling is all Barefoot.
        Bundled webfonts (OFL) keep the demo pixel-identical on every
@@ -1190,6 +1192,52 @@
             <p class="bf-muted">The card flips between a side-by-side layout in wide slots and a stacked layout in narrow ones.</p>
           </div>
         </article>
+      </div>
+
+      <h3>Tabs — scroll-snap ↔ wrap</h3>
+      <p class="bf-muted">A <code>[data-bf-tabs][data-adaptive]</code> keeps a single scroll-snapping row when wide and wraps to multiple rows when narrow. No <code>.bf-contain</code> needed — the group self-containers.</p>
+      <div id="demo-tabs-adaptive-wrap" style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 14rem; border: 1px dashed var(--bf-info)">
+        <div data-bf-tabs data-adaptive id="demo-tabs-adaptive">
+          <div role="tablist" aria-label="Demo tabs">
+            <button type="button" role="tab" aria-selected="true" aria-controls="tp1" id="tt1">Overview</button>
+            <button type="button" role="tab" aria-controls="tp2" id="tt2" tabindex="-1">Pricing</button>
+            <button type="button" role="tab" aria-controls="tp3" id="tt3" tabindex="-1">Docs</button>
+            <button type="button" role="tab" aria-controls="tp4" id="tt4" tabindex="-1">Support</button>
+            <button type="button" role="tab" aria-controls="tp5" id="tt5" tabindex="-1">Changelog</button>
+          </div>
+          <div role="tabpanel" id="tp1" aria-labelledby="tt1">Overview content.</div>
+          <div role="tabpanel" id="tp2" aria-labelledby="tt2" hidden>Pricing content.</div>
+          <div role="tabpanel" id="tp3" aria-labelledby="tt3" hidden>Docs content.</div>
+          <div role="tabpanel" id="tp4" aria-labelledby="tt4" hidden>Support content.</div>
+          <div role="tabpanel" id="tp5" aria-labelledby="tt5" hidden>Changelog content.</div>
+        </div>
+      </div>
+
+      <h3>Nav — drawer by container</h3>
+      <p class="bf-muted">A <code>[data-nav="drawer"]</code> collapses to an off-canvas drawer when its container is narrow (here a ~22rem slot) and stays an inline row in a wide slot. Reuses the same hamburger toggle.</p>
+      <div style="width: 22rem; max-width: 100%; border: 1px dashed var(--bf-info); padding: var(--bf-space-3)">
+        <nav data-nav="drawer" data-nav-js aria-label="Primary" id="demo-nav-drawer">
+          <a class="bf-brand" href="#">Acme</a>
+          <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="demo-nav-drawer-menu">Menu</button>
+          <ul id="demo-nav-drawer-menu">
+            <li><a href="#" aria-current="page">Home</a></li>
+            <li><a href="#">Docs</a></li>
+            <li><a href="#">Pricing</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <h3>Auto-wrap (no manual .bf-contain)</h3>
+      <p class="bf-muted">The table below is dropped straight into a plain <code>&lt;div&gt;</code> — no <code>.bf-contain</code>. The adaptive rule auto-establishes the container on its parent, so it still card-stacks when narrow.</p>
+      <div id="demo-table-adaptive-autowrap-wrap" style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 16rem; border: 1px dashed var(--bf-info)">
+        <table data-table="adaptive" id="demo-table-adaptive-autowrap" style="width: 100%">
+          <caption>Team roster (auto-wrapped)</caption>
+          <thead><tr><th>Name</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Name">Ada Lovelace</td><td data-label="Role">Engineer</td></tr>
+            <tr><td data-label="Name">Grace Hopper</td><td data-label="Role">Admiral</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 

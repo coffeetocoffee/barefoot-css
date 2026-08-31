@@ -66,10 +66,13 @@ function initNav(nav) {
 export function initNavs(root = document) {
   // querySelectorAll never matches the root itself — init it explicitly
   // so callers can pass either a subtree or a single nav element.
-  if (root instanceof Element && root.matches('[data-nav="header"]')) {
+  // A [data-nav="drawer"] uses the same hamburger contract, so it shares
+  // the wiring (the off-canvas styling lives in nav-adaptive.css).
+  const selector = '[data-nav="header"], [data-nav="drawer"]';
+  if (root instanceof Element && root.matches(selector)) {
     initNav(root);
   }
-  for (const nav of root.querySelectorAll('[data-nav="header"]')) {
+  for (const nav of root.querySelectorAll(selector)) {
     initNav(nav);
   }
 }

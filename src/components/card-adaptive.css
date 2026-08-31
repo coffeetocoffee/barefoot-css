@@ -42,4 +42,11 @@
   .card[data-card="adaptive"] > :where(header) {
     font-size: var(--bf-type-cqi-lg);
   }
+
+  /* v5.1: same auto-wrap as the adaptive table — the nearest parent of an
+     adaptive card becomes the query container without a hand-placed
+     .bf-contain. */
+  :where(div, section, main, aside, article, header, footer):has(> .card[data-card="adaptive"]) {
+    container-type: inline-size;
+  }
 }

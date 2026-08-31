@@ -541,12 +541,14 @@ ADR-0012 `@property` revisit).
       crossfading. Default stays `@property`-free to protect the byte budget
       (ADR-0005/0012). No change to the no-registration contract unless
       interpolation is explicitly wanted.
-- [ ] **More adaptive components + kill the manual `.bf-contain`.** Extend
-      the ADR-0009 contract to `nav` (sidebar↔drawer by container),
-      `tabs` (scroll-snap↔wrap), and `grid` (already container-aware). Then
-      auto-wrap: let authors skip hand-placing `.bf-contain` via a
-      `:has()`-based heuristic or a `data-adaptive` on the section — the
-      "morphs its own box" rule is the one ergonomic wart.
+- [x] **More adaptive components + kill the manual `.bf-contain`.** Extend
+      the ADR-0009 contract to `nav` (sidebar↔drawer by container,
+      `nav-adaptive.css`), `tabs` (scroll-snap↔wrap, `tabs-adaptive.css`),
+      and `grid` (already container-aware). Auto-wrap: `table-adaptive.css` /
+      `card-adaptive.css` now auto-establish the query container on the
+      component's parent via a `:has()` rule, so hand-placed `.bf-contain`
+      is optional (still supported) — the "morphs its own box" ergonomic
+      wart is gone. Documented in docs/adaptive.md.
 - [x] **Studio → copy-paste theme.** `demo/studio.html` exports "six lines"
       today; make it emit a real `tokens.json` / CSS snippet so a designer
       can paste a generated theme into a project.

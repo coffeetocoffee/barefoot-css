@@ -1,0 +1,42 @@
+/* Barefoot — tabs, adaptive (v5.1).
+   Opt-in: import this file and add data-adaptive to a [data-bf-tabs]
+   group. The tablist is a single scroll-snapping row when the CONTAINER is
+   wide and wraps to a multi-row flow when narrow — "the component is the
+   breakpoint" for tabs. The group self-containers (its own box doesn't
+   morph), so it queries its own container-name; no .bf-contain needed.
+   Degrades to a plain row where container queries are unavailable.
+
+   <div data-bf-tabs data-adaptive>
+     <div role="tablist">
+       <button role="tab" aria-selected="true">One</button>
+       <button role="tab">Two</button>
+     </div>
+     <div role="tabpanel">…</div>
+   </div> */
+@layer components {
+  [data-bf-tabs][data-adaptive] {
+    container-type: inline-size;
+    container-name: bf-tabs;
+  }
+
+  [data-bf-tabs][data-adaptive] [role="tablist"] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+
+  [data-bf-tabs][data-adaptive] [role="tab"] {
+    scroll-snap-align: start;
+  }
+
+  /* Narrow container: let the tabs wrap to multiple rows instead of
+     scrolling. 40rem mirrors --bf-adaptive-2 (Lightning CSS can't resolve
+     var() in @container conditions — same convention as grid.css). */
+  @container bf-tabs (max-width: 40rem) {
+    [data-bf-tabs][data-adaptive] [role="tablist"] {
+      flex-wrap: wrap;
+      overflow-x: visible;
+      scroll-snap-type: none;
+    }
+  }
+}

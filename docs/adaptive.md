@@ -26,14 +26,18 @@ Every adaptive component follows the same rules:
   `data-density="compact"` axis (v3.4) feeds the v5 adaptive behavior.
 - A component **cannot style its own box** from inside its own container — a
   `<table>` or `.card` that morphs its *own* layout queries the nearest
-  ancestor `.bf-contain` wrapper. Components whose own box doesn't morph
-  (segmented, form rows) self-container with `container-name: bf-<name>`.
+  ancestor container. You used to hand-place a `.bf-contain` wrapper for
+  that; v5.1 auto-establishes the container on the component's parent (see
+  below), so `.bf-contain` is now optional — still supported for explicit
+  control. Components whose own box doesn't morph (segmented, form rows,
+  tabs) self-container with `container-name: bf-<name>`.
 - Native semantics are untouched, so keyboard and screen-reader behavior is
   unchanged — accessibility is inherited, never re-implemented.
 
-### The `.bf-contain` wrapper
+### The `.bf-contain` wrapper (now optional)
 
-For components that morph their own box (table, card), wrap them:
+For components that morph their own box (table, card), the component queries
+the nearest ancestor container. You can still wrap them by hand:
 
 ```html
 <div class="bf-contain">
@@ -41,9 +45,13 @@ For components that morph their own box (table, card), wrap them:
 </div>
 ```
 
-`.bf-contain` establishes the container the component queries. Without it the
-component stays in its default (wide) layout. Components that only restyle
-their *descendants* (segmented, form) don't need the wrapper.
+But as of v5.1 you usually don't have to: importing `table-adaptive.css` /
+`card-adaptive.css` auto-establishes the container on the component's direct
+parent via a `:has()` rule, so dropping the table or card straight into a
+`<div>` (or any block ancestor) adapts correctly with no `.bf-contain`.
+`.bf-contain` remains for when you want explicit control of the container
+boundary. Components that only restyle their *descendants* (segmented, form,
+tabs) self-container, so they never needed the wrapper.
 
 ## The four adaptive components
 
@@ -103,6 +111,39 @@ with **zero JS** — invalid fields are summarized in a live region.
 
 Horizontal (`40% 1fr`) when the container is ≥ 40rem, vertical otherwise. The
 card header uses container-relative type.
+
+### Tabs — scroll-snap ↔ wrap (`tabs-adaptive.css`)
+
+```html
+<div data-bf-tabs data-adaptive>
+  <div role="tablist"> … </div>
+  <div role="tabpanel"> … </div>
+</div>
+```
+
+The tablist is a single scroll-snapping row when the container is wide and
+wraps to multiple rows when narrow (≤ `--bf-adaptive-2`, 40rem). The group
+self-containers (`container-name: bf-tabs`), so no `.bf-contain` is needed. The
+markup is the standard WAI-ARIA tabs pattern; `js/tabs.js` still drives panel
+switching. Degrades to a plain row where container queries are unavailable.
+
+### Nav — drawer by container (`nav-adaptive.css`)
+
+```html
+<nav data-nav="drawer" data-nav-js aria-label="Primary">
+  <a class="bf-brand" href="/">Acme</a>
+  <button type="button" class="bf-nav-toggle"
+          aria-expanded="false" aria-controls="site-menu">Menu</button>
+  <ul id="site-menu"> … </ul>
+</nav>
+```
+
+When the nav's container is narrow (≤ 40rem) the link list becomes an
+off-canvas drawer, opened by the same `[data-nav-js]` hamburger that the header
+collapse uses (`js/nav.js` flips `[data-open]`). In a wide container the list
+stays an inline row — so the same nav dropped into a sidebar collapses to a
+drawer, while the same nav in a topbar stays inline. The nav self-containers,
+so no `.bf-contain` is needed. Keyboard/ARIA are unchanged.
 
 ## Container-relative type (`cqi`)
 

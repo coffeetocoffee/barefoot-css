@@ -2207,6 +2207,8 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
     expect(json["--bf-seed-c"]).toBe(0.2);
   });
 
+
+
   test("opt-in theming-anim registers the seeds as animatable @property", () => {
     // ADR-0012 revisit: the default stays @property-free (byte budget +
     // the no-registration contract), but this opt-in shard registers the
@@ -2239,5 +2241,40 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
     );
     expect(props).toContain("--bf-seed-h");
     expect(props).toContain("--bf-seed-c");
+  });
+});
+
+test.describe("adaptive components (v5.1)", () => {
+  test("tabs-adaptive: scroll-snap row when wide, wrap when narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const list = page.locator(`${DEMOS.demoTabsAdaptive} [role="tablist"]`);
+    await setContainerWidth(page, DEMOS.demoTabsAdaptiveWrap, "48rem");
+    expect(await list.evaluate((el) => getComputedStyle(el).flexWrap)).toBe("nowrap");
+    expect(await list.evaluate((el) => getComputedStyle(el).overflowX)).toBe("auto");
+    await setContainerWidth(page, DEMOS.demoTabsAdaptiveWrap, "20rem");
+    expect(await list.evaluate((el) => getComputedStyle(el).flexWrap)).toBe("wrap");
+    expect(await list.evaluate((el) => getComputedStyle(el).overflowX)).not.toBe("auto");
+  });
+
+  test("nav-adaptive: drawer off-canvas when the container is narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const nav = page.locator(DEMOS.demoNavDrawer);
+    const ul = page.locator(`${DEMOS.demoNavDrawer} > ul`);
+    // The demo slot is ~22rem, so the nav self-containers narrow → drawer.
+    expect(await ul.evaluate((el) => getComputedStyle(el).position)).toBe("fixed");
+    expect(await ul.evaluate((el) => getComputedStyle(el).transform)).toContain("matrix");
+    // Open via the hamburger (js/nav.js flips [data-open]).
+    await page.locator(`${DEMOS.demoNavDrawer} .bf-nav-toggle`).click();
+    await expect(nav).toHaveAttribute("data-open", "");
+    expect(await ul.evaluate((el) => getComputedStyle(el).transform)).toContain("matrix(1");
+  });
+
+  test("auto-wrap: a table card-stacks without a manual .bf-contain", async ({ page }) => {
+    await gotoDemo(page);
+    const thead = page.locator(`${DEMOS.demoTableAdaptiveAutowrap} thead`);
+    await setContainerWidth(page, DEMOS.demoTableAdaptiveAutowrapWrap, "48rem");
+    expect(await thead.evaluate((el) => getComputedStyle(el).display)).not.toBe("none");
+    await setContainerWidth(page, DEMOS.demoTableAdaptiveAutowrapWrap, "20rem");
+    expect(await thead.evaluate((el) => getComputedStyle(el).display)).toBe("none");
   });
 });

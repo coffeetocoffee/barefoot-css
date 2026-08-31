@@ -21,6 +21,14 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   reproduces — plus the same overrides as a `tokens.json` map for design
   pipelines (replaces the old six-line snippet).
 
+- **Adaptive components extended + manual `.bf-contain` retired (v5.1).** New
+  opt-in `tabs-adaptive.css` (tablist scroll-snaps as one row when wide, wraps
+  when narrow) and `nav-adaptive.css` (`[data-nav="drawer"]` → off-canvas
+  drawer in a narrow container, reusing the hamburger toggle). `table-adaptive`
+  / `card-adaptive` now auto-establish the query container on the component's
+  parent via a `:has()` rule, so the hand-placed `.bf-contain` wrapper is
+  optional (still supported). See docs/adaptive.md.
+
 ## [5.0.1] — 2026-08-31
 
 ### Fixed

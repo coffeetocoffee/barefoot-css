@@ -72,4 +72,12 @@
   table[data-table="adaptive"] caption {
     font-size: var(--bf-type-cqi-sm);
   }
+
+  /* v5.1: authors no longer must hand-place .bf-contain — the nearest
+     parent of an adaptive table becomes the query container automatically.
+     .bf-contain still works for explicit control (it sets the same
+     container-type, so the two are idempotent). */
+  :where(div, section, main, aside, article, header, footer):has(> table[data-table="adaptive"]) {
+    container-type: inline-size;
+  }
 }
