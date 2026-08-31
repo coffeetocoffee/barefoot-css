@@ -1,10 +1,10 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js/theme.js`) · v5.0 Phase 0 recon complete (engine matrix verified, ADR-0009 + ADR-0010 accepted); prototype pending_
+_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap: adaptive extensions, generative theming morph, Studio export, base-select graduation) · v5.0 Phase 0 recon complete (engine matrix verified, ADR-0009 + ADR-0010 accepted); prototype pending_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@5.0.0` (2026-08-31) — **the component-is-the-breakpoint
+- **Current:** `barefoot-css@5.1.0` (2026-08-31) — **the component-is-the-breakpoint
   release**: container-adaptive components, the zero-JS floor raise, and generative
   theming 2.0. The 4.9 theme-persistence release (and 4.8 validation work) stands
   beneath it: the one script every demo page hand-rolled is
@@ -24,9 +24,9 @@ _Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js
   for Figma/iOS/Android), and gzip/brotli are measured by the build
   again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
   per-component is the headline path.
-- **Next:** **v5.1+ — "land the deferred."** v5.0.0 ("The component is the
-  breakpoint") shipped 2026-08-31; the deferred and engine-gated work lands in the
-  [v5.1+ Roadmap](#v51-roadmap--after-the-v50-release) below. The v5.0 arc is phased in
+- **Next:** **v5.2+ — "after the deferred."** v5.1.0 ("land the deferred")
+  shipped 2026-08-31, closing the v5.1 roadmap; future work lands in the
+  [v5.1+ Roadmap](#v51-roadmap--after-the-v50-release) below (now mostly `[x]`). The v5.0 arc is phased in
   [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
   below: container-adaptive components, the zero-JS floor raise, and
   generative theming 2.0. **Phase 0 recon done** — engine matrix verified
@@ -51,6 +51,15 @@ _Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js
   color/meter.css`; `full.css` byte-identical (the barrel re-imports every
   shard), but a text-only form now ships at ~1.4KB gzip. Documented in
   CHANGELOG `[5.0.0]`.
+- **Shipped in 5.1.0:** the deferred roadmap closes — `tabs-adaptive.css`
+  (scroll-snap↔wrap) and `nav-adaptive.css` (drawer by container) extend the
+  ADR-0009 contract; `table`/`card-adaptive` auto-establish their container via
+  `:has()`, retiring the manual `.bf-contain` wrapper; opt-in `theming-anim.css`
+  morphs the generative ramp; the Studio exports a pasteable theme +
+  `tokens.json`; and `base-select` graduates from deferred to a shipped
+  progressive-enhancement headline. Documented in CHANGELOG `[5.1.0]`. Firefox
+  still lacks `appearance: base-select` (flag 149–157), so its picker falls
+  back to the chevron skin via `@supports`.
 - **Tests:** Chromium (19 a11y / 105 JS / 369 CSS, 21 engine-gated skips /
    3 visual) · Firefox 369 CSS + 105 JS passed (skips engine-gated) · WebKit
    369 CSS + 104/105 JS passed — green except one WebKit-only pre-existing

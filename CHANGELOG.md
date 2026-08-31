@@ -8,6 +8,10 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+## [5.1.0] — 2026-08-31
+
+### Added
+
 - **Opt-in animated generative theming (`theming-anim.css`).** Registers the
   `--bf-seed-h` / `--bf-seed-c` generative seeds with `@property` so a seed
   change *morphs* the 12-step OKLCH ramp instead of snapping. Opt-in by
