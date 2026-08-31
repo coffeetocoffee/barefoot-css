@@ -42,9 +42,12 @@ export function initPopoverMenus(root = document) {
       if (e.newState === "open") {
         items()[0]?.focus();
       } else {
-        // Esc/item-activation/light-dismiss close → hand focus back to
-        // the opener (only if focus never left the menu).
+        // Esc/item-activation/light-dismiss close — hand focus back to
+        // the opener (only if focus never left the menu). A Tab-close
+        // (handled in keydown) strands focus on <body> on WebKit, so
+        // return it to the trigger there too (ADR-0006).
         refocusOpener(menu, trigger);
+        if (document.activeElement === document.body && trigger) trigger.focus();
       }
     });
 

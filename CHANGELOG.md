@@ -4,6 +4,16 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.1] — 2026-08-31
+
+### Fixed
+
+- **Popover menu returns focus to its trigger on Tab-close (WebKit).**
+  `popover-menu.js` now refocuses the invoker when a Tab-close strands
+  focus on `<body>`; `refocusOpener` only acted while focus stayed inside
+  the menu, leaving WebKit at 104/105. `js.spec` is now 105/105 across all
+  three engines.
+
 ## [5.0.0] — 2026-08-31
 
 ### Changed

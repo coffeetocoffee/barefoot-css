@@ -509,18 +509,20 @@ Live decisions only — history lives in CHANGELOG and docs/.
 
 ## v5.1+ Roadmap — after the v5.0 release
 
-v5.0.0-beta.1 is the feature floor. The release is closed out, then the
-deferred and engine-gated work lands. Ordered by value/risk; the first two
-items are already planned (base-select deferral, ADR-0012 `@property` revisit).
+v5.0.0 shipped 2026-08-31 — the feature floor is live. The release is
+closed out, then the deferred and engine-gated work lands. Ordered by
+value/risk; the first two items are already planned (base-select deferral,
+ADR-0012 `@property` revisit).
 
 ### Step 0 — close out the v5.0 release
 
-- [ ] Cut `rc.1` from `main`, soak, then tag `v5.0.0` stable
-      (release.yml takes over on the tag push, as for beta.1).
-- [ ] Fix the one known WebKit quirk: `popover-menu.js` / `return-focus.js`
-      does not restore focus to the trigger after a Tab-close on WebKit
-      (pre-existing, not v5-caused). On `popover` `toggle` close, if focus
-      would fall to `body`, refocus the invoker. Gets `js.spec` to 105/105.
+- [x] Cut `v5.0.0` from `main` and tag it stable (skipped the `rc.1` soak —
+      tagged `v5.0.0` directly; `release.yml` took over on the tag push and
+      published).
+- [x] Fix the one known WebKit quirk: `popover-menu.js` now refocuses the
+      trigger on a Tab-close when focus would fall to `<body>` (the
+      `refocusOpener` seam only acted while focus stayed inside the menu).
+      `js.spec` is now 105/105 on WebKit too.
 - [x] Ship the `forms.css` opt-in shard split in the `v5.0.0` tag. Source is
       complete (`forms-base.css` + six control shards `forms-select/checks/
       range/file/color/meter.css`; `full.css` byte-identical via the barrel) and
