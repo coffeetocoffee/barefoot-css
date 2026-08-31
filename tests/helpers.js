@@ -57,6 +57,7 @@ export const DEMOS = Object.freeze({
   demoFormAdaptive: "#demo-form-adaptive",
   demoCardAdaptive: "#demo-card-adaptive",
   demoCardAdaptiveWrap: "#demo-card-adaptive-wrap",
+  demoTabs: "#demo-tabs",
   demoTabsAdaptive: "#demo-tabs-adaptive",
   demoTabsAdaptiveWrap: "#demo-tabs-adaptive-wrap",
   demoNavDrawer: "#demo-nav-drawer",

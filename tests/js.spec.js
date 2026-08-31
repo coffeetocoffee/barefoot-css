@@ -72,7 +72,7 @@ test.describe("opt-in JS: tabs no-JS-first contract", () => {
 
   test("with the module, the group is marked and inactive panels hide at init", async ({ page }) => {
     await gotoDemo(page);
-    const group = page.locator("[data-bf-tabs]");
+    const group = page.locator(DEMOS.demoTabs);
     await expect(group).toHaveAttribute("data-bf-tabs-js", "");
     await expect(group.locator('[role="tabpanel"]').nth(0)).toBeVisible();
     await expect(group.locator('[role="tabpanel"]').nth(1)).toBeHidden();
