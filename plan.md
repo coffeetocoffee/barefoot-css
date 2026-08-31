@@ -497,3 +497,61 @@ Live decisions only — history lives in CHANGELOG and docs/.
 - No JS framework integration (no React/Vue wrappers).
 - No IE/legacy support. Modern CSS is the point.
 - No component classes for everything — elements first, always.
+
+## v5.1+ Roadmap — after the v5.0 release
+
+v5.0.0-beta.1 is the feature floor. The release is closed out, then the
+deferred and engine-gated work lands. Ordered by value/risk; the first two
+items are already planned (base-select deferral, ADR-0012 `@property` revisit).
+
+### Step 0 — close out the v5.0 release
+
+- [ ] Cut `rc.1` from `main`, soak, then tag `v5.0.0` stable
+      (release.yml takes over on the tag push, as for beta.1).
+- [ ] Fix the one known WebKit quirk: `popover-menu.js` / `return-focus.js`
+      does not restore focus to the trigger after a Tab-close on WebKit
+      (pre-existing, not v5-caused). On `popover` `toggle` close, if focus
+      would fall to `body`, refocus the invoker. Gets `js.spec` to 105/105.
+
+### v5.1 — "land the deferred"
+
+- [ ] **`base-select` graduates (headline).** Un-gate the picker skin once
+      Firefox ships `appearance: base-select` (flag dropped ~157; plan:
+      "too green to bet the release on"). Today it is `@supports`-gated
+      (Chromium 135+ / Safari 27); flip the watch-list entry from
+      "deferred" to "shipped" and remove the gated skip in `css.spec.js`.
+- [ ] **Generative theming v1.1 (ADR-0012 revisit).** Add an opt-in
+      `theming-anim.css` that registers `--bf-seed-h` / `--bf-seed-c` with
+      `@property` so theme switches *morph* the 12-step ramp instead of
+      crossfading. Default stays `@property`-free to protect the byte budget
+      (ADR-0005/0012). No change to the no-registration contract unless
+      interpolation is explicitly wanted.
+- [ ] **More adaptive components + kill the manual `.bf-contain`.** Extend
+      the ADR-0009 contract to `nav` (sidebar↔drawer by container),
+      `tabs` (scroll-snap↔wrap), and `grid` (already container-aware). Then
+      auto-wrap: let authors skip hand-placing `.bf-contain` via a
+      `:has()`-based heuristic or a `data-adaptive` on the section — the
+      "morphs its own box" rule is the one ergonomic wart.
+- [ ] **Studio → copy-paste theme.** `demo/studio.html` exports "six lines"
+      today; make it emit a real `tokens.json` / CSS snippet so a designer
+      can paste a generated theme into a project.
+
+### v5.2+ — un-gate the engine-gated (speculative, flag before starting)
+
+- [ ] **Scroll-driven animations green on Firefox.** Phase 3 found the
+      *installed* FF build (1538) did not enable SDA at runtime, which is
+      why reveal/progress stay gated. Once a Firefox with SDA ships, those
+      tests flip green (no source change needed — just drop the skip).
+- [ ] **Cross-document view transitions on Firefox/WebKit** once
+      `pageswap`/`pagereveal` land there (today Chromium-only, gated).
+- [ ] **Container-scoped theming** — a dark component inside a light page via
+      `@container style()`. Powerful but risky; treat as experimental.
+
+### Carried non-goals (declined, do not revive)
+
+- `@barefoot/core` vs `@barefoot/extended` split — fights ADR-0008 (frozen
+  `full.css` + per-component imports already give the minimal path).
+- Command-palette module — violates the "opt-in JS only where no native
+  primitive works" pillar; `demo/` + theme gallery already cover it.
+- Starter repo — `demo/` + the theme gallery already are the starter.
+
