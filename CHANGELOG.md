@@ -4,6 +4,147 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0-beta.1] — 2026-08-31
+
+The "component is the breakpoint" arc begins. Phase 0 is recon: the engine
+matrix was verified live (caniuse Jul-2026 + MDN) and two contracts were
+accepted. No source shipped yet — this phase sets the rules the Phase 1–2
+components must follow.
+
+### Added
+
+- **ADR-0009 — adaptive component contract.** Adaptive behavior ships in
+  per-component `<name>-adaptive.css` files (opt-in, never in frozen
+  `full.css`); the component root establishes a namespaced
+  `container-name: bf-<component>`; breakpoints are `--bf-adaptive-1/2/3`
+  tokens; density is a `@container style(--bf-density: …)` query with a
+  size-query layout floor; fluid type uses `cqi`. Tests must resize
+  containers, not the viewport.
+- **ADR-0010 — v5 floor raise.** Browser baseline moves to **Chrome 135+ /
+  Firefox 151+ / Safari 26.2+**. Firefox 151 is the hard gate — container
+  *style* queries land there, which the v5 density story requires. Interest
+  invokers stay out of the floor (Chromium-only as of Aug 2026); `tooltip.js`
+  survives as a polyfill. Degrade-by-omission still protects older engines.
+
+### Changed
+
+- Engine matrix verified: `@container style()` **shipped in Firefox 151
+  (Apr 2026)** — the plan's headline risk is closed, so density is
+  first-class, not a size-query-only fallback. `command`/`commandfor` is
+  green in all three engines; base `<select>` stays behind a Firefox flag and
+  is deferred to 5.1. plan.md watch-list and baseline updated with dates.
+
+### Phase 1 — adaptive engine (tokens + mechanics)
+
+- **Tokens (`src/tokens.css`):** added the adaptive token families —
+  `--bf-adaptive-1/2/3` (24 / 40 / 56rem container breakpoints),
+  `--bf-density` (`comfortable` default, set to `compact` by the existing
+  `data-density="compact"` axis so the v3.4 lever feeds the v5 style query),
+  and a fluid container-relative type scale `--bf-type-cqi-*`
+  (`clamp(… + Ncqi …)`) for type that tracks the component's box. None are
+  `@property`-registered (ADR-0005).
+- **Docs:** new "Container conventions" section in components.md and adaptive
+  tokens + density-axis notes in theming.md (the latter auto-checked by the
+  token-docs parity test).
+- **Tests:** `setContainerWidth` / `gridColumnCount` / `tokenValue` helpers in
+  `tests/helpers.js`; a new "adaptive engine" group in `css.spec.js` resizes
+  *containers* (not the viewport) and asserts the tokens, per ADR-0009.
+
+### Phase 2 — adaptive components (the headline)
+
+Four opt-in `<name>-adaptive.css` files (never in frozen `full.css`):
+
+- **`table-adaptive.css`** — `table[data-table="adaptive"]` card-stacks when
+  its **container** is narrow (≤ 40rem, mirrors `--bf-adaptive-2`); cells use
+  `data-label`; density via `@container style(--bf-density: compact)`.
+- **`segmented-adaptive.css`** — `[data-segmented][data-adaptive]` is its own
+  container (`bf-segmented`) and compresses label padding when narrow or under
+  `data-density="compact"`; cqi label type.
+- **`form-adaptive.css`** — `form[data-form="adaptive"]` collapses a `.bf-row`
+  to one column when narrow, and reveals a `:has(:user-invalid)` error summary —
+  both pure CSS, no JS.
+- **`card-adaptive.css`** — `.card[data-card="adaptive"]` lays out
+  horizontally when wide, vertically when narrow ("morphing density"); cqi
+  header type.
+
+`cqi` typography now drives the table caption, segmented label, and card
+header. Each ships a demo section (`demo/index.html`) + `css.spec.js` tests
+(resize containers, not the viewport) + axe scan; `npm run check` is green and
+the three-engine css suites pass.
+
+**Tooling note (ADR-0009):** Lightning CSS 1.33 can't resolve `var()` inside a
+`@container` *condition*, so the breakpoint literals are `rem` (same convention
+as `grid.css`'s 30/48rem); `--bf-adaptive-*` remain the documented thresholds.
+Components that morph their *own* box (table, card) query the nearest ancestor
+`.bf-contain` — a container can't style itself, and a `<table>` can't reliably
+host `container-type`.
+
+### Phase 3 — zero-JS completion tribunal (ADR-0011)
+
+Every opt-in JS module was tried against the v5 floor (Chrome 135 / FF 151 /
+Safari 26.2); a module dies only when its entire contract is subsumed.
+
+- **Zero modules deleted.** Verdicts: `tooltip.js` **survives** — interest
+  invokers are still Chromium-only (FF/Safari unsupported, verified Phase 0), so
+  the hover/focus fallback is required for ~2/3 of the floor. `popover-menu.js`
+  **survives** — anchor positioning now covers *positioning*, but roving focus /
+  APG menu keyboard semantics can't be expressed in CSS (ADR-0006). `theme.js`
+  **survives** — persistence has no native primitive. `tabs.js`, `table-sort.js`,
+  `nav.js`, `carousel.js`, `chips.js`, `alert-dismiss.js`, `toast.js`,
+  `reveal.js` + plumbing all **survive** — none subsumed.
+- **`command`/`commandfor` documented for consumers** (docs/javascript.md §13):
+  the Invoker Commands API is green across the whole floor, so declarative
+  dialog/popover wiring needs no module — the only "JS removed" in spirit.
+- **Partially un-gated tests:** only implicit **anchor positioning** could be
+  un-gated — verified green on chromium/firefox/webkit. **Scroll-driven
+  animations (reveal/progress) and `popover=hint` stay gated**: the *installed*
+  test browsers don't satisfy them at runtime (the aspirational floor is ahead of
+  what's actually installed), and `popover=hint` correctly ignores `Escape` so the
+  Esc-close assertion is spec-wrong for hints. Cross-doc view transitions and base
+  `<select>` also stay gated (still Chromium-only / FF-flagged) — deferred to 5.1.
+
+### Phase 4 — generative theming 2.0
+
+"One Color Infinite Theme" extended into a generative system.
+
+- **12-step OKLCH tonal scale** (`--bf-tone-1`…`--bf-tone-12`, light → dark)
+  generated from two dials — `--bf-seed-h` (hue) and `--bf-seed-c` (chroma) —
+  via relative-color syntax (`oklch(L C h)`) in `src/tokens.css`. Neutral hex
+  fallbacks for engines without relative color; chroma tapers at the light/dark
+  ends so the ramp stays perceptually even. Semantic roles compose onto steps
+  via `var()` (docs/theming.md).
+- **Studio** (`demo/studio.html`) is the editor: hue + chroma sliders regenerate
+  the live ramp (12 swatches update in place), the color picker drives the same
+  knobs, and a **resizable box** shows `table[data-table="adaptive"]` reflowing by
+  *container* (not viewport). Export stays six lines.
+- **ADR-0012 — typed `@property` rejected for v5.0** (revisits ADR-0005). The
+  ramp needs no registration; theme transitions stay the `startViewTransition`
+  crossfade. Revisit in 5.1 only if interpolation becomes a stated requirement.
+- **Contrast gate tested, not asserted:** `css.spec.js` "generative theming"
+  group asserts all 12 tones are distinct + monotonic and each clears a 3:1
+  graphical-object floor (WCAG 1.4.11); the seed-dial + adaptive-reflow behavior
+  is asserted too. Passes on chromium/firefox/webkit.
+
+### Phase 5 — hardening & release
+
+- **Docs:** new **`docs/adaptive.md`** (the "adaptive page" — contract,
+  `.bf-contain` wrapper, the four components, cqi type, a11y, floor). New
+  **`docs/migration-5.md`** — floor raise (Chrome 135 / FF 151 / Safari 26.2),
+  **zero JS modules removed** (ADR-0011), base-select deferred to 5.1,
+  command/commandfor + adaptive + generative theming as additive, no breaking
+  markup. `docs/theming.md` + `docs/javascript.md` carry v5.0 callouts.
+- **Conformance demo:** WCAG table gains AA rows for the v5.0 adaptive
+  components + generative theme; the adaptive section carries an AA note. The
+  conformance table is now a focusable `overflow-x:auto` region so it no longer
+  overflows the 375px viewport (and stays axe-clean — scrollable-region-focusable).
+- **Suite hardening:** full three-engine runs. `css.spec` 369 passed / 21
+  engine-gated skips; `a11y.spec` 19/19; `js.spec` 104/105 (one WebKit-only
+  popover Tab-close focus-return quirk, pre-existing, not v5-caused). Visual
+  baselines regenerated deliberately. Hardening fixes: removed a stray
+  `@property` substring from a `tokens.css` comment (ADR-0005 guard), typed
+  `--bf-density` in the DTCG export, documented the v5.0 adaptive `data-*`
+  attributes in `api.md`.
+
 ## [4.9.0] — 2026-08-30
 
 The theme persistence release. The one script every demo page was

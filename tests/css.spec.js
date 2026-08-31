@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -58,6 +58,117 @@ test.describe("container queries", () => {
     const sw = (await slide.boundingBox()).width;
 
     expect(Math.abs(sw - cw * 0.6)).toBeLessThan(2);
+  });
+});
+
+test.describe("adaptive engine (v5.0 Phase 1)", () => {
+  test("setContainerWidth helper drives container queries (narrow → 1 col, wide → 3)", async ({ page }) => {
+    await gotoDemo(page);
+    // Resize the *containers*, not the viewport (ADR-0009 / v5.0).
+    await setContainerWidth(page, ".bf-demo-narrow .bf-contain", "14rem");
+    await setContainerWidth(page, ".bf-demo-wide .bf-contain", "60rem");
+
+    expect(await gridColumnCount(page, ".bf-demo-narrow [data-grid]")).toBe(1);
+    expect(await gridColumnCount(page, ".bf-demo-wide [data-grid]")).toBe(3);
+  });
+
+  test("adaptive tokens present at :root", async ({ page }) => {
+    await gotoDemo(page);
+
+    const simple = {
+      "--bf-adaptive-1": "24rem",
+      "--bf-adaptive-2": "40rem",
+      "--bf-adaptive-3": "56rem",
+      "--bf-density": "comfortable",
+    };
+    for (const [name, expected] of Object.entries(simple)) {
+      expect(await tokenValue(page, name), name).toBe(expected);
+    }
+
+    for (const name of [
+      "--bf-type-cqi-xs", "--bf-type-cqi-sm", "--bf-type-cqi-md",
+      "--bf-type-cqi-lg", "--bf-type-cqi-xl", "--bf-type-cqi-2xl",
+    ]) {
+      expect(await tokenValue(page, name), name).toMatch(/^clamp\(/);
+    }
+  });
+
+  test("data-density=compact flips --bf-density to compact (style-query target)", async ({ page }) => {
+    await gotoDemo(page);
+    const before = await tokenValue(page, "--bf-density");
+    await page.evaluate(() => document.documentElement.setAttribute("data-density", "compact"));
+    const after = await tokenValue(page, "--bf-density");
+
+    expect(before).toBe("comfortable");
+    expect(after).toBe("compact");
+  });
+});
+
+test.describe("adaptive components (v5.0 Phase 2)", () => {
+  test("table[data-table=adaptive] card-stacks when its container is narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const table = page.locator(DEMOS.demoTableAdaptive);
+    const thead = table.locator("thead");
+    const firstCell = table.locator("tbody tr").first().locator("td").first();
+
+    await setContainerWidth(page, DEMOS.demoTableAdaptiveWrap, "14rem");
+    await expect(thead).toBeHidden();
+    await expect(firstCell).toHaveCSS("display", "flex");
+
+    await setContainerWidth(page, DEMOS.demoTableAdaptiveWrap, "60rem");
+    await expect(thead).toBeVisible();
+    await expect(firstCell).toHaveCSS("display", "table-cell");
+  });
+
+  test("segmented[data-adaptive] compresses label padding when narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const label = page.locator(`${DEMOS.demoSegmentedAdaptive} label`).first();
+
+    await setContainerWidth(page, DEMOS.demoSegmentedAdaptive, "14rem");
+    const narrow = await label.evaluate((el) => parseFloat(getComputedStyle(el).paddingInlineStart));
+
+    await setContainerWidth(page, DEMOS.demoSegmentedAdaptive, "40rem");
+    const wide = await label.evaluate((el) => parseFloat(getComputedStyle(el).paddingInlineStart));
+
+    // 14rem < --bf-adaptive-1 (24rem) → tighter inline padding; 40rem → base.
+    expect(narrow).toBeLessThan(wide);
+  });
+
+  test("form[data-form=adaptive] collapses its .bf-row to one column when narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const row = page.locator(`${DEMOS.demoFormAdaptive} .bf-row`);
+
+    await setContainerWidth(page, DEMOS.demoFormAdaptive, "14rem");
+    expect(await row.evaluate((el) => getComputedStyle(el).flexDirection)).toBe("column");
+
+    await setContainerWidth(page, DEMOS.demoFormAdaptive, "40rem");
+    expect(await row.evaluate((el) => getComputedStyle(el).flexDirection)).toBe("row");
+  });
+
+  test("card[data-card=adaptive] is horizontal when wide, vertical when narrow", async ({ page }) => {
+    await gotoDemo(page);
+    const narrow = await setContainerWidth(page, DEMOS.demoCardAdaptiveWrap, "14rem")
+      .then(() => gridColumnCount(page, DEMOS.demoCardAdaptive));
+    const wide = await setContainerWidth(page, DEMOS.demoCardAdaptiveWrap, "48rem")
+      .then(() => gridColumnCount(page, DEMOS.demoCardAdaptive));
+
+    expect(narrow).toBe(1);
+    expect(wide).toBe(2);
+  });
+
+  test("form[data-form=adaptive] reveals error summary on :user-invalid", async ({ page }) => {
+    await gotoDemo(page);
+    const form = page.locator(DEMOS.demoFormAdaptive);
+    const summary = form.locator("[data-form-summary]");
+    const first = form.locator("input[name=first]");
+
+    await expect(summary).toBeHidden();
+    // Interact with the empty required field and blur it → :user-invalid.
+    await first.click();
+    await first.fill("a");
+    await first.fill("");
+    await first.press("Tab");
+    await expect(summary).toBeVisible();
   });
 });
 
@@ -137,18 +248,16 @@ test.describe("anchored popovers (anchor positioning)", () => {
 
 test.describe("platform primitives (@supports-gated)", () => {
   // The 3.1 primitives: scroll-driven animations, popover=hint,
-  // interest invokers, implicit anchor positioning. Every gate is a
-  // live CSS.supports/prototype probe so each engine exercises what it
-  // ships and skips the rest — an engine lacking a feature fails only
-  // if the framework's fallback for that feature breaks, never for the
-  // absence itself.
+  // interest invokers, implicit anchor positioning. Each gate is a live
+  // CSS.supports/prototype probe so an engine exercises what it ships and
+  // skips the rest. v5.0 Phase 3: implicit anchor positioning is now
+  // exercised on every floor engine (un-gated — verified green on
+  // chromium/firefox/webkit); scroll-driven animations and popover=hint stay
+  // gated because the *installed* test browsers don't satisfy them at runtime
+  // (the aspirational floor is ahead of what's actually installed), so those
+  // skips remain. Interest invokers stay Chromium-only.
   const supportsScrollDriven = (page) =>
     page.evaluate(() => CSS.supports("animation-timeline: scroll()"));
-  // The progress bar rides an ANONYMOUS scroll() timeline, so the gate
-  // is just SDA support — engines that parse scroll() scrub anonymous
-  // timelines (verified Chromium 115+, Safari 26+). This probe also
-  // demands actual runtime resolution so the spec only asserts
-  // tracking where it tracks.
   const supportsCarouselProgress = async (page) =>
     page.evaluate(() => {
       if (!CSS.supports("animation-timeline: scroll()")) return false;
@@ -302,8 +411,6 @@ test.describe("platform primitives (@supports-gated)", () => {
 
   test("popovers pin to their invoker with zero anchoring markup (implicit anchors)", async ({ page }) => {
     await gotoDemo(page);
-    if (!(await supportsAnchorPos(page)))
-      test.skip(true, "anchor positioning unsupported here");
 
     // The demo dropped its inline anchor styles in 3.1 — pinning must
     // come entirely from the implicit invoker relationship. If any of
@@ -2005,5 +2112,75 @@ test.describe("v4.8 DTCG tokens.json export", () => {
     expect(spacing["space-1"].$value).toBe("0.25rem");
     expect(dtcg.core[group(dtcg.core, "Motion")].transition.$type).toBe("duration");
     expect(dtcg.core[group(dtcg.core, "Motion")].transition.$value).toBe("150ms");
+  });
+});
+
+test.describe("generative theming (v5.0 Phase 4)", () => {
+  // The 12-step OKLCH ramp is generated from --bf-seed-h / --bf-seed-c.
+  // The gate for this feature is contrast: every derived step must clear a
+  // 3:1 graphical-object floor (WCAG 1.4.11), verified here — never asserted.
+  test("12-step scale generates 12 distinct, monotonic (light→dark) steps", async ({ page }) => {
+    await gotoDemo(page);
+    const tones = [];
+    for (let i = 1; i <= 12; i++) {
+      tones.push(await tokenColor(page, `--bf-tone-${i}`));
+    }
+    expect(new Set(tones).size).toBe(12); // all distinct
+    // relative luminance strictly decreases down the ramp (light → dark);
+    // tolerate FP/clamp noise at the gamut edges.
+    const lum = tones.map((c) => luminance(c));
+    for (let i = 1; i < lum.length; i++) {
+      expect(lum[i]).toBeLessThanOrEqual(lum[i - 1] + 1e-4);
+    }
+  });
+
+  test("every derived step clears a 3:1 graphical-object contrast floor", async ({ page }) => {
+    await gotoDemo(page);
+    for (let i = 1; i <= 12; i++) {
+      const t = await tokenColor(page, `--bf-tone-${i}`);
+      const vsBlack = wcagContrast(t, "rgb(0 0 0)");
+      const vsWhite = wcagContrast(t, "rgb(255 255 255)");
+      expect(Math.max(vsBlack, vsWhite)).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  test("turning the seed dial regenerates the ramp", async ({ page }) => {
+    await gotoDemo(page);
+    const before = await tokenColor(page, "--bf-tone-6");
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty("--bf-seed-h", 20);
+    });
+    const after = await tokenColor(page, "--bf-tone-6");
+    expect(after).not.toBe(before);
+  });
+
+  test("studio: hue slider re-skins the ramp live; adaptive table reflows by container", async ({ page }) => {
+    await gotoStudio(page);
+    const swatch = (n) =>
+      page.locator(DEMOS.studioScale).first().evaluate(
+        (el, i) => getComputedStyle(el.children[i - 1]).backgroundColor,
+        n
+      );
+    const before = await swatch(6);
+    await page.locator(DEMOS.studioHue).evaluate((el) => {
+      el.value = 120;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const after = await swatch(6);
+    expect(after).not.toBe(before);
+
+    // Container-adaptive: the table stacks to cards as its container narrows
+    // (not the viewport). Wide → table-cell; narrow → block (card-stack).
+    const cell = page.locator(`${DEMOS.studioReflow} td[data-label]`).first();
+    await page.locator(DEMOS.studioReflow).evaluate((el) => {
+      el.style.width = "42rem";
+    });
+    const wide = await cell.evaluate((el) => getComputedStyle(el).display);
+    await page.locator(DEMOS.studioReflow).evaluate((el) => {
+      el.style.width = "16rem";
+    });
+    const narrow = await cell.evaluate((el) => getComputedStyle(el).display);
+    expect(wide).toBe("table-cell");
+    expect(narrow).toBe("flex"); // card-stack lays cells out as flex rows
   });
 });

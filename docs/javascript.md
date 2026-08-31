@@ -375,6 +375,45 @@ do: wiring switcher buttons and remembering the choice.
 
 - For dynamic content: `import { initTheme, setTheme } from "barefoot-css/js/theme.js"`.
 
+## 13. Declarative command wiring (`command` / `commandfor`) — zero JS
+
+New in v5.0: the **Invoker Commands API** (`command` / `commandfor`) is
+green across the whole v5 floor (Chrome 135, Firefox 144, Safari 26.2), so
+the most common dialog/popover wiring needs **no module at all** — the
+browser wires the button to the target natively. This is the Phase-3 win: a
+behavior that once implied a script now ships as markup.
+
+```html
+<!-- Open a <dialog> modally, no showModal() line needed -->
+<button type="button" commandfor="confirm" command="show-modal">Delete…</button>
+<dialog id="confirm" aria-labelledby="confirm-title">
+  <h2 id="confirm-title">Delete?</h2>
+  <form method="dialog">
+    <button commandfor="confirm" command="close" value="cancel">Cancel</button>
+    <button commandfor="confirm" command="close" value="ok">Delete</button>
+  </form>
+</dialog>
+
+<!-- Toggle a popover, no popovertarget needed -->
+<button type="button" commandfor="menu" command="toggle-popover">Menu</button>
+<div id="menu" popover>…</div>
+```
+
+Command values: `show-modal`, `close`, `request-close`, `show-popover`,
+`hide-popover`, `toggle-popover`, or a custom `--name` that dispatches a
+`CommandEvent` on the target (for your own logic). `commandfor` takes the
+target element's `id`.
+
+- **No Barefoot module required** — `js/barefoot.js` doesn't touch these; the
+  platform owns them. Existing `popovertarget` / `showModal()` paths keep
+  working unchanged (they're the same feature, older spelling).
+- **A11y:** the browser keeps proper focus management and `aria-expanded`/
+  `aria-details` relationships — nothing for you to wire.
+- **Graceful degradation:** engines without the API (none in the v5 floor)
+  treat the button as a plain `<button>`; fall back to `popovertarget` /
+  `showModal()` there. See the `demo-command` section on the conformance
+  demo for a live, keyboard-walkable example.
+
 ## Why no bundle
 
 These are opt-in by design. Importing them is a deliberate choice the

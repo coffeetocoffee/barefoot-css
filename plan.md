@@ -1,6 +1,6 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-30 — v4.9.0 shipped (theme toggle + persistence — `js/theme.js`)_
+_Last updated: 2026-08-31 — v4.9.0 shipped (theme toggle + persistence — `js/theme.js`) · v5.0 Phase 0 recon complete (engine matrix verified, ADR-0009 + ADR-0010 accepted); prototype pending_
 
 ## Snapshot
 
@@ -22,13 +22,32 @@ _Last updated: 2026-08-30 — v4.9.0 shipped (theme toggle + persistence — `js
   for Figma/iOS/Android), and gzip/brotli are measured by the build
   again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
   per-component is the headline path.
-- **Next:** TBD — post-4.9 ideas stay off-roadmap until the next scan
-  picks them up.
-- **Tests:** Chromium (19 a11y / 35 JS / 118 CSS, 2 engine-gated
-  skips / 3 visual) · Firefox 144 passed, 12 skipped · WebKit 148
-  passed, 7 skipped — green. Skips are engine-gated (interest invokers,
-  SDA, base-select fallback; cross-doc VT lives gated on
-  `pageswap`/`pagereveal`, proven live on Chromium; the v4.8
+- **Next:** **v5.0 — "The component is the breakpoint."** The flagship
+  arc is phased in [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
+  below: container-adaptive components, the zero-JS floor raise, and
+  generative theming 2.0. **Phase 0 recon done** — engine matrix verified
+  (FF style queries shipped v151), ADR-0009 (adaptive contract) + ADR-0010
+  (floor → Chrome 135 / FF 151 / Safari 26.2) accepted; standalone
+  prototype built. **Phase 1 (tokens) done; Phase 2 (adaptive components:
+  table→card-stack, segmented density, form reflow, card morph, cqi
+  typography) done** — four opt-in *-adaptive.css files ship, demo sections +
+  three-engine css tests + axe all green. **Phase 3 (zero-JS completion) done**
+  — tribunal recorded in ADR-0011: zero modules deleted (tooltip.js survives;
+  interest invokers still Chromium-only), command/commandfor documented, anchor
+  test un-gated (SDA/hint stay gated — installed browsers lag the floor).
+  **Phase 4 (generative theming 2.0) done** — 12-step OKLCH ramp from
+   --bf-seed-h/--bf-seed-c, Studio editor (slider + resizable reflow box),
+   ADR-0012 reaffirms no typed @property; contrast gate tested in css.spec.
+   **Phase 5 (hardening & release) done** — docs/adaptive.md + migration-5.md
+   written, conformance demo WCAG-labelled + mobile-safe, full three-engine
+   suites run (css 369/21, a11y 19/19, js 104/105 with one WebKit popover
+   focus-return quirk), visual baselines regenerated; release tag pending.
+- **Tests:** Chromium (19 a11y / 105 JS / 369 CSS, 21 engine-gated skips /
+   3 visual) · Firefox 369 CSS + 105 JS passed (skips engine-gated) · WebKit
+   369 CSS + 104/105 JS passed — green except one WebKit-only pre-existing
+   popover Tab-close focus-return quirk. Skips are engine-gated (interest
+   invokers, SDA, base-select fallback; cross-doc VT lives gated on
+   `pageswap`/`pagereveal`, proven live on Chromium; the v4.8
   forced-colors tests are chromium-gated emulation). One WebKit flake
   is known and pre-existing: the popover empty-roster Tab refocus test
   (js.spec, ADR-0006) intermittently misses the focus return on win32
@@ -152,10 +171,16 @@ and `.bf-*` utilities.
 ## Browser baseline
 
 2024+ evergreen only. Required features: `light-dark()`, Popover API,
-`@starting-style`, `allow-discrete`, native nesting, `color-mix`, `dvh`.
+`@starting-style`, `allow-discrete`, native nesting, `color-mix`, `dvh`,
+**`@container` size + style queries** (density story), **`command`/
+`commandfor`** (declarative dialog/popover wiring).
 
-(v4 raised the contract explicitly: Chrome 125+, Firefox 128+,
-Safari 26.2+.)
+- **v4.9 (shipped):** Chrome 125+, Firefox 128+, Safari 26.2+.
+- **v5.0 (ADR-0010, 2026-08-31):** **Chrome 135+, Firefox 151+, Safari
+  26.2+.** Firefox 151 is the hard gate — container style queries land
+  there. Degrade by omission still protects older engines (size-query
+  adaptation without style-query density); the floor is a support
+  statement, not a runtime cutoff.
 
 ## Next
 
@@ -172,10 +197,220 @@ already are; the split fights ADR-0008, where per-component imports +
 the frozen `full.css` already give the minimal path). The bundle freeze
 from 4.6 stays recorded in ADR-0008 and pinned by test.
 
-## Watch-list (no action until browsers fix it)
+## v5.0 Roadmap — "The component is the breakpoint"
+
+> Responsive design was about the viewport; v5 makes it about the
+> component. Zero media queries. Zero script.
+
+Components sense their **container**, not the screen: a table becomes a
+card-stack, a form collapses to one column, a segmented control compresses
+density — the same component renders three ways depending on where it is
+dropped. Mechanism: `@container` size queries, `@container style()` style
+queries, `cqi` fluid typography. Honest scoping: the groundwork is
+partially live — the header nav already collapses at its own width
+(inline-size container), `bf-container`/`bf-stack`/`[data-grid]` are
+container-driven — and "zero script" means every *interactive default* is
+CSS; tabs, table-sort, and theme persistence stay opt-in JS because no
+native primitive expresses them (decision log holds).
+
+### Guardrails (every phase)
+
+- `@supports` gate, degrade by omission — existing policy, unchanged.
+- Adaptive variants ship as per-component files, opt-in by import;
+  ADR-0008 (full.css freeze) untouched.
+- `data-*` variants only — no utility sprawl; size budget enforced by
+  `npm run size`.
+- Engine-uncertain features stay on the watch-list; deletions gate on
+  verification, not faith.
+
+### Phase 0 — Recon & contracts (spike)
+
+- [x] Engine matrix verified (Canary/TP/Nightly + caniuse): **style
+      queries in Firefox** (the big unknown — **SHIPPED FF 151, Apr 2026**),
+      interest invokers + implicit anchors in FF, `command`/`commandfor`,
+      base-select status. Watch-list updated with real dates.
+- [x] **ADR-0009** — adaptive component contract: per-component adaptive
+      files (`table-adaptive.css` shape), `container-name` conventions
+      (`bf-<component>`), breakpoint tokens (`--bf-adaptive-1/2/3`),
+      `--bf-density` style query + `cqi` type ramp.
+- [x] **ADR-0010** — v5 floor raise → **Chrome 135+ / Firefox 151+ /
+      Safari 26.2+** (FF 151 is the hard gate: container style queries).
+      Numbers pinned from the matrix check, not guesses.
+- [x] Prototype outside the repo: table→card-stack morph, density style
+      query, `cqi` type ramp — built at
+      `C:\Users\Rizqi\AppData\Local\Temp\opencode\v5-prototype\index.html`
+      (spike, not in repo; demonstrates all three mechanisms by resizing
+      containers, no viewport media queries).
+
+**Gate:** mechanism proven in Chromium + Safari + **Firefox** (style
+queries now green in all three); Firefox no longer merely "degrades by
+omission" for the density story.
+
+### Phase 1 — Adaptive engine (tokens + mechanics)
+
+- [x] `tokens.css`: `--bf-density` token, `cqi` type-scale tokens
+      (`--bf-type-cqi-*`), `--bf-adaptive-1/2/3` breakpoint tokens. The
+      v3.4 `[data-density="compact"]` axis now also sets `--bf-density`, so
+      the existing lever feeds the v5 style query (no new markup).
+- [x] Container conventions (`container-type`/`container-name`) documented
+      in components.md (new "Container conventions" section) + theming.md
+      (density axis + adaptive tokens sections).
+- [x] `css.spec.js` helpers: `setContainerWidth` / `gridColumnCount` /
+      `tokenValue` in `tests/helpers.js`; new "adaptive engine" test group
+      drives a container (not the viewport) and asserts the tokens.
+
+**Gate:** `npm run check` green (build + size + docs:size + docs:tokens +
+stylelint); `index.css` 2.68KB gzip — budget untouched, full.css frozen.
+
+### Phase 2 — Adaptive components (the headline, one PR each)
+
+- [x] **table → card-stack** (`table-adaptive.css`) — the showpiece. Card-stacks
+      when its **container** is narrow (`@container` ≤ 40rem, mirrors
+      `--bf-adaptive-2`); cells use `data-label`; density via `@container
+      style(--bf-density: compact)`.
+- [x] **segmented density** (`segmented-adaptive.css`) — self-container
+      (`container-name: bf-segmented`) compresses label padding on narrow
+      width + under `data-density="compact"`; cqi label type.
+- [x] **form reflow** (`form-adaptive.css`) — self-container collapses a
+      `.bf-row` to one column when narrow, and reveals a `:has(:user-invalid)`
+      error summary (zero JS).
+- [x] **card morph** (`card-adaptive.css`) — horizontal↔vertical by container
+      (`@container` ≥ 40rem); cqi header type.
+- [x] **cqi typography pass** — `table caption`, `segmented label`, `card
+      header` now use `--bf-type-cqi-*`.
+
+Each PR: demo section (`id="demo-<name>"` + `DEMOS` entry, wrapped in
+`.bf-contain`) + `css.spec.js` (resizes containers, not viewport) + a11y
+scan. **Correction vs plan:** components that morph their *own* box (table
+card-stack, card morph) query the nearest ancestor `.bf-contain` — a container
+cannot style itself, and a `<table>` can't reliably host `container-type`
+(see ADR-0009). Descendant-only adaptation (segmented, form) self-contains.
+Lightning CSS can't resolve `var()` inside `@container` conditions, so the
+breakpoints are literal `rem` (matching `grid.css`); `--bf-adaptive-*` stay
+the documented thresholds.
+
+**Gate:** three-engine suites pass (css: chromium + firefox + webkit; a11y:
+chromium, 19/19). `npm run check` green; `full.css` frozen; adaptive files are
+opt-in, never in the bundle.
+
+### Phase 3 — Zero-JS completion (the breaking change)
+
+Every JS module faces a tribunal against the new floor; a module dies only
+when its **entire contract** is subsumed:
+
+- [x] `tooltip.js` → **SURVIVES**. Interest invokers are Chromium-only (FF/
+      Safari unsupported as of Aug 2026, verified in Phase 0), so the
+      hover/focus fallback is still required for ~2/3 of the floor. The plan's
+      "clearest deletion candidate" is overturned by the engine matrix.
+- [x] `popover-menu.js` → **SURVIVES**. Anchor positioning (FF 147/Chrome 125/
+      Safari 26) covers the *positioning* half, but roving focus / APG menu
+      keyboard semantics can't be expressed in CSS (ADR-0006); module keeps
+      roving focus.
+- [x] `theme.js` → **SURVIVES** — persistence has no native primitive (4.9).
+- [x] `command`/`commandfor` declarative dialog wiring **documented** for
+      consumers (docs/javascript.md §13) — green across the whole floor, so
+      this wiring needs no module. The only "JS removed" in spirit.
+- [x] `tabs.js`, `table-sort.js`, `nav.js`, `carousel.js`, `chips.js`,
+      `alert-dismiss.js`, `toast.js`, `reveal.js` + plumbing → **all
+      SURVIVE**; none subsumed. Net: **zero modules deleted in v5.0**.
+- [x] Un-gate in place (partial): only **implicit anchor positioning** test
+      skips removed in `css.spec.js` — verified green on chromium/firefox/
+      webkit. **SDA reveal/progress + popover=hint stay gated**: the *installed*
+      test browsers don't satisfy them at runtime (aspirational floor is ahead of
+      what's installed), and `popover=hint` correctly ignores `Escape`. Cross-doc
+      VT + base-select also stay gated (still Chromium-only / FF-flagged →
+      deferred to 5.1, skips unchanged). Un-gating is conditional on "as floors
+      land" — they haven't landed in the lab yet.
+- [x] base-select: stays opt-in / deferred to 5.1 — too green to bet the
+      release on.
+
+**Gate:** js suite trimmed to survivors (none); keyboard walkthroughs pass for
+anchor-based tooltips/popovers; recorded in ADR-0011.
+
+### Phase 4 — Generative theming 2.0 (parallelizable with Phase 2)
+
+- [x] Build on 4.7 one-color theming: **12-step OKLCH tonal scale**
+       (`--bf-tone-1…12`) generated from `--bf-seed-h` / `--bf-seed-c` via
+       relative-color syntax (`oklch(L C h)`); neutral hex fallbacks for
+       engines without it. Semantic roles compose onto steps via `var()`
+       (docs/theming.md illustrates). Done in `src/tokens.css`.
+- [x] **ADR decision point resolved:** typed `@property` — *revisits
+       ADR-0005* — **rejected for v5.0** (ADR-0012). Ramp needs no
+       registration; theme transition stays the `startViewTransition`
+       crossfade. Revisit in 5.1 only if interpolation becomes a requirement.
+- [x] density / radius / spacing promoted to first-class token categories —
+       established in Phase 1/2 (`--bf-density`, `--bf-space-*`,
+       `--bf-radius-*`) and consumed by every adaptive component. No new
+       tokens needed; marking done.
+- [x] Launch demo: **Studio** (`demo/studio.html`) extended — hue + chroma
+       sliders regenerate the live 12-step ramp (watch the swatches), the
+       color picker drives the same knobs, and a **resizable box** shows a
+       `table[data-table="adaptive"]` reflowing by *container*, not viewport.
+- [x] **Gate:** WCAG contrast *tested* on every derived step — `css.spec.js`
+       "generative theming" group asserts all 12 tones are distinct +
+       monotonic and each clears a 3:1 graphical-object floor (1.4.11); the
+       seed-dial + adaptive-reflow behavior is asserted too. axe-core still
+       covers the demo surfaces via the a11y suite.
+
+**Gate:** WCAG contrast *tested* on every derived step (css.spec) — claims
+are never asserted.
+
+### Phase 5 — Hardening & release
+
+- [x] Docs: **`docs/adaptive.md`** (the "adaptive page"), theming.md +
+      javascript.md v5.0 callouts, **`docs/migration-5.md`** (floor raise,
+      module removals = none, base-select deferral, command/commandfor,
+      generative theming additions).
+- [x] README size table regen (`npm run docs:size`); conformance demo updated
+      with WCAG labels (adaptive components + generative theme rows, AA note
+      on the adaptive section). Wrapped the conformance table in a focusable
+      `overflow-x:auto` region so it no longer overflows the 375px viewport.
+- [x] Full suites Chromium → FF → WebKit: `css.spec` 369 passed / 21 skipped
+      (engine-gated), `a11y.spec` 19/19, `js.spec` 104/105 (1 WebKit-only
+      popover Tab-close focus-return quirk, pre-existing, not v5-caused),
+      visual baselines regenerated deliberately (light/dark/webfonts).
+      Hardening fixes landed: removed a stray `@property` substring from a
+      `tokens.css` comment (ADR-0005 guard test), typed `--bf-density` in the
+      DTCG export, documented the v5.0 adaptive `data-*` attributes in
+      `api.md`, made the conformance scroll region keyboard-accessible.
+- [ ] `v5.0.0-beta.1` → `rc.1` → tag `v5.0.0` (release.yml takes over on push).
+
+### Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Firefox style queries slip | density derives from size queries only — nothing breaks |
+| FF anchors / interest invokers slip | `tooltip.js` stays a polyfill; Phase 3 shrinks, doesn't die |
+| Adaptive variants churn visual baselines | narrow-container baseline cases from Phase 2 onward |
+
+### Non-goals for v5 (unchanged)
+
+Utility sprawl · framework wrappers · masonry before engines land · any
+build step · touching ADR-0008.
+
+**Critical path:** Phase 0 verification → Phase 1 tokens → Phase 2
+showpiece (table) → the rest parallelizes.
+
+## Watch-list (verified 2026-08-31, caniuse Jul-2026 + MDN)
 
 - `grid-template-rows: masonry` landing across engines — the v4.1
-  `grid-lanes` variant then collapses to a one-liner.
+  `grid-lanes` variant then collapses to a one-liner. Still pending; no
+  ship date in any engine as of Aug 2026.
+- ~~`@container style()` queries in Firefox~~ — **RESOLVED: shipped FF 151
+  (Apr 2026)**. The v5 density-by-style-query story is first-class across
+  all engines; no size-query-only fallback needed (ADR-0009/0010).
+- Interest invokers (`interestfor`/`interesttarget`) — **still Chromium-only
+  (Chrome/Edge 142+, Nov 2025); Firefox and Safari have NO support as of
+  Aug 2026.** Gates the `tooltip.js` deletion (v5 Phase 3); the module
+  stays a polyfill. Implicit *anchor* positioning (distinct feature) DID
+  ship in FF 147 (Jan 2026) — anchor-based tooltips are viable, the
+  hover/focus *invoker* trigger is not.
+- `command`/`commandfor` — **SHIPPED everywhere: Chrome/Edge 135 (Apr 25),
+  Firefox 144 (Oct 25), Safari 26.2 (late 25).** Available for Phase 3
+  declarative dialog/popover wiring.
+- base `<select>` (appearance: base-select) — **Chrome/Edge 135, Safari 27;
+  Firefox behind a flag (149–157), not shipped as of Aug 2026.** Deferred
+  to v5.1 per plan; not in the v5 floor.
 
 ## Decision log
 

@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="../dist/components/icons.css">
   <link rel="stylesheet" href="../dist/components/command.css">
   <link rel="stylesheet" href="../dist/components/data-grid.css">
+  <link rel="stylesheet" href="../dist/components/table-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/segmented-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/form-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/card-adaptive.css">
   <style>
     /* Page chrome only — the demo styling is all Barefoot.
        Bundled webfonts (OFL) keep the demo pixel-identical on every
@@ -43,6 +47,7 @@
     section { margin-block-start: var(--bf-space-8); }
     .conformance-table { margin-block-start: var(--bf-space-4); }
     .wcag { white-space: nowrap; }
+    .conformance-scroll { overflow-x: auto; max-width: 100%; }
     .try { margin-block-start: var(--bf-space-3); }
     .bf-demo-narrow { flex: 0 0 14rem; }
     .bf-demo-wide { flex: 1 1 0; min-width: 0; }
@@ -77,6 +82,7 @@
     <section id="conformance" aria-labelledby="conformance-title">
       <h2 id="conformance-title">Conformance matrix</h2>
       <p>Guarantees are inherited from native elements plus our focus handling. Proven by the walkthroughs below.</p>
+      <div class="conformance-scroll" tabindex="0" aria-label="WCAG conformance table (scrolls horizontally on small screens)">
       <table class="conformance-table" data-striped>
         <caption>Component → WCAG level → keyboard walkthrough</caption>
         <thead>
@@ -115,8 +121,13 @@
           <tr><td>Scroll-progress bar</td><td class="wcag">A</td><td>Decorative position feedback; no interactive content. Live under <code>prefers-reduced-motion</code>.</td></tr>
           <tr><td>Parallax</td><td class="wcag">AA</td><td>Decorative motion stops under <code>prefers-reduced-motion</code>; element stays in place.</td></tr>
           <tr><td>Navigation transitions</td><td class="wcag">AA</td><td>Nothing interactive — navigations work identically without the transition, and content renders fully. Crossfades and morphs stop under <code>prefers-reduced-motion</code>.</td></tr>
+          <tr><td>Adaptive table (v5.0)</td><td class="wcag">AA</td><td>Card-stacks when its <em>container</em> is narrow; still a real <code>&lt;table&gt;</code> in the a11y tree — headers announced, no markup change.</td></tr>
+          <tr><td>Adaptive form (v5.0)</td><td class="wcag">AA</td><td>Rows reflow to a column; invalid fields summarized via <code>:has(:user-invalid)</code> in a live region, zero JS.</td></tr>
+          <tr><td>Adaptive card (v5.0)</td><td class="wcag">AA</td><td>Horizontal↔vertical morph by container; heading stays a heading, link stays a link.</td></tr>
+          <tr><td>Generative theme (v5.0)</td><td class="wcag">AA</td><td>The 12-step ramp inherits the AA-verified palette; every derived step clears a 3:1 graphical-object floor (<code>demo/studio.html</code>).</td></tr>
         </tbody>
       </table>
+      </div>
     </section>
 
     <!-- Typography -->
@@ -1117,6 +1128,68 @@
           <p>Auto-dismissing toast (3s). Hover to pause.</p>
           <button type="button" popovertarget="demo-toast-auto">Close</button>
         </div>
+      </div>
+    </section>
+
+    <!-- Adaptive components (v5.0 Phase 2) — "the component is the breakpoint".
+         Each component is its own container, so drag the box's right edge (or
+         run the css.spec helpers) to watch it reflow. No media queries. -->
+    <section id="adaptive" aria-labelledby="adaptive-title">
+      <h2 id="adaptive-title">Adaptive components (v5.0)</h2>
+      <p>Each component senses its <em>container</em>, not the viewport. The same
+        markup renders stacked in a sidebar and full in the main column. Drag a
+        box's right edge to see it morph — or set <code>data-density="compact"</code>
+        on <code>&lt;html&gt;</code> to compress them all.</p>
+      <p class="bf-muted">WCAG <strong>AA</strong> — native semantics are preserved, so keyboard and screen-reader behavior are unchanged (see the conformance table).</p>
+
+      <h3>Table → card-stack</h3>
+      <p class="bf-muted">A <code>data-table="adaptive"</code> table card-stacks when its own width drops below <code>--bf-adaptive-2</code>. Cells carry <code>data-label</code> for the card captions.</p>
+      <div id="demo-table-adaptive-wrap" class="bf-contain" style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 16rem; border: 1px dashed var(--bf-info)">
+        <table data-table="adaptive" id="demo-table-adaptive" style="width: 100%">
+          <caption>Team roster</caption>
+          <thead><tr><th>Name</th><th>Role</th><th>Location</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Name">Ada Lovelace</td><td data-label="Role">Engineer</td><td data-label="Location">London</td></tr>
+            <tr><td data-label="Name">Grace Hopper</td><td data-label="Role">Admiral</td><td data-label="Location">NYC</td></tr>
+            <tr><td data-label="Name">Katherine Johnson</td><td data-label="Role">Mathematician</td><td data-label="Location">Hampton</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Segmented density</h3>
+      <p class="bf-muted">A <code>[data-segmented][data-adaptive]</code> compresses its labels when narrow or under <code>data-density="compact"</code>.</p>
+      <div style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 10rem; border: 1px dashed var(--bf-info)">
+        <fieldset data-segmented data-adaptive id="demo-segmented-adaptive">
+          <legend>View</legend>
+          <label><input type="radio" name="view2" checked>Day</label>
+          <label><input type="radio" name="view2">Week</label>
+          <label><input type="radio" name="view2">Month</label>
+        </fieldset>
+      </div>
+
+      <h3>Form reflow</h3>
+      <p class="bf-muted">A <code>form[data-form="adaptive"]</code> collapses its <code>.bf-row</code> to one column when narrow, and reveals an error summary via <code>:has(:user-invalid)</code>.</p>
+      <div style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 14rem; border: 1px dashed var(--bf-info)">
+        <form data-form="adaptive" id="demo-form-adaptive" class="bf-stack" onsubmit="return false">
+          <div class="bf-row bf-gap-3">
+            <label>First name <input type="text" name="first" required></label>
+            <label>Last name <input type="text" name="last" required></label>
+          </div>
+          <div data-form-summary>Please fix the highlighted fields.</div>
+          <button type="submit">Save</button>
+        </form>
+      </div>
+
+      <h3>Card morph</h3>
+      <p class="bf-muted">A <code>.card[data-card="adaptive"]</code> lays out horizontally when wide, vertically when narrow.</p>
+      <div id="demo-card-adaptive-wrap" class="bf-contain" style="resize: horizontal; overflow: auto; max-width: 100%; min-width: 16rem; border: 1px dashed var(--bf-info)">
+        <article class="card" data-card="adaptive" id="demo-card-adaptive" style="width: 100%">
+          <div data-card-media></div>
+          <div>
+            <header>Quarterly report</header>
+            <p class="bf-muted">The card flips between a side-by-side layout in wide slots and a stacked layout in narrow ones.</p>
+          </div>
+        </article>
       </div>
     </section>
 

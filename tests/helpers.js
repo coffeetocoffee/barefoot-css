@@ -51,6 +51,12 @@ export const DEMOS = Object.freeze({
   demoSidebar: "#demo-sidebar",
   demoSkeletonLine: "#demo-skeleton-line",
   demoSortTable: "#demo-sort-table",
+  demoTableAdaptive: "#demo-table-adaptive",
+  demoTableAdaptiveWrap: "#demo-table-adaptive-wrap",
+  demoSegmentedAdaptive: "#demo-segmented-adaptive",
+  demoFormAdaptive: "#demo-form-adaptive",
+  demoCardAdaptive: "#demo-card-adaptive",
+  demoCardAdaptiveWrap: "#demo-card-adaptive-wrap",
   demoSpinner: "#demo-spinner",
   demoStagger: "#demo-stagger",
   demoStepperH: "#demo-stepper-h",
@@ -84,7 +90,11 @@ export const DEMOS = Object.freeze({
   toastErrorTrigger: "#toast-error-trigger",
   toastTrigger: "#toast-trigger",
   toastUploadTrigger: "#toast-upload-trigger",
-  typography: "#typography",
+   typography: "#typography",
+   studioReflow: "#studio-reflow",
+   studioHue: "#studio-hue",
+   studioChroma: "#studio-chroma",
+   studioScale: "#studio-scale",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -97,6 +107,35 @@ export async function gotoDemo(page) {
    not the specs, knows where pages live. */
 export async function gotoGallery(page) {
   await page.goto("/demo/gallery.html");
+}
+
+/* Navigate to the generative Studio (v5.0 Phase 4) — the theming editor. */
+export async function gotoStudio(page) {
+  await page.goto("/demo/studio.html");
+}
+
+/* Relative luminance of a computed color string (e.g. "rgb(255 255 255)").
+   WCAG 2.1 linearization; the monotonic-ordering proxy for the generative
+   tonal scale (contrast-vs-black is too flat at the dark end to order by). */
+export function luminance(color) {
+  const m = (color.match(/[\d.]+/g) || [0, 0, 0]).map(Number);
+  const srgb = m.slice(0, 3).map((v) => {
+    v = v / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+}
+
+/* WCAG 2.1 contrast ratio between two computed color strings
+   (e.g. "rgb(255 255 255)" / "rgba(0 0 0 / 0.5)"). Pure math — no engine
+   involved — so a spec can assert a derived token's contrast floor without
+   spinning up axe. Used by the generative-theming contrast gate (Phase 4). */
+export function wcagContrast(fg, bg) {
+  const lf = luminance(fg);
+  const lb = luminance(bg);
+  const lighter = Math.max(lf, lb);
+  const darker = Math.min(lf, lb);
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 /* Navigate to the navigation-transitions pair page (the other
@@ -118,13 +157,13 @@ export async function mountFixture(page, html) {
 }
 
 /* Resolve a --bf-* custom property to its used color under the theme
-   currently active in the page: append a throwaway probe whose
-   style.color is var(<name>), read the computed color, remove it.
-   light-dark() and scheme selection are resolved by the engine, so
-   comparisons read "element uses token X" truthfully in any theme.
-   Valid because tokens are only ever re-declared at :root/html level —
-   a component-scoped token override would resolve differently on the
-   element under test and break the comparison silently. */
+    currently active in the page: append a throwaway probe whose
+    style.color is var(<name>), read the computed color, remove it.
+    light-dark() and scheme selection are resolved by the engine, so
+    comparisons read "element uses token X" truthfully in any theme.
+    Valid because tokens are only ever re-declared at :root/html level —
+    a component-scoped token override would resolve differently on the
+    element under test and break the comparison silently. */
 export async function tokenColor(page, name) {
   return page.evaluate((token) => {
     const probe = document.createElement("span");
@@ -133,5 +172,36 @@ export async function tokenColor(page, name) {
     const resolved = getComputedStyle(probe).color;
     probe.remove();
     return resolved;
+  }, name);
+}
+
+/* Drive a component's container query by pinning the container's inline
+    size. Barefoot adapts to the *container*, not the viewport — so tests
+    assert behavior by resizing the container, never the window (ADR-0009 /
+    v5.0 Phase 1). Pass the container element's selector; width is any CSS
+    length (e.g. "14rem", "60rem"). */
+export async function setContainerWidth(page, selector, width) {
+  await page.locator(selector).first().evaluate((el, w) => {
+    el.style.width = w;
+  }, width);
+}
+
+/* Count the resolved grid tracks of an element (used to assert a container
+    query flipped the column count). */
+export async function gridColumnCount(page, selector) {
+  return page.locator(selector).first().evaluate((el) =>
+    getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length
+  );
+}
+
+/* Read a --bf-* custom property's raw declared value at :root (not the
+    color-resolved form tokenColor returns). Used to assert adaptive tokens
+    are present and spelled correctly. */
+export async function tokenValue(page, name) {
+  return page.evaluate((token) => {
+    const v = getComputedStyle(document.documentElement)
+      .getPropertyValue(token)
+      .trim();
+    return v;
   }, name);
 }

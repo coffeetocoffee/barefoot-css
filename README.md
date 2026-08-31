@@ -47,8 +47,8 @@ npm install barefoot-css
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 54.21KB | **10.01KB** | 8.75KB |
-| `index.css` | 9.52KB | **2.54KB** | 2.18KB |
+| `full.css` | 55.58KB | **10.37KB** | 9.08KB |
+| `index.css` | 10.89KB | **2.88KB** | 2.46KB |
 | `components/forms.css` | 10.74KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
@@ -83,6 +83,7 @@ npm install barefoot-css
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
 | `components/pagination.css` | 0.86KB | **0.38KB** | 0.28KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
+| `components/table-adaptive.css` | 0.88KB | **0.36KB** | 0.28KB |
 | `js/alert-dismiss.js` | 0.61KB | **0.35KB** | 0.28KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
@@ -94,17 +95,20 @@ npm install barefoot-css
 | `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
 | `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
+| `components/form-adaptive.css` | 0.54KB | **0.29KB** | 0.23KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
 | `themes/coastal.css` | 0.44KB | **0.24KB** | 0.20KB |
+| `components/card-adaptive.css` | 0.40KB | **0.24KB** | 0.18KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
 | `components/divider.css` | 0.36KB | **0.22KB** | 0.16KB |
 | `components/view-transition.css` | 0.52KB | **0.22KB** | 0.18KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
 | `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
+| `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
 <!-- SIZES:END -->
 

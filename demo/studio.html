@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../dist/components/icons.css">
   <link rel="stylesheet" href="../dist/components/command.css">
   <link rel="stylesheet" href="../dist/components/data-grid.css">
+  <link rel="stylesheet" href="../dist/components/table-adaptive.css">
   <style>
     @font-face {
       font-family: "Inter";
@@ -48,12 +49,14 @@
     .studio-export { padding: var(--bf-space-4); border-block-start: var(--bf-border-width) solid var(--bf-border); background: var(--bf-surface); }
     .studio-export pre { margin: var(--bf-space-3) 0 0; padding: var(--bf-space-4); background: var(--bf-surface-alt); border-radius: var(--bf-radius); overflow: auto; }
     .bf-row { display: flex; gap: var(--bf-space-3); align-items: center; }
-  </style>
+    .studio-scale { display: flex; gap: 2px; margin-top: var(--bf-space-2); height: 2rem; border-radius: var(--bf-radius-sm); overflow: hidden; }
+    .studio-scale span { flex: 1 1 0; }
+   </style>
 </head>
 <body>
   <div class="studio-bar">
     <h1><span data-icon="settings" aria-hidden="true"></span> Barefoot Studio <span class="bf-muted" style="font-weight:400; font-size:0.875rem">— One Color. Infinite Theme.</span></h1>
-    <span class="bf-muted" style="margin-inline-start:auto">v4.7 Chroma</span>
+    <span class="bf-muted" style="margin-inline-start:auto">v5.0 Generative</span>
     <button type="button" id="studio-export-btn" data-variant="primary"><span data-icon="plus" aria-hidden="true"></span> Copy 6 lines</button>
   </div>
 
@@ -92,7 +95,37 @@
         <option value="compact">Compact</option>
       </select>
     </fieldset>
+
+    <fieldset>
+      <label for="studio-hue">Generate — hue</label>
+      <span class="bf-row">
+        <input id="studio-hue" type="range" min="0" max="360" value="250" step="1" style="flex:1" aria-label="Seed hue">
+        <output id="studio-hue-out">250</output>
+      </span>
+      <label for="studio-chroma">chroma</label>
+      <span class="bf-row">
+        <input id="studio-chroma" type="range" min="0" max="0.30" value="0.13" step="0.01" style="flex:1" aria-label="Seed chroma">
+        <output id="studio-chroma-out">0.13</output>
+      </span>
+      <small class="bf-muted">12-step OKLCH ramp regenerates from <code>--bf-seed-h</code> / <code>--bf-seed-c</code>.</small>
+      <div id="studio-scale" class="studio-scale" aria-hidden="true"></div>
+    </fieldset>
   </div>
+
+  <section aria-label="Container-adaptive reflow" style="padding: var(--bf-space-4); border-block-end: var(--bf-border-width) solid var(--bf-border);">
+    <h2 style="margin-top:0">Container-adaptive reflow</h2>
+    <p class="bf-muted" style="max-width:60ch">Drag the bottom-right corner — the table reflows to a card stack as its <em>container</em> narrows, not the viewport.</p>
+    <div id="studio-reflow" class="bf-contain" style="resize:both; overflow:auto; width:42rem; max-width:100%; min-height:8rem; border:var(--bf-border-width) solid var(--bf-border); border-radius:var(--bf-radius); padding:var(--bf-space-3);">
+      <table data-table="adaptive">
+        <thead><tr><th>Name</th><th>Role</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Name">Ada</td><td data-label="Role">Engineer</td><td data-label="Status">Active</td></tr>
+          <tr><td data-label="Name">Lin</td><td data-label="Role">Designer</td><td data-label="Status">Away</td></tr>
+          <tr><td data-label="Name">Riz</td><td data-label="Role">Writer</td><td data-label="Status">Active</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <div class="studio-preview">
     <iframe id="studio-preview" src="index.html" title="Live preview of Barefoot demo" loading="eager"></iframe>
@@ -119,6 +152,63 @@
     const density = $("#studio-density");
     const output = $("#studio-output");
     const copyBtn = $("#studio-export-btn");
+    const hue = $("#studio-hue");
+    const hueOut = $("#studio-hue-out");
+    const chroma = $("#studio-chroma");
+    const chromaOut = $("#studio-chroma-out");
+    const scale = $("#studio-scale");
+
+    // Build the 12-step tonal swatch strip (reads --bf-tone-N, which the
+    // seed knobs regenerate live).
+    for (let i = 1; i <= 12; i++) {
+      const s = document.createElement("span");
+      s.style.background = `var(--bf-tone-${i})`;
+      scale.append(s);
+    }
+
+    function hexToHsl(hex) {
+      hex = hex.replace("#", "");
+      if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+      const r = parseInt(hex.slice(0, 2), 16) / 255;
+      const g = parseInt(hex.slice(2, 4), 16) / 255;
+      const b = parseInt(hex.slice(4, 6), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0; const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          default: h = (r - g) / d + 4;
+        }
+        h /= 6;
+      }
+      return { h: h * 360, s };
+    }
+
+    // Push the generative seed knobs to the studio chrome + the live preview.
+    function applySeed() {
+      const h = parseInt(hue.value, 10);
+      const c = parseFloat(chroma.value);
+      hueOut.textContent = h;
+      chromaOut.textContent = c.toFixed(2);
+      document.documentElement.style.setProperty("--bf-seed-h", h);
+      document.documentElement.style.setProperty("--bf-seed-c", c);
+      const pd = preview.contentDocument;
+      if (pd) {
+        pd.documentElement.style.setProperty("--bf-seed-h", h);
+        pd.documentElement.style.setProperty("--bf-seed-c", c);
+      }
+    }
+
+    // Drive the generators from the picked primary color.
+    function syncColorToSeed() {
+      const { h, s } = hexToHsl(primary.value);
+      hue.value = Math.round(h);
+      chroma.value = Math.min(0.2, Math.max(0.04, +(s * 0.2).toFixed(2)));
+      applySeed();
+    }
 
     function formatRadius(px) {
       return (px/16).toFixed(3).replace(/\.?0+$/,"") + "rem";
@@ -145,16 +235,18 @@
 
     function sync() { applyToPreview(); updateOutput(); }
 
-    primary.addEventListener("input", () => { primaryText.value = primary.value; sync(); });
+    primary.addEventListener("input", () => { primaryText.value = primary.value; syncColorToSeed(); sync(); });
     primaryText.addEventListener("input", () => {
       if (/^#[0-9a-fA-F]{3,8}$/.test(primaryText.value.trim())) {
         primary.value = primaryText.value.trim();
-        sync();
+        syncColorToSeed(); sync();
       }
     });
     radius.addEventListener("input", sync);
     font.addEventListener("change", sync);
     density.addEventListener("change", sync);
+    hue.addEventListener("input", applySeed);
+    chroma.addEventListener("input", applySeed);
     preview.addEventListener("load", sync);
 
     copyBtn.addEventListener("click", async () => {
@@ -166,6 +258,7 @@
     });
 
     // initial
+    applySeed();
     updateOutput();
   </script>
 </body>

@@ -1,0 +1,75 @@
+/* Barefoot — table, adaptive (v5.0 Phase 2).
+   Opt-in: import this file and set data-table="adaptive" on a <table>,
+   then drop it inside a container (e.g. .bf-contain, the grid pattern) — the
+   table card-stacks when that CONTAINER is narrow, not the viewport. This
+   matches the existing data-table="stack" mechanism; a <table> cannot
+   reliably host container-type itself (its own box is what morphs), so the
+   container is its ancestor (ADR-0009 §"Container is the breakpoint").
+
+   <div class="bf-contain">
+     <table data-table="adaptive">
+       <thead><tr><th>Name</th><th>Role</th></tr></thead>
+       <tbody>
+         <tr><td data-label="Name">Ada</td><td data-label="Role">Engineer</td></tr>
+       </tbody>
+     </table>
+   </div>
+
+   Each body cell carries data-label (its column header) so the card view can
+   caption it. Degrades to a plain table on engines without container queries. */
+@layer components {
+  /* Card-stack when the NEAREST container is narrower than --bf-adaptive-2
+     (40rem). Lightning CSS can't resolve var() in @container conditions, so
+     the literal mirrors the token (same convention as grid.css). */
+  @container (width <= 40rem) {
+    table[data-table="adaptive"] thead {
+      display: none;
+    }
+
+    table[data-table="adaptive"] tr {
+      display: grid;
+      gap: var(--bf-space-1);
+      padding: var(--bf-space-3);
+      margin-block-end: var(--bf-space-3);
+      border: var(--bf-border-width) solid var(--bf-border);
+      border-radius: var(--bf-radius);
+      background: var(--bf-surface);
+    }
+
+    table[data-table="adaptive"] th,
+    table[data-table="adaptive"] td {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--bf-space-3);
+      padding: 0;
+      border-block-end: 0;
+      text-align: start;
+    }
+
+    table[data-table="adaptive"] td::before {
+      content: attr(data-label);
+      font-weight: var(--bf-font-weight-semibold);
+      color: var(--bf-muted);
+    }
+  }
+
+  /* Density: compress further when an ancestor carries --bf-density:
+     compact (set by data-density="compact" on any ancestor). Queries the
+     nearest container's style. */
+  @container style(--bf-density: compact) {
+    table[data-table="adaptive"] tr {
+      padding: var(--bf-space-2);
+      margin-block-end: var(--bf-space-2);
+    }
+
+    table[data-table="adaptive"] th,
+    table[data-table="adaptive"] td {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* cqi typography pass: the caption tracks the container's width. */
+  table[data-table="adaptive"] caption {
+    font-size: var(--bf-type-cqi-sm);
+  }
+}

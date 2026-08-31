@@ -1,0 +1,54 @@
+/* Barefoot — form, adaptive (v5.0 Phase 2).
+   Opt-in: add data-form="adaptive" to a <form>. It becomes its own
+   container (container-name: bf-form) and reflows to a single column at
+   narrow widths, and reveals an error summary when any field is
+   :user-invalid — both pure CSS, no JS.
+
+   <form data-form="adaptive" class="bf-stack">
+     <div class="bf-row">
+       <label>First <input required></label>
+       <label>Last <input required></label>
+     </div>
+     <div data-form-summary hidden>Please fix the highlighted fields.</div>
+     <button type="submit">Save</button>
+   </form>
+
+   The summary starts hidden; :has(:user-invalid) reveals it after the user
+   interacts. No engine support → it simply stays hidden (degrade by
+   omission). */
+@layer components {
+  form[data-form="adaptive"] {
+    container-type: inline-size;
+    container-name: bf-form;
+  }
+
+  /* Single-column reflow: a multi-field .bf-row collapses to stacked. */
+  /* 24rem mirrors --bf-adaptive-1 (Lightning CSS can't resolve var() in
+     @container conditions — same convention as grid.css's literals). */
+  @container bf-form (max-width: 24rem) {
+    form[data-form="adaptive"] .bf-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* Error summary, revealed by :has(:user-invalid) — zero script. */
+  form[data-form="adaptive"]:has(:user-invalid) [data-form-summary] {
+    display: block;
+  }
+
+  form[data-form="adaptive"] [data-form-summary] {
+    display: none;
+    border: var(--bf-border-width) solid var(--bf-danger);
+    background: var(--bf-danger-subtle);
+    color: var(--bf-text);
+    border-radius: var(--bf-radius);
+    padding: var(--bf-space-3);
+    margin-block-end: var(--bf-space-3);
+  }
+
+  /* cqi typography pass: the summary tracks the form's width. */
+  form[data-form="adaptive"] [data-form-summary] {
+    font-size: var(--bf-type-cqi-sm);
+  }
+}

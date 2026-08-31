@@ -113,7 +113,7 @@ All component attributes and their valid values:
 | `data-size` | `<button>`, `.bf-avatar`, `[data-spinner]`, `[data-icon]` | `sm`, `lg` | 0.1 |
 | `data-grid` | any container | `auto-fit`, `auto-fill`, `masonry`, `1`–`4` (column count) | 0.1 |
 | `data-gap` | `[data-grid]` | `0`–`8` | 1.6 |
-| `data-table` | `<table>` | `stack`, `sticky-head`, `sticky-col` (compose, e.g. `"sticky-head sticky-col"`) | 1.1 |
+| `data-table` | `<table>` | `stack`, `sticky-head`, `sticky-col`, `adaptive` (compose, e.g. `"sticky-head adaptive"`) | 1.1, 5.0 |
 | `data-nav` | `<header>`, `<footer>` | `header`, `footer` | 1.6 |
 | `data-switch` | `input[type="checkbox"]` | (boolean) | 1.1 |
 | `data-accordion` | `<details>` | (boolean) | 0.1 |
@@ -170,6 +170,13 @@ All component attributes and their valid values:
 | `data-command-hint` | inside `[data-command]` | (boolean) | 4.7 |
 | `data-selected` | `[data-command-item]`, `tr` in `table[data-grid]` | (boolean) | 4.7 |
 | `data-grid` | `<table>` (extends) | resizable columns via `resize: horizontal`, stacks at 40rem container | 4.7 |
+| `data-segmented` | `<fieldset>` | (boolean) — add `data-adaptive` for container-density compression | 3.3, 5.0 |
+| `data-adaptive` | `[data-segmented]` | (boolean) — segmented control compresses when narrow / under `data-density="compact"` | 5.0 |
+| `data-card` | `.card` | `adaptive` — morphs horizontal↔vertical by container | 5.0 |
+| `data-card-media` | child of `.card[data-card="adaptive"]` | (boolean) — media side in horizontal layout | 5.0 |
+| `data-form` | `<form>` | `adaptive` — `.bf-row` collapses to a column when narrow | 5.0 |
+| `data-form-summary` | child of `[data-form="adaptive"]` | (boolean) — zero-JS invalid-field summary via `:has(:user-invalid)` | 5.0 |
+| `data-label` | `<td>` in `table[data-table="adaptive"]` | text — column header shown when card-stacked | 5.0 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

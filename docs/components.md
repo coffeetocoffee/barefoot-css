@@ -12,6 +12,36 @@ All components use **logical CSS properties** (`margin-inline`,
 
 Import from `dist/components/*.css` (or get everything with `full.css`).
 
+## Container conventions (v5.0)
+
+"The component is the breakpoint" — components adapt to the **container they
+are dropped in**, never the viewport. The mechanism (ADR-0009):
+
+- **Adaptive behavior lives in a sibling file**, `<name>-adaptive.css`,
+  imported only where you opt in. The frozen `full.css` (ADR-0008) gains no
+  adaptive surface — adaptive components are à-la-carte.
+- **The component root is the query container.** It sets
+  `container-type: inline-size` (and a `container-name: bf-<component>` so a
+  nested component can target *its own* container, never an ancestor's). No
+  mandatory `.bf-contain` wrapper — drop it anywhere and it adapts.
+- **Breakpoints are tokens.** Adaptive queries reference `--bf-adaptive-1`
+  (24rem, stacked floor), `--bf-adaptive-2` (40rem, compressed density), and
+  `--bf-adaptive-3` (56rem, full density) — three variables a theme can
+  retune, never inline `rem` literals. See `src/tokens.css`.
+- **Density is a style query.** Components read `--bf-density` on their
+  container and compress via `@container bf-<component> style(--bf-density:
+  compact)`. Set `data-density="compact"` (v3.4) on any ancestor and the
+  existing density axis flips `--bf-density`, so the v5 style query fires with
+  zero new markup. The size-query breakpoints above stay the floor for layout
+  morphs (card-stack, single-column reflow), so older engines degrade by
+  omission, not by broken layout.
+- **Fluid type uses `cqi`.** Adaptive components size type against the
+  container with the `--bf-type-cqi-*` scale (e.g. `font-size:
+  var(--bf-type-cqi-md)`), not the viewport-clamped `--bf-type-*`.
+
+Tests resize **containers**, not the window — see `setContainerWidth` in
+`tests/helpers.js`.
+
 ## Buttons
 
 ```html

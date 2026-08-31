@@ -183,6 +183,54 @@
     /* ---- Motion (v4.6: view transitions) ---- */
     --bf-vt-duration: 250ms;                 /* cross-document + morph transition length */
     --bf-vt-easing: ease;                    /* view-transition group timing */
+
+    /* ---- Adaptive engine (v5.0 Phase 1) ----
+       "The component is the breakpoint": components sense their container,
+       not the viewport. Tokens back ADR-0009. None use typed property
+       registration (ADR-0005). */
+
+    /* Adaptive breakpoints — the three "where it is dropped" thresholds
+       every adaptive component shares. A theme retunes the whole adaptive
+       grid from these three variables (not magic numbers in @container). */
+    --bf-adaptive-1: 24rem;  /* stacked / single-column floor */
+    --bf-adaptive-2: 40rem;  /* two-up / compressed density */
+    --bf-adaptive-3: 56rem;  /* full desktop density */
+
+    /* Density — a style-query target. Adaptive components read this on
+       their container and compress via @container style(--bf-density:
+       compact). Default comfortable; [data-density="compact"] flips it
+       (v3.4, below) so the existing density axis feeds the v5 style query. */
+    --bf-density: comfortable;
+
+    /* Fluid, container-relative type scale (cqi). Adaptive components use
+       these instead of the viewport-clamped --bf-type-* so type tracks the
+       component's box, not the screen. */
+    --bf-type-cqi-xs: clamp(0.7rem, 0.66rem + 0.25cqi, 0.8rem);
+    --bf-type-cqi-sm: clamp(0.8rem, 0.72rem + 0.5cqi, 0.95rem);
+    --bf-type-cqi-md: clamp(0.95rem, 0.82rem + 0.9cqi, 1.15rem);
+    --bf-type-cqi-lg: clamp(1.15rem, 0.92rem + 1.5cqi, 1.5rem);
+    --bf-type-cqi-xl: clamp(1.4rem, 1.05rem + 2.4cqi, 2rem);
+    --bf-type-cqi-2xl: clamp(1.8rem, 1.15rem + 3.8cqi, 2.75rem);
+
+    /* ---- Generative tonal scale (v5.0 Phase 4) ----
+       "One Color Infinite Theme" extended: a 12-step OKLCH ramp generated
+       from two knobs (--bf-seed-h hue, --bf-seed-c chroma). Re-theme by
+       turning a dial, not by editing a dozen values. Hex fallbacks below;
+       the @supports block regenerates the whole ramp from the seed. */
+    --bf-seed-h: 250;   /* generative seed hue (0–360) */
+    --bf-seed-c: 0.13;  /* generative seed chroma */
+    --bf-tone-1:  #f7f7f8;
+    --bf-tone-2:  #eceef0;
+    --bf-tone-3:  #dde0e4;
+    --bf-tone-4:  #c7ccd2;
+    --bf-tone-5:  #aab1ba;
+    --bf-tone-6:  #8b95a1;
+    --bf-tone-7:  #6c7886;
+    --bf-tone-8:  #515f6e;
+    --bf-tone-9:  #3b4856;
+    --bf-tone-10: #2a3540;
+    --bf-tone-11: #1c242c;
+    --bf-tone-12: #11161b;
   }
 }
 
@@ -209,11 +257,36 @@
 }
 /* stylelint-enable lightness-notation, hue-degree-notation */
 
+/* Generative tonal scale: regenerate all 12 steps from the seed knobs.
+   Constant chroma keeps the ramp strictly monotonic in luminance — a taper
+   can invert adjacent steps near the gamut edges. */
+/* stylelint-disable lightness-notation, hue-degree-notation */
+@layer tokens {
+  @supports (color: oklch(from red l c h)) {
+    :root {
+      --bf-tone-1:  oklch(0.97 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-2:  oklch(0.94 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-3:  oklch(0.90 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-4:  oklch(0.85 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-5:  oklch(0.78 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-6:  oklch(0.70 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-7:  oklch(0.60 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-8:  oklch(0.50 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-9:  oklch(0.42 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-10: oklch(0.34 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-11: oklch(0.26 var(--bf-seed-c) var(--bf-seed-h));
+      --bf-tone-12: oklch(0.18 var(--bf-seed-c) var(--bf-seed-h));
+    }
+  }
+}
+/* stylelint-enable lightness-notation, hue-degree-notation */
+
 /* ---- Density presets (v3.4) ----
    data-density="compact" on <html> (or any subtree) remaps the spacing
    and radius tokens to tighter values — a second theming axis that
    compresses chrome without new palettes. Normal is the default. */
 [data-density="compact"] {
+  --bf-density: compact;   /* also flips the v5.0 style-query density axis (ADR-0009) */
   --bf-space-1: 0.125rem;
   --bf-space-2: 0.25rem;
   --bf-space-3: 0.5rem;

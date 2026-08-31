@@ -231,6 +231,40 @@ the base token and every ramp follows.
 | `--bf-vt-duration` | `250ms` | cross-document + morph transition length |
 | `--bf-vt-easing` | `ease` | view-transition group timing |
 
+### Adaptive engine (v5.0 Phase 1)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-adaptive-1` | `24rem` | stacked / single-column floor |
+| `--bf-adaptive-2` | `40rem` | two-up / compressed density |
+| `--bf-adaptive-3` | `56rem` | full desktop density |
+| `--bf-density` | `comfortable` |  |
+| `--bf-type-cqi-xs` | `clamp(0.7rem, 0.66rem + 0.25cqi, 0.8rem)` |  |
+| `--bf-type-cqi-sm` | `clamp(0.8rem, 0.72rem + 0.5cqi, 0.95rem)` |  |
+| `--bf-type-cqi-md` | `clamp(0.95rem, 0.82rem + 0.9cqi, 1.15rem)` |  |
+| `--bf-type-cqi-lg` | `clamp(1.15rem, 0.92rem + 1.5cqi, 1.5rem)` |  |
+| `--bf-type-cqi-xl` | `clamp(1.4rem, 1.05rem + 2.4cqi, 2rem)` |  |
+| `--bf-type-cqi-2xl` | `clamp(1.8rem, 1.15rem + 3.8cqi, 2.75rem)` |  |
+
+### Generative tonal scale (v5.0 Phase 4)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-seed-h` | `250` | generative seed hue (0–360) |
+| `--bf-seed-c` | `0.13` | generative seed chroma |
+| `--bf-tone-1` | `#f7f7f8` |  |
+| `--bf-tone-2` | `#eceef0` |  |
+| `--bf-tone-3` | `#dde0e4` |  |
+| `--bf-tone-4` | `#c7ccd2` |  |
+| `--bf-tone-5` | `#aab1ba` |  |
+| `--bf-tone-6` | `#8b95a1` |  |
+| `--bf-tone-7` | `#6c7886` |  |
+| `--bf-tone-8` | `#515f6e` |  |
+| `--bf-tone-9` | `#3b4856` |  |
+| `--bf-tone-10` | `#2a3540` |  |
+| `--bf-tone-11` | `#1c242c` |  |
+| `--bf-tone-12` | `#11161b` |  |
+
 <!-- TOKENS:END -->
 
 ## How light/dark works (the trick)
@@ -431,3 +465,26 @@ Combine with any theme — the density axis is orthogonal to the color
 axis. A dashboard theme with compact density gives denser controls;
 an editorial theme without it stays airy. Override individual tokens
 to fine-tune the compact preset.
+
+`data-density="compact"` also sets `--bf-density: compact`, which is the
+**v5.0 style-query target** (ADR-0009): adaptive components read
+`--bf-density` on their container and compress via
+`@container style(--bf-density: compact)`, no new markup. So the v3.4
+density axis and the v5.0 container-adaptive density are the same lever.
+
+### Adaptive tokens (v5.0 Phase 1)
+
+The adaptive engine adds three token families (full values in the table
+above, auto-generated from `src/tokens.css`):
+
+- `--bf-adaptive-1 / -2 / -3` — the shared "where it is dropped" container
+  breakpoints (24 / 40 / 56rem). Every adaptive component queries these, so a
+  theme retunes the whole adaptive grid from three variables.
+- `--bf-density` — `comfortable` by default; `compact` under
+  `data-density="compact"`. The style-query target for density compression.
+- `--bf-type-cqi-*` — a fluid, container-relative type scale
+  (`clamp(… + Ncqi …)`) that tracks the component's box instead of the
+  viewport. Adaptive components use these over the viewport-clamped
+  `--bf-type-*`.
+
+None are `@property`-registered (ADR-0005).

@@ -1,0 +1,41 @@
+/* Barefoot — segmented control, adaptive (v5.0 Phase 2).
+   Opt-in: add data-adaptive to a [data-segmented]. It becomes its own
+   container (container-name: bf-segmented) and compresses when narrow or
+   under --bf-density: compact. Without the attribute it behaves exactly as
+   the base control. Degrades by omission on engines without container
+   queries (just never compresses). */
+@layer components {
+  [data-segmented][data-adaptive] {
+    container-type: inline-size;
+    container-name: bf-segmented;
+  }
+
+  /* Narrow container: pull the labels in so more segments fit. This is the
+     "compressed density" the v5 thesis is named for — the control senses
+     its own width, not the viewport. */
+  /* 24rem mirrors --bf-adaptive-1 (Lightning CSS can't resolve var() in
+     @container conditions — same convention as grid.css's literals). */
+  @container bf-segmented (max-width: 24rem) {
+    [data-segmented][data-adaptive] label {
+      padding-inline: var(--bf-space-2);
+    }
+  }
+
+  /* Density style query: tighter still when the author sets
+     data-density="compact" on an ancestor (which flips --bf-density). */
+  @container bf-segmented style(--bf-density: compact) {
+    [data-segmented][data-adaptive] {
+      padding: 0;
+    }
+
+    [data-segmented][data-adaptive] label {
+      padding-block: 0;
+      padding-inline: var(--bf-space-2);
+    }
+  }
+
+  /* cqi typography pass: label text tracks the control's width. */
+  [data-segmented][data-adaptive] label {
+    font-size: var(--bf-type-cqi-sm);
+  }
+}

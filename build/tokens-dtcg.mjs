@@ -289,6 +289,11 @@ function classify(name, value, tokens, mode) {
     return { type: "fontFamily", value: v };
   }
 
+  // Density axis keyword (comfortable | compact) — a plain string token.
+  if (name === "--bf-density") {
+    return { type: "string", value: v };
+  }
+
   // Motion shorthand: "150ms ease" → duration token + easing extension.
   const motion = v.match(/^([\d.]+m?s)\s+(.+)$/);
   if (motion && /ms$|^\d+(\.\d+)?s$/.test(motion[1])) {

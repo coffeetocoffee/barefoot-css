@@ -1,0 +1,45 @@
+/* Barefoot — card, adaptive (v5.0 Phase 2).
+   Opt-in: add data-card="adaptive" to a .card and drop it inside a
+   container (e.g. .bf-contain). It lays out horizontally (media + body side
+   by side) when the CONTAINER is wide, vertically when narrow — "morphing
+   density". The card's own box is what morphs, so the container is its
+   ancestor (a container can't style itself — ADR-0009). A [data-card-media]
+   child is the visual; everything else is the body. Degrades to a stacked
+   card on engines without container queries.
+
+   <div class="bf-contain">
+     <article class="card" data-card="adaptive">
+       <div data-card-media></div>
+       <div><header>…</header><p>…</p></div>
+     </article>
+   </div> */
+@layer components {
+  /* Narrow default: stacked (single column). */
+  .card[data-card="adaptive"] {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--bf-space-4);
+  }
+
+  .card[data-card="adaptive"] > [data-card-media] {
+    border-radius: var(--bf-radius);
+    background: var(--bf-surface-alt);
+    min-height: 6rem;
+  }
+
+  /* Wide container → horizontal (media left, body right). 40rem mirrors
+     --bf-adaptive-2 (Lightning CSS can't resolve var() in @container
+     conditions — same convention as grid.css's literals). The card is a
+     descendant of the container here, so its own grid can be restyled. */
+  @container (min-width: 40rem) {
+    .card[data-card="adaptive"] {
+      grid-template-columns: 40% 1fr;
+      align-items: center;
+    }
+  }
+
+  /* cqi typography pass: the header tracks the container's width. */
+  .card[data-card="adaptive"] > :where(header) {
+    font-size: var(--bf-type-cqi-lg);
+  }
+}
