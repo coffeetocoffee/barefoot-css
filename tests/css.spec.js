@@ -2244,10 +2244,12 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
   });
 });
 
-test.describe("generative system + container-scoped theming (v5.2)", () => {
+test.describe("generative system + container-scoped theming (v5.2 → v5.3)", () => {
   // v5.2: one seed becomes the master accent and derives the whole colour
   // system (seed-system.css); and a dark panel scopes per container with zero
-  // JS (theming-scope.css). Contrast is the contract — never asserted.
+  // JS (theming-scope.css). v5.3 extends the seed to a whole *visual
+  // language* — chroma drives radius / spacing / type / motion (morphology).
+  // Contrast is the contract — never asserted.
 
   test("seed-system: one seed drives the master accent (source contract)", () => {
     const src = fs.readFileSync(
@@ -2278,6 +2280,44 @@ test.describe("generative system + container-scoped theming (v5.2)", () => {
     // The Chroma engine derives hover from --bf-primary; it must differ.
     const hover = await tokenColor(page, "--bf-primary-hover");
     expect(hover, "chroma engine must derive hover from the seeded accent").not.toBe(primaryB);
+  });
+
+  test("seed-system: morphology — chroma drives radius, spacing & motion (v5.3)", async ({ page }) => {
+    await gotoDemo(page);
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/seed-system.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: css });
+
+    const read = (token, prop) =>
+      page.evaluate(({ token, prop }) => {
+        const probe = document.createElement("span");
+        document.body.append(probe);
+        probe.style[prop] = `var(${token})`;
+        const v = getComputedStyle(probe)[prop];
+        probe.remove();
+        return v;
+      }, { token, prop });
+
+    const setChroma = (c) =>
+      page.evaluate((c) => {
+        document.documentElement.style.setProperty("--bf-seed-c", c);
+      }, c);
+
+    await setChroma(0.02);
+    const lowR = parseFloat(await read("--bf-radius", "borderTopLeftRadius"));
+    const lowS = parseFloat(await read("--bf-space-4", "paddingTop"));
+    const lowM = parseFloat(await read("--bf-vt-duration", "transitionDuration"));
+
+    await setChroma(0.3);
+    const highR = parseFloat(await read("--bf-radius", "borderTopLeftRadius"));
+    const highS = parseFloat(await read("--bf-space-4", "paddingTop"));
+    const highM = parseFloat(await read("--bf-vt-duration", "transitionDuration"));
+
+    expect(highR, "radius must grow with chroma").toBeGreaterThan(lowR);
+    expect(highS, "spacing must grow with chroma").toBeGreaterThan(lowS);
+    expect(highM, "motion must grow with chroma").toBeGreaterThan(lowM);
   });
 
   test("theming-scope: a dark panel scopes per container inside a light page", async ({ page }) => {

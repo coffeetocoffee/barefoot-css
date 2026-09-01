@@ -10,12 +10,19 @@
                                     (Chroma engine, tokens.css)
         → --bf-tone-1 … --bf-tone-12 (12-step OKLCH ramp, tokens.css)
 
+   v5.3 adds **generative morphology**: the seed's chroma also expresses a
+   *temperament*. High chroma reads as expressive (larger radius, looser
+   spacing, a touch more type, more motion); low chroma reads as minimal. The
+   seed drives the whole *visual language*, not just the colour system — one
+   colour in, a whole system out.
+
    "One colour in, a whole system out" — literally. Set the dial, not a
    dozen values, and every component follows.
 
    Import in addition to tokens.css; opt-in so the default no-seed contract
-   and the byte budget stay intact (ADR-0005 / 0008 / 0013). The default
-   framework look (neutral ink accent) is untouched until you import this.
+   and the byte budget stay intact (ADR-0005 / 0008 / 0013 / 0014). The
+   default framework look (neutral ink accent) is untouched until you import
+   this.
 
    import "barefoot/themes/seed-system.css"; */
 
@@ -31,6 +38,46 @@
       /* Brand-tinted surface for cards/panels that echo the accent without
          losing neutrality — derived, not a duplicate palette. */
       --bf-surface-brand: oklch(0.96 0.03 var(--bf-seed-h));
+
+      /* ---- Generative morphology (v5.3) ----
+         The hue does not set a type scale; the *mood* of the seed does.
+         Chroma is the honest lever: a saturated seed reads as expressive,
+         a grey one as minimal. Every term is a calc() over --bf-seed-c, so
+         turning the chroma dial re-skins the whole visual language with
+         the same two knobs that drive the colour system. No @property, no
+         JS (ADR-0005 / 0014). The [data-density="compact"] axis still
+         overrides radius/spacing (higher-specificity attribute rule),
+         so density and morphology compose rather than fight. */
+
+      /* Radius — expressive ↔ minimal. */
+      --bf-radius:    calc(0.25rem + var(--bf-seed-c) * 1.5rem);
+      --bf-radius-sm: calc(0.1875rem + var(--bf-seed-c) * 0.75rem);
+      --bf-radius-lg: calc(0.375rem + var(--bf-seed-c) * 2.25rem);
+
+      /* Spacing rhythm — looser with chroma. */
+      --bf-space-1: calc(0.1875rem + var(--bf-seed-c) * 0.0625rem);
+      --bf-space-2: calc(0.375rem + var(--bf-seed-c) * 0.125rem);
+      --bf-space-3: calc(0.5625rem + var(--bf-seed-c) * 0.1875rem);
+      --bf-space-4: calc(0.75rem + var(--bf-seed-c) * 0.25rem);
+      --bf-space-5: calc(1.125rem + var(--bf-seed-c) * 0.375rem);
+      --bf-space-6: calc(1.5rem + var(--bf-seed-c) * 0.5rem);
+      --bf-space-7: calc(2.25rem + var(--bf-seed-c) * 0.75rem);
+      --bf-space-8: calc(3rem + var(--bf-seed-c) * 1rem);
+
+      /* Type (cqi, container-relative) — type tracks the mood. The chroma
+         term nudges each step; the clamp bounds keep legibility intact. */
+      --bf-type-cqi-xs:  clamp(0.7rem,  0.66rem + 0.25cqi + var(--bf-seed-c) * 0.1rem,  0.8rem);
+      --bf-type-cqi-sm:  clamp(0.8rem,  0.72rem + 0.5cqi + var(--bf-seed-c) * 0.15rem, 0.95rem);
+      --bf-type-cqi-md:  clamp(0.95rem, 0.82rem + 0.9cqi + var(--bf-seed-c) * 0.2rem,  1.15rem);
+      --bf-type-cqi-lg:  clamp(1.15rem, 0.92rem + 1.5cqi + var(--bf-seed-c) * 0.35rem, 1.5rem);
+      --bf-type-cqi-xl:  clamp(1.4rem,  1.05rem + 2.4cqi + var(--bf-seed-c) * 0.6rem,  2rem);
+      --bf-type-cqi-2xl: clamp(1.8rem,  1.15rem + 3.8cqi + var(--bf-seed-c) * 0.95rem, 2.75rem);
+
+      /* Motion — more chroma, more life. */
+      --bf-transition:      calc(120ms + var(--bf-seed-c) * 200ms) ease;
+      --bf-transition-slow: calc(180ms + var(--bf-seed-c) * 350ms) ease;
+      --bf-vt-duration:     calc(180ms + var(--bf-seed-c) * 500ms);
+      --bf-reveal-duration: calc(450ms + var(--bf-seed-c) * 800ms);
     }
   }
 }

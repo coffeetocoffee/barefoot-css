@@ -1,6 +1,6 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap); v5.2 planned as "The Design System That Writes Itself" (generative system + container-scoped theming); engine-gated un-gating moved to v5.3+_
+_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap); v5.2 planned as "The Design System That Writes Itself" (generative system + container-scoped theming)_
 
 ## Snapshot
 
@@ -645,14 +645,93 @@ no class war.
   CSS-only (no JS in the shipped framework — Studio's image extraction is
   demo-only JS).
 
-### v5.3+ — un-gate the engine-gated (speculative, flag before starting)
+### v5.3 — "The seed is the designer" (FLAGSHIP: generative morphology)
 
-- [ ] **Scroll-driven animations green on Firefox.** Phase 3 found the
-      *installed* FF build (1538) did not enable SDA at runtime, which is
-      why reveal/progress stay gated. Once a Firefox with SDA ships, those
-      tests flip green (no source change needed — just drop the skip).
-- [ ] **Cross-document view transitions on Firefox/WebKit** once
-      `pageswap`/`pagereveal` land there (today Chromium-only, gated).
+> One colour in, a whole *visual language* out — not just the colour
+> system, but the temperament. Pure CSS. Zero JavaScript. Scoped by
+> container.
+
+v5.2 proves "one colour in → a whole **colour** system out." The flagship
+for v5.3 extends the generative thesis from *colour* to the **entire visual
+language** — a single `--bf-seed-h` / `--bf-seed-c` derives not only the
+12-step ramp + accent but the *temperament*: radius, spacing rhythm, type
+scale, and motion. Honestly, via CSS **relative-color + `calc()`**, never
+faked. This is the moat Tailwind (compositional / utility) cannot copy — and
+it completes the trilogy after v5.0 (*size*) and v5.2 (*seed/colour*): v5.3
+is **semantics-of-mood**.
+
+#### The mechanism
+
+The hue does not set a type scale; the *mood* of the seed does. High chroma
+reads as expressive, low chroma as minimal — so chroma drives the rhythm:
+
+```css
+:root{
+  --bf-seed-h: 250;
+  --bf-seed-c: 0.18;
+  --bf-primary: oklch(0.55 var(--bf-seed-c) var(--bf-seed-h));
+
+  /* temperament derived from chroma (honest, CSS-only) */
+  --bf-radius:  calc(0.25rem + var(--bf-seed-c) * 1.5rem);
+  --bf-space:   calc(0.75rem + var(--bf-seed-c) * 0.75rem);
+  --bf-type:    calc(1rem    + var(--bf-seed-c) * 0.5rem);
+  --bf-motion:  calc(var(--bf-seed-c) * 300ms);
+}
+```
+
+- Derivation stays in pure CSS — no JS in the shipped framework (Studio's
+  image → seed extraction remains demo-only JS, as in v5.2).
+- No `@property` registration in the default path — ADR-0005 / ADR-0012
+  hold; interpolation stays opt-in in `theming-anim.css`.
+- Scoped per-island via `@container style()`, reusing the v5.2
+  `theming-scope.css` containment boundary — a dark, expressive card inside
+  a light, minimal page, zero JS, no class war.
+
+#### Phases
+
+- [x] **Phase 0 — Temperament tokens.** Added to `src/themes/seed-system.css`
+  (opt-in, so the default neutral look is untouched — ADR-0008 / 0013): the
+  generative-morphology block derives `--bf-radius{,-sm,-lg}` / `--bf-space-1…8`
+  / `--bf-type-cqi-*` / `--bf-transition` / `--bf-transition-slow` /
+  `--bf-vt-duration` / `--bf-reveal-duration` from `--bf-seed-c` via `calc()`.
+  Placed inside the existing `@supports (color: oklch(from red l c h))`
+  `:root` rule. ADR-0013's "no non-colour derivation" clause is overturned by
+  **ADR-0014** (chroma = mood, not hue = identity). No `@property`.
+- [x] **Phase 1 — Generative morphology in Studio.** `demo/studio.html` badge +
+  chroma caption note the v5.3 morphology; the `tokens.json` export now emits the
+  resolved `--bf-radius` / `--bf-space-4` / `--bf-type-cqi-md` / `--bf-vt-duration`
+  alongside the 12-step ramp, so the export carries the full derived system.
+- [x] **Phase 2 — CI gate.** Extended the `css.spec.js` "generative system +
+  container-scoped theming" group with a **morphology** test asserting chroma
+  moves `--bf-radius` / `--bf-space-4` / `--bf-transition` monotonically
+  (low → high chroma). The existing 1.4.11 / AA contrast gate on derived tones is
+  unchanged. AA is checked, not asserted.
+- [x] **Phase 3 — Hardening & release.** README callout + `docs/theming.md` §
+  "Seed → whole visual language" + `docs/studio.md` v5.3 notes + new
+  `docs/adr/0014-generative-morphology.md`. `full.css` frozen (ADR-0008
+  untouched — morphology ships only inside opt-in `seed-system.css`). Tag `v5.3.0`
+  pending `npm run check` (Node is not installed in the editing environment, so
+  the suites could not be executed here; code is written to existing conventions
+  and the new morphology test is added).
+
+#### Guardrails (every phase)
+
+- Opt-in by import; ADR-0008 (`full.css` freeze) untouched; `@supports` gate,
+  degrade by omission; size budget enforced by `npm run size`; seed math
+  stays CSS-only.
+- The derivation is *mood*, not pseudo-science: we assert relationships
+  (chroma ↑ → radius/spacing/motion ↑) and contrast, never "this hue means
+  trustworthy."
+
+#### Alternatives considered (parked, not declined)
+
+- **"The component is self-aware"** — `:has()` content-driven morphogenesis
+  (`:has(img)`, `:has([data-urgent])`): the component re-skins by its own
+  *semantics*, not its size. Pure CSS, already on the floor. Strong
+  companion to, or fallback for, generative morphology.
+- **Anchor-laid-out everything** — anchor positioning to make *any*
+  component non-modally layer (beyond popovers/tooltips). More "web feature"
+  than "CSS feature"; lower priority than the generative moat.
 
 ### Carried non-goals (declined, do not revive)
 

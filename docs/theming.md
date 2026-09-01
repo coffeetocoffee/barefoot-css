@@ -479,12 +479,38 @@ dials. The 12-step `--bf-tone-*` ramp is generated from the same seed. **One
 colour in, a whole system out** — literally.
 
 This is opt-in so the neutral default accent and the byte budget stay intact
-(ADR-0005 / 0008 / 0013). Type, spacing, and radius are deliberately *not*
-seed-derived — a hue does not determine a type scale; they stay independent
-tokens, re-mappable with the [density axis](#density-axis-v34).
+(ADR-0005 / 0008 / 0013). A *hue* does not determine a type scale — but the
+seed's **chroma** is a legitimate mood lever, and v5.3 derives the visual
+*temperament* from it (see below). Type/spacing/radius otherwise stay
+independent tokens, re-mappable with the [density axis](#density-axis-v34).
 
-Try it live in **[Studio](../demo/studio.html)** — the seed drives the accent
-and the ramp together, and the export emits the full derived token set.
+Try it live in **[Studio](../demo/studio.html)** — the seed drives the accent,
+the ramp, **and** the whole visual language together, and the export emits the
+full derived token set.
+
+### Seed → whole visual language (v5.3 morphology, opt-in)
+
+v5.3 extends the generative seed from *colour* to the entire **visual
+language**. The seed's chroma expresses a *temperament*: a saturated seed reads
+as expressive — larger radius, looser spacing, a touch more type, more motion —
+while a near-grey seed reads as minimal. Every term is a `calc()` over
+`--bf-seed-c`, so the same two dials that drive the colour system also re-skin
+radius, spacing, the container type scale, and motion:
+
+```css
+/* inside seed-system.css, @supports (color: oklch(from red l c h)) */
+--bf-radius:    calc(0.25rem   + var(--bf-seed-c) * 1.5rem);
+--bf-space-4:   calc(0.75rem   + var(--bf-seed-c) * 0.25rem);
+--bf-type-cqi-md: clamp(0.95rem, 0.82rem + 0.9cqi  + var(--bf-seed-c) * 0.2rem, 1.15rem);
+--bf-transition: calc(120ms + var(--bf-seed-c) * 200ms) ease;
+```
+
+It is honest scoping: we assert relationships (chroma ↑ → radius/spacing/motion
+↑) plus the existing WCAG floors, never "this hue means trustworthy" (see
+[ADR-0014](adr/0014-generative-morphology.md)). No `@property`, no JS; the
+density axis still overrides radius/spacing (higher-specificity attribute rule),
+so density and morphology compose rather than fight. `full.css` stays frozen
+(ADR-0008) — morphology ships only inside the opt-in `seed-system.css`.
 
 ### Container-scoped theming (`theming-scope.css`, opt-in)
 

@@ -58,7 +58,7 @@
 <body>
   <div class="studio-bar">
     <h1><span data-icon="settings" aria-hidden="true"></span> Barefoot Studio <span class="bf-muted" style="font-weight:400; font-size:0.875rem">— One Color. Infinite Theme.</span></h1>
-    <span class="bf-muted" style="margin-inline-start:auto">v5.2 Generative system</span>
+    <span class="bf-muted" style="margin-inline-start:auto">v5.3 Generative morphology</span>
     <button type="button" id="studio-export-btn" data-variant="primary"><span data-icon="plus" aria-hidden="true"></span> Copy 6 lines</button>
   </div>
 
@@ -109,7 +109,7 @@
         <input id="studio-chroma" type="range" min="0" max="0.30" value="0.13" step="0.01" style="flex:1" aria-label="Seed chroma">
         <output id="studio-chroma-out">0.13</output>
       </span>
-      <small class="bf-muted">12-step OKLCH ramp regenerates from <code>--bf-seed-h</code> / <code>--bf-seed-c</code>.</small>
+      <small class="bf-muted">12-step OKLCH ramp <em>and</em> the whole visual language — radius, spacing, type &amp; motion — regenerate from <code>--bf-seed-h</code> / <code>--bf-seed-c</code> (v5.3 morphology).</small>
       <div id="studio-scale" class="studio-scale" aria-hidden="true"></div>
     </fieldset>
   </div>
@@ -284,7 +284,17 @@
           .map(([k, v]) => `  ${k}: ${v};`)
           .join("\n") +
         "\n}";
-      jsonOut.textContent = JSON.stringify(theme, null, 2);
+      // Emit the full derived system for v5.3: the seed also drives the
+      // morphology (radius / spacing / type / motion). These are read live
+      // from computed style so the exported tokens.json is reproducible.
+      const cs = getComputedStyle(document.documentElement);
+      const morph = {
+        "--bf-radius":    cs.getPropertyValue("--bf-radius").trim(),
+        "--bf-space-4":   cs.getPropertyValue("--bf-space-4").trim(),
+        "--bf-type-cqi-md": cs.getPropertyValue("--bf-type-cqi-md").trim(),
+        "--bf-vt-duration": cs.getPropertyValue("--bf-vt-duration").trim(),
+      };
+      jsonOut.textContent = JSON.stringify({ ...theme, ...morph }, null, 2);
     }
 
     function sync() { applyToPreview(); updateOutput(); }
