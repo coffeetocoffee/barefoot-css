@@ -14,7 +14,7 @@
 
 - **~10KB or bust.** `index.css` is **2.88KB gzipped** (measured, not estimated — see the table below). Import the core plus only the component files you use; the *everything* bundle (`full.css`) has been frozen since v4.6 (ADR-0008) so per-component stays the real story.
 - **The component is the breakpoint.** *(v5.0)* Components adapt to the **box they're dropped in**, not the viewport. Drop a data table into a sidebar and it card-stacks. Widen it and it returns to rows. No media queries, no JS, no re-render. → [docs/adaptive.md](docs/adaptive.md)
-- **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin with a handful of variables — no Sass, no recompile. Tokens also ship as a W3C DTCG `tokens.json` for Figma / iOS / Android sync, and v5.0 adds a **generative 12-step ramp** you steer with two dials (`--bf-seed-h` / `--bf-seed-c`).
+- **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin with a handful of variables — no Sass, no recompile. Tokens also ship as a W3C DTCG `tokens.json` for Figma / iOS / Android sync, and v5.0 adds a **generative 12-step ramp** you steer with two dials (`--bf-seed-h` / `--bf-seed-c`). v5.2's opt-in `seed-system.css` takes it further: **one seed becomes the master accent and derives the whole colour system** — "one colour in, a whole system out" (→ [docs/studio.md](docs/studio.md)). And `theming-scope.css` scopes a dark panel inside a light page, zero JS, via `@container style()`.
 - **JS-free, by default.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>`, accordions are `<details name>`. Form validation is pure CSS (`:user-valid` / `:user-invalid`). Optional tiny JS modules (tabs, sortable tables, menu keyboard nav, theme persistence) are opt-in and zero-dependency.
 - **Accessible out of the box.** Native elements hand you focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere, AA contrast by default, `forced-colors` hardened, and an axe-core suite in CI proves it.
 - **No "Bootstrap look."** Neutral by default: ink on paper, hairline borders, no shadows, no gradients. The design is yours — we just supply the muscle.
@@ -118,6 +118,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
+| `themes/theming-scope.css` | 1.76KB | **0.32KB** | 0.26KB |
 | `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |
 | `components/forms-range.css` | 0.91KB | **0.31KB** | 0.23KB |
 | `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
@@ -143,6 +144,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
 | `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
+| `themes/seed-system.css` | 0.17KB | **0.13KB** | 0.12KB |
 <!-- SIZES:END -->
 
 > **Budget:** `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if it ever creeps over.

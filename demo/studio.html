@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="../dist/components/command.css">
   <link rel="stylesheet" href="../dist/components/data-grid.css">
   <link rel="stylesheet" href="../dist/components/table-adaptive.css">
+  <link rel="stylesheet" href="../dist/themes/seed-system.css">
+  <link rel="stylesheet" href="../dist/themes/theming-scope.css">
   <style>
     @font-face {
       font-family: "Inter";
@@ -56,7 +58,7 @@
 <body>
   <div class="studio-bar">
     <h1><span data-icon="settings" aria-hidden="true"></span> Barefoot Studio <span class="bf-muted" style="font-weight:400; font-size:0.875rem">— One Color. Infinite Theme.</span></h1>
-    <span class="bf-muted" style="margin-inline-start:auto">v5.0 Generative</span>
+    <span class="bf-muted" style="margin-inline-start:auto">v5.2 Generative system</span>
     <button type="button" id="studio-export-btn" data-variant="primary"><span data-icon="plus" aria-hidden="true"></span> Copy 6 lines</button>
   </div>
 
@@ -130,6 +132,23 @@
   <div class="studio-preview">
     <iframe id="studio-preview" src="index.html" title="Live preview of Barefoot demo" loading="eager"></iframe>
   </div>
+
+  <section aria-label="Container-scoped theming" style="padding: var(--bf-space-4); border-block-start: var(--bf-border-width) solid var(--bf-border);">
+    <h2 style="margin-top:0">Container-scoped theming</h2>
+    <p class="bf-muted" style="max-width:60ch">A dark panel inside a light page — zero JS, no class war. The <code>data-bf-scope="dark"</code> element becomes a container; its subtree re-skins per container via <code>@container style()</code>. Resize the panel: the scope follows the box, not the viewport.</p>
+    <div style="display:grid; gap:var(--bf-space-4); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));">
+      <div data-bf-scope="dark" style="padding:var(--bf-space-4); border-radius:var(--bf-radius-lg); background:var(--bf-surface); color:var(--bf-text); border:var(--bf-border-width) solid var(--bf-border);">
+        <strong style="color:var(--bf-text)">Dark scope</strong>
+        <p class="bf-muted" style="margin-block-end:0">This card is dark even though the page is light. Buttons, borders and text all follow <code>--bf-surface</code> / <code>--bf-text</code>.</p>
+        <button type="button" data-variant="primary">Primary in scope</button>
+      </div>
+      <div data-bf-scope="contrast" style="padding:var(--bf-space-4); border-radius:var(--bf-radius-lg); background:var(--bf-surface); color:var(--bf-text); border:var(--bf-border-width) solid var(--bf-border);">
+        <strong style="color:var(--bf-text)">Contrast scope</strong>
+        <p class="bf-muted" style="margin-block-end:0">A high-contrast region inside a normal page — useful for a focused callout.</p>
+        <button type="button" data-variant="primary">Primary in scope</button>
+      </div>
+    </div>
+  </section>
 
   <div class="studio-export" aria-labelledby="export-title">
     <h2 id="export-title" style="margin:0">Export — paste into your CSS</h2>
@@ -245,6 +264,13 @@
         "--bf-seed-c": parseFloat(chroma.value),
       };
       if (density.value === "compact") theme["--bf-density"] = "compact";
+      // Emit the full derived system: the 12-step tonal ramp resolved live
+      // from the seed (v5.2 — "one colour in, a whole system out").
+      const cs = getComputedStyle(document.documentElement);
+      for (let i = 1; i <= 12; i++) {
+        const v = cs.getPropertyValue(`--bf-tone-${i}`).trim();
+        if (v) theme[`--bf-tone-${i}`] = v;
+      }
       return theme;
     }
 

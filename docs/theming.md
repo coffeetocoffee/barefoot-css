@@ -452,6 +452,65 @@ registers them. Under `prefers-reduced-motion: reduce` the seeds swap
 instantly, so the morph never fights a user's motion preference. The
 `--bf-vt-duration` / `--bf-vt-easing` tokens tune the morph length.
 
+## The Design System That Writes Itself (v5.2, opt-in)
+
+v5.2 promotes generative theming from a 12-step *ramp* to a *full, derived
+design system*. One seed becomes the master accent; that accent propagates
+through the Chroma engine to every brand token; and a dark panel can live
+inside a light page via container-scoped theming. The framework generates a
+*system*, not utilities (see [ADR-0013](adr/0013-generative-system-contract.md)).
+
+### Seed → whole system (`seed-system.css`, opt-in)
+
+Import `seed-system.css` in addition to `tokens.css` and the two seed knobs
+become the framework's master accent:
+
+```css
+@import "barefoot/themes/seed-system.css";
+:root { --bf-seed-h: 250; --bf-seed-c: 0.13; }
+```
+
+`--bf-primary` is then `oklch(0.55 var(--bf-seed-c) var(--bf-seed-h))`, and
+because the Chroma engine (in `tokens.css`) derives
+`--bf-primary-hover` / `-subtle` / `-contrast` / `-border` / `-muted` /
+`-strong` from `--bf-primary`, and the alpha ramps (`surface-2/3`, `*-muted`,
+`*-subtle`, `*-darken`) key off it, the *entire* colour system follows two
+dials. The 12-step `--bf-tone-*` ramp is generated from the same seed. **One
+colour in, a whole system out** — literally.
+
+This is opt-in so the neutral default accent and the byte budget stay intact
+(ADR-0005 / 0008 / 0013). Type, spacing, and radius are deliberately *not*
+seed-derived — a hue does not determine a type scale; they stay independent
+tokens, re-mappable with the [density axis](#density-axis-v34).
+
+Try it live in **[Studio](../demo/studio.html)** — the seed drives the accent
+and the ramp together, and the export emits the full derived token set.
+
+### Container-scoped theming (`theming-scope.css`, opt-in)
+
+A dark panel inside a light page, with zero JS and no class war:
+
+```html
+<section data-bf-scope="dark">
+  <!-- every descendant re-skins to the dark palette; the page stays light -->
+</section>
+```
+
+`data-bf-scope` accepts `light` / `dark` / `contrast` / `auto`. The element
+becomes a container; it and its descendants resolve a locally-scoped token
+layer via `@container style()`, so the scope follows the container — not the
+document root or the viewport. This generalizes `[data-bf-theme]` (which flips
+`color-scheme` globally) to a per-container subtree. Opt-in; `full.css` stays
+frozen (ADR-0008). Engines without `@container style()` fall back to the
+wrapper's inherited `color-scheme`, so the scope still applies.
+
+```css
+@import "barefoot/themes/theming-scope.css";
+```
+
+Nested opposite scopes resolve to their nearest container; keep deeply nested
+opposite scopes on separate containers.
+
 ## Density axis (v3.4)
 
 Themes gain a second axis — **density** — without new palettes. Set

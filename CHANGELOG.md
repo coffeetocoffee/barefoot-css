@@ -8,6 +8,28 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- **Generative system, keystone (`seed-system.css`, opt-in).** Importing it makes
+  the two generative seed knobs (`--bf-seed-h` / `--bf-seed-c`) the framework's
+  master accent: `--bf-primary` becomes `oklch(0.55 var(--bf-seed-c)
+  var(--bf-seed-h))`, and the Chroma engine then derives the entire colour system
+  — hover / subtle / border / focus, the alpha ramps, and the 12-step tonal ramp
+  — from those two dials. "One colour in, a whole system out." Opt-in by import;
+  the neutral default accent and the `full.css` budget are untouched (ADR-0005 /
+  0008 / 0013). Type/spacing/radius stay independent tokens, not seed-derived.
+
+- **Container-scoped theming (`theming-scope.css`, opt-in).** Drop
+  `data-bf-scope="dark|light|contrast|auto"` on any element to scope a locally
+  themed subtree via `@container style()` — a dark panel inside a light page, zero
+  JS, no class war. The scope follows the container, not the root or viewport.
+  Opt-in; `full.css` stays frozen (ADR-0008). Engines without `@container
+  style()` fall back to the wrapper's inherited `color-scheme`.
+
+- **Studio emits the full derived system.** `demo/studio.html` (loading
+  `seed-system.css`) now exports the resolved 12-step `--bf-tone-*` ramp inside
+  `tokens.json`, so a designer pastes a complete seed-derived system, not just six
+  lines. New `docs/studio.md` documents it.
+
+
 ## [5.1.0] — 2026-08-31
 
 ### Added

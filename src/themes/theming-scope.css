@@ -1,0 +1,96 @@
+/* Barefoot — container-scoped theming (opt-in).
+   A dark panel inside a light page, with zero JS and no class war: drop
+   data-bf-scope="dark|light|contrast|auto" on any element. The element
+   becomes a container; it and its descendants resolve a locally-scoped
+   token layer, so a dark card sits inside a light dashboard and follows its
+   own container — not the document root.
+
+   This generalizes [data-bf-theme] (which flips color-scheme globally) to a
+   subtree that resolves per container. Opt-in; full.css stays frozen
+   (ADR-0008). Degrades by omission: engines without @container style() fall
+   back to the wrapper's inherited color-scheme (set by the attribute rules
+   below), so the scope still applies — only the container-query path is
+   skipped.
+
+   import "barefoot/themes/theming-scope.css";
+
+   Note on nesting: the scope is applied by inheritance from the wrapper
+   element, so a light scope inside a dark scope overrides correctly for its
+   own subtree. The @container style() rules below re-affirm the scheme on
+   descendants of a container that declares --bf-scope-theme; keep nested
+   opposite scopes on separate containers. */
+
+[data-bf-scope] {
+  container-type: inline-size;
+  container-name: bf-scope;
+}
+
+/* The element itself resolves the chosen scheme + carries the scope flag
+   that the container style queries read from. */
+[data-bf-scope="light"] {
+  --bf-scope-theme: light;
+  color-scheme: light;
+}
+[data-bf-scope="dark"] {
+  --bf-scope-theme: dark;
+  color-scheme: dark;
+}
+[data-bf-scope="auto"] {
+  --bf-scope-theme: auto;
+  color-scheme: light dark;
+}
+[data-bf-scope="contrast"] {
+  --bf-scope-theme: contrast;
+  color-scheme: light dark;
+  --bf-primary: light-dark(#000000, #ffffff);
+  --bf-primary-fg: light-dark(#ffffff, #000000);
+  --bf-surface: light-dark(#ffffff, #000000);
+  --bf-surface-alt: light-dark(#f0f0f0, #101010);
+  --bf-text: light-dark(#000000, #ffffff);
+  --bf-muted: light-dark(#404040, #c0c0c0);
+  --bf-border: light-dark(#000000, #ffffff);
+  --bf-focus-ring: light-dark(#000000, #ffffff);
+  --bf-danger: light-dark(#000000, #ffffff);
+  --bf-danger-fg: light-dark(#ffffff, #000000);
+  --bf-success: light-dark(#000000, #ffffff);
+  --bf-success-fg: light-dark(#ffffff, #000000);
+  --bf-info: light-dark(#000000, #ffffff);
+  --bf-info-fg: light-dark(#ffffff, #000000);
+  --bf-warning: light-dark(#000000, #ffffff);
+  --bf-warning-fg: light-dark(#ffffff, #000000);
+}
+
+/* Descendants re-resolve the scoped token layer per container. The scope
+   follows the container (not the viewport or the root). Light-dark() tokens
+   resolve against the inherited color-scheme, so setting it is enough to
+   re-skin the whole subtree. */
+@container bf-scope style(--bf-scope-theme: dark) {
+  :where(*) { color-scheme: dark; }
+}
+@container bf-scope style(--bf-scope-theme: light) {
+  :where(*) { color-scheme: light; }
+}
+@container bf-scope style(--bf-scope-theme: auto) {
+  :where(*) { color-scheme: light dark; }
+}
+@container bf-scope style(--bf-scope-theme: contrast) {
+  :where(*) {
+    color-scheme: light dark;
+    --bf-primary: light-dark(#000000, #ffffff);
+    --bf-primary-fg: light-dark(#ffffff, #000000);
+    --bf-surface: light-dark(#ffffff, #000000);
+    --bf-surface-alt: light-dark(#f0f0f0, #101010);
+    --bf-text: light-dark(#000000, #ffffff);
+    --bf-muted: light-dark(#404040, #c0c0c0);
+    --bf-border: light-dark(#000000, #ffffff);
+    --bf-focus-ring: light-dark(#000000, #ffffff);
+    --bf-danger: light-dark(#000000, #ffffff);
+    --bf-danger-fg: light-dark(#ffffff, #000000);
+    --bf-success: light-dark(#000000, #ffffff);
+    --bf-success-fg: light-dark(#ffffff, #000000);
+    --bf-info: light-dark(#000000, #ffffff);
+    --bf-info-fg: light-dark(#ffffff, #000000);
+    --bf-warning: light-dark(#000000, #ffffff);
+    --bf-warning-fg: light-dark(#ffffff, #000000);
+  }
+}

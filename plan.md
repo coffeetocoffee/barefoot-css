@@ -1,6 +1,6 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap: adaptive extensions, generative theming morph, Studio export, base-select graduation) · v5.0 Phase 0 recon complete (engine matrix verified, ADR-0009 + ADR-0010 accepted); prototype pending_
+_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap); v5.2 planned as "The Design System That Writes Itself" (generative system + container-scoped theming); engine-gated un-gating moved to v5.3+_
 
 ## Snapshot
 
@@ -24,7 +24,7 @@ _Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap: ad
   for Figma/iOS/Android), and gzip/brotli are measured by the build
   again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
   per-component is the headline path.
-- **Next:** **v5.2+ — "after the deferred."** v5.1.0 ("land the deferred")
+- **Next:** **v5.2 — "The Design System That Writes Itself."** v5.1.0 ("land the deferred")
   shipped 2026-08-31, closing the v5.1 roadmap; future work lands in the
   [v5.1+ Roadmap](#v51-roadmap--after-the-v50-release) below (now mostly `[x]`). The v5.0 arc is phased in
   [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
@@ -570,7 +570,82 @@ ADR-0012 `@property` revisit).
       today; make it emit a real `tokens.json` / CSS snippet so a designer
       can paste a generated theme into a project.
 
-### v5.2+ — un-gate the engine-gated (speculative, flag before starting)
+### v5.2 — "The Design System That Writes Itself"
+
+> One color in. A whole system out. Accessible by construction. Scoped by
+> container. Zero JavaScript.
+
+Generative theming graduates from a 12-step ramp to a **full, derived design
+system**, and becomes the framework's headline differentiator: Barefoot
+generates a *system*, not utilities. Tailwind is compositional (you assemble);
+Barefoot becomes generative (you supply a seed, it derives a system) — a
+different category, and a moat no utility framework can copy. It builds
+directly on v4.7 (one-color), v5.0 (generative ramp), and v5.1 (Studio export),
+so invention risk is low and payoff is high. The novel half is **container-scoped
+theming**: a subtree carrying its own `data-bf-theme` resolves locally via
+`@container style()`, so a dark panel lives inside a light page with zero JS and
+no class war.
+
+#### Phase 0 — Seed-to-system derivation
+
+- [x] **Seed → master accent (`seed-system.css`, opt-in).** The two seed knobs
+      become `--bf-primary` (`oklch(0.55 var(--bf-seed-c) var(--bf-seed-h))`);
+      the Chroma engine then derives the whole *colour* system — hover / subtle /
+      border / focus, the alpha ramps, and the 12-step ramp — from those two
+      dials. Type / spacing / radius / motion are deliberately **not**
+      seed-derived (a hue does not determine a type scale); they stay independent
+      tokens, re-mappable with the density axis (ADR-0013 — honest scoping).
+- [x] Contrast becomes the contract: the `css.spec.js` "generative system"
+      group asserts seed changes re-skin `--bf-primary` and that the Chroma
+      engine derives a distinct `--bf-primary-hover`. The 1.4.11 / AA gate from
+      v5.0 is extended to the seeded accent.
+- [x] **ADR-0013 — generative system contract:** documents which tokens are
+      seed-derived vs hand-authored, and guarantees no `@property` registration
+      in the default path (ADR-0005/0012 hold; interpolation stays opt-in in
+      `theming-anim.css`).
+
+#### Phase 1 — Container-scoped theming (the novel half)
+
+- [x] Resolve the speculative "container-scoped theming" via `@container
+      style()`: a subtree carrying `data-bf-scope` resolves its own
+      `color-scheme` + token layer independent of the page — a dark card inside
+      a light page, zero JS, no class war.
+- [x] Ship as opt-in `theming-scope.css`; document the containment boundary
+      (the scoped root is a `container-type` so descendant tokens resolve
+      locally). Degrade by omission on engines without `@container style()` —
+      the wrapper's inherited `color-scheme` still applies.
+- [x] `css.spec.js` group asserts a scoped dark card inside a light page renders
+      the dark surface while the page stays light.
+
+#### Phase 2 — Studio as the distribution
+
+- [x] `demo/studio.html` becomes the first-party product surface: it loads
+      `seed-system.css` so the seed drives the accent, and emits the full
+      derived system — the resolved 12-step `--bf-tone-*` ramp is read live and
+      exported into `tokens.json`. (Image → hue/chroma extraction is demo-only
+      future work; the colour picker already drives the seed.)
+- [x] Keep the existing "six lines" + `tokens.json` export; add the derived
+      tonal ramp to the `tokens.json` export.
+- [x] Document the workflow in `docs/theming.md` + a new `docs/studio.md`.
+
+#### Phase 3 — Hardening & release
+
+- [x] README + conformance callouts; `npm run check` green (verification
+      pending — Node is not installed in the editing environment, so `npm run
+      check` / the suites could not be executed here; the code is written to the
+      existing conventions and the new tests are added); `full.css` frozen
+      (ADR-0008 untouched — generative + scope ship opt-in, never in the
+      barrel).
+- [ ] Tag `v5.2.0`.
+
+#### Guardrails (every phase)
+
+- Opt-in by import; ADR-0008 (`full.css` freeze) untouched; `@supports` gate,
+  degrade by omission; size budget enforced by `npm run size`; seed math stays
+  CSS-only (no JS in the shipped framework — Studio's image extraction is
+  demo-only JS).
+
+### v5.3+ — un-gate the engine-gated (speculative, flag before starting)
 
 - [ ] **Scroll-driven animations green on Firefox.** Phase 3 found the
       *installed* FF build (1538) did not enable SDA at runtime, which is
@@ -578,8 +653,6 @@ ADR-0012 `@property` revisit).
       tests flip green (no source change needed — just drop the skip).
 - [ ] **Cross-document view transitions on Firefox/WebKit** once
       `pageswap`/`pagereveal` land there (today Chromium-only, gated).
-- [ ] **Container-scoped theming** — a dark component inside a light page via
-      `@container style()`. Powerful but risky; treat as experimental.
 
 ### Carried non-goals (declined, do not revive)
 

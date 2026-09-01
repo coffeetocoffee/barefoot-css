@@ -1,0 +1,37 @@
+/* Barefoot — generative system, keystone (opt-in).
+   Turns the two generative seed knobs (--bf-seed-h / --bf-seed-c) into the
+   framework's master accent. The whole colour system then derives from one
+   seed:
+
+     --bf-seed-h / --bf-seed-c
+        → --bf-primary              (this file)
+        → --bf-primary-hover/subtle/contrast/border/muted/strong
+           + --bf-surface-2/3, *-muted, *-subtle, *-darken
+                                    (Chroma engine, tokens.css)
+        → --bf-tone-1 … --bf-tone-12 (12-step OKLCH ramp, tokens.css)
+
+   "One colour in, a whole system out" — literally. Set the dial, not a
+   dozen values, and every component follows.
+
+   Import in addition to tokens.css; opt-in so the default no-seed contract
+   and the byte budget stay intact (ADR-0005 / 0008 / 0013). The default
+   framework look (neutral ink accent) is untouched until you import this.
+
+   import "barefoot/themes/seed-system.css"; */
+
+/* stylelint-disable lightness-notation, hue-degree-notation */
+@layer tokens {
+  @supports (color: oklch(from red l c h)) {
+    :root {
+      /* Master accent derived from the seed. Mid lightness (0.55) keeps AA
+         text contrast when paired with the auto-computed --bf-primary-fg
+         (the Chroma engine derives it from --bf-primary). */
+      --bf-primary: oklch(0.55 var(--bf-seed-c) var(--bf-seed-h));
+
+      /* Brand-tinted surface for cards/panels that echo the accent without
+         losing neutrality — derived, not a duplicate palette. */
+      --bf-surface-brand: oklch(0.96 0.03 var(--bf-seed-h));
+    }
+  }
+}
+/* stylelint-enable lightness-notation, hue-degree-notation */

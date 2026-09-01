@@ -2244,6 +2244,75 @@ test.describe("generative theming (v5.0 Phase 4)", () => {
   });
 });
 
+test.describe("generative system + container-scoped theming (v5.2)", () => {
+  // v5.2: one seed becomes the master accent and derives the whole colour
+  // system (seed-system.css); and a dark panel scopes per container with zero
+  // JS (theming-scope.css). Contrast is the contract — never asserted.
+
+  test("seed-system: one seed drives the master accent (source contract)", () => {
+    const src = fs.readFileSync(
+      path.join(rootDir, "src/themes/seed-system.css"),
+      "utf8"
+    );
+    // The seed knobs must become --bf-primary via relative color.
+    expect(src, "seed must derive --bf-primary").toContain(
+      "--bf-primary: oklch(0.55 var(--bf-seed-c) var(--bf-seed-h))"
+    );
+    expect(src).toContain('@supports (color: oklch(from red l c h))');
+  });
+
+  test("seed-system: turning the seed dial re-skins the whole colour system", async ({ page }) => {
+    await gotoDemo(page);
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/seed-system.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: css });
+    const primaryA = await tokenColor(page, "--bf-primary");
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty("--bf-seed-h", 20);
+      document.documentElement.style.setProperty("--bf-seed-c", 0.2);
+    });
+    const primaryB = await tokenColor(page, "--bf-primary");
+    expect(primaryB, "primary must follow the seed").not.toBe(primaryA);
+    // The Chroma engine derives hover from --bf-primary; it must differ.
+    const hover = await tokenColor(page, "--bf-primary-hover");
+    expect(hover, "chroma engine must derive hover from the seeded accent").not.toBe(primaryB);
+  });
+
+  test("theming-scope: a dark panel scopes per container inside a light page", async ({ page }) => {
+    await gotoDemo(page);
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/theming-scope.css"),
+      "utf8"
+    );
+    expect(css, "scope must use @container style()").toContain(
+      "@container bf-scope style(--bf-scope-theme: dark)"
+    );
+    await page.addStyleTag({ content: css });
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-bf-theme", "light");
+      const panel = document.createElement("section");
+      panel.setAttribute("data-bf-scope", "dark");
+      panel.id = "scope-panel";
+      panel.innerHTML = '<span id="scope-probe">x</span>';
+      document.body.append(panel);
+    });
+    const probeSurface = await page.locator("#scope-probe").evaluate((el) => {
+      const p = document.createElement("span");
+      el.append(p);
+      p.style.color = "var(--bf-surface)";
+      const c = getComputedStyle(p).color;
+      p.remove();
+      return c;
+    });
+    const pageSurface = await tokenColor(page, "--bf-surface");
+    expect(probeSurface, "scoped panel must differ from the light page").not.toBe(pageSurface);
+    // dark scope resolves --bf-surface to #161616.
+    expect(probeSurface.replace(/\s/g, ""), "scoped surface must be the dark value").toContain("22,22,22");
+  });
+});
+
 test.describe("adaptive components (v5.1)", () => {
   test("tabs-adaptive: scroll-snap row when wide, wrap when narrow", async ({ page }) => {
     await gotoDemo(page);
