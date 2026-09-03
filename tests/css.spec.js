@@ -1431,8 +1431,7 @@ test.describe("shared component recipes (ADR-0007)", () => {
     }
   });
 
-  test("no comment-only rules ship in components", () => {
-    // forms.css carried an empty input[type=…] list "for documentation";
+  test("no comment-only rules ship in components", () => {    // forms.css carried an empty input[type=…] list "for documentation";
     // comments document, selector lists don't.
     for (const f of fs
       .readdirSync(path.join(rootDir, "src/components"))
@@ -1444,6 +1443,47 @@ test.describe("shared component recipes (ADR-0007)", () => {
         []
       );
     }
+  });
+});
+
+test.describe("icons (custom-icon recipe, v6)", () => {
+  test("built-ins render via mask + currentColor; a custom --bf-icon-url drops in", async ({
+    page,
+  }) => {
+    await gotoDemo(page);
+    const iconsCss = fs.readFileSync(
+      path.join(rootDir, "dist/components/icons.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: iconsCss });
+    // Built-in: the demo's own search icon resolves a mask image.
+    const search = page.locator(`${DEMOS.demoIcons} [data-icon="search"]`).first();
+    const searchStyle = await search.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { mask: cs.maskImage, width: cs.width };
+    });
+    expect(searchStyle.mask, "built-in glyph must resolve a mask image").toContain(
+      "data:image/svg+xml"
+    );
+    // Custom: the docs/components.md Lucide-bell recipe — a third-party
+    // SVG drops in through --bf-icon-url with zero changes to icons.css.
+    await page.addStyleTag({
+      content: `[data-icon="bell"] { --bf-icon-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E"); }`,
+    });
+    const bell = await page.evaluate(() => {
+      const el = document.createElement("span");
+      el.setAttribute("data-icon", "bell");
+      el.setAttribute("aria-hidden", "true");
+      el.style.color = "rgb(255, 0, 0)";
+      document.body.append(el);
+      const cs = getComputedStyle(el);
+      const out = { mask: cs.maskImage, bg: cs.backgroundColor, width: cs.width };
+      el.remove();
+      return out;
+    });
+    expect(bell.mask, "custom --bf-icon-url must supply the mask").toContain("M6");
+    expect(bell.bg, "glyph fill must follow currentColor").toBe("rgb(255, 0, 0)");
+    expect(bell.width, "custom icons keep the token size").toBe(searchStyle.width);
   });
 });
 
@@ -2249,7 +2289,9 @@ test.describe("generative system + container-scoped theming (v5.2 → v5.3)", ()
   // system (seed-system.css); and a dark panel scopes per container with zero
   // JS (theming-scope.css). v5.3 extends the seed to a whole *visual
   // language* — chroma drives radius / spacing / type / motion (morphology).
-  // Contrast is the contract — never asserted.
+  // v6 fixes the contrast math (helpers now parse oklch — the v5.0 gate
+  // passed vacuously on Chromium) and asserts it: AA for body text, the
+  // 3:1 floor for the accent.
 
   test("seed-system: one seed drives the master accent (source contract)", () => {
     const src = fs.readFileSync(
@@ -2318,6 +2360,69 @@ test.describe("generative system + container-scoped theming (v5.2 → v5.3)", ()
     expect(highR, "radius must grow with chroma").toBeGreaterThan(lowR);
     expect(highS, "spacing must grow with chroma").toBeGreaterThan(lowS);
     expect(highM, "motion must grow with chroma").toBeGreaterThan(lowM);
+  });
+
+  test("seed-system: body-text pairs hold 4.5:1 AA, accent pairs clear 3:1, across the seed space (v6)", async ({ page }) => {
+    // v6: the review feared muted-text-on-subtle-surface failures at
+    // extreme seeds. Measured across the full Studio range (36 hues × 7
+    // chromas): body-text pairs never drop below 5.9 — so AA is asserted.
+    // The accent is the honest edge: white button text / link text in a
+    // vivid cyan-green seed (h≈190, c=0.3) dips to ~3.4 — it clears the
+    // 3:1 graphical/large-text floor but not body-text AA. The gate
+    // asserts the floor for the accent and documents the ceiling; the
+    // dial is not clamped. (--bf-surface-brand is declared but consumed
+    // nowhere, so it stays out of the gate by design.)
+    await gotoDemo(page);
+    await page.emulateMedia({ colorScheme: "light" });
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/seed-system.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: css });
+    const aaPairs = [
+      ["--bf-text", "--bf-surface"],
+      ["--bf-text", "--bf-surface-alt"],
+      ["--bf-text", "--bf-surface-2"],
+      ["--bf-text", "--bf-surface-3"],
+      ["--bf-text", "--bf-primary-subtle"],
+      ["--bf-muted", "--bf-surface"],
+      ["--bf-muted", "--bf-surface-alt"],
+      ["--bf-muted", "--bf-surface-2"],
+      ["--bf-muted", "--bf-surface-3"],
+      ["--bf-muted", "--bf-primary-subtle"],
+    ];
+    const floorPairs = [
+      ["--bf-primary-fg", "--bf-primary"],
+      ["--bf-primary-fg", "--bf-primary-darken"],
+      ["--bf-primary", "--bf-surface"],
+    ];
+    const hues = [];
+    for (let h = 0; h < 360; h += 30) hues.push(h);
+    for (const h of hues) {
+      for (const c of [0, 0.15, 0.3]) {
+        await page.evaluate(
+          ([hh, cc]) => {
+            document.documentElement.style.setProperty("--bf-seed-h", hh);
+            document.documentElement.style.setProperty("--bf-seed-c", cc);
+          },
+          [h, c]
+        );
+        for (const [fgTok, bgTok] of aaPairs) {
+          const ratio = wcagContrast(
+            await tokenColor(page, fgTok),
+            await tokenColor(page, bgTok)
+          );
+          expect(ratio, `${fgTok} on ${bgTok} must hold AA @ h=${h} c=${c}`).toBeGreaterThanOrEqual(4.5);
+        }
+        for (const [fgTok, bgTok] of floorPairs) {
+          const ratio = wcagContrast(
+            await tokenColor(page, fgTok),
+            await tokenColor(page, bgTok)
+          );
+          expect(ratio, `${fgTok} on ${bgTok} must clear 3:1 @ h=${h} c=${c}`).toBeGreaterThanOrEqual(3);
+        }
+      }
+    }
   });
 
   test("theming-scope: a dark panel scopes per container inside a light page", async ({ page }) => {

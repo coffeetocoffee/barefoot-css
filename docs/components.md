@@ -1029,6 +1029,36 @@ support, carousel controls + autoplay) and their markup.
 - Twelve glyphs: `search`, `close`/`x`, `menu`, `check`, `chevron-down`, `chevron-right`, `plus`, `trash`, `star`, `heart`, `settings`/`gear`, `user`. Add a new one by adding a `[data-icon="name"] { --bf-icon-url: url("data:image/svg+xml,…") }` rule — same pattern.
 - **A11y:** icons are decorative (`aria-hidden="true"`); where the icon is the only content, give the parent button a visible label or `aria-label`.
 
+### Using your own icons (v6)
+
+The 12 built-ins are a size-budget stance, not a ceiling — `[data-icon]`
+reads an arbitrary `--bf-icon-url`, so any SVG set (Lucide, Heroicons,
+your own) drops in with the mask + `currentColor` behavior intact. Two
+forms, same one-liner:
+
+```css
+/* Form 1 — inline data URL (zero requests, themable, copy-pasteable).
+   Example: Lucide "bell" (24×24 stroke icon, lucide.dev). */
+[data-icon="bell"] {
+  --bf-icon-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.94 1.94 0 0 0 3.4 0'/%3E%3C/svg%3E");
+}
+
+/* Form 2 — external file (cacheable, one rule per glyph). */
+[data-icon="bell"] {
+  --bf-icon-url: url("/icons/bell.svg");
+}
+```
+
+```html
+<span data-icon="bell" aria-hidden="true"></span>
+<span data-icon="bell" data-size="lg" aria-hidden="true"></span>
+```
+
+- **Paint shapes opaque, any color (black is convention).** The mask reads the image's *alpha*, and the visible color always comes from `background: currentColor` on `[data-icon]` — so `currentColor` *inside* your SVG source does nothing (an SVG loaded as a mask is isolated from the page). Never bake a fixed fill into the glyph; hover, theme, and `color` keep working for free.
+- **Sizing is unchanged:** `--bf-icon-size` / `data-size="sm|lg"` apply to custom icons exactly like built-ins; the mask scales with `contain`, so 16×16 and 24×24 sources behave the same.
+- **A11y:** same contract — decorative icons get `aria-hidden="true"`; a lone icon inside a button means the button needs the `aria-label`.
+- **Budget note:** inline data URLs ship inside your CSS (no request, but bytes in the stylesheet); external files cache separately. Either way the glyph stays out of `icons.css` — the 12-glyph core and the size budget are untouched.
+
 ## Command palette (v4.7)
 
 ```html

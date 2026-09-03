@@ -120,10 +120,39 @@ export async function gotoStudio(page) {
   await page.goto("/demo/studio.html");
 }
 
-/* Relative luminance of a computed color string (e.g. "rgb(255 255 255)").
-   WCAG 2.1 linearization; the monotonic-ordering proxy for the generative
-   tonal scale (contrast-vs-black is too flat at the dark end to order by). */
+/* Relative luminance of a computed color string. Handles the two
+   serializations engines return: legacy "rgb(...)" and modern
+   "oklch(...)" — Chromium preserves the oklch form for relative-color
+   derivations, and parsing its L/C/H° numbers as sRGB bytes silently
+   measured garbage (the hue degrees alone inflated "luminance", so the
+   v5.0 contrast gate passed vacuously; fixed in v6). WCAG 2.1
+   linearization throughout; the monotonic-ordering proxy for the
+   generative tonal scale (contrast-vs-black is too flat at the dark
+   end to order by). */
 export function luminance(color) {
+  const oklch = color.match(/oklch\(\s*([^\s]+)\s+([^\s]+)\s+([^)]+)\)/);
+  if (oklch) {
+    // OKLCH → OKLab → linear sRGB (Ottosson); linear channels feed the
+    // WCAG weights directly. Out-of-gamut seeds clamp per channel —
+    // the test-gate approximation of the browser's gamut mapping.
+    const num = (v) => (v === "none" ? 0 : Number(v));
+    const L = num(oklch[1]);
+    const C = num(oklch[2]);
+    const H = (num(oklch[3]) * Math.PI) / 180;
+    const a = C * Math.cos(H);
+    const b = C * Math.sin(H);
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+    const l = l_ ** 3;
+    const m = m_ ** 3;
+    const s = s_ ** 3;
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    const r = clamp01(+4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+    const g = clamp01(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+    const bl = clamp01(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  }
   const m = (color.match(/[\d.]+/g) || [0, 0, 0]).map(Number);
   const srgb = m.slice(0, 3).map((v) => {
     v = v / 255;

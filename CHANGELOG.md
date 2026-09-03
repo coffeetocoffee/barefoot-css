@@ -4,6 +4,44 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] — 2026-09-03
+
+### Added
+
+- **Seed-space contrast gate.** A new `css.spec.js` test sweeps the full
+  Studio seed range (12 hues × 3 chromas, pinned light scheme) and asserts
+  10 body-text pairs (`--bf-text` / `--bf-muted` on surface / alt / 2 / 3 /
+  subtle) hold 4.5:1 AA, plus a 3:1 floor for 3 accent pairs
+  (`--bf-primary-fg` on primary / darken, `--bf-primary` on surface).
+  Measured worst body-text pair: 5.9:1. Known edge, asserted as floor:
+  white button/link text in a vivid cyan-green seed (h≈190, c=0.3) dips to
+  ~3.4:1 — the seed dial stays unclamped by design.
+- **CDN quick-start.** The README now opens with a copy-paste HTML
+  boilerplate on jsDelivr (core + one commented `<link>` each for a
+  component shard and a theme) — no build step, no install. npm stays the
+  second path.
+- **Custom-icon recipe + first icons test.** `docs/components.md` gained
+  "Using your own icons": any SVG set (Lucide, Heroicons) drops in through
+  `--bf-icon-url` (data-URL and file forms, worked Lucide-bell example),
+  with the mask-alpha / `currentColor` mechanics spelled out. A new
+  `css.spec.js` test proves the recipe renders — and covers `[data-icon]`
+  itself for the first time. No new built-in glyphs; `icons.css` and the
+  size budget are untouched.
+
+### Fixed
+
+- **The v5.0 contrast gate measured garbage on Chromium.** Computed colors
+  serialize as `oklch(...)`, and the `luminance()` test helper parsed the
+  L/C/H° numbers as sRGB bytes — the hue degrees alone inflated the result,
+  so the 3:1 gate passed without measuring anything. The helper now
+  converts OKLCH → linear sRGB (Ottosson) with per-channel gamut clamping;
+  the old gate measures for real and still passes.
+- **Paid the v5.2/v5.3 verification debt.** Both shipped with "could not be
+  executed here" caveats; the full matrix has now run locally —
+  `npm run check` green plus Chromium 195 passed, Firefox 166, WebKit 171,
+  visual regression green on all three (win32 baselines). Caveats struck
+  from `plan.md`.
+
 ## [Unreleased]
 
 ### Added

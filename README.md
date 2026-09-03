@@ -23,6 +23,30 @@
 
 ## Quick start
 
+No build step. Paste this into a plain HTML file and you're styling —
+CDN first, npm second:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot test drive</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/index.css">
+  <!-- opt-in components + themes, one <link> each: -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/components/dialog.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/themes/sunset.css"> -->
+</head>
+<body>
+  <button>Save</button>
+  <input type="email" placeholder="you@example.com">
+</body>
+</html>
+```
+
+Or install it:
+
 ```bash
 npm install barefoot-css
 ```

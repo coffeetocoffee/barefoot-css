@@ -1,6 +1,6 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap); v5.2 planned as "The Design System That Writes Itself" (generative system + container-scoped theming)_
+_Last updated: 2026-09-03 — v6 work complete (all three phases [x]: verification debt paid + CDN quick-start + icon recipe, three-engine suites green locally); tagging/releasing left to the maintainer_
 
 ## Snapshot
 
@@ -24,9 +24,13 @@ _Last updated: 2026-08-31 — v5.1.0 shipped (completes the deferred roadmap); v
   for Figma/iOS/Android), and gzip/brotli are measured by the build
   again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
   per-component is the headline path.
-- **Next:** **v5.2 — "The Design System That Writes Itself."** v5.1.0 ("land the deferred")
-  shipped 2026-08-31, closing the v5.1 roadmap; future work lands in the
-  [v5.1+ Roadmap](#v51-roadmap--after-the-v50-release) below (now mostly `[x]`). The v5.0 arc is phased in
+- **Next:** **v6 — "Prove it, then let people in."** No new surface: pay
+  down the verification debt (run `npm run check` + the three-engine suites
+  locally — Node is available now — and strike the v5.2/v5.3 "could not be
+  executed here" caveats), add a CDN quick-start to the README, and document
+  the `--bf-icon-url` escape hatch as the first-party icon-integration
+  recipe. Full breakdown in [v6](#v6--prove-it-then-let-people-in).
+  The v5.0 arc is phased in
   [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
   below: container-adaptive components, the zero-JS floor raise, and
   generative theming 2.0. **Phase 0 recon done** — engine matrix verified
@@ -630,12 +634,13 @@ no class war.
 
 #### Phase 3 — Hardening & release
 
-- [x] README + conformance callouts; `npm run check` green (verification
-      pending — Node is not installed in the editing environment, so `npm run
-      check` / the suites could not be executed here; the code is written to the
-      existing conventions and the new tests are added); `full.css` frozen
-      (ADR-0008 untouched — generative + scope ship opt-in, never in the
-      barrel).
+- [x] README + conformance callouts; `npm run check` green — **verified
+      locally 2026-09-03 (v6 Phase 0):** build + 10KB budget
+      (`index.css` 2.88KB gzip) + docs regen + stylelint all PASS;
+      Chromium 195 passed / 2 engine-gated skips, Firefox 166 / 12,
+      WebKit 171 / 7, visual regression green on all three (win32
+      baselines). `full.css` frozen (ADR-0008 untouched — generative +
+      scope ship opt-in, never in the barrel).
 - [ ] Tag `v5.2.0`.
 
 #### Guardrails (every phase)
@@ -710,9 +715,9 @@ reads as expressive, low chroma as minimal — so chroma drives the rhythm:
   "Seed → whole visual language" + `docs/studio.md` v5.3 notes + new
   `docs/adr/0014-generative-morphology.md`. `full.css` frozen (ADR-0008
   untouched — morphology ships only inside opt-in `seed-system.css`). Tag `v5.3.0`
-  pending `npm run check` (Node is not installed in the editing environment, so
-  the suites could not be executed here; code is written to existing conventions
-  and the new morphology test is added).
+  — **verified locally 2026-09-03 (v6 Phase 0):** `npm run check` green and
+  the full three-engine suites pass (same counts as the v5.2 note above);
+  the morphology test passes on all three engines.
 
 #### Guardrails (every phase)
 
@@ -732,6 +737,101 @@ reads as expressive, low chroma as minimal — so chroma drives the rhythm:
 - **Anchor-laid-out everything** — anchor positioning to make *any*
   component non-modally layer (beyond popovers/tooltips). More "web feature"
   than "CSS feature"; lower priority than the generative moat.
+
+### v6 — "Prove it, then let people in"
+
+> No new surface. v6 pays down the verification debt, opens the front door,
+> and documents the escape hatch that already exists.
+
+An external review of v5.3 surfaced three gaps worth acting on — and, just as
+importantly, a pile of "missing features" that are deliberate non-goals with
+ADRs behind them (framework wrappers, masonry before engines, DTCG types the
+spec doesn't have). Those stay declined. These three are real:
+
+#### Phase 0 — Verification debt (the headline; do this first)
+
+- [x] **Run the suites for real.** v5.2 and v5.3 shipped with the honest
+      caveat "Node is not installed in the editing environment, so `npm run
+      check` / the suites could not be executed here". **Done 2026-09-03:**
+      `npm run check` green (build + `index.css` 2.88KB/10KB budget + docs
+      regen + stylelint); Chromium 195 passed / 2 engine-gated skips,
+      Firefox 166 / 12, WebKit 171 / 7 — zero failures, visual regression
+      green on all three against the win32 baselines. (Local env note:
+      Playwright's Firefox/WebKit needed the VC++ 2015–2022 redistributable
+      `msvcp140_1.dll` — installed once via the official `vc_redist.x64.exe`.)
+- [x] Fix anything the run surfaces, then **strike the caveats** from the
+      v5.2/v5.3 Phase 3 notes and record the green run counts in Snapshot.
+      Two real findings, both fixed inside the gate (no token changes):
+      (1) the v5.0 3:1 gate was **vacuous on Chromium** — computed colors
+      serialize as `oklch(...)` and `luminance()` parsed L/C/H° as sRGB
+      bytes, so it passed without measuring. `helpers.js` now converts
+      OKLCH→linear-sRGB properly (Ottosson) and the old gate measures for
+      real. (2) the feared muted-on-subtle failure **does not exist**
+      (worst measured pair 5.9:1) — but a genuine edge does: white button
+      text / link text in a vivid cyan-green seed (h≈190, c=0.3) dips to
+      ~3.4:1. Asserted as a 3:1 floor, documented as the AA ceiling; the
+      dial stays unclamped.
+- [x] **Contrast gate, extended (cheap hardening while we're in the tests).**
+      New `css.spec.js` test "body-text pairs hold 4.5:1 AA, accent pairs
+      clear 3:1, across the seed space": 10 body-text pairs
+      (`--bf-text`/`--bf-muted` on surface/alt/2/3/subtle) asserted at AA,
+      3 accent pairs (`--bf-primary-fg` on primary/darken, `--bf-primary`
+      on surface) asserted at the 3:1 floor, swept over 12 hues × 3 chromas
+      in pinned light scheme. (`--bf-surface-brand` is declared but consumed
+      nowhere — out of the gate by design.)
+
+**Gate:** a fully green local run of `npm run check` + all three engines,
+recorded in this file, caveats gone.
+
+#### Phase 1 — CDN quick-start (the front door)
+
+- [x] **README gets a copy-paste CDN section.** Zero CDN mentions today; a
+      framework whose non-goal is "any build step" should let someone be
+      styling in ten seconds. `https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/index.css`
+      plus one `<link>` boilerplate block, npm kept as the second path.
+      **Done 2026-09-03:** full HTML boilerplate first, npm second; all
+      three URLs (`index.css`, `components/dialog.css`, `themes/sunset.css`)
+      verified resolving live on jsDelivr.
+- [x] Verify the jsDelivr URLs resolve for `index.css`, a component shard,
+      and a theme; note in docs/performance.md that gzip is what CDNs serve
+      (already the budget's contract — `performance.md` said it since
+      before v6, no edit needed).
+
+**Gate:** the snippet works from a plain HTML file with no install step.
+
+#### Phase 2 — Icon integration recipe (document the hatch)
+
+- [x] **No new glyphs; document the escape hatch.** The 12-glyph set is a
+      size-budget stance, not an oversight — shipping 30–50 inline masks
+      fights the ~10KB thesis. But `[data-icon]` already reads an arbitrary
+      `--bf-icon-url`, so Lucide/Heroicons SVGs can be dropped in *today*
+      with the mask + `currentColor` behavior intact. It just isn't written
+      down anywhere.
+- [x] Add an "Using your own icons" section to docs/components.md: the
+      one-liner custom-property recipe, a worked Lucide example (data-URL
+      and file-URL forms), and the a11y note (aria-label when the icon is
+      the only content). Docs-only change; `icons.css` and the budget stay
+      untouched. **Done 2026-09-03**, plus the mechanism note the recipe
+      depends on (the mask reads image *alpha*; page `currentColor` never
+      reaches inside the SVG file), and a permanent `css.spec.js` test —
+      "built-ins render via mask + currentColor; a custom --bf-icon-url
+      drops in" — which also covers `[data-icon]` itself for the first
+      time (nothing asserted it before).
+
+**Gate:** recipe copy-pastes into the demo and renders a Lucide glyph at
+`currentColor`; stylelint + size budget untouched by definition.
+
+#### Explicitly declined from the review (do not revive)
+
+- React/Vue/Svelte wrappers and a PostCSS plugin — carried non-goal
+  ("No JS framework integration"); plain CSS *is* the framework-agnostic
+  story, and a plugin contradicts the no-build-step pillar.
+- Masonry / deep-subgrid layout primitives — watch-list until engines
+  ship; nothing to build.
+- Studio as a standalone hosted app — `demo/studio.html` already deploys
+  to GitHub Pages on every push to main; a custom domain is marketing,
+  not code.
+- 30–50 built-in glyphs — see Phase 2; the recipe is the feature.
 
 ### Carried non-goals (declined, do not revive)
 
