@@ -3,15 +3,14 @@ name: Release
 # Publish a new version to npm when a vX.Y.Z tag is pushed.
 # Tag it with:  git tag v1.0.0 && git push origin v1.0.0
 #
-# REQUIRED before tagging: the `NPM_TOKEN` secret must be a granular
-# access token with **"Publish to the public registry"** permission AND
-# **"bypass 2FA"** enabled — without "bypass 2FA", npm rejects automated
-# publishes with `E403 Forbidden` no matter what. Create it at:
-#   https://www.npmjs.com/settings/<user>/tokens → "new granular access
-#   token" → check "bypass 2FA" → save it as the `NPM_TOKEN` repository
-#   secret. Tokens are cheap to rotate: refresh the secret before each
-#   release, and the preflight step below catches a missing/wrong token
-#   within seconds instead of after the whole build+test run.
+# Auth is OIDC trusted publishing — no NPM_TOKEN secret, nothing to
+# rotate, nothing to leak. Prerequisite (one-time, on npmjs.com →
+# package settings → Trusted Publisher): authorize GitHub Actions for
+# this repo + this workflow file. The workflow side needs
+# `id-token: write` (below) and npm ≥ 11.5.1 (Node 22 ships npm 10,
+# hence the upgrade step); `npm publish` then mints a short-lived
+# token itself. Do NOT set NODE_AUTH_TOKEN — a static token would take
+# precedence and reintroduce the E403/2FA failure mode.
 on:
   push:
     tags:
@@ -19,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   publish:
@@ -32,15 +32,13 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: npm
 
-      # Fail fast: a missing/invalid token is useless to debug after a
-      # 2-minute build+test run. `npm whoami` resolves the token set up
-      # above and errors immediately if it can't authenticate. (It can't
-      # detect a *stale* token with bypass-2FA missing — npm only rejects
-      # that at publish time — but it catches the 90% case.)
-      - name: Preflight — token authenticates
-        run: npm whoami
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # OIDC trusted publishing needs npm ≥ 11.5.1; Node 22 ships npm 10,
+      # so upgrade first. Fail-fast bonus: if the npm upgrade or the
+      # registry handshake breaks, it breaks here — before build+test.
+      - name: Preflight — npm with OIDC trusted-publishing support
+        run: |
+          npm install -g npm@11
+          npm --version
 
       - name: Install
         run: npm ci
@@ -56,11 +54,11 @@ jobs:
       - name: Tests (a11y + JS + CSS behavior)
         run: npx playwright test --project=chromium tests/a11y.spec.js tests/js.spec.js tests/css.spec.js
 
-      # Prepublish runs npm run check again; skip audit since npm publishes already-built dist.
+      # Prepublish runs npm run check again; skip audit since npm publishes
+      # already-built dist. OIDC: no NODE_AUTH_TOKEN — trusted publishing
+      # mints the token from the workflow's id-token at publish time.
       - name: Publish to npm
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
