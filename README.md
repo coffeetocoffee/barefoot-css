@@ -5,17 +5,18 @@
 [![npm version](https://img.shields.io/npm/v/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![npm downloads](https://img.shields.io/npm/dm/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
-[![v5.0](https://img.shields.io/badge/phase-5.0%20%E2%80%94%20the%20component%20is%20the%20breakpoint-2b7a4f)](docs/adaptive.md)
+[![v6.2](https://img.shields.io/badge/phase-6.2%20%E2%80%94%20the%20layout%20is%20the%20breakpoint-2b7a4f)](docs/layout.md)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
 ---
 
 ## Why Barefoot?
 
-- **~10KB or bust.** `index.css` is **2.88KB gzipped** (measured, not estimated — see the table below). Import the core plus only the component files you use; the *everything* bundle (`full.css`) has been frozen since v4.6 (ADR-0008) so per-component stays the real story.
-- **The component is the breakpoint.** *(v5.0)* Components adapt to the **box they're dropped in**, not the viewport. Drop a data table into a sidebar and it card-stacks. Widen it and it returns to rows. No media queries, no JS, no re-render. → [docs/adaptive.md](docs/adaptive.md)
-- **Theming by default.** Every visual is a `--bf-*` custom property. Re-skin with a handful of variables — no Sass, no recompile. Tokens also ship as a W3C DTCG `tokens.json` for Figma / iOS / Android sync, and v5.0 adds a **generative 12-step ramp** you steer with two dials (`--bf-seed-h` / `--bf-seed-c`). v5.2's opt-in `seed-system.css` takes it further: **one seed becomes the master accent and derives the whole colour system** — "one colour in, a whole system out" (→ [docs/studio.md](docs/studio.md)). v5.3's opt-in `seed-system.css` goes further still: the seed's **chroma** also derives the visual *temperament* — radius, spacing, container type, and motion — so one colour in, a whole *visual language* out. And `theming-scope.css` scopes a dark panel inside a light page, zero JS, via `@container style()`.
-- **JS-free, by default.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>`, accordions are `<details name>`. Form validation is pure CSS (`:user-valid` / `:user-invalid`). Optional tiny JS modules (tabs, sortable tables, menu keyboard nav, theme persistence) are opt-in and zero-dependency.
+- **Tiny on purpose.** `index.css` is **2.90KB gzipped** — measured, not estimated (receipts below). Import the core plus only the components you use; the *everything* bundle (`full.css`) has been frozen since v4.6, so per-component stays the real story.
+- **The layout is the breakpoint.** *(v6.2)* Components — and now layouts — adapt to the **box they're dropped in**, not the viewport. A data table in a sidebar card-stacks; widen it and it's rows again. A sidebar splits, then stacks. No media queries, no JS, no re-render. Don't take our word for it — [drag the boxes in the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html).
+- **Theming by default.** Every visual is a `--bf-*` custom property — re-skin with a handful of variables, no Sass, no recompile. Tokens ship as W3C DTCG `tokens.json` for Figma / iOS / Android, one seed can derive the whole system ([Studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)), and a dark panel can live inside a light page with zero JS.
+- **JS-free, by default.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>`, accordions are `<details name>`, validation is pure CSS. The few things CSS genuinely can't do (tabs, sortable tables, theme persistence) are tiny opt-in, zero-dependency modules.
+- **It checks your laces.** *(v6.1)* An opt-in dev checker audits Barefoot's own markup contracts — the stuff axe can't know — right in your console.
 - **Accessible out of the box.** Native elements hand you focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere, AA contrast by default, `forced-colors` hardened, and an axe-core suite in CI proves it.
 - **No "Bootstrap look."** Neutral by default: ink on paper, hairline borders, no shadows, no gradients. The design is yours — we just supply the muscle.
 
@@ -33,10 +34,10 @@ CDN first, npm second:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Barefoot test drive</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/index.css">
   <!-- opt-in components + themes, one <link> each: -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/components/dialog.css"> -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/themes/sunset.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/components/dialog.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/themes/sunset.css"> -->
 </head>
 <body>
   <button>Save</button>
@@ -74,20 +75,19 @@ npm install barefoot-css
 
 ---
 
-## The v5.0 headline: *the component is the breakpoint*
+## The v6.2 headline: *the layout is the breakpoint*
 
-Stop asking "how wide is the screen?" Start asking "how wide am I **here**?" A sidebar, a card, a grid cell — none of them *is* the viewport. v5.0's adaptive components sense their **container** and re-flow to fit:
+Stop asking "how wide is the screen?" Start asking "how wide am I **here**?" A sidebar, a card, a grid cell — none of them *is* the viewport. v5.0 taught components to sense their **container**; v6.2 teaches layouts the same trick:
 
-| Component | Adaptive behavior |
+| Primitive | What it does |
 |---|---|
-| `table[data-table="adaptive"]` | Card-stacks when its container is narrow; stays a real `<table>` in the a11y tree. |
-| `form[data-form="adaptive"]` | `.bf-row` collapses to one column; reveals a zero-JS error summary. |
-| `.card[data-card="adaptive"]` | Horizontal ↔ vertical by container. |
-| `[data-segmented][data-adaptive]` | Compresses label padding when narrow or under `data-density="compact"`. |
+| `.bf-flow` | Vertical rhythm that breathes with the box — tight in a sidebar, roomy in a column. |
+| `.bf-switcher` | Children share a row while the box is wide; each takes a full row when it's narrow. |
+| `.bf-sidebar` | Aside beside main in a wide box; stacked beneath it in a narrow one. |
 
-Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adaptive.md](docs/adaptive.md)
+Still true from v5.0: `table[data-table="adaptive"]` card-stacks, `form[data-form="adaptive"]` reflows to one column with a zero-JS error summary, `.card[data-card="adaptive"]` flips horizontal↔vertical, `[data-segmented][data-adaptive]` compresses. → [docs/adaptive.md](docs/adaptive.md)
 
-v6.2 extends the thesis to layout: container-aware `.bf-flow`, `.bf-switcher`, and a deterministic `.bf-sidebar` upgrade — all opt-in — plus a resizable [playground](demo/playground.html). → [docs/layout.md](docs/layout.md)
+Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:** [the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) — drag a box, watch it reflow. → [docs/layout.md](docs/layout.md)
 
 ---
 
@@ -184,7 +184,7 @@ Opt-in JS (`dist/js/`): nine zero-dependency behavior modules, imported one by o
 
 ---
 
-## Browser baseline (v5.0)
+## Browser baseline
 
 Modern evergreen browsers only — **Chrome 135+ / Firefox 151+ / Safari 26.2+** (ADR-0010). v5.0 leans on container queries, container *style* queries, container units, anchor positioning, the Invoker Commands API, and `oklch()` relative color. Barefoot deliberately does **not** transpile away modern CSS — that's exactly where the size and simplicity come from. Older engines gracefully degrade (e.g. an adaptive table stays a plain table).
 
@@ -220,7 +220,7 @@ build/                 Lightning CSS bundler + size budget + preview server
 ## Docs
 
 - Live: [docs site](https://coffeetocoffee.github.io/barefoot-css/) and
-  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages)
+  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages) — plus the [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) and [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 - [Adaptive components](docs/adaptive.md) — *the* v5.0 feature: container-adaptive by contract
 - [Container-aware layout](docs/layout.md) — the v6.2 layout primitives and playground
 - [Theming](docs/theming.md) — tokens, `light-dark()`, `data-bf-theme`, starter themes, the generative ramp
@@ -247,7 +247,7 @@ npm run preview   # serve demo/ at localhost:4173
 
 Hundreds of tests run across **Chromium, Firefox, and WebKit**:
 
-- **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, and the theme gallery — all at **zero violations** — plus keyboard-contract tests.
+- **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, the theme gallery, and the layout playground — all at **zero violations** — plus keyboard-contract tests.
 - **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End), no-JS-first contracts, popover-menu keyboard nav, theme persistence.
 - **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the layout-primitive suite (v6.2), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
 - **Visual regression (`tests/visual.spec.js`)** — full-page light/dark screenshots against committed per-engine baselines.
@@ -267,4 +267,4 @@ CI (`.github/workflows/ci.yml`) runs six jobs: `build + size budget`, behavior +
 
 ## License
 
-MIT — go build something.
+MIT — go build something. Shoes optional.
