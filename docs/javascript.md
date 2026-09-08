@@ -17,6 +17,7 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/tooltip.js` | Hover tooltip fallback for engines without interest invokers |
 | `js/theme.js` | Theme toggle + persistence for `[data-bf-theme-btn]` buttons |
 | `js/barefoot.js` | All ten in one import |
+| `js/verify.js` | Dev-only contract checker: warns when Barefoot markup is subtly broken ([verify.md](verify.md)) |
 
 Deprecated surfaces keep working through 3.x and warn once per page
 when their markup is present; the full table with replacements lives
@@ -59,7 +60,10 @@ seams: `js/roving-index.js` owns all Arrow/Home/End list math
 (tabs and popover menus parameterize wrap vs clamp), and
 `js/return-focus.js` owns "a disclosure closed → focus returns to its
 opener, but only if focus never left" (header nav, details menus,
-popover menus). See `docs/adr/0006`.
+popover menus). See `docs/adr/0006`. Behavior modules that a
+[Verify](verify.md) rule audits also record themselves with `arm()` at
+import, so the checker can tell a loaded module from missing markup
+support — still plumbing, still not public API.
 
 ## 1. Tabs (`js/tabs.js`)
 
@@ -413,6 +417,24 @@ target element's `id`.
   treat the button as a plain `<button>`; fall back to `popovertarget` /
   `showModal()` there. See the `demo-command` section on the conformance
   demo for a live, keyboard-walkable example.
+
+## 14. Contract checker (`js/verify.js`) — dev-only, not in the barrel
+
+Full documentation: [docs/verify.md](verify.md). The short version:
+
+```html
+<script type="module">
+  import "barefoot-css/js/verify.js";
+</script>
+```
+
+One scan on load; one console warning per broken contract (not per
+element), naming every offender and the fix. `data-bf-verify="strict"`
+on `<html>` throws one aggregate error instead — the CI form. The rules
+live in `js/verify-contracts.js` (ADR-0015: one registry, two formats —
+CI contract-packs will consume the same registry in a later phase).
+`js/barefoot.js` never imports it, and it only ever warns: a page that
+honors the contracts hears nothing.
 
 ## Why no bundle
 

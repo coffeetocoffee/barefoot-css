@@ -1,98 +1,49 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-03 — v6 work complete (all three phases [x]: verification debt paid + CDN quick-start + icon recipe, three-engine suites green locally); tagging/releasing left to the maintainer_
+_Last updated: 2026-09-08 — v6.1.0 "Barefoot Verify" staged for release
+(registry, engine, contract-packs, visible layer, hardening); v5.2/v5.3/v6
+tags still pending the maintainer_
 
 ## Snapshot
 
-- **Current:** `barefoot-css@5.1.0` (2026-08-31) — **the component-is-the-breakpoint
-  release**: container-adaptive components, the zero-JS floor raise, and generative
-  theming 2.0. The 4.9 theme-persistence release (and 4.8 validation work) stands
-  beneath it: the one script every demo page hand-rolled is
-  now a first-party opt-in module. `js/theme.js` wires
-  `[data-bf-theme-btn]` buttons to `data-bf-theme` on `<html>`,
-  remembers the choice in localStorage (`barefoot-theme` key), re-applies
-  it at init, crossfades clicks through `startViewTransition` (skipped
-  under reduced motion), validates names like every variant value, and
-  hands control back to the OS on `auto` — `light-dark()` keeps
-  following system changes with zero JS. The 4.8 zero-JS validation
-  release stands beneath it: touched textual fields draw a check/cross
-  shape cue beside the `:user-valid`/`:user-invalid` border (pure CSS,
-  `currentColor` SVG — no palette baked in), `forced-colors: active`
-  is hardened across forms/pagination/segmented/command/ghost
-  buttons/skeleton (structure instead of hue), tokens export as a W3C
-  DTCG `tokens.json` (light/dark/core, `color-mix()` mixed out to hex
-  for Figma/iOS/Android), and gzip/brotli are measured by the build
-  again. `full.css` stays frozen at its 4.5 import set (ADR-0008) —
-  per-component is the headline path.
-- **Next:** **v6 — "Prove it, then let people in."** No new surface: pay
-  down the verification debt (run `npm run check` + the three-engine suites
-  locally — Node is available now — and strike the v5.2/v5.3 "could not be
-  executed here" caveats), add a CDN quick-start to the README, and document
-  the `--bf-icon-url` escape hatch as the first-party icon-integration
-  recipe. Full breakdown in [v6](#v6--prove-it-then-let-people-in).
-  The v5.0 arc is phased in
-  [v5.0 Roadmap](#v50-roadmap--the-component-is-the-breakpoint)
-  below: container-adaptive components, the zero-JS floor raise, and
-  generative theming 2.0. **Phase 0 recon done** — engine matrix verified
-  (FF style queries shipped v151), ADR-0009 (adaptive contract) + ADR-0010
-  (floor → Chrome 135 / FF 151 / Safari 26.2) accepted; standalone
-  prototype built. **Phase 1 (tokens) done; Phase 2 (adaptive components:
-  table→card-stack, segmented density, form reflow, card morph, cqi
-  typography) done** — four opt-in *-adaptive.css files ship, demo sections +
-  three-engine css tests + axe all green. **Phase 3 (zero-JS completion) done**
-  — tribunal recorded in ADR-0011: zero modules deleted (tooltip.js survives;
-  interest invokers still Chromium-only), command/commandfor documented, anchor
-  test un-gated (SDA/hint stay gated — installed browsers lag the floor).
-  **Phase 4 (generative theming 2.0) done** — 12-step OKLCH ramp from
-   --bf-seed-h/--bf-seed-c, Studio editor (slider + resizable reflow box),
-   ADR-0012 reaffirms no typed @property; contrast gate tested in css.spec.
-   **Phase 5 (hardening & release) done** — docs/adaptive.md + migration-5.md
-   written, conformance demo WCAG-labelled + mobile-safe, full three-engine
-    suites run (css 369/21, a11y 19/19, js 104/105 with one WebKit popover
-    focus-return quirk),     visual baselines regenerated; released as `v5.0.0` (2026-08-31).
-- **Shipped in 5.0.0:** `forms.css` split into opt-in shards — `forms-base.css`
-  (text inputs + validation + states) plus `forms-select/checks/range/file/
-  color/meter.css`; `full.css` byte-identical (the barrel re-imports every
-  shard), but a text-only form now ships at ~1.4KB gzip. Documented in
-  CHANGELOG `[5.0.0]`.
-- **Shipped in 5.1.0:** the deferred roadmap closes — `tabs-adaptive.css`
-  (scroll-snap↔wrap) and `nav-adaptive.css` (drawer by container) extend the
-  ADR-0009 contract; `table`/`card-adaptive` auto-establish their container via
-  `:has()`, retiring the manual `.bf-contain` wrapper; opt-in `theming-anim.css`
-  morphs the generative ramp; the Studio exports a pasteable theme +
-  `tokens.json`; and `base-select` graduates from deferred to a shipped
-  progressive-enhancement headline. Documented in CHANGELOG `[5.1.0]`. Firefox
-  still lacks `appearance: base-select` (flag 149–157), so its picker falls
-  back to the chevron skin via `@supports`.
-- **Tests:** Chromium (19 a11y / 105 JS / 369 CSS, 21 engine-gated skips /
-   3 visual) · Firefox 369 CSS + 105 JS passed (skips engine-gated) · WebKit
-   369 CSS + 104/105 JS passed — green except one WebKit-only pre-existing
-   popover Tab-close focus-return quirk. Skips are engine-gated (interest
-   invokers, SDA, base-select fallback; cross-doc VT lives gated on
-   `pageswap`/`pagereveal`, proven live on Chromium; the v4.8
-  forced-colors tests are chromium-gated emulation). One WebKit flake
-  is known and pre-existing: the popover empty-roster Tab refocus test
-  (js.spec, ADR-0006) intermittently misses the focus return on win32
-  WebKit — it fails on a clean tree too. Specs touch the
-  demo only through `tests/helpers.js`. Visual baselines are win32 and
-  unchanged this arc (the theme switcher moved from the demo's inline
-  script to `js/theme.js` with identical behavior). ubuntu/macos jobs
-  stay behavior-only.
-- **Build:** `index.css` 2.54KB gzip · `full.css` 10.01KB gzip —
-  **frozen at its 4.5 import set** (ADR-0008); existing files still
-  evolve under `npm run size`. Gzip (level 9) and brotli are measured
-  by the build again: in-process zlib with a fresh-child-process
-  fallback for the Node 26/Windows break, raw budget kept only as the
-  last resort. New DTCG export `dist/tokens.json` ships outside the
-  CSS payload.
-- **History:** milestones 0.1 → 4.9.0 shipped; per-release detail lives
-  in `CHANGELOG.md`. Arc shape: components & theming depth (0.x–2.x),
-  namespace cleanup + deprecation policy (3.x), platform catch-up +
-  layout + motion + selects/sticky tables (4.x), navigation
-  transitions + bundle freeze (4.6), one-color theming + Studio +
-  CSS-only primitives (4.7), validation finish + forced colors +
-  DTCG export + measured sizes (4.8), theme persistence as the
-  smallest honest opt-in JS (4.9).
+- **Shipped:** `barefoot-css@6.0.0` (2026-09-03) — v6 "Prove it, then let
+  people in" (verification debt, CDN quick-start, icon recipe), preceded by
+  v5.0 "the component is the breakpoint" (container-adaptive components, the
+  zero-JS floor raise, generative theming 2.0) and v5.1 (base-select
+  graduation, adaptive round two, Studio export). Per-release detail in the
+  [Release archive](#release-archive) and `CHANGELOG.md`.
+- **Staged for release (this tag):** **v6.1.0 — Barefoot Verify** (ADR-0015).
+  Phase 0 the contract registry (`src/js/verify-contracts.js`); Phase 1 the
+  dev-only checker engine (`js/verify.js`, 1.61KB gzip, strict mode, arming
+  seam); Phase 2 the CI contract-packs (`verify/pack.mjs` export, dogfooded
+  by the suites); Phase 3 the visible layer (live badge + break/fix stage on
+  demo/Studio, per-rule docs); Phase 4 hardening (JS gzip budgets policed,
+  full matrix green). `release.yml` takes over on tag push.
+- **Verification (2026-09-08, with Verify in the matrix):** Chromium 232
+  passed / 2 engine-gated skips · Firefox 202 / 12 · WebKit 207 / 7 — zero
+  failures; visual regression green on all three (win32 baselines); axe
+  green including the Verify stage's broken-contract state. Skips are
+  engine-gated (interest invokers, SDA, `popover=hint`, cross-doc VT,
+  base-select fallback; the v4.8 forced-colors tests are Chromium-gated
+  emulation). One known pre-existing WebKit flake: the popover empty-roster
+  Tab refocus test intermittently misses the focus return on win32 — it
+  fails on a clean tree too. Specs touch the demo only through
+  `tests/helpers.js`; ubuntu/macos jobs stay behavior-only.
+- **Build:** `index.css` 2.88KB gzip (budget ≤ 10KB, enforced by
+  `npm run size`) · the JS table is now policed too (~2KB module family,
+  explicit registry/barrel budgets) · `full.css` frozen at its 4.5 import
+  set (ADR-0008). Gzip (level 9) and brotli are measured by the build —
+  in-process zlib with a fresh-child-process fallback for the Node 26/
+  Windows break. The DTCG export `dist/tokens.json` ships outside the CSS
+  payload.
+- **History:** milestones 0.1 → 6.0.0 shipped; 6.1.0 staged pending tag.
+  Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
+  deprecation policy (3.x), platform catch-up + layout + motion + selects/
+  sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
+  theming + Studio + CSS-only primitives (4.7), validation finish + forced
+  colors + DTCG export + measured sizes (4.8), theme persistence as the
+  smallest honest opt-in JS (4.9), adaptive + generative (5.0–5.3),
+  verification + front door (v6), Barefoot Verify (v6.1).
 
 ## Vision
 
@@ -206,235 +157,193 @@ and `.bf-*` utilities.
 
 ## Next
 
-The v4.9 review menu is resolved: theme toggle + persistence shipped as
-`js/theme.js` (see Snapshot); the layout-primitives idea was already
-live since 4.x — `bf-container`/`bf-stack` in `utilities.css`, the
-container-driven `[data-grid]` in `components/grid.css`, and the
-`[data-layout]` app shell in `components/layout.css` — so nothing new
-was built there; the command-palette module, a starter repo, and the
-`@barefoot/core` vs `@barefoot/extended` package split were declined
-(the palette violates pillar #3 — opt-in JS only where no native
-primitive works; the starter is what `demo/` and the theme gallery
-already are; the split fights ADR-0008, where per-component imports +
-the frozen `full.css` already give the minimal path). The bundle freeze
-from 4.6 stays recorded in ADR-0008 and pinned by test.
+- **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
+  action only; `release.yml` takes over on the tag push.
+- **Barefoot Verify — all phases complete (2026-09-08); release tag
+  pending the maintainer:** the contract registry
+  (`src/js/verify-contracts.js`), ADR-0015, the checker engine
+  (`js/verify.js`, 1.61KB gzip, strict mode, arming registry in
+  the lifecycle seam), the CI contract-packs (`verify/pack.mjs`, the
+  `./verify/pack.mjs` export), the visible layer (live badge +
+  break/fix stage on the demo and Studio, per-rule docs), and the
+  hardening pass (JS budgets policed, three-engine matrix green,
+  axe-scanned) are all in — 34 verify tests green on all three
+  engines, and the suites themselves consume the pack (dogfooding
+  claim met). **Next: tag v6.1.0** (maintainer action, RELEASE.md);
+  the Verify roadmap is complete.
+- **Parked candidates** (not planned): `:has()` content-driven
+  morphogenesis and anchor-laid-out layering (v5.3); engine-gated test
+  skips un-block as floors land (watch-list).
 
-## v5.0 Roadmap — "The component is the breakpoint"
+## vNext — Barefoot Verify (draft)
 
-> Responsive design was about the viewport; v5 makes it about the
-> component. Zero media queries. Zero script.
+> **Selling line:** "The framework that checks your laces."
 
-Components sense their **container**, not the screen: a table becomes a
-card-stack, a form collapses to one column, a segmented control compresses
-density — the same component renders three ways depending on where it is
-dropped. Mechanism: `@container` size queries, `@container style()` style
-queries, `cqi` fluid typography. Honest scoping: the groundwork is
-partially live — the header nav already collapses at its own width
-(inline-size container), `bf-container`/`bf-stack`/`[data-grid]` are
-container-driven — and "zero script" means every *interactive default* is
-CSS; tabs, table-sort, and theme persistence stay opt-in JS because no
-native primitive expresses them (decision log holds).
+The core insight: Verify generalizes something Barefoot already ships.
+`warnOnce` in lifecycle.js fires "on use, not on import" for deprecated
+surfaces; Verify promotes that idea from deprecation warnings to
+**contract warnings** — and audits what **axe can't know**. Axe checks
+generic WCAG; only Barefoot knows that `popovertarget` needs a live id,
+that a sticky table needs a focusable wrapper, that `data-alert-dismiss`
+without `alert-dismiss.js` is a no-op button. Honest scoping: **never
+rebuild axe, only audit the framework's own contracts.**
+
+### Phase 0 — Contract registry + ADR-0015 ✅ (2026-09-08)
+
+- **Done.** `src/js/verify-contracts.js` is the machine-readable
+  registry — rule id, selector(s), pure-DOM `check` (`(el, ctx)` with
+  `{ byId, armed }`, no closures, so the same function runs in-page and
+  in the Phase-2 pack), fix hint, docs link, verbatim quote. Seed rules:
+  `popover-target-exists`, `sticky-scroll-focusable` (WCAG 2.1.1),
+  `skip-link-first`, `describedby-wired`, `module-pairing` (dismiss/
+  chips/toast buttons whose JS module isn't loaded),
+  `nav-complete-contract`.
+- **ADR-0015 — delivery mechanism: two formats, one registry** (written,
+  accepted):
+  1. `js/verify.js` — dev-only module; console warnings styled after
+     `warnOnce` (once per page, only when markup matches). Explicit
+     import, so zero cost unless you ask.
+  2. Contract-packs — the same rules exported as Playwright/
+     axe-composable helpers, so consumers pin the contracts in their
+     own CI.
+- **Gate: met.** `tests/verify.spec.js` pins the registry format
+  (exact field set, unique kebab-case ids, real modules), proves every
+  rule traceable to a sentence in `docs/` (the API-audit pattern turned
+  outward — one quote was caught drifting from its docs sentence during
+  the first run), proves broken fixtures trip / corrected fixtures stay
+  silent for all six rules, and runs the demo clean with every module
+  armed. Registry is data, not behavior: excluded from the barrel
+  contract, shipped in `dist/js/` by the existing build.
+
+### Phase 1 — The checker engine (`js/verify.js`) ✅ (2026-09-08)
+
+- **Done.** Zero-dependency, readable, measured 1.61KB gzip (in the
+  ~2KB family). Dev-gated: warns in console styled after `warnOnce`
+  (once per rule per page, only when markup matches — the volume law
+  is pinned by test); `data-bf-verify="strict"` opts into throwing one
+  aggregate error in CI. Never ships in the `barefoot.js` barrel
+  (pinned by test). The lifecycle seam gained `arm()`/`isArmed()` so
+  `module-pairing` reports truthfully (module-instance state, not DOM
+  attributes — fixture-safe).
+- **Gate: met.** The engine runs on `demo/index.html` and finds zero
+  warnings (the demo is the dogfood proof — the demo itself doesn't
+  import the module; the test runs the engine's own `runVerify()`
+  there); deliberately-broken fixture pages (`tests/fixtures/
+  verify-broken.html`) trip every rule with a correct fix hint, and
+  the corrected twin page stays silent with every module armed. The
+  whole suite is green on Chromium, Firefox, and WebKit.
+
+### Phase 2 — Contract-packs for CI ✅ (2026-09-08)
+
+- **Done.** `verify/pack.mjs` — importable assertions for the
+  consumer's test suite (`runPack` / `runRule` / `assertClean`),
+  shipped via the new `./verify/pack.mjs` export and covered by the
+  packaging smoke test. The sweep is evaluated **in the page under
+  test** and imports `js/verify-contracts.js` from the files the page
+  actually loads (`base` option) — no Node-side copy of rule logic,
+  no checker auto-scan inside the tested page. Arming is *declared*
+  (`armed` option, default all) where the engine *detects* it — CI
+  cannot reach into the page's module registry, so the consumer
+  declares partial loads and `module-pairing` audits the rest.
+- **Gate: met.** Barefoot's own suites are refactored to consume the
+  pack — `tests/verify.spec.js` deleted its inline sweep runner and
+  now sweeps through `runPack`/`runRule`, imports the registry through
+  the pack's re-export, and pins the dogfood claim: a test asserts no
+  local runner returns, and another asserts pack and engine agree
+  rule-for-rule on the same page (two formats, one registry).
+
+### Phase 3 — The visible layer ✅ (2026-09-08)
+
+- **Done.** Demo + Studio carry a live Verify badge
+  (`demo/verify-badge.js`, one script tag, self-contained): "✓ Barefoot
+  contracts verified" / "✗ N contract violations — details in the
+  console", re-scanned on markup changes via a debounced
+  MutationObserver with a no-change write guard (no rescan loop). It
+  refuses to run inside the Studio's preview iframe (one badge per
+  visual stack) and paints from `runVerify()` while `verify()` carries
+  the once-per-rule console warnings — the checker's read-only
+  guardrail is untouched; the badge writes only to its own node.
+- **The flagship demo moment:** the demo gains a `#verify` stage
+  section — Break flips the dropdown's `popovertarget` to a dead id,
+  the badge turns ✗ with the count, the console names the fix; Fix
+  restores it.
+- **`docs/verify.md`: one section per rule** — contract sentence,
+  broken markup (✗), fixed markup (✓) — pinned by a test that walks
+  `VERIFY_RULES` and asserts a heading + markup per rule (the
+  docs-from-registry pattern).
+- **Gates:** 31 verify tests green on all three engines; a11y suite
+  green with the badge + stage on the page (role="status" live region,
+  decorative glyph aria-hidden); visual baselines regenerated
+  deliberately for the new demo furniture (all three engines).
+
+### Phase 4 — Hardening & release ✅ (2026-09-08; tag = maintainer action)
+
+- **Done.** The JS size table is measured **and policed**: `npm run
+  size` enforces a gzip budget per shipped `js/` entry — the ~2KB
+  module family is the default, with explicit limits for
+  `js/verify-contracts.js` (4KB; data-heavy by design — every rule
+  quotes its docs sentence) and `js/barefoot.js` (1KB; the barrel is
+  imports only). An unbudgeted new `js/` file fails the check. Pinned
+  from the test side: `verify.spec.js` Phase 4 walks `sizes.json`
+  against the budget map and asserts the Verify entries cannot drop
+  out of it.
+- **Gates: met.** `npm run check` green; full matrix verified
+  2026-09-08 — Chromium 232 passed / 2 engine-gated skips, Firefox 202
+  / 12, WebKit 207 / 7 (skips are the documented engine-gated ones);
+  axe-scan green on the demo including the Verify stage section in
+  its resting and broken-contract states (a11y suite 20/20). The
+  Verify suite (34 tests) runs in `test:ff` / `test:webkit` too.
+- **Tag the release** — maintainer action per RELEASE.md (bump
+  version, CHANGELOG is staged, commit `feat: v6.1.0 — Barefoot
+  Verify`, push the `v6.1.0` tag; `release.yml` builds, tests, and
+  publishes). Not done here on purpose.
 
 ### Guardrails (every phase)
 
-- `@supports` gate, degrade by omission — existing policy, unchanged.
-- Adaptive variants ship as per-component files, opt-in by import;
-  ADR-0008 (full.css freeze) untouched.
-- `data-*` variants only — no utility sprawl; size budget enforced by
-  `npm run size`.
-- Engine-uncertain features stay on the watch-list; deletions gate on
-  verification, not faith.
+- Opt-in by import · never in the `barefoot.js` barrel · ADR-0008
+  untouched · warns, never mutates DOM or styles · the registry is the
+  single source of truth for docs, checker, and packs (pinned by test,
+  like the docs-from-source rulings).
 
-### Phase 0 — Recon & contracts (spike)
+### Tensions the ADR must settle
 
-- [x] Engine matrix verified (Canary/TP/Nightly + caniuse): **style
-      queries in Firefox** (the big unknown — **SHIPPED FF 151, Apr 2026**),
-      interest invokers + implicit anchors in FF, `command`/`commandfor`,
-      base-select status. Watch-list updated with real dates.
-- [x] **ADR-0009** — adaptive component contract: per-component adaptive
-      files (`table-adaptive.css` shape), `container-name` conventions
-      (`bf-<component>`), breakpoint tokens (`--bf-adaptive-1/2/3`),
-      `--bf-density` style query + `cqi` type ramp.
-- [x] **ADR-0010** — v5 floor raise → **Chrome 135+ / Firefox 151+ /
-      Safari 26.2+** (FF 151 is the hard gate: container style queries).
-      Numbers pinned from the matrix check, not guesses.
-- [x] Prototype outside the repo: table→card-stack morph, density style
-      query, `cqi` type ramp — built at
-      `C:\Users\Rizqi\AppData\Local\Temp\opencode\v5-prototype\index.html`
-      (spike, not in repo; demonstrates all three mechanisms by resizing
-      containers, no viewport media queries).
-
-**Gate:** mechanism proven in Chromium + Safari + **Firefox** (style
-queries now green in all three); Firefox no longer merely "degrades by
-omission" for the density story.
-
-### Phase 1 — Adaptive engine (tokens + mechanics)
-
-- [x] `tokens.css`: `--bf-density` token, `cqi` type-scale tokens
-      (`--bf-type-cqi-*`), `--bf-adaptive-1/2/3` breakpoint tokens. The
-      v3.4 `[data-density="compact"]` axis now also sets `--bf-density`, so
-      the existing lever feeds the v5 style query (no new markup).
-- [x] Container conventions (`container-type`/`container-name`) documented
-      in components.md (new "Container conventions" section) + theming.md
-      (density axis + adaptive tokens sections).
-- [x] `css.spec.js` helpers: `setContainerWidth` / `gridColumnCount` /
-      `tokenValue` in `tests/helpers.js`; new "adaptive engine" test group
-      drives a container (not the viewport) and asserts the tokens.
-
-**Gate:** `npm run check` green (build + size + docs:size + docs:tokens +
-stylelint); `index.css` 2.68KB gzip — budget untouched, full.css frozen.
-
-### Phase 2 — Adaptive components (the headline, one PR each)
-
-- [x] **table → card-stack** (`table-adaptive.css`) — the showpiece. Card-stacks
-      when its **container** is narrow (`@container` ≤ 40rem, mirrors
-      `--bf-adaptive-2`); cells use `data-label`; density via `@container
-      style(--bf-density: compact)`.
-- [x] **segmented density** (`segmented-adaptive.css`) — self-container
-      (`container-name: bf-segmented`) compresses label padding on narrow
-      width + under `data-density="compact"`; cqi label type.
-- [x] **form reflow** (`form-adaptive.css`) — self-container collapses a
-      `.bf-row` to one column when narrow, and reveals a `:has(:user-invalid)`
-      error summary (zero JS).
-- [x] **card morph** (`card-adaptive.css`) — horizontal↔vertical by container
-      (`@container` ≥ 40rem); cqi header type.
-- [x] **cqi typography pass** — `table caption`, `segmented label`, `card
-      header` now use `--bf-type-cqi-*`.
-
-Each PR: demo section (`id="demo-<name>"` + `DEMOS` entry, wrapped in
-`.bf-contain`) + `css.spec.js` (resizes containers, not viewport) + a11y
-scan. **Correction vs plan:** components that morph their *own* box (table
-card-stack, card morph) query the nearest ancestor `.bf-contain` — a container
-cannot style itself, and a `<table>` can't reliably host `container-type`
-(see ADR-0009). Descendant-only adaptation (segmented, form) self-contains.
-Lightning CSS can't resolve `var()` inside `@container` conditions, so the
-breakpoints are literal `rem` (matching `grid.css`); `--bf-adaptive-*` stay
-the documented thresholds.
-
-**Gate:** three-engine suites pass (css: chromium + firefox + webkit; a11y:
-chromium, 19/19). `npm run check` green; `full.css` frozen; adaptive files are
-opt-in, never in the bundle.
-
-### Phase 3 — Zero-JS completion (the breaking change)
-
-Every JS module faces a tribunal against the new floor; a module dies only
-when its **entire contract** is subsumed:
-
-- [x] `tooltip.js` → **SURVIVES**. Interest invokers are Chromium-only (FF/
-      Safari unsupported as of Aug 2026, verified in Phase 0), so the
-      hover/focus fallback is still required for ~2/3 of the floor. The plan's
-      "clearest deletion candidate" is overturned by the engine matrix.
-- [x] `popover-menu.js` → **SURVIVES**. Anchor positioning (FF 147/Chrome 125/
-      Safari 26) covers the *positioning* half, but roving focus / APG menu
-      keyboard semantics can't be expressed in CSS (ADR-0006); module keeps
-      roving focus.
-- [x] `theme.js` → **SURVIVES** — persistence has no native primitive (4.9).
-- [x] `command`/`commandfor` declarative dialog wiring **documented** for
-      consumers (docs/javascript.md §13) — green across the whole floor, so
-      this wiring needs no module. The only "JS removed" in spirit.
-- [x] `tabs.js`, `table-sort.js`, `nav.js`, `carousel.js`, `chips.js`,
-      `alert-dismiss.js`, `toast.js`, `reveal.js` + plumbing → **all
-      SURVIVE**; none subsumed. Net: **zero modules deleted in v5.0**.
-- [x] Un-gate in place (partial): only **implicit anchor positioning** test
-      skips removed in `css.spec.js` — verified green on chromium/firefox/
-      webkit. **SDA reveal/progress + popover=hint stay gated**: the *installed*
-      test browsers don't satisfy them at runtime (aspirational floor is ahead of
-      what's installed), and `popover=hint` correctly ignores `Escape`. Cross-doc
-      VT + base-select also stay gated (still Chromium-only / FF-flagged →
-      deferred to 5.1, skips unchanged). Un-gating is conditional on "as floors
-      land" — they haven't landed in the lab yet.
-- [x] base-select: stays opt-in / deferred to 5.1 — too green to bet the
-      release on.
-
-**Gate:** js suite trimmed to survivors (none); keyboard walkthroughs pass for
-anchor-based tooltips/popovers; recorded in ADR-0011.
-
-### Phase 4 — Generative theming 2.0 (parallelizable with Phase 2)
-
-- [x] Build on 4.7 one-color theming: **12-step OKLCH tonal scale**
-       (`--bf-tone-1…12`) generated from `--bf-seed-h` / `--bf-seed-c` via
-       relative-color syntax (`oklch(L C h)`); neutral hex fallbacks for
-       engines without it. Semantic roles compose onto steps via `var()`
-       (docs/theming.md illustrates). Done in `src/tokens.css`.
-- [x] **ADR decision point resolved:** typed `@property` — *revisits
-       ADR-0005* — **rejected for v5.0** (ADR-0012). Ramp needs no
-       registration; theme transition stays the `startViewTransition`
-       crossfade. Revisit in 5.1 only if interpolation becomes a requirement.
-- [x] density / radius / spacing promoted to first-class token categories —
-       established in Phase 1/2 (`--bf-density`, `--bf-space-*`,
-       `--bf-radius-*`) and consumed by every adaptive component. No new
-       tokens needed; marking done.
-- [x] Launch demo: **Studio** (`demo/studio.html`) extended — hue + chroma
-       sliders regenerate the live 12-step ramp (watch the swatches), the
-       color picker drives the same knobs, and a **resizable box** shows a
-       `table[data-table="adaptive"]` reflowing by *container*, not viewport.
-- [x] **Gate:** WCAG contrast *tested* on every derived step — `css.spec.js`
-       "generative theming" group asserts all 12 tones are distinct +
-       monotonic and each clears a 3:1 graphical-object floor (1.4.11); the
-       seed-dial + adaptive-reflow behavior is asserted too. axe-core still
-       covers the demo surfaces via the a11y suite.
-
-**Gate:** WCAG contrast *tested* on every derived step (css.spec) — claims
-are never asserted.
-
-### Phase 5 — Hardening & release
-
-- [x] Docs: **`docs/adaptive.md`** (the "adaptive page"), theming.md +
-      javascript.md v5.0 callouts, **`docs/migration-5.md`** (floor raise,
-      module removals = none, base-select deferral, command/commandfor,
-      generative theming additions).
-- [x] README size table regen (`npm run docs:size`); conformance demo updated
-      with WCAG labels (adaptive components + generative theme rows, AA note
-      on the adaptive section). Wrapped the conformance table in a focusable
-      `overflow-x:auto` region so it no longer overflows the 375px viewport.
-- [x] Full suites Chromium → FF → WebKit: `css.spec` 369 passed / 21 skipped
-      (engine-gated), `a11y.spec` 19/19, `js.spec` 104/105 (1 WebKit-only
-      popover Tab-close focus-return quirk, pre-existing, not v5-caused),
-      visual baselines regenerated deliberately (light/dark/webfonts).
-      Hardening fixes landed: removed a stray `@property` substring from a
-      `tokens.css` comment (ADR-0005 guard test), typed `--bf-density` in the
-      DTCG export, documented the v5.0 adaptive `data-*` attributes in
-      `api.md`, made the conformance scroll region keyboard-accessible.
-- [ ] `v5.0.0-beta.1` → `rc.1` → tag `v5.0.0` (release.yml takes over on push).
-
-### Risks
-
-| Risk | Mitigation |
-|------|------------|
-| Firefox style queries slip | density derives from size queries only — nothing breaks |
-| FF anchors / interest invokers slip | `tooltip.js` stays a polyfill; Phase 3 shrinks, doesn't die |
-| Adaptive variants churn visual baselines | narrow-container baseline cases from Phase 2 onward |
-
-### Non-goals for v5 (unchanged)
-
-Utility sprawl · framework wrappers · masonry before engines land · any
-build step · touching ADR-0008.
-
-**Critical path:** Phase 0 verification → Phase 1 tokens → Phase 2
-showpiece (table) → the rest parallelizes.
+1. **"Zero-JS framework ships a JS checker" — hypocrisy or honesty?**
+   Pillar #3 says opt-in JS only where no native primitive works. No
+   browser API audits markup contracts, so Verify is the *most*
+   justified JS in the repo — but that argument must be written into
+   ADR-0015 or the community smells a contradiction.
+2. **Audience.** `verify.js` serves the paste-the-CDN-link beginner
+   (the v6 front door); contract-packs serve the design-system team.
+   If forced to headline one: the beginner story — *you wrote plain
+   HTML and got it subtly wrong; the framework caught it in your
+   console.*
+3. **Silent failure vs nagging.** The `warnOnce` "warn on use"
+   precedent is the right volume: warn exactly once, only when the
+   surface exists, never for markup Barefoot doesn't manage. If it
+   ever nags on valid pages, the tool dies — trust is the entire
+   product.
 
 ## Watch-list (verified 2026-08-31, caniuse Jul-2026 + MDN)
 
-- `grid-template-rows: masonry` landing across engines — the v4.1
-  `grid-lanes` variant then collapses to a one-liner. Still pending; no
-  ship date in any engine as of Aug 2026.
-- ~~`@container style()` queries in Firefox~~ — **RESOLVED: shipped FF 151
-  (Apr 2026)**. The v5 density-by-style-query story is first-class across
-  all engines; no size-query-only fallback needed (ADR-0009/0010).
-- Interest invokers (`interestfor`/`interesttarget`) — **still Chromium-only
-  (Chrome/Edge 142+, Nov 2025); Firefox and Safari have NO support as of
-  Aug 2026.** Gates the `tooltip.js` deletion (v5 Phase 3); the module
+- `grid-template-rows: masonry` — still pending in every engine; no ship
+  date. The v4.1 `grid-lanes` variant then collapses to a one-liner.
+- ~~`@container style()` in Firefox~~ — **RESOLVED: shipped FF 151 (Apr
+  2026)**. The density-by-style-query story is first-class across all
+  engines (ADR-0009/0010).
+- Interest invokers (`interestfor`/`interesttarget`) — **still
+  Chromium-only (Chrome/Edge 142+, Nov 2025); Firefox and Safari have no
+  support as of Aug 2026.** Gates the `tooltip.js` deletion; the module
   stays a polyfill. Implicit *anchor* positioning (distinct feature) DID
   ship in FF 147 (Jan 2026) — anchor-based tooltips are viable, the
   hover/focus *invoker* trigger is not.
-- `command`/`commandfor` — **SHIPPED everywhere: Chrome/Edge 135 (Apr 25),
-  Firefox 144 (Oct 25), Safari 26.2 (late 25).** Available for Phase 3
-  declarative dialog/popover wiring.
-- base `<select>` (appearance: base-select) — **Chrome/Edge 135, Safari 27;
-  Firefox behind a flag (149–157), not shipped as of Aug 2026.** Graduated
-  in v5.1 as a progressive-enhancement headline (ships in the default bundle,
-  `@supports`-gated); the `@supports` gate and the gated test skips stay
-  because Firefox still lags — Firefox users get the chevron fallback.
+- `command`/`commandfor` — **SHIPPED everywhere** (Chrome/Edge 135,
+  Firefox 144, Safari 26.2). Available for declarative dialog/popover
+  wiring.
+- base `<select>` (`appearance: base-select`) — **Chrome/Edge 135,
+  Safari 27; Firefox behind a flag (149–157), not shipped as of Aug
+  2026.** Graduated in v5.1 as a progressive-enhancement headline
+  (`@supports`-gated); Firefox users get the chevron fallback, and the
+  gated test skips stay until Firefox ships.
 
 ## Decision log
 
@@ -517,327 +426,183 @@ Live decisions only — history lives in CHANGELOG and docs/.
 
 ## Non-goals
 
+Core, unchanged:
+
 - No utility framework. The `.bf-*` set stays tiny and layout-only.
 - No JS framework integration (no React/Vue wrappers).
 - No IE/legacy support. Modern CSS is the point.
 - No component classes for everything — elements first, always.
+- No build step. No touching ADR-0008.
 
-## v5.1+ Roadmap — after the v5.0 release
+Declined — do not revive:
 
-v5.0.0 shipped 2026-08-31 — the feature floor is live. The release is
-closed out, then the deferred and engine-gated work lands. Ordered by
-value/risk; the first two items are already planned (base-select deferral,
-ADR-0012 `@property` revisit).
-
-### Step 0 — close out the v5.0 release
-
-- [x] Cut `v5.0.0` from `main` and tag it stable (skipped the `rc.1` soak —
-      tagged `v5.0.0` directly; `release.yml` took over on the tag push and
-      published).
-- [x] Fix the one known WebKit quirk: `popover-menu.js` now refocuses the
-      trigger on a Tab-close when focus would fall to `<body>` (the
-      `refocusOpener` seam only acted while focus stayed inside the menu).
-      `js.spec` is now 105/105 on WebKit too.
-- [x] Ship the `forms.css` opt-in shard split in the `v5.0.0` tag. Source is
-      complete (`forms-base.css` + six control shards `forms-select/checks/
-      range/file/color/meter.css`; `full.css` byte-identical via the barrel) and
-      documented in CHANGELOG `[5.0.0]`. Consumers can now import text-inputs-only.
-
-### v5.1 — "land the deferred"
-
-- [x] **`base-select` graduates (headline).** Shipped in v5.1 as a
-      progressive-enhancement headline: the picker skin (`::picker(select)`,
-      themed options, `::checkmark`) is in the default bundle and upgrades
-      every single `<select>` where the engine ships `appearance: base-select`
-      (Chromium 135+ / Safari 27+), falling back to the chevron skin elsewhere
-      (Firefox, via `@supports`). The ADR-0010 watch-list entry flipped from
-      "deferred" to "shipped". The gated test skips in `css.spec.js` stay
-      because Firefox still hasn't shipped base-select (flag 149–157, not
-      shipped as of Aug 2026) — graduation was never blocked on Firefox, only
-      the universal `@supports`-free gate was; the feature is no longer
-      "too green" or opt-in.
-- [x] **Generative theming v1.1 (ADR-0012 revisit).** Add an opt-in
-      `theming-anim.css` that registers `--bf-seed-h` / `--bf-seed-c` with
-      `@property` so theme switches *morph* the 12-step ramp instead of
-      crossfading. Default stays `@property`-free to protect the byte budget
-      (ADR-0005/0012). No change to the no-registration contract unless
-      interpolation is explicitly wanted.
-- [x] **More adaptive components + kill the manual `.bf-contain`.** Extend
-      the ADR-0009 contract to `nav` (sidebar↔drawer by container,
-      `nav-adaptive.css`), `tabs` (scroll-snap↔wrap, `tabs-adaptive.css`),
-      and `grid` (already container-aware). Auto-wrap: `table-adaptive.css` /
-      `card-adaptive.css` now auto-establish the query container on the
-      component's parent via a `:has()` rule, so hand-placed `.bf-contain`
-      is optional (still supported) — the "morphs its own box" ergonomic
-      wart is gone. Documented in docs/adaptive.md.
-- [x] **Studio → copy-paste theme.** `demo/studio.html` exports "six lines"
-      today; make it emit a real `tokens.json` / CSS snippet so a designer
-      can paste a generated theme into a project.
-
-### v5.2 — "The Design System That Writes Itself"
-
-> One color in. A whole system out. Accessible by construction. Scoped by
-> container. Zero JavaScript.
-
-Generative theming graduates from a 12-step ramp to a **full, derived design
-system**, and becomes the framework's headline differentiator: Barefoot
-generates a *system*, not utilities. Tailwind is compositional (you assemble);
-Barefoot becomes generative (you supply a seed, it derives a system) — a
-different category, and a moat no utility framework can copy. It builds
-directly on v4.7 (one-color), v5.0 (generative ramp), and v5.1 (Studio export),
-so invention risk is low and payoff is high. The novel half is **container-scoped
-theming**: a subtree carrying its own `data-bf-theme` resolves locally via
-`@container style()`, so a dark panel lives inside a light page with zero JS and
-no class war.
-
-#### Phase 0 — Seed-to-system derivation
-
-- [x] **Seed → master accent (`seed-system.css`, opt-in).** The two seed knobs
-      become `--bf-primary` (`oklch(0.55 var(--bf-seed-c) var(--bf-seed-h))`);
-      the Chroma engine then derives the whole *colour* system — hover / subtle /
-      border / focus, the alpha ramps, and the 12-step ramp — from those two
-      dials. Type / spacing / radius / motion are deliberately **not**
-      seed-derived (a hue does not determine a type scale); they stay independent
-      tokens, re-mappable with the density axis (ADR-0013 — honest scoping).
-- [x] Contrast becomes the contract: the `css.spec.js` "generative system"
-      group asserts seed changes re-skin `--bf-primary` and that the Chroma
-      engine derives a distinct `--bf-primary-hover`. The 1.4.11 / AA gate from
-      v5.0 is extended to the seeded accent.
-- [x] **ADR-0013 — generative system contract:** documents which tokens are
-      seed-derived vs hand-authored, and guarantees no `@property` registration
-      in the default path (ADR-0005/0012 hold; interpolation stays opt-in in
-      `theming-anim.css`).
-
-#### Phase 1 — Container-scoped theming (the novel half)
-
-- [x] Resolve the speculative "container-scoped theming" via `@container
-      style()`: a subtree carrying `data-bf-scope` resolves its own
-      `color-scheme` + token layer independent of the page — a dark card inside
-      a light page, zero JS, no class war.
-- [x] Ship as opt-in `theming-scope.css`; document the containment boundary
-      (the scoped root is a `container-type` so descendant tokens resolve
-      locally). Degrade by omission on engines without `@container style()` —
-      the wrapper's inherited `color-scheme` still applies.
-- [x] `css.spec.js` group asserts a scoped dark card inside a light page renders
-      the dark surface while the page stays light.
-
-#### Phase 2 — Studio as the distribution
-
-- [x] `demo/studio.html` becomes the first-party product surface: it loads
-      `seed-system.css` so the seed drives the accent, and emits the full
-      derived system — the resolved 12-step `--bf-tone-*` ramp is read live and
-      exported into `tokens.json`. (Image → hue/chroma extraction is demo-only
-      future work; the colour picker already drives the seed.)
-- [x] Keep the existing "six lines" + `tokens.json` export; add the derived
-      tonal ramp to the `tokens.json` export.
-- [x] Document the workflow in `docs/theming.md` + a new `docs/studio.md`.
-
-#### Phase 3 — Hardening & release
-
-- [x] README + conformance callouts; `npm run check` green — **verified
-      locally 2026-09-03 (v6 Phase 0):** build + 10KB budget
-      (`index.css` 2.88KB gzip) + docs regen + stylelint all PASS;
-      Chromium 195 passed / 2 engine-gated skips, Firefox 166 / 12,
-      WebKit 171 / 7, visual regression green on all three (win32
-      baselines). `full.css` frozen (ADR-0008 untouched — generative +
-      scope ship opt-in, never in the barrel).
-- [ ] Tag `v5.2.0`.
-
-#### Guardrails (every phase)
-
-- Opt-in by import; ADR-0008 (`full.css` freeze) untouched; `@supports` gate,
-  degrade by omission; size budget enforced by `npm run size`; seed math stays
-  CSS-only (no JS in the shipped framework — Studio's image extraction is
-  demo-only JS).
-
-### v5.3 — "The seed is the designer" (FLAGSHIP: generative morphology)
-
-> One colour in, a whole *visual language* out — not just the colour
-> system, but the temperament. Pure CSS. Zero JavaScript. Scoped by
-> container.
-
-v5.2 proves "one colour in → a whole **colour** system out." The flagship
-for v5.3 extends the generative thesis from *colour* to the **entire visual
-language** — a single `--bf-seed-h` / `--bf-seed-c` derives not only the
-12-step ramp + accent but the *temperament*: radius, spacing rhythm, type
-scale, and motion. Honestly, via CSS **relative-color + `calc()`**, never
-faked. This is the moat Tailwind (compositional / utility) cannot copy — and
-it completes the trilogy after v5.0 (*size*) and v5.2 (*seed/colour*): v5.3
-is **semantics-of-mood**.
-
-#### The mechanism
-
-The hue does not set a type scale; the *mood* of the seed does. High chroma
-reads as expressive, low chroma as minimal — so chroma drives the rhythm:
-
-```css
-:root{
-  --bf-seed-h: 250;
-  --bf-seed-c: 0.18;
-  --bf-primary: oklch(0.55 var(--bf-seed-c) var(--bf-seed-h));
-
-  /* temperament derived from chroma (honest, CSS-only) */
-  --bf-radius:  calc(0.25rem + var(--bf-seed-c) * 1.5rem);
-  --bf-space:   calc(0.75rem + var(--bf-seed-c) * 0.75rem);
-  --bf-type:    calc(1rem    + var(--bf-seed-c) * 0.5rem);
-  --bf-motion:  calc(var(--bf-seed-c) * 300ms);
-}
-```
-
-- Derivation stays in pure CSS — no JS in the shipped framework (Studio's
-  image → seed extraction remains demo-only JS, as in v5.2).
-- No `@property` registration in the default path — ADR-0005 / ADR-0012
-  hold; interpolation stays opt-in in `theming-anim.css`.
-- Scoped per-island via `@container style()`, reusing the v5.2
-  `theming-scope.css` containment boundary — a dark, expressive card inside
-  a light, minimal page, zero JS, no class war.
-
-#### Phases
-
-- [x] **Phase 0 — Temperament tokens.** Added to `src/themes/seed-system.css`
-  (opt-in, so the default neutral look is untouched — ADR-0008 / 0013): the
-  generative-morphology block derives `--bf-radius{,-sm,-lg}` / `--bf-space-1…8`
-  / `--bf-type-cqi-*` / `--bf-transition` / `--bf-transition-slow` /
-  `--bf-vt-duration` / `--bf-reveal-duration` from `--bf-seed-c` via `calc()`.
-  Placed inside the existing `@supports (color: oklch(from red l c h))`
-  `:root` rule. ADR-0013's "no non-colour derivation" clause is overturned by
-  **ADR-0014** (chroma = mood, not hue = identity). No `@property`.
-- [x] **Phase 1 — Generative morphology in Studio.** `demo/studio.html` badge +
-  chroma caption note the v5.3 morphology; the `tokens.json` export now emits the
-  resolved `--bf-radius` / `--bf-space-4` / `--bf-type-cqi-md` / `--bf-vt-duration`
-  alongside the 12-step ramp, so the export carries the full derived system.
-- [x] **Phase 2 — CI gate.** Extended the `css.spec.js` "generative system +
-  container-scoped theming" group with a **morphology** test asserting chroma
-  moves `--bf-radius` / `--bf-space-4` / `--bf-transition` monotonically
-  (low → high chroma). The existing 1.4.11 / AA contrast gate on derived tones is
-  unchanged. AA is checked, not asserted.
-- [x] **Phase 3 — Hardening & release.** README callout + `docs/theming.md` §
-  "Seed → whole visual language" + `docs/studio.md` v5.3 notes + new
-  `docs/adr/0014-generative-morphology.md`. `full.css` frozen (ADR-0008
-  untouched — morphology ships only inside opt-in `seed-system.css`). Tag `v5.3.0`
-  — **verified locally 2026-09-03 (v6 Phase 0):** `npm run check` green and
-  the full three-engine suites pass (same counts as the v5.2 note above);
-  the morphology test passes on all three engines.
-
-#### Guardrails (every phase)
-
-- Opt-in by import; ADR-0008 (`full.css` freeze) untouched; `@supports` gate,
-  degrade by omission; size budget enforced by `npm run size`; seed math
-  stays CSS-only.
-- The derivation is *mood*, not pseudo-science: we assert relationships
-  (chroma ↑ → radius/spacing/motion ↑) and contrast, never "this hue means
-  trustworthy."
-
-#### Alternatives considered (parked, not declined)
-
-- **"The component is self-aware"** — `:has()` content-driven morphogenesis
-  (`:has(img)`, `:has([data-urgent])`): the component re-skins by its own
-  *semantics*, not its size. Pure CSS, already on the floor. Strong
-  companion to, or fallback for, generative morphology.
-- **Anchor-laid-out everything** — anchor positioning to make *any*
-  component non-modally layer (beyond popovers/tooltips). More "web feature"
-  than "CSS feature"; lower priority than the generative moat.
-
-### v6 — "Prove it, then let people in"
-
-> No new surface. v6 pays down the verification debt, opens the front door,
-> and documents the escape hatch that already exists.
-
-An external review of v5.3 surfaced three gaps worth acting on — and, just as
-importantly, a pile of "missing features" that are deliberate non-goals with
-ADRs behind them (framework wrappers, masonry before engines, DTCG types the
-spec doesn't have). Those stay declined. These three are real:
-
-#### Phase 0 — Verification debt (the headline; do this first)
-
-- [x] **Run the suites for real.** v5.2 and v5.3 shipped with the honest
-      caveat "Node is not installed in the editing environment, so `npm run
-      check` / the suites could not be executed here". **Done 2026-09-03:**
-      `npm run check` green (build + `index.css` 2.88KB/10KB budget + docs
-      regen + stylelint); Chromium 195 passed / 2 engine-gated skips,
-      Firefox 166 / 12, WebKit 171 / 7 — zero failures, visual regression
-      green on all three against the win32 baselines. (Local env note:
-      Playwright's Firefox/WebKit needed the VC++ 2015–2022 redistributable
-      `msvcp140_1.dll` — installed once via the official `vc_redist.x64.exe`.)
-- [x] Fix anything the run surfaces, then **strike the caveats** from the
-      v5.2/v5.3 Phase 3 notes and record the green run counts in Snapshot.
-      Two real findings, both fixed inside the gate (no token changes):
-      (1) the v5.0 3:1 gate was **vacuous on Chromium** — computed colors
-      serialize as `oklch(...)` and `luminance()` parsed L/C/H° as sRGB
-      bytes, so it passed without measuring. `helpers.js` now converts
-      OKLCH→linear-sRGB properly (Ottosson) and the old gate measures for
-      real. (2) the feared muted-on-subtle failure **does not exist**
-      (worst measured pair 5.9:1) — but a genuine edge does: white button
-      text / link text in a vivid cyan-green seed (h≈190, c=0.3) dips to
-      ~3.4:1. Asserted as a 3:1 floor, documented as the AA ceiling; the
-      dial stays unclamped.
-- [x] **Contrast gate, extended (cheap hardening while we're in the tests).**
-      New `css.spec.js` test "body-text pairs hold 4.5:1 AA, accent pairs
-      clear 3:1, across the seed space": 10 body-text pairs
-      (`--bf-text`/`--bf-muted` on surface/alt/2/3/subtle) asserted at AA,
-      3 accent pairs (`--bf-primary-fg` on primary/darken, `--bf-primary`
-      on surface) asserted at the 3:1 floor, swept over 12 hues × 3 chromas
-      in pinned light scheme. (`--bf-surface-brand` is declared but consumed
-      nowhere — out of the gate by design.)
-
-**Gate:** a fully green local run of `npm run check` + all three engines,
-recorded in this file, caveats gone.
-
-#### Phase 1 — CDN quick-start (the front door)
-
-- [x] **README gets a copy-paste CDN section.** Zero CDN mentions today; a
-      framework whose non-goal is "any build step" should let someone be
-      styling in ten seconds. `https://cdn.jsdelivr.net/npm/barefoot-css@5/dist/index.css`
-      plus one `<link>` boilerplate block, npm kept as the second path.
-      **Done 2026-09-03:** full HTML boilerplate first, npm second; all
-      three URLs (`index.css`, `components/dialog.css`, `themes/sunset.css`)
-      verified resolving live on jsDelivr.
-- [x] Verify the jsDelivr URLs resolve for `index.css`, a component shard,
-      and a theme; note in docs/performance.md that gzip is what CDNs serve
-      (already the budget's contract — `performance.md` said it since
-      before v6, no edit needed).
-
-**Gate:** the snippet works from a plain HTML file with no install step.
-
-#### Phase 2 — Icon integration recipe (document the hatch)
-
-- [x] **No new glyphs; document the escape hatch.** The 12-glyph set is a
-      size-budget stance, not an oversight — shipping 30–50 inline masks
-      fights the ~10KB thesis. But `[data-icon]` already reads an arbitrary
-      `--bf-icon-url`, so Lucide/Heroicons SVGs can be dropped in *today*
-      with the mask + `currentColor` behavior intact. It just isn't written
-      down anywhere.
-- [x] Add an "Using your own icons" section to docs/components.md: the
-      one-liner custom-property recipe, a worked Lucide example (data-URL
-      and file-URL forms), and the a11y note (aria-label when the icon is
-      the only content). Docs-only change; `icons.css` and the budget stay
-      untouched. **Done 2026-09-03**, plus the mechanism note the recipe
-      depends on (the mask reads image *alpha*; page `currentColor` never
-      reaches inside the SVG file), and a permanent `css.spec.js` test —
-      "built-ins render via mask + currentColor; a custom --bf-icon-url
-      drops in" — which also covers `[data-icon]` itself for the first
-      time (nothing asserted it before).
-
-**Gate:** recipe copy-pastes into the demo and renders a Lucide glyph at
-`currentColor`; stylelint + size budget untouched by definition.
-
-#### Explicitly declined from the review (do not revive)
-
-- React/Vue/Svelte wrappers and a PostCSS plugin — carried non-goal
-  ("No JS framework integration"); plain CSS *is* the framework-agnostic
-  story, and a plugin contradicts the no-build-step pillar.
+- `@barefoot/core` vs `@barefoot/extended` split — fights ADR-0008
+  (frozen `full.css` + per-component imports already give the minimal
+  path).
+- Command-palette module — violates the "opt-in JS only where no native
+  primitive works" pillar; `demo/` + theme gallery already cover it.
+- Starter repo — `demo/` + the theme gallery already are the starter.
+- React/Vue/Svelte wrappers and a PostCSS plugin — plain CSS *is* the
+  framework-agnostic story; a plugin contradicts the no-build-step
+  pillar.
 - Masonry / deep-subgrid layout primitives — watch-list until engines
   ship; nothing to build.
 - Studio as a standalone hosted app — `demo/studio.html` already deploys
   to GitHub Pages on every push to main; a custom domain is marketing,
   not code.
-- 30–50 built-in glyphs — see Phase 2; the recipe is the feature.
+- 30–50 built-in glyphs — the 12-glyph set is a size-budget stance; the
+  `--bf-icon-url` recipe (v6) is the feature.
 
-### Carried non-goals (declined, do not revive)
+## Release archive
 
-- `@barefoot/core` vs `@barefoot/extended` split — fights ADR-0008 (frozen
-  `full.css` + per-component imports already give the minimal path).
-- Command-palette module — violates the "opt-in JS only where no native
-  primitive works" pillar; `demo/` + theme gallery already cover it.
-- Starter repo — `demo/` + the theme gallery already are the starter.
+### v5.0 — "The component is the breakpoint" (released 2026-08-31)
 
+> Responsive design was about the viewport; v5 makes it about the
+> component. Zero media queries. Zero script.
+
+- **ADR-0009 — adaptive component contract:** per-component
+  `*-adaptive.css` files, `container-name: bf-<component>` conventions,
+  breakpoint tokens `--bf-adaptive-1/2/3`, `--bf-density` style query,
+  `cqi` type ramp. **ADR-0010 — floor raise:** Chrome 135+ / Firefox
+  151+ / Safari 26.2+ (FF 151 is the hard gate: container style
+  queries). Numbers pinned from a verified engine matrix, not guesses.
+- **Adaptive components:** `table-adaptive.css` (card-stack showpiece),
+  `segmented-adaptive.css` (density), `form-adaptive.css` (one-column
+  reflow + `:has(:user-invalid)` error summary), `card-adaptive.css`
+  (horizontal↔vertical), plus a cqi typography pass. Corrections vs
+  plan: self-box morphs query the nearest ancestor container (a
+  container can't style itself; a `<table>` can't host
+  `container-type`), and Lightning CSS can't resolve `var()` inside
+  `@container` conditions, so breakpoints are literal `rem` while
+  `--bf-adaptive-*` stay the documented thresholds.
+- **Zero-JS tribunal (ADR-0011): zero modules deleted.** `tooltip.js`
+  survives (interest invokers still Chromium-only), `popover-menu.js`
+  keeps roving focus (APG keyboard semantics aren't CSS-expressible),
+  `theme.js` survives (no persistence primitive). `command`/`commandfor`
+  declarative wiring documented for consumers — the only "JS removed"
+  in spirit. Test un-gating partial: implicit anchors un-gated; SDA,
+  `popover=hint`, cross-doc VT, and base-select stayed gated (installed
+  browsers lag the aspirational floor).
+- **Generative theming 2.0:** 12-step OKLCH tonal scale
+  (`--bf-tone-1…12`) from `--bf-seed-h` / `--bf-seed-c` in
+  `src/tokens.css`; Studio gains hue/chroma sliders + a resizable
+  reflow box. **ADR-0012** rejects typed `@property` for v5.0.
+  Contrast is tested per derived step (3:1 / 1.4.11 floor) in
+  `css.spec.js` — claims are never asserted.
+- **Hardening & release:** `docs/adaptive.md`, `migration-5.md`,
+  WCAG-labelled mobile-safe demo; suites green (css 369/21 skips, a11y
+  19/19, js 104/105 — one pre-existing WebKit popover quirk); visual
+  baselines regenerated. `forms.css` split into opt-in shards
+  (`forms-base.css` + `forms-select/checks/range/file/color/meter.css`)
+  shipped in the tag: a text-only form ≈ 1.4KB gzip, `full.css`
+  byte-identical via the barrel.
+
+### v5.1 — "Land the deferred" (released 2026-08-31)
+
+- **`base-select` graduates (headline).** The picker skin
+  (`::picker(select)`, themed options, `::checkmark`, `::picker-icon`)
+  ships in the default bundle, `@supports`-gated, upgrading every
+  single `<select>` where the engine supports it (Chromium 135+ /
+  Safari 27+). Firefox (flag 149–157) keeps the chevron skin; the
+  gated test skips stay until Firefox ships.
+- **`theming-anim.css` (ADR-0012 revisit).** Opt-in `@property`
+  registration for `--bf-seed-h` / `--bf-seed-c` so theme switches
+  *morph* the 12-step ramp instead of crossfading. The default path
+  stays registration-free (ADR-0005).
+- **Adaptive round two + `.bf-contain` retirement.** `nav-adaptive.css`
+  (sidebar↔drawer by container) and `tabs-adaptive.css`
+  (scroll-snap↔wrap) extend ADR-0009; `table`/`card-adaptive`
+  auto-establish their query container on the parent via `:has()`, so
+  the manual wrapper is optional.
+- **Studio → copy-paste theme.** The Studio exports a real
+  `tokens.json` / CSS snippet, not just "six lines".
+
+### v5.2 — "The design system that writes itself" (built & verified; tag pending)
+
+> One color in. A whole system out. Accessible by construction. Scoped
+> by container. Zero JavaScript.
+
+- **`seed-system.css` (opt-in) — seed → master accent.** The two seed
+  knobs become `--bf-primary` (`oklch(0.55 var(--bf-seed-c)
+  var(--bf-seed-h))`); the Chroma engine derives the whole colour
+  system — hover / subtle / border / focus, alpha ramps, the 12-step
+  ramp. Type / spacing / radius / motion deliberately stay
+  hand-authored (a hue does not determine a type scale) — **ADR-0013,
+  the generative system contract.**
+- **`theming-scope.css` (opt-in) — container-scoped theming, the novel
+  half.** A `data-bf-scope` subtree resolves its own `color-scheme` +
+  token layer via `@container style()`: a dark card inside a light
+  page, zero JS, no class war. Degrades by omission to the inherited
+  scheme.
+- **Studio becomes the distribution.** Loads `seed-system.css`, reads
+  the resolved 12-step ramp live, and emits the derived system into
+  `tokens.json`; workflow documented in `docs/theming.md` +
+  `docs/studio.md`. (Image → hue/chroma extraction stays demo-only
+  JS.)
+- **Verification (2026-09-03, v6 Phase 0):** `npm run check` green;
+  Chromium 195 / 2 skips, Firefox 166 / 12, WebKit 171 / 7; visual
+  green on all three. `full.css` frozen — generative + scope ship
+  opt-in, never in the barrel.
+
+### v5.3 — "The seed is the designer" — generative morphology, the flagship (built & verified; tag pending)
+
+> One colour in, a whole *visual language* out — not just the colour
+> system, but the temperament. Pure CSS. Zero JavaScript. Scoped by
+> container.
+
+- **ADR-0014 — generative morphology.** Overturns ADR-0013's "no
+  non-colour derivation" clause: chroma = mood, not hue = identity.
+  High chroma reads expressive, low chroma minimal — so `--bf-seed-c`
+  derives the temperament via `calc()`: `--bf-radius{,-sm,-lg}`,
+  `--bf-space-1…8`, `--bf-type-cqi-*`, `--bf-transition{,-slow}`,
+  `--bf-vt-duration`, `--bf-reveal-duration`. Ships inside opt-in
+  `seed-system.css`, within the existing `@supports (color: oklch(from
+  red l c h))` gate; no `@property` in the default path.
+- **Studio carries the full system.** Badge + chroma caption note the
+  morphology; the `tokens.json` export emits resolved `--bf-radius` /
+  `--bf-space-4` / `--bf-type-cqi-md` / `--bf-vt-duration` alongside
+  the ramp.
+- **CI gate.** A morphology test asserts chroma moves `--bf-radius` /
+  `--bf-space-4` / `--bf-transition` monotonically (low → high), green
+  on all three engines; the 1.4.11 / AA contrast gate is unchanged.
+  The derivation is *mood*, not pseudo-science: relationships are
+  asserted, never "this hue means trustworthy."
+- **Parked (not declined):** "the component is self-aware" — `:has()`
+  content-driven morphogenesis (`:has(img)`, `:has([data-urgent])`;
+  the component re-skins by semantics, not size); and anchor-laid-out
+  everything (non-modal layering beyond popovers/tooltips).
+
+### v6 — "Prove it, then let people in" (complete 2026-09-03; release pending)
+
+> No new surface. Pay the verification debt, open the front door,
+> document the escape hatch that already exists.
+
+- **Phase 0 — verification debt (the headline).** The suites ran for
+  real for the first time (v5.2/v5.3 shipped with the honest "could
+  not be executed here" caveat); all green — Chromium 195 / 2,
+  Firefox 166 / 12, WebKit 171 / 7, visual green on all three
+  (win32 baselines; Playwright's FF/WebKit needed the VC++
+  redistributable once). Two real findings, both fixed inside the
+  gate: (1) the v5.0 3:1 contrast gate was **vacuous on Chromium** —
+  computed colors serialize as `oklch(...)` and `luminance()` parsed
+  L/C/H° as sRGB bytes, so it passed without measuring;
+  `helpers.js` now converts OKLCH→linear-sRGB (Ottosson) and the gate
+  measures for real. (2) The feared muted-on-subtle failure does not
+  exist (worst pair 5.9:1), but a genuine edge does — white button/
+  link text on a vivid cyan-green seed (h≈190, c=0.3) dips to ~3.4:1,
+  asserted as a 3:1 floor and documented as the AA ceiling; the dial
+  stays unclamped. Contrast gate extended: 10 body-text pairs at AA +
+  3 accent pairs at 3:1, swept over 12 hues × 3 chromas in pinned
+  light scheme.
+- **Phase 1 — CDN quick-start (the front door).** README copy-paste
+  `<link>` boilerplate first, npm second; the three jsDelivr URLs
+  (`index.css`, a component shard, a theme) verified resolving live.
+  Gate: the snippet works from a plain HTML file with no install step.
+- **Phase 2 — icon integration recipe (document the hatch).**
+  `docs/components.md` gains "Using your own icons": the
+  `--bf-icon-url` one-liner, a worked Lucide example (data-URL and
+  file-URL forms), the a11y note, and the mechanism note the recipe
+  depends on (the mask reads image *alpha*; page `currentColor` never
+  reaches inside the SVG file). Plus a permanent `css.spec.js` test
+  covering `[data-icon]` for the first time. Docs-only; `icons.css`
+  and the budget untouched.

@@ -206,6 +206,8 @@ document.querySelector("dialog").showModal();
 - `data-kind="menu"` → panel with menu item styling.
 - `data-kind="tooltip"` → small muted tooltip. Mark the trigger with
   `data-tooltip` for the affordance (dotted underline, `cursor: help`).
+- `popovertarget` must name the `id` of a live `[popover]` element — a
+  typo'd or missing id leaves the trigger a silent no-op.
 - **JS:** none — Popover API is declarative.
 - **A11y:** light-dismiss + `Esc` native. Position with anchor positioning
   or your own CSS.

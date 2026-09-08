@@ -95,19 +95,21 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 55.64KB | **10.37KB** | 9.06KB |
+| `js/verify-contracts.js` | 8.29KB | **3.08KB** | 2.62KB |
 | `index.css` | 10.89KB | **2.88KB** | 2.46KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
+| `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
 | `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
 | `js/theme.js` | 2.80KB | **1.31KB** | 1.06KB |
 | `js/popover-menu.js` | 2.46KB | **1.20KB** | 1.00KB |
 | `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
+| `js/lifecycle.js` | 2.19KB | **1.07KB** | 0.89KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
-| `js/toast.js` | 2.75KB | **1.01KB** | 0.83KB |
+| `js/toast.js` | 2.77KB | **1.02KB** | 0.83KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
-| `js/lifecycle.js` | 1.57KB | **0.82KB** | 0.67KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
@@ -130,13 +132,13 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `components/table-adaptive.css` | 0.99KB | **0.41KB** | 0.32KB |
 | `themes/seed-system.css` | 1.48KB | **0.41KB** | 0.35KB |
 | `components/forms-checks.css` | 1.07KB | **0.41KB** | 0.31KB |
+| `js/chips.js` | 0.67KB | **0.41KB** | 0.33KB |
 | `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
-| `js/chips.js` | 0.65KB | **0.40KB** | 0.31KB |
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
 | `components/nav-adaptive.css` | 0.75KB | **0.38KB** | 0.29KB |
 | `components/pagination.css` | 0.86KB | **0.38KB** | 0.28KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
-| `js/alert-dismiss.js` | 0.61KB | **0.35KB** | 0.28KB |
+| `js/alert-dismiss.js` | 0.63KB | **0.36KB** | 0.32KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
@@ -173,7 +175,7 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 
 > **Budget:** `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if it ever creeps over.
 
-Opt-in JS (`dist/js/`): nine zero-dependency behavior modules, imported one by one or all together via `barefoot.js`. Internal plumbing (`lifecycle.js`, `remove-on-click.js`) ships alongside but is not public API. → [docs/javascript.md](docs/javascript.md)
+Opt-in JS (`dist/js/`): nine zero-dependency behavior modules, imported one by one or all together via `barefoot.js`. Internal plumbing (`lifecycle.js`, `remove-on-click.js`) ships alongside but is not public API, and `js/verify.js` is the opt-in dev-only contract checker (never in the barrel). → [docs/javascript.md](docs/javascript.md)
 
 ---
 
@@ -201,8 +203,9 @@ src/
 demo/index.html        conformance page (keyboard walkthroughs)
 demo/studio.html       generative theming editor (v5.0)
 docs/                  theming, components, javascript, accessibility,
-                       performance, api, adaptive, migration-3/4/5
-tests/                 a11y (axe-core), opt-in JS, visual regression
+                       performance, api, adaptive, migration-3/4/5, verify
+tests/                 a11y (axe-core), opt-in JS, visual regression,
+                       Verify registry + checker engine
 build/                 Lightning CSS bundler + size budget + preview server
 ```
 

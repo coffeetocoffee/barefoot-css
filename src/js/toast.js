@@ -13,7 +13,9 @@
    import "barefoot/js/toast.js"
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm } from "./lifecycle.js";
+
+arm("toast");
 
 function initToasts(root = document) {
   const toasts = root.querySelectorAll('[popover][data-kind="toast"][data-duration]');

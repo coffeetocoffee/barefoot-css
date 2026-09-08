@@ -511,7 +511,18 @@ test.describe("opt-in JS barrel completeness", () => {
       .filter(
         (f) =>
           f !== "barefoot.js" &&
-          !["lifecycle.js", "remove-on-click.js", "roving-index.js", "return-focus.js"].includes(f)
+          // lifecycle/remove-on-click/roving-index/return-focus are
+          // internal plumbing (ADR-0002/0004/0006); verify.js +
+          // verify-contracts.js are the Verify checker and its registry
+          // (ADR-0015) — opt-in by import, never in the barrel.
+          ![
+            "lifecycle.js",
+            "remove-on-click.js",
+            "roving-index.js",
+            "return-focus.js",
+            "verify-contracts.js",
+            "verify.js",
+          ].includes(f)
       )
       .sort();
     const barrel = fs.readFileSync(path.join(rootDir, "src/js/barefoot.js"), "utf8");

@@ -47,6 +47,7 @@ jobs:
             "barefoot-css/themes/dashboard.css",
             "barefoot-css/utilities.css",
             "barefoot-css/js/barefoot.js",
+            "barefoot-css/verify/pack.mjs",
             "barefoot-css/src/index.css",
           ];
           for (const t of targets) {
@@ -88,7 +89,7 @@ jobs:
         # dist/ is gitignored, so the demo page is unstyled until it's
         # built — the test jobs must build before running Playwright.
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --project=chromium tests/js.spec.js tests/css.spec.js
+      - run: npx playwright test --project=chromium tests/js.spec.js tests/css.spec.js tests/verify.spec.js
 
   firefox:
     name: Behavior (JS + CSS, Firefox)
@@ -106,7 +107,7 @@ jobs:
         # *-win32.png; on Linux Playwright would demand *-linux.png
         # snapshots that don't exist. Cross-engine visuals run in the
         # "visual-cross" Windows job below.
-      - run: npx playwright test --project=firefox tests/css.spec.js tests/js.spec.js
+      - run: npx playwright test --project=firefox tests/css.spec.js tests/js.spec.js tests/verify.spec.js
 
   webkit:
     name: Behavior (JS + CSS, WebKit)
@@ -123,7 +124,7 @@ jobs:
         # WebKit = Safari's engine; run on macOS to match real usage.
         # Behavior only — no visual.spec.js (baselines are *-win32.png;
         # see the firefox job note).
-      - run: npx playwright test --project=webkit tests/css.spec.js tests/js.spec.js
+      - run: npx playwright test --project=webkit tests/css.spec.js tests/js.spec.js tests/verify.spec.js
 
   visual:
     name: Visual regression

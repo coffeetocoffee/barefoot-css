@@ -339,5 +339,10 @@
     applySeed();
     updateOutput();
   </script>
+
+  <!-- Verify (Phase 3): the live badge on the Studio chrome itself.
+       The preview iframe (demo/index.html) carries its own badge; this
+       one guards the Studio markup. -->
+  <script type="module" src="./verify-badge.js"></script>
 </body>
 </html>

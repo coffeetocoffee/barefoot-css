@@ -10,8 +10,10 @@
    import "barefoot/js/alert-dismiss.js"
 */
 
-import { onDomReady } from "./lifecycle.js";
+import { onDomReady, arm } from "./lifecycle.js";
 import { removeOnClick } from "./remove-on-click.js";
+
+arm("alert-dismiss");
 
 export function initAlertDismiss(root = document) {
   removeOnClick(root, "alert-dismiss", "[data-alert]", "[data-alert-dismiss]");

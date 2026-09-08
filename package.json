@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",
@@ -14,11 +14,13 @@
     "./components/*": "./dist/components/*",
     "./themes/*": "./dist/themes/*",
     "./js/*": "./dist/js/*",
+    "./verify/pack.mjs": "./verify/pack.mjs",
     "./src/*": "./src/*"
   },
   "files": [
     "dist",
     "src",
+    "verify",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -40,10 +42,11 @@
     "test:a11y": "playwright test --project=chromium tests/a11y.spec.js",
     "test:js": "playwright test --project=chromium tests/js.spec.js",
     "test:css": "playwright test --project=chromium tests/css.spec.js",
+    "test:verify": "playwright test --project=chromium tests/verify.spec.js",
     "test:visual": "playwright test --project=chromium tests/visual.spec.js",
     "test:visual:update": "playwright test --project=chromium tests/visual.spec.js --update-snapshots",
-    "test:ff": "playwright test --project=firefox tests/css.spec.js tests/js.spec.js tests/visual.spec.js",
-    "test:webkit": "playwright test --project=webkit tests/css.spec.js tests/js.spec.js tests/visual.spec.js",
+    "test:ff": "playwright test --project=firefox tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/visual.spec.js",
+    "test:webkit": "playwright test --project=webkit tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/visual.spec.js",
     "prepack": "npm run check",
     "prepublishOnly": "npm run check"
   },

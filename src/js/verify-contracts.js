@@ -1,0 +1,197 @@
+/* Barefoot — Verify contract registry (Phase 0, ADR-0015).
+   The machine-readable single source of truth for the framework's own
+   markup contracts — the ones axe can't know: that popovertarget needs
+   a live id, that a sticky table's scroll wrapper must be focusable and
+   named, that a [data-alert-dismiss] button without its module is a
+   no-op. Generic WCAG work stays with axe; this audits only what
+   Barefoot itself documents.
+
+   One registry, two delivery formats (ADR-0015):
+   - js/verify.js (Phase 1) — dev-only browser checker; console warnings
+     in the warnOnce style (once per page, only when markup matches);
+     explicit import, so zero cost unless you ask; never in barefoot.js.
+   - verify/pack.mjs (Phase 2) — the same rules exported as Playwright/
+     axe-composable helpers, so consumers pin the contracts in CI.
+
+   Rule shape (pinned by tests/verify.spec.js):
+   - id      kebab-case rule id, unique.
+   - select  CSS selector (or array of selectors) that finds the surface.
+   - check   (el, ctx) => detail | null. A pure DOM assertion — no
+             closures, so it runs in-page and serializes into
+             page.evaluate. ctx = { byId(id), armed(module) }: armed()
+             reports whether an opt-in module (file stem, e.g. "chips")
+             initialized on the page; the engine owns the detection.
+   - fix     the console fix hint.
+   - docs    the docs file that states the contract.
+   - quote   verbatim sentence(s) from that file. Every rule is
+             traceable to a sentence in docs/, pinned by test — the
+             API-audit pattern turned outward.
+   - module  (optional) the arming module path(s), e.g. "js/chips.js".
+   - wcag    (optional) the WCAG success criterion at stake.
+
+   Not a behavior module: nothing to init, not listed in barefoot.js.
+   Zero dependencies. Ships as-is like its siblings, so dist/js travels
+   as one directory.
+*/
+
+export const VERIFY_RULES = [
+  {
+    id: "popover-target-exists",
+    select: "[popovertarget]",
+    check(el, ctx) {
+      const id = el.getAttribute("popovertarget");
+      const target = id ? ctx.byId(id) : null;
+      if (!target) {
+        return `popovertarget="${id || ""}" does not match any id in the document`;
+      }
+      if (!target.hasAttribute("popover")) {
+        return `popovertarget="${id}" resolves, but the target has no popover attribute, so the trigger does nothing`;
+      }
+      return null;
+    },
+    fix: "point popovertarget at the id of a live [popover] element (docs/components.md, Popover)",
+    docs: "docs/components.md",
+    quote: [
+      "`popovertarget` must name the `id` of a live `[popover]` element — a typo'd or missing id leaves the trigger a silent no-op.",
+    ],
+  },
+
+  {
+    id: "sticky-scroll-focusable",
+    select: ['[data-table~="sticky-head"]', '[data-table~="sticky-col"]'],
+    wcag: "2.1.1",
+    check(el, ctx) {
+      // Find the scroll container the sticky cells stick against; the
+      // walk is bounded so a table with no wrapper stays silent (a
+      // sticky table over plain page scroll is not a violation).
+      let wrapper = null;
+      let node = el.parentElement;
+      for (let hops = 0; node && hops < 6; hops++) {
+        const overflow = getComputedStyle(node);
+        if (/(auto|scroll)/.test(`${overflow.overflowX} ${overflow.overflowY}`)) {
+          wrapper = node;
+          break;
+        }
+        node = node.parentElement;
+      }
+      if (!wrapper) return null;
+      if (!wrapper.hasAttribute("tabindex")) {
+        return 'the scroll wrapper of a sticky table is not keyboard-focusable — give it tabindex="0"';
+      }
+      const label = wrapper.getAttribute("aria-label") || wrapper.getAttribute("title");
+      if (label && label.trim()) return null;
+      const labelledby = (wrapper.getAttribute("aria-labelledby") || "").trim();
+      if (labelledby && labelledby.split(/\s+/).every((id) => ctx.byId(id))) {
+        return null;
+      }
+      return "the scroll wrapper of a sticky table has no accessible name — give it aria-label or aria-labelledby";
+    },
+    fix: 'give the sticky table\'s scroll wrapper tabindex="0" and an accessible name (docs/components.md, Table)',
+    docs: "docs/components.md",
+    quote: [
+      'Give the wrapper `tabindex="0"` and an accessible name: tables hold no focusable content, so without it keyboard users can\'t scroll (WCAG 2.1.1; axe\'s `scrollable-region-focusable` flags it).',
+    ],
+  },
+
+  {
+    id: "skip-link-first",
+    select: "a.bf-skip-link",
+    check(el, ctx) {
+      // Elements that render nothing don't take the first Tab stop, so
+      // they may precede the skip link; anything visible may not.
+      const INERT = ["SCRIPT", "TEMPLATE", "NOSCRIPT", "LINK", "STYLE", "META"];
+      let before = el.previousElementSibling;
+      while (before) {
+        if (!INERT.includes(before.tagName)) {
+          return "the skip link is not the first element in <body>, so the first Tab stop lands on something else";
+        }
+        before = before.previousElementSibling;
+      }
+      const href = el.getAttribute("href") || "";
+      if (href.startsWith("#") && !ctx.byId(href.slice(1))) {
+        return `href="${href}" does not match any id in the document`;
+      }
+      return null;
+    },
+    fix: "put the skip link as the first element in <body> and point it at your main landmark (docs/components.md, Navigation)",
+    docs: "docs/components.md",
+    quote: [
+      "Pair it with `.bf-skip-link` as the first element in `<body>` so the first Tab stop skips past the nav to `<main>`.",
+    ],
+  },
+
+  {
+    id: "describedby-wired",
+    select: ".bf-field-error",
+    check(el) {
+      const id = el.id;
+      if (!id) {
+        return "the field error text has no id, so no control can reference it via aria-describedby";
+      }
+      for (const control of document.querySelectorAll("input, select, textarea")) {
+        const refs = (control.getAttribute("aria-describedby") || "").trim();
+        if (refs.split(/\s+/).includes(id)) return null;
+      }
+      return `no control lists "${id}" in its aria-describedby, so the error is never announced with its field`;
+    },
+    fix: 'wire the field error to its control with aria-describedby="<error-id>" (docs/components.md, Forms)',
+    docs: "docs/components.md",
+    quote: [
+      "Pair each field with `.bf-field-error` text wired up via `aria-describedby`.",
+    ],
+  },
+
+  {
+    id: "module-pairing",
+    select: [
+      "[data-alert-dismiss]",
+      "[data-chip-remove]",
+      '[popover][data-kind="toast"][data-duration]',
+    ],
+    module: ["js/alert-dismiss.js", "js/chips.js", "js/toast.js"],
+    check(el, ctx) {
+      const module = el.hasAttribute("data-alert-dismiss")
+        ? "alert-dismiss"
+        : el.hasAttribute("data-chip-remove")
+          ? "chips"
+          : "toast";
+      if (ctx.armed(module)) return null;
+      return `this control is a no-op — the opt-in js/${module}.js module is not loaded`;
+    },
+    fix: "load barefoot-css/js/barefoot.js (or the single module) or drop the dead control (docs/components.md, Alert / Chip / Toast)",
+    docs: "docs/components.md",
+    quote: [
+      "Without the module the button is a no-op visual affordance.",
+      "No-JS first: without the module nothing hides, the × just does nothing.",
+      "Load `js/toast.js` to enable.",
+    ],
+  },
+
+  {
+    id: "nav-complete-contract",
+    select: ".bf-nav-toggle",
+    check(el, ctx) {
+      const nav = el.closest('[data-nav="header"], [data-nav="drawer"]');
+      if (!nav) {
+        return 'the toggle must live inside a [data-nav="header"] or [data-nav="drawer"] nav';
+      }
+      const list = nav.querySelector(":scope > ul");
+      if (!list) {
+        return "the nav has no direct <ul> link list, so the collapse contract is incomplete";
+      }
+      if (!list.id) {
+        return "the nav list has no id, so the collapse contract is incomplete";
+      }
+      const ref = el.getAttribute("aria-controls");
+      if (!ref || ctx.byId(ref) !== list) {
+        return `aria-controls="${ref || ""}" must point at the nav's own list (#${list.id})`;
+      }
+      return null;
+    },
+    fix: "complete the hamburger contract: a toggle with aria-controls pointing at an id'd direct <ul> of the nav (docs/components.md, Hamburger)",
+    docs: "docs/components.md",
+    quote: [
+      "A header nav without a complete contract (toggle + id'd list) is never armed for collapse.",
+    ],
+  },
+];

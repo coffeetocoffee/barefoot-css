@@ -1241,6 +1241,17 @@
       </div>
     </section>
 
+    <!-- Verify (Phase 3) -->
+    <section id="verify" aria-labelledby="verify-title">
+      <h2 id="verify-title">Verify — the framework checks your laces</h2>
+      <p>The dev-only <code>js/verify.js</code> checker audits Barefoot's own markup contracts — the ones axe can't know — and the badge in the corner shows the live result. Break a contract and it flips <span class="badge" data-variant="danger">✗</span>, with the exact fix named in the console (<a href="../docs/verify.md">docs/verify.md</a>).</p>
+      <div class="bf-row bf-gap-2" role="group" aria-label="Verify stage controls">
+        <button type="button" id="verify-break-btn">Break the popover contract</button>
+        <button type="button" id="verify-fix-btn" data-variant="primary" disabled>Fix it</button>
+      </div>
+      <p class="bf-muted" id="verify-stage-note">Try it: click <strong>Break</strong>, watch the badge, read the console, then <strong>Fix</strong>. The checker never mutates the DOM — the stage controls do, and the badge only reports.</p>
+    </section>
+
     </main>
 
     <footer class="bf-container bf-mt-8">
@@ -1266,6 +1277,27 @@
       document.getElementById("cancel-dialog").addEventListener("click", () => dlg.close());
       document.getElementById("confirm-dialog").addEventListener("click", () => dlg.close());
     }
+
+    // Verify stage (Phase 3): break a real contract, watch the badge
+    // flip. The dropdown trigger (#demo-menu-1, Popover-API menu) is
+    // the victim; verify-badge.js picks the change up via its
+    // MutationObserver and js/verify.js names the fix in the console.
+    const menuBtn = document.querySelector('[popovertarget="demo-menu-1"]');
+    const breakBtn = document.getElementById("verify-break-btn");
+    const fixBtn = document.getElementById("verify-fix-btn");
+    if (menuBtn && breakBtn && fixBtn) {
+      const setStage = (broken) => {
+        if (broken) {
+          menuBtn.setAttribute("popovertarget", "demo-menu-ghost");
+        } else {
+          menuBtn.setAttribute("popovertarget", "demo-menu-1");
+        }
+        breakBtn.disabled = broken;
+        fixBtn.disabled = !broken;
+      };
+      breakBtn.addEventListener("click", () => setStage(true));
+      fixBtn.addEventListener("click", () => setStage(false));
+    }
   </script>
 
   <script type="module">
@@ -1274,5 +1306,11 @@
     // ships in the CSS.
     import "../dist/js/barefoot.js";
   </script>
+
+  <!-- Verify (Phase 3): the live "✓ verified" badge — the flagship
+       demo moment. Break any contract below on stage (e.g. change a
+       popovertarget to a dead id) and watch the badge flip and the
+       console name the fix. Dev-only; never in the framework barrel. -->
+  <script type="module" src="./verify-badge.js"></script>
 </body>
 </html>

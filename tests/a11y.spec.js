@@ -128,6 +128,24 @@ test.describe("accessibility conformance (axe-core)", () => {
     const results = await new AxeBuilder({ page }).exclude(DEMOS.stepper).analyze();
     expect(results.violations).toEqual([]);
   });
+
+  test("Verify stage section: resting and broken-contract states are clean", async ({ page }) => {
+    // The Verify badge and stage controls are new demo furniture
+    // (Phase 3); axe must clear them resting AND mid-violation — the
+    // broken state is the page's whole point, so it must stay clean
+    // while it demonstrates it.
+    await gotoDemo(page);
+    const badge = page.locator(".bf-verify-badge");
+    await expect(badge).toHaveAttribute("data-state", "ok");
+
+    await page.getByRole("button", { name: "Break the popover contract" }).click();
+    await expect(badge).toHaveAttribute("data-state", "broken");
+    const results = await new AxeBuilder({ page }).include("#verify").analyze();
+    expect(results.violations).toEqual([]);
+
+    await page.getByRole("button", { name: "Fix it" }).click();
+    await expect(badge).toHaveAttribute("data-state", "ok");
+  });
 });
 
 test.describe("visible focus + keyboard contract", () => {

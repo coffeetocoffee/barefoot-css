@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot Verify — deliberately broken fixture</title>
+  <!-- Not linked from any demo page. Served by build/serve.mjs for
+       tests/verify.spec.js (Phase 1 engine gate): every Verify seed
+       rule is violated exactly here. `?strict` arms the strict CI
+       throw on the same page. -->
+  <script>
+    if (location.search.includes("strict")) {
+      document.documentElement.setAttribute("data-bf-verify", "strict");
+    }
+  </script>
+</head>
+<body>
+  <main id="main">
+    <!-- popover-target-exists (x2): one dead id, one non-popover target -->
+    <button type="button" popovertarget="ghost">Menu 1</button>
+    <button type="button" popovertarget="plain">Menu 2</button>
+    <div id="plain">not a popover</div>
+
+    <!-- sticky-scroll-focusable: scroll wrapper is neither focusable nor named -->
+    <div style="overflow: auto; height: 6rem">
+      <table data-table="sticky-head">
+        <thead><tr><th>Task</th></tr></thead>
+        <tbody><tr><td>1</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- describedby-wired: error text exists, no control references it -->
+    <input id="email" type="email">
+    <small id="email-error" class="bf-field-error">Enter an email.</small>
+
+    <!-- module-pairing (x3): controls whose modules are not loaded on
+         this page on purpose — that is the state the rule audits. -->
+    <div data-alert="danger" role="alert">
+      <p>Failed.</p>
+      <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
+    </div>
+    <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
+    <div popover="manual" id="toast-auto" data-kind="toast" data-duration="3000" role="status">
+      <p>Saved.</p>
+      <button type="button" popovertarget="toast-auto">Close</button>
+    </div>
+
+    <!-- nav-complete-contract: toggle wired to an id that doesn't exist -->
+    <nav data-nav="header" aria-label="Primary">
+      <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="menu">Menu</button>
+      <ul id="real-menu"><li><a href="#">Home</a></li></ul>
+    </nav>
+  </main>
+
+  <!-- skip-link-first: present but NOT the first element in <body> -->
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+
+  <!-- Verify only — deliberately NO barefoot.js here: the fixture page
+       must exercise the "module not loaded" state of module-pairing. -->
+  <script type="module">
+    import "/dist/js/verify.js";
+  </script>
+</body>
+</html>

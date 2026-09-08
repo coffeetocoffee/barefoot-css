@@ -42,10 +42,87 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   visual regression green on all three (win32 baselines). Caveats struck
   from `plan.md`.
 
-## [Unreleased]
+## [6.1.0] — 2026-09-08
 
 ### Added
 
+- **Barefoot Verify, Phase 4 — hardening: the JS size table is policed.**
+  `npm run size` now enforces a gzip budget per shipped JS entry (same
+  contract as CSS): the ~2KB module family is the default, with
+  explicit limits for `js/verify-contracts.js` (4KB — it quotes the
+  docs sentence for every rule, data-heavy by design) and
+  `js/barefoot.js` (1KB — growth there means something regressed). A
+  new `js/` file fails the check until given a deliberate budget.
+  Pinned from the test side too: `verify.spec.js` Phase 4 asserts
+  every entry against its budget and that the Verify entries cannot
+  silently drop out of the budget map. `test:ff` / `test:webkit` now
+  include `verify.spec.js`, and the a11y suite axe-scans the demo's
+  Verify stage section in both its resting and broken-contract states.
+  Full matrix verified 2026-09-08: Chromium 232 passed / 2 engine-gated
+  skips, Firefox 202 / 12, WebKit 207 / 7; `npm run check` green.
+- **Barefoot Verify, Phase 3 — the visible layer.** The conformance demo
+  and the Studio chrome carry a live Verify badge (`demo/
+  verify-badge.js`, a self-contained demo widget around the dev-only
+  engine): "✓ Barefoot contracts verified" when clean, "✗ N contract
+  violations — details in the console" when not, re-scanned on markup
+  changes via a debounced MutationObserver. The guardrail stays intact —
+  the checker never mutates the DOM; the badge writes only to the node
+  it created and skips writes when nothing changed (no rescan loop).
+  Inside the Studio it refuses to run in the preview iframe (one badge
+  per visual stack). The demo gains a stage section (#verify): a Break/
+  Fix pair that mutates the dropdown's `popovertarget` to a dead id and
+  back — break a contract on stage, watch the badge flip and the
+  console name the fix. `docs/verify.md` gains a per-rule reference
+  (contract, broken markup, fixed markup) pinned by test, and the
+  visual baselines were regenerated deliberately for the new demo
+  furniture.
+- **Barefoot Verify, Phase 2 — CI contract-packs (`verify/pack.mjs`).**
+  The same registry, exported as Playwright-composable assertions:
+  `runPack(page)` sweeps all rules, `runRule(page, id)` pins one,
+  `assertClean(page)` throws a formatted report for any test runner.
+  The sweep is evaluated in the page under test and imports the
+  registry from the files the page actually loads (`base` option,
+  default `/dist/`; CDN users pass their jsDelivr base) — CI pins
+  byte-for-byte what ships, with no Node-side copy of rule logic and
+  no checker auto-scan inside the tested page. Arming is declared
+  (`armed` option, default: every module) where the browser checker
+  detects it — partial loads pass the subset and module-pairing audits
+  the rest as dead controls. Shipped via the new `./verify/pack.mjs`
+  export, covered by the packaging smoke test, and — the dogfooding
+  claim — Barefoot's own suites now consume the pack for every
+  registry sweep, with a test pinning that pack and engine agree
+  rule-for-rule on the same page.
+- **Barefoot Verify, Phase 1 — the checker engine (`js/verify.js`,
+  dev-only).** Imports the Phase-0 registry and runs every rule on
+  load, in the `warnOnce` volume: one warning per rule per page (never
+  per element), naming every offender and the fix; silence on pages
+  that honor the contracts. `data-bf-verify="strict"` on `<html>`
+  throws one aggregate error instead — the CI form. Exports
+  `runVerify()` (pure read) and `verify()` for dynamic content and
+  future CI packs. The lifecycle seam gains `arm()` / `isArmed()` so
+  `module-pairing` distinguishes a not-loaded module from broken
+  markup (chips, alert-dismiss, toast arm at import). Measured
+  1.61KB gzip; never in the `barefoot.js` barrel; never mutates the
+  DOM. Gates: broken fixture page trips all six seed rules through
+  the engine's own seams; corrected twin stays silent; the demo
+  dogfoods clean; strict throws exactly one aggregate error; volume
+  asserted despite deliberate repeat offenders. Green on Chromium,
+  Firefox, and WebKit.
+- **Barefoot Verify, Phase 0 — the contract registry + ADR-0015.** Every
+  implicit markup contract in `docs/components.md` is now a machine-readable
+  rule in `src/js/verify-contracts.js`: id, selector(s), pure-DOM `check`,
+  fix hint, and the verbatim docs sentence the rule restates. Six seed rules:
+  `popover-target-exists`, `sticky-scroll-focusable` (WCAG 2.1.1),
+  `skip-link-first`, `describedby-wired`, `module-pairing` (dismiss/chips/
+  toast buttons whose JS module isn't loaded), `nav-complete-contract`.
+  Pinned by `tests/verify.spec.js` three ways: the rule shape is exact, every
+  quote must appear in the named docs file (the API-audit pattern turned
+  outward), and each rule is proven to trip on deliberately-broken fixtures,
+  stay silent on corrected ones, and pass clean on `demo/index.html` with
+  every module armed (the demo is the dogfood proof). The registry is data,
+  not behavior: excluded from the `barefoot.js` barrel contract, copied to
+  `dist/js/` by the build, and consumed in Phase 1 (`js/verify.js`) and
+  Phase 2 (`verify/pack.mjs`) — one registry, two delivery formats (ADR-0015).
 - **Generative system, keystone (`seed-system.css`, opt-in).** Importing it makes
   the two generative seed knobs (`--bf-seed-h` / `--bf-seed-c`) the framework's
   master accent: `--bf-primary` becomes `oklch(0.55 var(--bf-seed-c)

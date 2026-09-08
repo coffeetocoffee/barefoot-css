@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot Verify — clean fixture</title>
+  <!-- The corrected twin of verify-broken.html: every Verify seed rule
+       honored. Loads barefoot.js so the module-pairing controls are
+       armed and functional — the engine must stay silent here. -->
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+  <main id="main">
+    <button type="button" popovertarget="menu">Menu</button>
+    <div popover id="menu">
+      <a href="#">Edit</a>
+      <a href="#">Share</a>
+    </div>
+
+    <div role="region" aria-label="Ledger" tabindex="0" style="overflow: auto; height: 6rem">
+      <table data-table="sticky-head">
+        <thead><tr><th>Task</th></tr></thead>
+        <tbody><tr><td>1</td></tr></tbody>
+      </table>
+    </div>
+
+    <input id="email" type="email" aria-describedby="email-error">
+    <small id="email-error" class="bf-field-error">Enter an email.</small>
+
+    <div data-alert="danger" role="alert">
+      <p>Failed.</p>
+      <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
+    </div>
+    <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
+    <div popover="manual" id="toast-auto" data-kind="toast" data-duration="3000" role="status">
+      <p>Saved.</p>
+      <button type="button" popovertarget="toast-auto">Close</button>
+    </div>
+
+    <nav data-nav="header" aria-label="Primary">
+      <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="site-menu">Menu</button>
+      <ul id="site-menu"><li><a href="#">Home</a></li></ul>
+    </nav>
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+    import "/dist/js/verify.js";
+  </script>
+</body>
+</html>

@@ -13,8 +13,10 @@
    import "barefoot/js/chips.js"
 */
 
-import { onDomReady } from "./lifecycle.js";
+import { onDomReady, arm } from "./lifecycle.js";
 import { removeOnClick } from "./remove-on-click.js";
+
+arm("chips");
 
 export function initChips(root = document) {
   removeOnClick(root, "chips", "[data-chip]", "[data-chip-remove]");

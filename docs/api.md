@@ -86,6 +86,7 @@ All deprecated surfaces have been removed in 4.0. See
   "./components/*": "./dist/components/*",
   "./themes/*": "./dist/themes/*",
   "./js/*": "./dist/js/*",
+  "./verify/pack.mjs": "./verify/pack.mjs",
   "./tokens.json": "./dist/tokens.json",
   "./src/*": "./src/*"
 }
@@ -99,6 +100,7 @@ All deprecated surfaces have been removed in 4.0. See
 | `"barefoot-css/components/dialog.css"` | Any single component |
 | `"barefoot-css/themes/editorial.css"` | Any starter theme |
 | `"barefoot-css/js/barefoot.js"` | All JS modules bundled |
+| `"barefoot-css/verify/pack.mjs"` | Verify contract-packs: the registry rules as Playwright assertions for CI (v6.1, ADR-0015) |
 | `"barefoot-css/tokens.json"` | The `--bf-*` tokens as a W3C DTCG design-token file (v4.8) |
 | `"barefoot-css/src/tokens.css"` | Raw source (unstable) |
 
@@ -177,6 +179,7 @@ All component attributes and their valid values:
 | `data-form` | `<form>` | `adaptive` — `.bf-row` collapses to a column when narrow | 5.0 |
 | `data-form-summary` | child of `[data-form="adaptive"]` | (boolean) — zero-JS invalid-field summary via `:has(:user-invalid)` | 5.0 |
 | `data-label` | `<td>` in `table[data-table="adaptive"]` | text — column header shown when card-stacked | 5.0 |
+| `data-bf-verify` | `<html>` | `strict` — Verify contract checker throws instead of warning ([verify.md](verify.md)) | 6.1 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

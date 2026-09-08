@@ -12,6 +12,13 @@
      calls it when it arms against markup that uses a deprecated
      surface; pages that never touch it stay silent. Set-backed per
      module instance — one page load = at most one warning per key.
+   - arm(name) / isArmed(name): the arming registry Verify reads. A
+     behavior module records itself at import ("imported = armed"), so
+     js/verify.js can tell a dead-looking control whose module never
+     loaded from one whose module did. Module-instance state, not DOM
+     attributes — it needs no page surface and survives fixture
+     document swaps. Only modules a registry rule audits arm today
+     (chips, alert-dismiss, toast); others join if rules need them.
 
     Ships as-is like its siblings; behavior modules import it relatively,
     so dist/js/ travels as one directory — which it always is, being a
@@ -20,6 +27,7 @@
 
 const bindings = new WeakMap();
 const warned = new Set();
+const armedModules = new Set();
 
 export function onDomReady(fn) {
   if (document.readyState === "loading") {
@@ -41,4 +49,12 @@ export function warnOnce(key, message) {
   if (warned.has(key)) return;
   warned.add(key);
   console.warn(`[barefoot-css] ${message}`);
+}
+
+export function arm(name) {
+  armedModules.add(name);
+}
+
+export function isArmed(name) {
+  return armedModules.has(name);
 }
