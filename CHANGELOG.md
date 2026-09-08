@@ -4,6 +4,21 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.2.0] — 2026-09-08
+
+### Added
+
+- **Container-aware layout primitives.** New opt-in `components/layout-flow.css`
+  (`.bf-flow`), `components/layout-switcher.css` (`.bf-switcher`), and
+  `components/layout-sidebar.css` (a deterministic container-aware
+  `.bf-sidebar` upgrade). Thresholds mirror the adaptive tokens rather than
+  viewport breakpoints.
+- **Barefoot Playground.** New `demo/playground.html` with resizable boxes,
+  keyboard-operable width sliders, and live widths for the primitives plus a
+  composite sidebar/switcher/adaptive table/card stage.
+- **Layout documentation.** New `docs/layout.md`, linked from the README and
+  docs nav.
+
 ## [6.0.0] — 2026-09-03
 
 ### Added

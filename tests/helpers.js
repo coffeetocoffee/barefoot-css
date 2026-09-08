@@ -97,10 +97,16 @@ export const DEMOS = Object.freeze({
   toastTrigger: "#toast-trigger",
   toastUploadTrigger: "#toast-upload-trigger",
    typography: "#typography",
-   studioReflow: "#studio-reflow",
-   studioHue: "#studio-hue",
-   studioChroma: "#studio-chroma",
-   studioScale: "#studio-scale",
+    studioReflow: "#studio-reflow",
+    studioHue: "#studio-hue",
+    studioChroma: "#studio-chroma",
+    studioScale: "#studio-scale",
+    // v6.2 — the layout is the breakpoint (demo/playground.html).
+    playgroundFlow: "#pg-flow",
+    playgroundSwitcher: "#pg-switcher",
+    playgroundForm: "#pg-form",
+    playgroundSidebar: "#pg-sidebar",
+    playgroundComposite: "#pg-composite",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -118,6 +124,12 @@ export async function gotoGallery(page) {
 /* Navigate to the generative Studio (v5.0 Phase 4) — the theming editor. */
 export async function gotoStudio(page) {
   await page.goto("/demo/studio.html");
+}
+
+/* Navigate to the layout playground (v6.2) — the resizable demo that
+   proves "the layout is the breakpoint" live. */
+export async function gotoPlayground(page) {
+  await page.goto("/demo/playground.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

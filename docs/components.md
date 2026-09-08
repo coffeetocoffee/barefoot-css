@@ -1104,7 +1104,8 @@ forms, same one-liner:
 Layout-only, opt-in:
 
 - **Container & flow** — `.bf-container`, `.bf-stack`, `.bf-row`,
-  `.bf-gap-1…5`.
+  `.bf-gap-1…5`. Container-aware layout has its own page:
+  [Container-aware layout](layout.md).
 - **Spacing scale** — `.bf-mt-1…8` / `.bf-mb-1…8`
   (margin-block-start/end), `.bf-p-1…8` (all-sides padding),
   `.bf-px-1…8` / `.bf-py-1…8` (padding-inline/block). Each maps to the
@@ -1114,7 +1115,12 @@ Layout-only, opt-in:
 - **Split layout** — `.bf-sidebar`: the first child is the aside
   (`--bf-sidebar-width`, 16rem), everything else flows beside it; the
   split wraps to one column when the row can't fit the aside plus ≥60%
-  main. Zero media queries.
+  main. Zero media queries. Import `components/layout-sidebar.css` after
+  utilities for the deterministic 40rem container collapse.
+- **Container rhythm & switcher** — `.bf-flow` tightens its gap in narrow
+  containers (`components/layout-flow.css`); `.bf-switcher` shares a row
+  while its container is wide and stacks below 24rem
+  (`components/layout-switcher.css`).
 - **Sticky** — `.bf-sticky` pins an element to `--bf-sticky-top` (`0`)
   while its scrolling ancestor moves.
 - **Text & a11y** — `.bf-muted`, `.bf-center`, `.bf-overline`,

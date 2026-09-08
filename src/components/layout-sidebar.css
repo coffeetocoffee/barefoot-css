@@ -1,0 +1,32 @@
+/* Barefoot — sidebar, container-aware (v6.2).
+   Extends the existing .bf-sidebar utility (utilities.css) with a
+   deterministic collapse on the CONTAINER width, not the 60%-min-width
+   flex heuristic. Import AFTER full.css / utilities.css so these rules
+   win the cascade tie.
+
+   <div class="bf-contain">
+     <div class="bf-sidebar">
+       <aside>…</aside>
+       <main>…</main>
+     </div>
+   </div> */
+
+@layer utilities {
+  .bf-sidebar {
+    /* Self-container: the wrapper's own box is the query context. */
+    container-type: inline-size;
+  }
+
+  /* Narrow container → the content drops below the sidebar and both go
+     full width. Mirrors --bf-adaptive-2 (40rem) as a literal (Lightning
+     CSS can't resolve var() in @container conditions). Without this the
+     flex-wrap heuristic still stacks — this just pins the breakpoint to
+     the documented token. */
+  @container (width <= 40rem) {
+    .bf-sidebar > :first-child,
+    .bf-sidebar > :not(:first-child) {
+      flex-basis: 100%;
+      min-width: 0;
+    }
+  }
+}

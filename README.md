@@ -87,6 +87,8 @@ Stop asking "how wide is the screen?" Start asking "how wide am I **here**?" A s
 
 Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adaptive.md](docs/adaptive.md)
 
+v6.2 extends the thesis to layout: container-aware `.bf-flow`, `.bf-switcher`, and a deterministic `.bf-sidebar` upgrade — all opt-in — plus a resizable [playground](demo/playground.html). → [docs/layout.md](docs/layout.md)
+
 ---
 
 ## Size (measured, current build)
@@ -94,9 +96,9 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 55.64KB | **10.37KB** | 9.06KB |
+| `full.css` | 55.73KB | **10.39KB** | 9.10KB |
 | `js/verify-contracts.js` | 8.29KB | **3.08KB** | 2.62KB |
-| `index.css` | 10.89KB | **2.88KB** | 2.46KB |
+| `index.css` | 10.98KB | **2.90KB** | 2.47KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
@@ -163,14 +165,17 @@ Every adaptive file is **opt-in** (never in frozen `full.css`). → [docs/adapti
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
 | `components/divider.css` | 0.36KB | **0.22KB** | 0.16KB |
+| `components/layout-flow.css` | 0.34KB | **0.22KB** | 0.17KB |
 | `components/view-transition.css` | 0.52KB | **0.22KB** | 0.18KB |
 | `components/card.css` | 0.33KB | **0.21KB** | 0.15KB |
 | `components/forms-color.css` | 0.42KB | **0.21KB** | 0.16KB |
 | `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
 | `components/tabs-adaptive.css` | 0.38KB | **0.19KB** | 0.16KB |
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
+| `components/layout-switcher.css` | 0.27KB | **0.19KB** | 0.15KB |
 | `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
 | `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
+| `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
 <!-- SIZES:END -->
 
 > **Budget:** `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if it ever creeps over.
@@ -196,14 +201,15 @@ src/
   components/          buttons, forms, dialog, popover, dropdown,
                        accordion, tabs, carousel, grid, nav, alert,
                        skeleton, table, code, card, badge,
-                       breadcrumbs, pagination — plus *-adaptive.css
+                       breadcrumbs, pagination, layout primitives — plus *-adaptive.css
   js/                  opt-in modules: tabs, table-sort, popover-menu, nav, barefoot, …
   themes/              editorial, dashboard, playful, forest, sunset, custom template
   utilities.css        opt-in helpers
 demo/index.html        conformance page (keyboard walkthroughs)
 demo/studio.html       generative theming editor (v5.0)
+demo/playground.html   resizable layout proof (v6.2)
 docs/                  theming, components, javascript, accessibility,
-                       performance, api, adaptive, migration-3/4/5, verify
+                       performance, api, adaptive, layout, migration-3/4/5, verify
 tests/                 a11y (axe-core), opt-in JS, visual regression,
                        Verify registry + checker engine
 build/                 Lightning CSS bundler + size budget + preview server
@@ -216,6 +222,7 @@ build/                 Lightning CSS bundler + size budget + preview server
 - Live: [docs site](https://coffeetocoffee.github.io/barefoot-css/) and
   [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages)
 - [Adaptive components](docs/adaptive.md) — *the* v5.0 feature: container-adaptive by contract
+- [Container-aware layout](docs/layout.md) — the v6.2 layout primitives and playground
 - [Theming](docs/theming.md) — tokens, `light-dark()`, `data-bf-theme`, starter themes, the generative ramp
 - [Components](docs/components.md) — markup, behavior, JS status for each component
 - [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
@@ -242,7 +249,7 @@ Hundreds of tests run across **Chromium, Firefox, and WebKit**:
 
 - **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, and the theme gallery — all at **zero violations** — plus keyboard-contract tests.
 - **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End), no-JS-first contracts, popover-menu keyboard nav, theme persistence.
-- **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
+- **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the layout-primitive suite (v6.2), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
 - **Visual regression (`tests/visual.spec.js`)** — full-page light/dark screenshots against committed per-engine baselines.
 
 ```bash

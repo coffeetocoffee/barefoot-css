@@ -197,6 +197,14 @@ the base token and every ramp follows.
 | `--bf-grid-min` | `14rem` | minimum track in [data-grid="auto-fit"/"auto-fill"] |
 | `--bf-grid-gap` | `var(--bf-space-4)` | default [data-grid] gap |
 | `--bf-sidebar-width` | `16rem` | fixed-ish aside in .bf-sidebar |
+
+### Layout (v6.2: container-aware primitives)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-flow-space` | `var(--bf-space-4)` | default .bf-flow rhythm |
+| `--bf-switcher-gap` | `var(--bf-space-4)` | default .bf-switcher gap |
+| `--bf-switcher-min` | `14rem` | shared-row minimum in .bf-switcher |
 | `--bf-sticky-top` | `0` | offset for .bf-sticky |
 
 ### Layout (v1.8: content & media)

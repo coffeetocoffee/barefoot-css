@@ -1,8 +1,8 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-08 — v6.1.0 "Barefoot Verify" staged for release
-(registry, engine, contract-packs, visible layer, hardening); v5.2/v5.3/v6
-tags still pending the maintainer_
+_Last updated: 2026-09-08 — v6.2.0 "The layout is the breakpoint"
+releasing (container-aware layout primitives + playground); v6.1.0
+"Barefoot Verify" shipped (tag pushed)_
 
 ## Snapshot
 
@@ -12,23 +12,24 @@ tags still pending the maintainer_
   zero-JS floor raise, generative theming 2.0) and v5.1 (base-select
   graduation, adaptive round two, Studio export). Per-release detail in the
   [Release archive](#release-archive) and `CHANGELOG.md`.
-- **Staged for release (this tag):** **v6.1.0 — Barefoot Verify** (ADR-0015).
+- **Shipped:** **v6.1.0 — Barefoot Verify** (ADR-0015, tag pushed).
   Phase 0 the contract registry (`src/js/verify-contracts.js`); Phase 1 the
   dev-only checker engine (`js/verify.js`, 1.61KB gzip, strict mode, arming
   seam); Phase 2 the CI contract-packs (`verify/pack.mjs` export, dogfooded
   by the suites); Phase 3 the visible layer (live badge + break/fix stage on
   demo/Studio, per-rule docs); Phase 4 hardening (JS gzip budgets policed,
   full matrix green). `release.yml` takes over on tag push.
-- **Verification (2026-09-08, with Verify in the matrix):** Chromium 232
-  passed / 2 engine-gated skips · Firefox 202 / 12 · WebKit 207 / 7 — zero
-  failures; visual regression green on all three (win32 baselines); axe
-  green including the Verify stage's broken-contract state. Skips are
-  engine-gated (interest invokers, SDA, `popover=hint`, cross-doc VT,
-  base-select fallback; the v4.8 forced-colors tests are Chromium-gated
-  emulation). One known pre-existing WebKit flake: the popover empty-roster
-  Tab refocus test intermittently misses the focus return on win32 — it
-  fails on a clean tree too. Specs touch the demo only through
-  `tests/helpers.js`; ubuntu/macos jobs stay behavior-only.
+- **Verification (2026-09-08, v6.2 matrix):** Chromium 238 passed / 2
+  engine-gated skips · Firefox 207 / 12 · WebKit 212 / 7 — zero failures;
+  visual regression green on all three (win32 baselines); axe green
+  including the Verify stage's broken-contract state and the new
+  playground page. Skips are engine-gated (interest invokers, SDA,
+  `popover=hint`, cross-doc VT, base-select fallback; the v4.8
+  forced-colors tests are Chromium-gated emulation). One known
+  pre-existing WebKit flake: the popover empty-roster Tab refocus test
+  intermittently misses the focus return on win32 — it fails on a clean
+  tree too. Specs touch the demo only through `tests/helpers.js`;
+  ubuntu/macos jobs stay behavior-only.
 - **Build:** `index.css` 2.88KB gzip (budget ≤ 10KB, enforced by
   `npm run size`) · the JS table is now policed too (~2KB module family,
   explicit registry/barrel budgets) · `full.css` frozen at its 4.5 import
@@ -36,14 +37,15 @@ tags still pending the maintainer_
   in-process zlib with a fresh-child-process fallback for the Node 26/
   Windows break. The DTCG export `dist/tokens.json` ships outside the CSS
   payload.
-- **History:** milestones 0.1 → 6.0.0 shipped; 6.1.0 staged pending tag.
+- **History:** milestones 0.1 → 6.1.0 shipped; 6.2.0 releasing.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
   theming + Studio + CSS-only primitives (4.7), validation finish + forced
   colors + DTCG export + measured sizes (4.8), theme persistence as the
   smallest honest opt-in JS (4.9), adaptive + generative (5.0–5.3),
-  verification + front door (v6), Barefoot Verify (v6.1).
+  verification + front door (v6), Barefoot Verify (v6.1), container-aware
+  layout + playground (v6.2).
 
 ## Vision
 
@@ -169,8 +171,14 @@ and `.bf-*` utilities.
   hardening pass (JS budgets policed, three-engine matrix green,
   axe-scanned) are all in — 34 verify tests green on all three
   engines, and the suites themselves consume the pack (dogfooding
-  claim met). **Next: tag v6.1.0** (maintainer action, RELEASE.md);
-  the Verify roadmap is complete.
+  claim met). Tag `v6.1.0` pushed; `release.yml` publishes from the tag.
+- **v6.2.0 (releasing now — commit + tag + push) — "the layout is the breakpoint":**
+  container-query layout primitives (`.bf-flow`, `.bf-sidebar`,
+  `.bf-switcher`, opt-in per file) plus the **Barefoot Playground**
+  (`demo/playground.html`) — resizable containers (`resize: both`) with
+  demo-only keyboard width sliders/readouts that let developers resize a
+  box and watch the layout and adaptive components reflow live. The
+  playground is the proof; the primitives are the product.
 - **Parked candidates** (not planned): `:has()` content-driven
   morphogenesis and anchor-laid-out layering (v5.3); engine-gated test
   skips un-block as floors land (watch-list).
@@ -322,6 +330,69 @@ rebuild axe, only audit the framework's own contracts.**
    surface exists, never for markup Barefoot doesn't manage. If it
    ever nags on valid pages, the tool dies — trust is the entire
    product.
+
+## v6.2.0 — "The layout is the breakpoint" (releasing 2026-09-08)
+
+> **Selling line:** "The layout is the breakpoint." The playground is
+> the proof; the primitives are the product.
+
+Implemented and verified 2026-09-08; full matrix below, then commit +
+tag + push per RELEASE.md.
+
+The thesis so far stops at the component edge: v5 made *components*
+container-aware, but developers still hand-roll Grid/Flexbox wrappers to
+place them — and those wrappers still think in viewport media queries.
+This release extends the thesis one level up: **the layout is the
+breakpoint too.** And it ships with the demo that proves it live,
+because "the component is the breakpoint" is hard to grasp while
+muscle-memory says *resize the browser*.
+
+### Phase 0 — The Playground (`demo/playground.html`) ✅ (2026-09-08)
+
+- The conversion demo is built: resizable boxes (`resize: both`) holding
+  live Barefoot surfaces — `.bf-flow`, `.bf-switcher`, an adaptive form,
+  `.bf-sidebar`, and a composite sidebar → switcher → adaptive
+  table/card stage. Drag the handle and watch the layout reflow at *its*
+  width while the viewport never moves.
+- Honest scoping: pointer resizing is native CSS, but there is no native
+  keyboard equivalent — so the page adds demo-only width sliders and a
+  live numeric readout per box (arrow keys work). No shipped framework
+  JS is added.
+- Gate: met — keyboard-operable sliders, axe-clean, and visual baselines
+  untouched (`demo/index.html` was not changed).
+
+### Phase 1 — Container-query layout primitives (the product) ✅ (2026-09-08)
+
+- **Opt-in per file** — `components/layout-flow.css` (`.bf-flow`),
+  `components/layout-switcher.css` (`.bf-switcher`), and
+  `components/layout-sidebar.css` (the `.bf-sidebar` upgrade), extending
+  the existing utilities rather than replacing them. Breakpoints mirror
+  the container's adaptive tokens (`--bf-adaptive-1/2`).
+- Measured sizes: `layout-flow.css` 0.22KB gzip, `layout-switcher.css`
+  0.19KB gzip, `layout-sidebar.css` 0.13KB gzip — each well under the
+  ~0.5KB target and never in frozen `full.css` (ADR-0008).
+- **ADR-0016** (accepted): primitives query the *container*
+  (a `.bf-sidebar` inside a grid cell collapses there, not at some
+  viewport guess), reusing the v5.0 corrections (a container can't
+  query itself; wrappers establish the query context via `:has()`
+  where possible, mirroring `table/card-adaptive`). The sidebar upgrade
+  shares the utilities layer and must be imported after it.
+
+### Phase 2 — Docs & distribution ✅ (2026-09-08)
+
+- Built: `docs/layout.md` (one section per primitive plus degradation),
+  ADR-0016, README headline/project/docs pointers, and the Utilities
+  section in `docs/components.md`.
+- Gate: met — no new `data-*` attributes, so the `api.md` audit stays
+  green; token tables regenerated; full matrix 2026-09-08 — Chromium
+  238 passed / 2 skips, Firefox 207 / 12, WebKit 212 / 7, zero failures,
+  visual green on all three, axe 21/21 including the playground page.
+
+### Guardrails (inherited)
+
+- Opt-in by import · never in `full.css` · `index.css` budget
+  untouched (primitives ship as separate files) · degrade by omission
+  · every gate pinned by test, per house style.
 
 ## Watch-list (verified 2026-08-31, caniuse Jul-2026 + MDN)
 
@@ -606,3 +677,23 @@ Declined — do not revive:
   reaches inside the SVG file). Plus a permanent `css.spec.js` test
   covering `[data-icon]` for the first time. Docs-only; `icons.css`
   and the budget untouched.
+
+### v6.2 — "The layout is the breakpoint" (released 2026-09-08)
+
+> **Selling line:** "The layout is the breakpoint." The playground is
+> the proof; the primitives are the product.
+
+- **Primitives:** opt-in `layout-flow.css` (`.bf-flow`, 0.22KB gzip),
+  `layout-switcher.css` (`.bf-switcher`, 0.19KB), `layout-sidebar.css`
+  (deterministic `.bf-sidebar` collapse, 0.13KB) — thresholds mirror
+  `--bf-adaptive-1/2`, never in frozen `full.css` (ADR-0008).
+- **Playground:** `demo/playground.html` — resizable boxes with
+  keyboard-operable width sliders and live readouts; flow, switcher,
+  adaptive form, sidebar, and a composite sidebar → switcher →
+  adaptive table/card stage.
+- **Contract:** ADR-0016; tuning tokens `--bf-flow-space`,
+  `--bf-switcher-gap`, `--bf-switcher-min` in `tokens.css`;
+  `docs/layout.md`; no new `data-*` attributes.
+- **Verification (2026-09-08):** `npm run check` green; Chromium 238 /
+  2 skips, Firefox 207 / 12, WebKit 212 / 7, zero failures; visual
+  green on all three; axe 21/21 including the playground.

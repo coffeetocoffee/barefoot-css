@@ -1,0 +1,44 @@
+/* Barefoot — flow (v6.2).
+   A vertical stack whose rhythm breathes with the CONTAINER, not the
+   viewport — "the layout is the breakpoint". Drop it in any box; wrap the
+   host in .bf-contain or rely on the auto-establishment below.
+
+   <div class="bf-contain">
+     <div class="bf-flow">
+       <p>…</p>
+       <p>…</p>
+     </div>
+   </div> */
+
+@layer components {
+  .bf-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bf-flow-space, var(--bf-space-4));
+  }
+
+  /* Rhythm tracks the container's width (1% of its inline size). Kept in
+     a separate supports-gated rule so engines without cqi keep the base
+     rhythm above. */
+  @supports (width: 1cqi) {
+    .bf-flow {
+      gap: clamp(var(--bf-space-3), 2.5cqi, var(--bf-space-6));
+    }
+  }
+
+  /* Narrow container → tighten the rhythm (mirrors --bf-adaptive-1 /
+     24rem). Lightning CSS can't resolve var() in @container conditions,
+     so the literal mirrors the token, same convention as the adaptive
+     components. */
+  @container (width <= 24rem) {
+    .bf-flow {
+      gap: var(--bf-space-3);
+    }
+  }
+
+  /* v5.1 pattern: auto-establish the query container on the host so a
+     hand-placed .bf-contain is optional (idempotent with it). */
+  :where(div, section, main, aside, article, header, footer):has(> .bf-flow) {
+    container-type: inline-size;
+  }
+}

@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -145,6 +145,14 @@ test.describe("accessibility conformance (axe-core)", () => {
 
     await page.getByRole("button", { name: "Fix it" }).click();
     await expect(badge).toHaveAttribute("data-state", "ok");
+  });
+});
+
+test.describe("layout playground (v6.2)", () => {
+  test("playground has no axe violations", async ({ page }) => {
+    await gotoPlayground(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
   });
 });
 

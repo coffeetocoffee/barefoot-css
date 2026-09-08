@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -1952,6 +1952,72 @@ test.describe("v4.6 navigation transitions (cross-document view transitions)", (
     if (state === "unsupported")
       test.skip(true, "pagereveal/pageswap unsupported here");
     expect(state).toBe("plain");
+  });
+});
+
+test.describe("layout primitives (v6.2 — the layout is the breakpoint)", () => {
+  // The container, not the viewport, drives the layout. Each primitive is
+  // resized by width (setContainerWidth) exactly like the adaptive
+  // components — never the window (ADR-0009 / v5.0 Phase 1).
+  test(".bf-flow gap tightens when the container is narrow, opens when wide", async ({ page }) => {
+    await gotoPlayground(page);
+    const flow = page.locator(`${DEMOS.playgroundFlow} .bf-flow`);
+
+    await setContainerWidth(page, `${DEMOS.playgroundFlow} .pg-contain`, "14rem");
+    const narrow = await flow.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+
+    await setContainerWidth(page, `${DEMOS.playgroundFlow} .pg-contain`, "56rem");
+    const wide = await flow.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+
+    // 14rem < --bf-adaptive-1 (24rem) → tightest; 56rem → opens up.
+    expect(narrow).toBeLessThan(wide);
+  });
+
+  test(".bf-switcher stacks children when narrow, shares a row when wide", async ({ page }) => {
+    await gotoPlayground(page);
+    const switcher = page.locator(`${DEMOS.playgroundSwitcher} .bf-switcher`);
+
+    await setContainerWidth(page, `${DEMOS.playgroundSwitcher} .bf-switcher`, "14rem");
+    const narrowTops = await switcher.locator(":scope > *").evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().top));
+    expect(narrowTops[narrowTops.length - 1] - narrowTops[0]).toBeGreaterThan(0);
+
+    await setContainerWidth(page, `${DEMOS.playgroundSwitcher} .bf-switcher`, "50rem");
+    const wideTops = await switcher.locator(":scope > *").evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().top));
+    expect(wideTops[wideTops.length - 1] - wideTops[0]).toBeLessThan(2);
+  });
+
+  test(".bf-sidebar stacks the content below the aside when narrow, splits when wide", async ({ page }) => {
+    await gotoPlayground(page);
+    const sidebar = page.locator(`${DEMOS.playgroundSidebar} .bf-sidebar`);
+    const aside = sidebar.locator(":scope > aside");
+    const main = sidebar.locator(":scope > .pg-main");
+
+    await setContainerWidth(page, `${DEMOS.playgroundSidebar} .bf-sidebar`, "14rem");
+    const asideTop = await aside.evaluate((el) => el.getBoundingClientRect().top);
+    const narrowMainTop = await main.evaluate((el) => el.getBoundingClientRect().top);
+    expect(narrowMainTop - asideTop).toBeGreaterThan(0);
+
+    await setContainerWidth(page, `${DEMOS.playgroundSidebar} .bf-sidebar`, "50rem");
+    const asideRight = await aside.evaluate((el) => el.getBoundingClientRect().right);
+    const wideMainLeft = await main.evaluate((el) => el.getBoundingClientRect().left);
+    expect(wideMainLeft).toBeGreaterThan(asideRight);
+  });
+
+  test("playground page loads the layout primitives", async ({ page }) => {
+    await gotoPlayground(page);
+    await expect(page.locator(`${DEMOS.playgroundFlow} .bf-flow`)).toHaveCount(1);
+    await expect(page.locator(`${DEMOS.playgroundSwitcher} .bf-switcher`)).toHaveCount(1);
+    await expect(page.locator(`${DEMOS.playgroundForm} form[data-form="adaptive"]`)).toHaveCount(1);
+    await expect(page.locator(`${DEMOS.playgroundSidebar} .bf-sidebar`)).toHaveCount(1);
+  });
+
+  test("layout tuning tokens are declared at :root", async ({ page }) => {
+    await gotoPlayground(page);
+    expect(await tokenValue(page, "--bf-flow-space")).toBe("1rem");
+    expect(await tokenValue(page, "--bf-switcher-gap")).toBe("1rem");
+    expect(await tokenValue(page, "--bf-switcher-min")).toBe("14rem");
   });
 });
 

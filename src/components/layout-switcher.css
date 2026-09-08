@@ -1,0 +1,38 @@
+/* Barefoot — switcher (v6.2).
+   Children share a row while the CONTAINER is wide, and each takes its
+   own full-width row when the container is narrow — like the adaptive
+   components, driven by the box, not the viewport.
+
+   <div class="bf-contain">
+     <div class="bf-switcher">
+       <article class="card">…</article>
+       <article class="card">…</article>
+     </div>
+   </div> */
+
+@layer components {
+  .bf-switcher {
+    /* Self-container: the wrapper's own box is the query context, so the
+       @container rules below (which restyle the children — a container
+       can't style itself, ADR-0009) read the switcher's width, not the
+       viewport. */
+    container-type: inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bf-switcher-gap, var(--bf-space-4));
+    align-items: stretch;
+  }
+
+  .bf-switcher > * {
+    flex: 1 1 var(--bf-switcher-min, 14rem);
+    min-width: 0;
+  }
+
+  /* Narrow container → one item per row. Mirrors --bf-adaptive-1 (24rem).
+     Wide → a shared row regardless of each child's content min-width. */
+  @container (width <= 24rem) {
+    .bf-switcher > * {
+      flex-basis: 100%;
+    }
+  }
+}

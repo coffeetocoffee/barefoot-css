@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot Playground — the layout is the breakpoint</title>
+  <meta name="description" content="Drag a box or use the width slider — watch Barefoot's layout primitives reflow to the container, not the viewport.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/table-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/card-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/form-adaptive.css">
+  <link rel="stylesheet" href="../dist/components/layout-flow.css">
+  <link rel="stylesheet" href="../dist/components/layout-switcher.css">
+  <!-- Imported after full.css: the container-aware .bf-sidebar upgrade
+       lives in the utilities layer and must win the cascade tie. -->
+  <link rel="stylesheet" href="../dist/components/layout-sidebar.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .pg-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .pg-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    h3 { margin-block-end: var(--bf-space-2); }
+    .pg-muted { color: var(--bf-muted); max-width: 62ch; }
+
+    /* A playground stage: a labelled width slider (keyboard-operable via
+       arrow keys — the resize: both handle alone is mouse-only) plus a
+       resizable box the user drags. Both feed the same .pg-box width. */
+    .pg-stage { padding-block-end: var(--bf-space-4); }
+    .pg-controls {
+      display: flex; align-items: center; gap: var(--bf-space-3);
+      margin-block-end: var(--bf-space-3); flex-wrap: wrap;
+    }
+    .pg-controls label { font-weight: var(--bf-font-weight-medium); }
+    .pg-range { flex: 0 1 18rem; max-width: 100%; }
+    .pg-readout {
+      font-family: var(--bf-font-mono); font-size: 0.875rem;
+      color: var(--bf-muted); min-width: 5ch;
+    }
+    .pg-box {
+      resize: both; overflow: auto; max-width: 100%;
+      min-width: 12rem; min-height: 8rem;
+      border: 1px dashed var(--bf-info);
+      border-radius: var(--bf-radius);
+      background: var(--bf-surface);
+    }
+    /* The query container for the content inside the resizable box. */
+    .pg-contain {
+      container-type: inline-size;
+      padding: var(--bf-space-3);
+    }
+    .pg-aside { background: var(--bf-surface-alt); }
+    .pg-aside, .pg-main { padding: var(--bf-space-3); border-radius: var(--bf-radius); }
+    .pg-callout { border-inline-start: 3px solid var(--bf-info); padding-inline-start: var(--bf-space-3); }
+  </style>
+</head>
+<body>
+  <header class="bf-container pg-head">
+    <p class="bf-overline">Barefoot CSS</p>
+    <h1>The layout is the breakpoint</h1>
+    <p>Resize <em>the box</em>, not your browser window. Every primitive and component below adapts to the
+      container it sits in. Drag the bottom-right corner of any box, or use the width slider (arrow keys work).
+      Read the live width under each box — the layout reflows while the viewport never moves.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="../docs/layout.md">layout docs</a>.</p>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Flow -->
+    <section class="pg-stage" aria-labelledby="pg-flow-title">
+      <h2 id="pg-flow-title"><code>.bf-flow</code> — rhythm that breathes</h2>
+      <p class="pg-muted">A vertical stack whose gap tightens as the container narrows (and opens up when wide),
+        via container units. No media query.</p>
+      <div class="pg-controls">
+        <label for="pg-flow-range">Container width</label>
+        <input type="range" class="pg-range" id="pg-flow-range" min="12" max="64" value="40" step="1">
+        <output class="pg-readout" id="pg-flow-readout" for="pg-flow-range">40rem</output>
+      </div>
+      <div class="pg-box" id="pg-flow" data-pg-box style="width:40rem">
+        <div class="pg-contain">
+          <div class="bf-flow">
+            <p>A plain paragraph of body text. The vertical rhythm between these blocks is set by the container,
+              not the screen — widen the box and the gap opens up.</p>
+            <p>Another block. In a narrow sidebar the same markup reads tight; in a wide column it breathes.</p>
+            <p>And a third, to make the rhythm obvious as you drag.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Switcher -->
+    <section class="pg-stage" aria-labelledby="pg-switcher-title">
+      <h2 id="pg-switcher-title"><code>.bf-switcher</code> — side-by-side ↔ stacked</h2>
+      <p class="pg-muted">Children share a row while the container is wide; each drops to its own full-width row
+        when it gets narrow. The switch happens at the container, not the viewport.</p>
+      <div class="pg-controls">
+        <label for="pg-switcher-range">Container width</label>
+        <input type="range" class="pg-range" id="pg-switcher-range" min="12" max="64" value="40" step="1">
+        <output class="pg-readout" id="pg-switcher-readout" for="pg-switcher-range">40rem</output>
+      </div>
+      <div class="pg-box" id="pg-switcher" data-pg-box style="width:40rem">
+        <div class="pg-contain">
+          <div class="bf-switcher">
+            <article class="card"><h3>One</h3><p>A card in the switcher.</p></article>
+            <article class="card"><h3>Two</h3><p>Another card.</p></article>
+            <article class="card"><h3>Three</h3><p>A third card.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Adaptive form -->
+    <section class="pg-stage" aria-labelledby="pg-form-title">
+      <h2 id="pg-form-title"><code>form[data-form="adaptive"]</code> — one-column reflow</h2>
+      <p class="pg-muted">The same form collapses its row to one column when the container narrows. The error summary stays hidden until a field is user-invalid — pure CSS.</p>
+      <div class="pg-controls">
+        <label for="pg-form-range">Container width</label>
+        <input type="range" class="pg-range" id="pg-form-range" min="12" max="64" value="40" step="1">
+        <output class="pg-readout" id="pg-form-readout" for="pg-form-range">40rem</output>
+      </div>
+      <div class="pg-box" id="pg-form" data-pg-box style="width:40rem">
+        <div class="pg-contain">
+          <form data-form="adaptive" class="bf-stack" onsubmit="return false">
+            <div class="bf-row bf-gap-3">
+              <label>First name <input type="text" name="first" required></label>
+              <label>Last name <input type="text" name="last" required></label>
+            </div>
+            <div data-form-summary hidden>Please fix the highlighted fields.</div>
+            <button type="submit">Save</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <section class="pg-stage" aria-labelledby="pg-sidebar-title">
+      <h2 id="pg-sidebar-title"><code>.bf-sidebar</code> — split ↔ stack</h2>
+      <p class="pg-muted">The aside sits beside the main content while the container is wide, then drops below it
+        when the container narrows past the breakpoint (40rem).</p>
+      <div class="pg-controls">
+        <label for="pg-sidebar-range">Container width</label>
+        <input type="range" class="pg-range" id="pg-sidebar-range" min="12" max="64" value="40" step="1">
+        <output class="pg-readout" id="pg-sidebar-readout" for="pg-sidebar-range">40rem</output>
+      </div>
+      <div class="pg-box" id="pg-sidebar" data-pg-box style="width:40rem">
+        <div class="pg-contain">
+          <div class="bf-sidebar">
+            <aside class="pg-aside"><h3>Sidebar</h3><p>Supporting content — nav, meta, controls.</p></aside>
+            <div class="pg-main"><h3>Main</h3><p>The primary reading column. When the box is wide this runs
+              beside the sidebar; shrink it and the sidebar drops beneath.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Composite: the whole thesis -->
+    <section class="pg-stage" aria-labelledby="pg-composite-title">
+      <h2 id="pg-composite-title">Everything at once — the layout is the breakpoint</h2>
+      <p class="pg-muted">A sidebar whose main column is a switcher, holding an adaptive table and an adaptive card.
+        Shrink the box and the sidebar stacks, the switcher stacks, and the table card-stacks — all from one resize.</p>
+      <div class="pg-controls">
+        <label for="pg-composite-range">Container width</label>
+        <input type="range" class="pg-range" id="pg-composite-range" min="12" max="64" value="52" step="1">
+        <output class="pg-readout" id="pg-composite-readout" for="pg-composite-range">52rem</output>
+      </div>
+      <div class="pg-box" id="pg-composite" data-pg-box style="width:52rem">
+        <div class="pg-contain">
+          <div class="bf-sidebar">
+            <aside class="pg-aside">
+              <h3>Sidebar</h3>
+              <p class="pg-callout">A callout. The flow rhythm here tracks this narrow container.</p>
+            </aside>
+            <div class="pg-main">
+              <div class="bf-switcher">
+                <article class="card">
+                  <table data-table="adaptive">
+                    <thead><tr><th>Name</th><th>Role</th></tr></thead>
+                    <tbody>
+                      <tr><td data-label="Name">Ada</td><td data-label="Role">Engineer</td></tr>
+                      <tr><td data-label="Name">Lin</td><td data-label="Role">Designer</td></tr>
+                    </tbody>
+                  </table>
+                </article>
+                <article class="card" data-card="adaptive">
+                  <div data-card-media></div>
+                  <div><h3>Adaptive card</h3><p>Horizontal when wide, vertical when narrow.</p></div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Demo chrome only (not shipped framework JS). The box is resizable by
+    // mouse (resize: both); this wires the keyboard-operable slider + a live
+    // readout, and keeps the two in sync when you drag.
+    document.querySelectorAll("[data-pg-box]").forEach((box) => {
+      const stage = box.closest(".pg-stage");
+      const range = stage.querySelector(".pg-range");
+      const readout = stage.querySelector(".pg-readout");
+
+      const apply = (rem) => {
+        box.style.width = `${rem}rem`;
+        readout.textContent = `${rem}rem`;
+      };
+      range.addEventListener("input", () => apply(range.value));
+      new ResizeObserver(() => {
+        const rem = Math.round(box.getBoundingClientRect().width / 16);
+        readout.textContent = `${rem}rem`;
+        if (document.activeElement !== range) range.value = rem;
+      }).observe(box);
+      apply(range.value);
+    });
+  </script>
+
+  <!-- Verify (Phase 3): the live badge, same as every demo page. This page
+       carries no popovers/dialogs, so it should read clean. -->
+  <script type="module" src="./verify-badge.js"></script>
+</body>
+</html>
