@@ -107,6 +107,15 @@ export const DEMOS = Object.freeze({
     playgroundForm: "#pg-form",
     playgroundSidebar: "#pg-sidebar",
     playgroundComposite: "#pg-composite",
+    // v6.3 — paint & paper (demo/paint-paper.html).
+    paintPaperForm: "#pp-form",
+    paintPaperGroup: "#pp-form-group",
+    paintPaperEmail: "#pp-email",
+    paintPaperError: "#pp-email-error",
+    paintPaperSticky: "#pp-table-sticky",
+    paintPaperGrid: "#pp-grid",
+    paintPaperLink: "#pp-print-link",
+    paintPaperNoPrint: "#pp-no-print",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -130,6 +139,12 @@ export async function gotoStudio(page) {
    proves "the layout is the breakpoint" live. */
 export async function gotoPlayground(page) {
   await page.goto("/demo/playground.html");
+}
+
+/* Navigate to the paint & paper proofs (v6.3) — validation groups,
+   the sticky table wrapper, and the opt-in print layer. */
+export async function gotoPaintPaper(page) {
+  await page.goto("/demo/paint-paper.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

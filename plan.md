@@ -1,8 +1,8 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-08 — v6.2.0 "The layout is the breakpoint"
-releasing (container-aware layout primitives + playground); v6.1.0
-"Barefoot Verify" shipped (tag pushed)_
+_Last updated: 2026-09-11 — v6.3.0 "Paint & Paper" built & verified
+(validation groups, sticky tables, print layer + proofs); v6.2.0
+shipped, v6.1.0 "Barefoot Verify" shipped (tag pushed)_
 
 ## Snapshot
 
@@ -37,7 +37,15 @@ releasing (container-aware layout primitives + playground); v6.1.0
   in-process zlib with a fresh-child-process fallback for the Node 26/
   Windows break. The DTCG export `dist/tokens.json` ships outside the CSS
   payload.
-- **History:** milestones 0.1 → 6.1.0 shipped; 6.2.0 releasing.
+- **Built & verified:** **v6.3.0 — Paint & Paper** (ADR-0017, tag
+  pending the maintainer). Validation groups (`.bf-form-group` +
+  `.bf-error-text`, new `--bf-danger-subtle` token), the
+  `.bf-table-sticky` wrapper, the opt-in `print.css` layer, and the
+  proofs on `demo/paint-paper.html` (own page — the conformance
+  demo's visual baselines stay untouched). Full matrix below, then
+  commit + tag + push per RELEASE.md.
+- **History:** milestones 0.1 → 6.2.0 shipped; 6.3.0 built & verified
+  (tag pending).
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -172,16 +180,122 @@ and `.bf-*` utilities.
   axe-scanned) are all in — 34 verify tests green on all three
   engines, and the suites themselves consume the pack (dogfooding
   claim met). Tag `v6.1.0` pushed; `release.yml` publishes from the tag.
-- **v6.2.0 (releasing now — commit + tag + push) — "the layout is the breakpoint":**
-  container-query layout primitives (`.bf-flow`, `.bf-sidebar`,
-  `.bf-switcher`, opt-in per file) plus the **Barefoot Playground**
+- **v6.2.0 — shipped:** container-query layout primitives (`.bf-flow`, `.bf-switcher`,
+  opt-in per file) plus the **Barefoot Playground**
   (`demo/playground.html`) — resizable containers (`resize: both`) with
   demo-only keyboard width sliders/readouts that let developers resize a
   box and watch the layout and adaptive components reflow live. The
   playground is the proof; the primitives are the product.
+- **v6.3.0 (built & verified 2026-09-11; tag = maintainer action) — "Paint & Paper":**
+  validation paint (`.bf-form-group:has(:user-invalid)` tint +
+  `.bf-error-text` reveal, new `--bf-danger-subtle` token), the
+  opt-in `print.css` layer (flatten, ink-on-paper, href destinations,
+  `.bf-no-print`, zero cost on screen), and `.bf-table-sticky`
+  (pins + mask fade, covered by `sticky-scroll-focusable`) — proven on
+  `demo/paint-paper.html`, pinned by the v6.3 suites. Tag `v6.3.0`
+  per RELEASE.md; `release.yml` publishes from the tag.
+- **vNext roadmap (drafted 2026-09-11):** v6.3 → v6.8, three phases ×
+  two themed releases — quick wins (validation paint, print, sticky
+  tables, rhythm, stagger), maturity (states pattern, validation a11y,
+  missing primitives, recipes, RTL), long bets (declarative forms, data
+  grid, usage audit, cross-doc VT, script-aware type). See the
+  [vNext roadmap](#vnext-roadmap--v63--v68-draft-2026-09-11) section.
 - **Parked candidates** (not planned): `:has()` content-driven
   morphogenesis and anchor-laid-out layering (v5.3); engine-gated test
   skips un-block as floors land (watch-list).
+
+## vNext roadmap — v6.3 → v6.8 (draft, 2026-09-11)
+
+> Distilled from three independent gap analyses (tactical, structural,
+> strategic). Each phase splits into two themed releases: quick wins →
+> maturity → long bets. Every item stays on-thesis: opt-in by import,
+> never in frozen `full.css` (ADR-0008), degrade by omission, gated by
+> test.
+
+### Phase 1 — Quick wins (pure CSS, opt-in, zero JS)
+
+**v6.3 — "Paint & Paper"** (visible + export credibility)
+
+- **Validation paint:** `.bf-form-group:has(:user-invalid)` group
+  tint/border + `.bf-error-text` revealed via `:has()` /
+  `@starting-style`. Copy-paste form pattern, zero JS.
+- **Print layer (opt-in `print.css`):** flatten container queries,
+  `break-inside: avoid` on cards/rows, force ink-on-paper (plain hex,
+  mirrors the print-palette stance), link `href` in parentheses,
+  `.bf-no-print`. Cost: 0 bytes on screen.
+- **`.bf-table-sticky`:** sticky header + first column via `@layer`
+  z-index discipline + `mask-image` fade edge ("more data" affordance).
+  Extends `sticky-scroll-focusable` (Verify already audits the wrapper).
+
+**v6.4 — "Rhythm & Motion"** (fluid feel, on-thesis)
+
+- **`.bf-rhythm`:** line-height/gap tied to `--bf-adaptive-*` so
+  components breathe proportionally at any container width — extends
+  `.bf-flow` and the cqi type ramp.
+- **`.bf-stagger`:** `calc(var(--item-index) * 50ms)` entry animation;
+  `@starting-style` / view-transition recipes documented as patterns,
+  not just tokens. `prefers-reduced-motion` respected as always.
+- **Override/escape-hatch docs:** the "Barefoot Override Pattern" —
+  `@layer user` theme-overrides file, copy-pasteable, so nobody reaches
+  for `!important`.
+
+### Phase 2 — Maturity (patterns + Verify contracts)
+
+**v6.5 — "States & Real Validation"** (make "accessible by default"
+auditable)
+
+- **Empty/loading/error states as a pattern** (highest leverage):
+  documented composition with `role="status"`, `aria-busy`, live-region
+  contracts — plus Verify rules so the claim is auditable, not
+  aspirational. A few `.bf-*` utilities; no new components.
+- **Full validation a11y:** `aria-describedby` wiring on invalid fields,
+  `aria-live` error summary, focus-first-error contract. Bless native
+  constraint validation explicitly; Verify audits the wiring.
+
+**v6.6 — "Primitives, Patterns & On-Ramp"** (completeness + reach)
+
+- **Data-display primitives:** `dl`/key-value pairs, stat blocks,
+  timelines — the elements every dashboard needs.
+- **Missing atoms as patterns:** pagination/breadcrumbs/`aria-current`,
+  avatar/figure/media guidance, toast placement + politeness,
+  `<meter>`/`<progress>` in context, prose/long-form surface
+  (`max-inline-size: 65ch` measure).
+- **Recipes doc + migration guides:** "sidebar + table + filter bar",
+  "settings form + save state", "empty dashboard"; plus "coming from
+  Pico / Bootstrap / Tailwind" on-ramps.
+- **RTL stated and tested:** logical properties are already used —
+  assert it, test `dir="rtl"`, document it.
+
+### Phase 3 — Vision (architecture & platform bets)
+
+**v6.7 — "Architecture & Audit"** (declarative + self-aware)
+
+- **Declarative form architecture:** `data-state="loading|invalid"` +
+  `:has()` state-mapping for wizards, async validation loops, dependent
+  fields — extends v6.3/v6.5 validation into complex flows without a
+  state store.
+- **Real data grid, gracefully:** column resize/reorder/pagination
+  patterns that degrade to the card-stack on narrow containers — no
+  50KB grid library.
+- **Verify → usage audit:** warn when markup drifts from the
+  framework's intended semantic shape (`<div role="button">`, missing
+  `<h1>`, landmark drift). Still never rebuilds axe.
+
+**v6.8 — "Global & Seamless"** (long-range platform)
+
+- **Cross-document View Transitions + Speculation Rules:** persistent
+  header/modal/sidebar morph across MPA navigations, no JS router.
+  Builds on the existing cross-doc VT work (currently engine-gated).
+- **Script-aware typography:** `:lang(ja)` / `:lang(ar)` metric,
+  tracking, and line-box tokens in the base layer — a single scale
+  stops breaking in multilingual apps.
+
+### Roadmap guardrails (every release)
+
+- Opt-in by import · never in `full.css` · `index.css` budget untouched
+  · print/states/RTL items ship as docs + tiny layers, not components ·
+  every a11y contract gets a Verify rule or an explicit "bring your
+  own" statement · every gate pinned by test, per house style.
 
 ## vNext — Barefoot Verify (draft)
 
@@ -697,3 +811,31 @@ Declined — do not revive:
 - **Verification (2026-09-08):** `npm run check` green; Chromium 238 /
   2 skips, Firefox 207 / 12, WebKit 212 / 7, zero failures; visual
   green on all three; axe 21/21 including the playground.
+
+### v6.3 — "Paint & Paper" (built & verified 2026-09-11; tag pending)
+
+> **Selling line:** "Paint & paper." Visible validation, sticky tables
+> with a scroll hint, and a print layer — still zero JavaScript.
+
+- **Validation paint:** opt-in `forms-validation.css` (`.bf-form-group`,
+  `.bf-error-text`, `--bf-danger-subtle` token) — group tint + message
+  reveal via `:has(:user-invalid)` / `@starting-style`, `aria-invalid`
+  mirror for script-driven forms, bring-your-own wiring statement
+  until v6.5 audits it.
+- **Print layer:** opt-in `print.css` — every rule inside `@media
+  print` (zero cost on screen): container layouts flatten, adaptive
+  stacks re-tabulate, sticky cells unstick, http(s) destinations print,
+  `.bf-no-print` hides, `break-inside: avoid` extends.
+- **`.bf-table-sticky`:** scroll container + pinned header + pinned
+  leading column + `@supports`-gated `mask-image` fade, on the
+  `--bf-z-sticky` ladder; covered by Verify's `sticky-scroll-focusable`.
+- **Contract:** ADR-0017; `docs/paint-paper.md`; proofs on
+  `demo/paint-paper.html` (own page — conformance baselines untouched);
+  no new `data-*` attributes, so the `api.md` audit stays green;
+  `full.css` frozen, `index.css` untouched.
+- **Verification (2026-09-11):** `npm run check` green (index 2.91KB
+  gzip, JS budgets policed, AA contrast gate green, stylelint clean);
+  full Chromium suite 250 passed / 2 engine-gated skips, Firefox 217 /
+  12, WebKit 222 / 7 — zero failures; visual green on all three
+  (baselines untouched); axe 23/23 including the paint-paper page in
+  its resting and invalid-group states.

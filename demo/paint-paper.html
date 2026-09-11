@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot Paint &amp; Paper — validation groups, sticky tables, print</title>
+  <meta name="description" content="The v6.3 proofs: validation groups that tint on :user-invalid, a sticky table wrapper with a scroll fade, and an opt-in print layer. Zero JavaScript.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/forms-validation.css">
+  <link rel="stylesheet" href="../dist/components/table-sticky.css">
+  <link rel="stylesheet" href="../dist/components/print.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .pp-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .pp-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .pp-muted { color: var(--bf-muted); max-width: 62ch; }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+  <header class="bf-container pp-head">
+    <p class="bf-overline">Barefoot CSS · v6.3 Paint &amp; Paper</p>
+    <h1>Paint &amp; paper</h1>
+    <p>Three small proofs, zero JavaScript: a validation group that tints when its field is wrong,
+      a sticky table that hints at more data, and a print layer that flattens it all to ink on paper.
+      Back to the <a href="index.html">conformance demo</a> · <a href="../docs/paint-paper.md">paint &amp; paper docs</a>.</p>
+  </header>
+
+  <main class="bf-container" id="main">
+    <section id="validation" aria-labelledby="validation-title">
+      <h2 id="validation-title">Validation groups</h2>
+      <p class="pp-muted">Wrap a label, a control, and its message in <code>.bf-form-group</code>.
+        Touch the field with a bad value and the whole group tints while <code>.bf-error-text</code> appears —
+        <code>:has(:user-invalid)</code> does it, no script. The message is wired with
+        <code>aria-describedby</code> so it stays announced.</p>
+      <form id="pp-form" class="bf-stack" onsubmit="return false">
+        <div class="bf-form-group" id="pp-form-group">
+          <label for="pp-email">Email</label>
+          <input id="pp-email" name="email" type="email" required placeholder="you@example.com" aria-describedby="pp-email-error">
+          <small class="bf-error-text" id="pp-email-error">Enter an address like you@example.com.</small>
+        </div>
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="sticky" aria-labelledby="sticky-title">
+      <h2 id="sticky-title">Sticky table</h2>
+      <p class="pp-muted"><code>.bf-table-sticky</code> is the scroll container, the pinned header,
+        the pinned leading column, and the fade edge in one class. The wrapper carries
+        <code>tabindex="0"</code> and a name so keyboard users can scroll it.</p>
+      <div class="bf-table-sticky" id="pp-table-sticky" role="region" aria-label="Quarterly ledger, scrollable" tabindex="0">
+        <table style="min-width: 48rem">
+          <caption>Quarterly ledger</caption>
+          <thead>
+            <tr><th scope="col">Month</th><th scope="col">Revenue</th><th scope="col">Costs</th><th scope="col">Net</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Jan</th><td>12,400</td><td>8,100</td><td>4,300</td></tr>
+            <tr><th scope="row">Feb</th><td>11,900</td><td>7,950</td><td>3,950</td></tr>
+            <tr><th scope="row">Mar</th><td>14,200</td><td>8,400</td><td>5,800</td></tr>
+            <tr><th scope="row">Apr</th><td>13,800</td><td>8,350</td><td>5,450</td></tr>
+            <tr><th scope="row">May</th><td>15,600</td><td>9,100</td><td>6,500</td></tr>
+            <tr><th scope="row">Jun</th><td>16,100</td><td>9,300</td><td>6,800</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="print" aria-labelledby="print-title">
+      <h2 id="print-title">Print</h2>
+      <p class="pp-muted">The opt-in <code>print.css</code> flattens container layouts, restores plain tables,
+        prints link destinations, and hides screen-only chrome (<code>.bf-no-print</code>).
+        Open print preview to see it — on screen nothing changes.</p>
+      <p>Read the <a id="pp-print-link" href="https://example.com/docs">full documentation</a>
+        <span class="badge bf-no-print" id="pp-no-print">screen only</span></p>
+      <div data-grid id="pp-grid">
+        <article class="card"><header>Card A</header><p>Stacks on paper, side by side on screen.</p></article>
+        <article class="card"><header>Card B</header><p>One readable column when printed.</p></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -2018,6 +2018,147 @@ test.describe("layout primitives (v6.2 — the layout is the breakpoint)", () =>
     expect(await tokenValue(page, "--bf-flow-space")).toBe("1rem");
     expect(await tokenValue(page, "--bf-switcher-gap")).toBe("1rem");
     expect(await tokenValue(page, "--bf-switcher-min")).toBe("14rem");
+  });
+});
+
+test.describe("paint & paper (v6.3 — validation groups, sticky tables, print)", () => {
+  // Zero-JS proofs on demo/paint-paper.html (the v6.2 precedent: new
+  // demo furniture lives on its own page so the conformance demo's
+  // visual baselines stay untouched).
+  test("validation group rests neutral with its message hidden", async ({ page }) => {
+    await gotoPaintPaper(page);
+    await expect(page.locator(DEMOS.paintPaperGroup)).toHaveCSS(
+      "border-color", await tokenColor(page, "--bf-border")); // --bf-border
+    await expect(page.locator(DEMOS.paintPaperError)).toBeHidden();
+  });
+
+  test("touched invalid field tints the group and reveals the message", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const group = page.locator(DEMOS.paintPaperGroup);
+    const error = page.locator(DEMOS.paintPaperError);
+
+    await page.locator(DEMOS.paintPaperEmail).fill("not-an-email");
+    await page.locator(DEMOS.paintPaperEmail).blur();
+
+    await expect(group).toHaveCSS("border-color", await tokenColor(page, "--bf-danger")); // --bf-danger
+    await expect(group).toHaveCSS("background-color", await tokenColor(page, "--bf-danger-subtle")); // --bf-danger-subtle
+    await expect(error).toBeVisible();
+    await expect(error).toHaveCSS("opacity", "1");
+    await expect(error).toHaveCSS("color", await tokenColor(page, "--bf-danger"));
+  });
+
+  test("valid field paints the group edge success and hides the message", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const group = page.locator(DEMOS.paintPaperGroup);
+    const error = page.locator(DEMOS.paintPaperError);
+
+    await page.locator(DEMOS.paintPaperEmail).fill("you@example.com");
+    await page.locator(DEMOS.paintPaperEmail).blur();
+
+    await expect(group).toHaveCSS("border-color", await tokenColor(page, "--bf-success")); // --bf-success
+    await expect(error).toBeHidden();
+  });
+
+  test("[aria-invalid] mirrors the group state for script-driven forms", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const group = page.locator(DEMOS.paintPaperGroup);
+    const error = page.locator(DEMOS.paintPaperError);
+    const input = page.locator(DEMOS.paintPaperEmail);
+
+    await input.evaluate((el) => el.setAttribute("aria-invalid", "true"));
+    await expect(group).toHaveCSS("border-color", await tokenColor(page, "--bf-danger"));
+    await expect(error).toBeVisible();
+
+    await input.evaluate((el) => el.setAttribute("aria-invalid", "false"));
+    await expect(group).toHaveCSS("border-color", await tokenColor(page, "--bf-success"));
+    await expect(error).toBeHidden();
+  });
+
+  test("--bf-danger-subtle token is declared at :root", async ({ page }) => {
+    await gotoPaintPaper(page);
+    expect(await tokenValue(page, "--bf-danger-subtle")).toMatch(/^color-mix\(/);
+  });
+
+  test(".bf-table-sticky pins header + leading column on the token ladder", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const wrap = page.locator(DEMOS.paintPaperSticky);
+    await expect(wrap).toHaveCSS("overflow", "auto");
+
+    // A non-corner header cell rides the header plane…
+    const th = wrap.locator("thead th").nth(1);
+    await expect(th).toHaveCSS("position", "sticky");
+    await expect(th).toHaveCSS("top", "0px");
+    expect(
+      await th.evaluate((el) => getComputedStyle(el).backgroundColor)
+    ).toBe(await tokenColor(page, "--bf-surface")); // opaque on purpose
+    const zToken = await page.locator("html").evaluate((el) =>
+      parseInt(getComputedStyle(el).getPropertyValue("--bf-z-sticky").trim())
+    );
+    expect(parseInt(await th.evaluate((el) => getComputedStyle(el).zIndex))).toBe(zToken);
+
+    // Leading column sticks on the logical start edge (RTL mirrors free).
+    const rowHead = wrap.locator("tbody th").first();
+    await expect(rowHead).toHaveCSS("position", "sticky");
+    expect(
+      await rowHead.evaluate((el) => getComputedStyle(el).insetInlineStart)
+    ).toBe("0px");
+
+    // …while the corner cell pins on both axes — one rung above the planes.
+    const corner = wrap.locator("thead th").first();
+    expect(parseInt(await corner.evaluate((el) => getComputedStyle(el).zIndex))).toBe(zToken + 1);
+  });
+
+  test("sticky fade is mask-only behind @supports (pins hold without it)", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const supported = await page.evaluate(() =>
+      CSS.supports("mask-image", "linear-gradient(to right, black, transparent)"));
+    if (!supported) test.skip(true, "mask-image gradients unsupported here");
+    const mask = await page.locator(DEMOS.paintPaperSticky).evaluate(
+      (el) => getComputedStyle(el).maskImage);
+    expect(mask).toContain("linear-gradient");
+  });
+
+  test("print.css costs nothing on screen", async ({ page }) => {
+    await gotoPaintPaper(page);
+    await expect(page.locator(DEMOS.paintPaperNoPrint)).toBeVisible();
+    await expect(page.locator(DEMOS.paintPaperGrid)).toHaveCSS("display", "grid");
+  });
+
+  test("print media hides screen chrome, shows destinations, flattens grids", async ({ page }) => {
+    await gotoPaintPaper(page);
+    await page.emulateMedia({ media: "print" });
+
+    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(page.locator(DEMOS.paintPaperNoPrint)).toBeHidden();
+
+    // Destinations survive the trip: "label (https://…)". Engines
+    // serialize attr() differently here — Chromium/WebKit resolve the
+    // URL, Firefox returns the specified attr(href) — so the resolved
+    // URL is asserted only where the engine resolves it; the rule
+    // firing (not none) is asserted everywhere, and the interpolation
+    // itself is pinned source-side below.
+    const after = await page.locator(DEMOS.paintPaperLink).evaluate(
+      (el) => getComputedStyle(el, "::after").content);
+    expect(after).not.toBe("none");
+    if (!after.includes("attr(href)")) {
+      expect(after).toContain("https://example.com/docs");
+    }
+    const printSrc = fs.readFileSync(path.join(rootDir, "src/components/print.css"), "utf8");
+    expect(printSrc).toContain("attr(href)");
+
+    // Container layouts flatten to one readable column.
+    await expect(page.locator(DEMOS.paintPaperGrid)).toHaveCSS("display", "block");
+  });
+
+  test("v6.3 files stay opt-in: out of full.css and index.css (ADR-0008)", () => {
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    for (const f of ["forms-validation.css", "print.css", "table-sticky.css"]) {
+      expect(full, `full.css gained ${f}`).not.toContain(f);
+    }
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    expect(index).not.toContain("forms-validation.css");
+    expect(index).not.toContain("print.css");
+    expect(index).not.toContain("table-sticky.css");
   });
 });
 

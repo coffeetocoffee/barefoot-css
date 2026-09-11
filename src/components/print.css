@@ -1,0 +1,142 @@
+/* Barefoot — print layer (v6.3).
+   Opt-in: import this file when your pages need to print well. Every
+   rule lives inside @media print, so the cost on screen is exactly
+   zero bytes of applied style.
+
+   <link rel="stylesheet" href="barefoot-css/components/print.css">
+
+   What it does on paper:
+   - Flattens container-query layouts to a single readable column
+     (grids, switchers, sidebars stop being clever at print width).
+   - Restores plain tables (adaptive card-stacks re-tabulate).
+   - Forces ink-on-paper (plain hex, the print-palette stance from
+     base.css — print is always light, never the screen theme).
+   - Prints link destinations in parentheses, hides .bf-no-print.
+   - Never splits cards, rows, groups, or code across pages.
+
+   Base.css already carries the minimal print core (token reset +
+   shadow removal + break-inside for tr/blockquote/pre/.card); this
+   file extends it for opt-in surfaces. Degrade by omission: engines
+   without container queries never stacked, so the flatten rules match
+   nothing and the rest still applies. */
+@layer components {
+  @media print {
+    /* Ink-first: same print-palette stance as base.css (plain hex,
+       !important to beat themes and the components layer). Print is
+       always light — a dark theme must never print dark surfaces. */
+    :root {
+      --bf-surface: #ffffff !important;
+      --bf-surface-alt: #f4f4f4 !important;
+      --bf-text: #000000 !important;
+      --bf-muted: #333333 !important;
+      --bf-border: #cccccc !important;
+      --bf-primary: #000000 !important;
+      --bf-primary-fg: #ffffff !important;
+      --bf-focus-ring: #000000 !important;
+      --bf-danger: #000000 !important;
+      --bf-danger-fg: #ffffff !important;
+      --bf-success: #000000 !important;
+      --bf-success-fg: #ffffff !important;
+      --bf-info: #000000 !important;
+      --bf-info-fg: #ffffff !important;
+      --bf-warning: #000000 !important;
+      --bf-warning-fg: #ffffff !important;
+    }
+
+    /* Opt-out: screen-only chrome never reaches paper. */
+    .bf-no-print {
+      display: none !important;
+    }
+
+    /* Link destinations survive the trip: "label (https://…)". Bare
+       http(s) links only — fragment and same-page anchors print bare. */
+    a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 0.875em;
+      word-break: break-all;
+    }
+
+    /* Flatten container-query layouts: one readable column. Killing
+       container-type keeps @container rules from firing at the print
+       width; the flow children keep their rhythm, everything else
+       stacks full-width. */
+    .bf-contain,
+    .bf-switcher,
+    .bf-sidebar {
+      container-type: normal;
+    }
+
+    [data-grid],
+    .bf-switcher,
+    .bf-sidebar,
+    .bf-row {
+      display: block;
+    }
+
+    [data-grid] > *,
+    .bf-switcher > *,
+    .bf-sidebar > *,
+    .bf-row > * {
+      margin-block-end: var(--bf-space-3);
+    }
+
+    /* Restore plain tables: the card-stack is a screen affordance.
+       Headers return, rows re-tabulate, sticky cells unstick (nothing
+       scrolls on paper) and the scroll fade is removed. */
+    table[data-table="stack"] thead,
+    table[data-table="adaptive"] thead,
+    table[data-grid] thead {
+      display: table-header-group;
+    }
+
+    table[data-table="stack"] tr,
+    table[data-table="adaptive"] tr,
+    table[data-grid] tr {
+      display: table-row;
+      padding: 0;
+      margin-block-end: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    table[data-table="stack"] th,
+    table[data-table="stack"] td,
+    table[data-table="adaptive"] th,
+    table[data-table="adaptive"] td,
+    table[data-grid] th,
+    table[data-grid] td {
+      display: table-cell;
+      padding: var(--bf-space-2) var(--bf-space-3);
+      border-block-end: var(--bf-border-width) solid var(--bf-border);
+    }
+
+    table[data-table~="sticky-head"] thead th,
+    table[data-table~="sticky-col"] thead th:first-child,
+    table[data-table~="sticky-col"] tbody th:first-child,
+    table[data-table~="sticky-col"] tbody td:first-child,
+    table[data-grid] thead th,
+    .bf-table-sticky thead th,
+    .bf-table-sticky tbody th:first-child,
+    .bf-table-sticky tbody td:first-child {
+      position: static;
+    }
+
+    .bf-table-sticky {
+      overflow: visible;
+      max-height: none;
+      mask-image: none;
+    }
+
+    /* Don't split blocks across pages. */
+    tr,
+    blockquote,
+    pre,
+    .card,
+    .bf-form-group,
+    [data-grid] > *,
+    .bf-switcher > * {
+      break-inside: avoid;
+    }
+  }
+}

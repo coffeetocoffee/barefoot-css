@@ -135,6 +135,13 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   subtle ring around the whole form once any touched field is invalid.
   Pair each field with `.bf-field-error` text wired up via
   `aria-describedby`.
+- **Validation groups** (v6.3) — wrap a label, a control, and its
+  message in `.bf-form-group` (`components/forms-validation.css`):
+  the group tints when any control inside is touched-and-invalid and
+  `.bf-error-text` is revealed by the same `:has()`, with an
+  `@starting-style` entrance. `aria-invalid="true"` / `"false"`
+  mirrors the state for script-driven forms. Wire controls with
+  `aria-describedby` (full validation auditing lands in v6.5).
 - **Field-level states** — `:user-invalid` / `:user-valid` fire only
   *after* a control is touched (nothing flashes on page load): invalid
   fields get the danger border, valid fields get the success border.
@@ -162,7 +169,8 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   smaller payload, import `forms-base.css` (text inputs + validation + states)
   plus only the shards you use — `forms-select.css`, `forms-checks.css`,
   `forms-range.css`, `forms-file.css`, `forms-color.css`, `forms-meter.css`.
-  Every shard builds on `forms-base.css`.
+  Every shard builds on `forms-base.css`. `forms-validation.css` (v6.3 group
+  tint + error reveal) stands alongside them — same tokens, no dependency.
 
 ## Dialog (modal)
 
@@ -785,6 +793,12 @@ support, carousel controls + autoplay) and their markup.
   `scrollable-region-focusable` flags it). Sticky cells get an opaque
   `--bf-surface` background (transparent ones show rows through) and
   `z-index: var(--bf-z-sticky)`.
+- **Sticky wrapper** (v6.3) — `.bf-table-sticky`
+  (`components/table-sticky.css`) is the scroll container, the pinned
+  header, the pinned leading column, and a `mask-image` "more data"
+  fade in one class (the fade is `@supports`-gated decoration, dropped
+  under forced colors). Same `tabindex="0"` + name contract — Verify's
+  `sticky-scroll-focusable` audits it, no new rule needed.
 - **Sortable** — put real `<button>`s in the header cells and add
   `data-bf-sort` (with `js/table-sort.js`, see
   [JavaScript](javascript.md)); the buttons are re-skinned to inherit
@@ -1098,6 +1112,24 @@ forms, same one-liner:
 
 - Extends `components/table.css`: `data-grid` on a `<table>` makes each `<th>` `resize: horizontal` (drag the inline-end edge) and opts into a container-query stack at `≤40rem` (same breakpoint as `data-table="stack"`). Composes with `sticky-head` — header stays pinned while you resize.
 - **JS:** none. **A11y:** same as table — semantic `<th>`/`<caption>` plus optional `aria-sort` from `js/table-sort.js`; the resize handle is presentational.
+
+## Print (v6.3)
+
+```html
+<link rel="stylesheet" href="barefoot-css/components/print.css">
+```
+
+- Opt-in, screen-zero: every rule sits inside `@media print`, so
+  nothing applies on screen. On paper it flattens container-query
+  layouts to one column, restores plain tables (adaptive stacks
+  re-tabulate, sticky cells unstick, the scroll fade is removed),
+  forces ink-on-paper (the base print-palette stance — plain hex,
+  always light), prints http(s) link destinations in parentheses, hides
+  `.bf-no-print` screen-only chrome, and keeps cards, rows, groups, and
+  code from splitting across pages.
+- **JS:** none. **A11y:** nothing hidden that matters — `.bf-no-print`
+  is for screen-only chrome (badges, controls), never content.
+- Full page: [Paint & Paper](paint-paper.md).
 
 ## Utilities
 

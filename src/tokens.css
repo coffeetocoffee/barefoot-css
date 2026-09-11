@@ -114,6 +114,7 @@
     --bf-primary-darken: color-mix(in oklab, var(--bf-primary), #000000 8%); /* hover darken for primary fills */
     --bf-danger-darken: color-mix(in oklab, var(--bf-danger), #000000 8%); /* hover darken for danger fills */
     --bf-danger-muted: color-mix(in oklab, var(--bf-danger), transparent 75%); /* light danger tint (focus rings) */
+    --bf-danger-subtle: color-mix(in oklab, var(--bf-danger), transparent 88%); /* very light danger tint */
     --bf-success-muted: color-mix(in oklab, var(--bf-success), transparent 75%); /* light success tint (focus rings) */
     --bf-success-darken: color-mix(in oklab, var(--bf-success), #000000 8%); /* hover darken for success fills */
     --bf-success-subtle: color-mix(in oklab, var(--bf-success), transparent 88%); /* very light success tint */

@@ -1,0 +1,77 @@
+/* Barefoot — sticky table wrapper (v6.3).
+   Opinionated scroll container with a pinned header row, a pinned
+   leading column, and a scroll fade edge ("there is more data").
+   Complements data-table="sticky-head sticky-col" (bare sticky cells
+   on your own wrapper); reach for this when you want the wrapper,
+   the pins, and the affordance in one class.
+
+   <div class="bf-table-sticky" role="region" aria-label="Quarterly ledger, scrollable" tabindex="0">
+     <table>
+       <caption>…</caption>
+       <thead><tr><th>…</th></tr></thead>
+       <tbody>…</tbody>
+     </table>
+   </div>
+
+   Give the wrapper tabindex="0" plus an accessible name so keyboard
+   users can scroll it — tables hold no focusable content of their own
+   (WCAG 2.1.1; Verify's sticky-scroll-focusable rule audits exactly
+   this, so the wrapper is covered there, not here). Sticky cells carry
+   an opaque surface so scrolled rows never show through; the corner
+   cell sits one rung above the header/column planes. The fade is
+   mask-image behind @supports — engines without it keep the pins and
+   lose only the hint (degrade by omission). */
+@layer components {
+  .bf-table-sticky {
+    overflow: auto;
+    max-width: 100%;
+    max-height: 24rem;
+  }
+
+  .bf-table-sticky thead th {
+    position: sticky;
+    top: 0;
+    z-index: var(--bf-z-sticky);
+    background: var(--bf-surface);
+  }
+
+  .bf-table-sticky tbody th:first-child,
+  .bf-table-sticky tbody td:first-child {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--bf-z-sticky);
+    background: var(--bf-surface);
+  }
+
+  /* The corner cell pins on both axes — it must paint above the
+     header row and the leading column alike. */
+  .bf-table-sticky thead th:first-child {
+    z-index: calc(var(--bf-z-sticky) + 1);
+  }
+
+  /* "More data" fade on the scroll edges. Mask only — never layout —
+     so it can't move the table. @supports-gated: no mask support, no
+     fade, pins unaffected. */
+  @supports (mask-image: linear-gradient(to right, black, transparent)) {
+    .bf-table-sticky {
+      mask-image:
+        linear-gradient(to right, black calc(100% - 2.5rem), transparent),
+        linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
+      mask-composite: intersect;
+    }
+
+    [dir="rtl"] .bf-table-sticky {
+      mask-image:
+        linear-gradient(to left, black calc(100% - 2.5rem), transparent),
+        linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
+    }
+  }
+
+  /* Forced colors: the fade is decoration — drop it so nothing
+     obscures the grid under High Contrast. */
+  @media (forced-colors: active) {
+    .bf-table-sticky {
+      mask-image: none;
+    }
+  }
+}

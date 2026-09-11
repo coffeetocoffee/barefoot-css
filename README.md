@@ -5,7 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![npm downloads](https://img.shields.io/npm/dm/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
-[![v6.2](https://img.shields.io/badge/phase-6.2%20%E2%80%94%20the%20layout%20is%20the%20breakpoint-2b7a4f)](docs/layout.md)
+[![v6.3](https://img.shields.io/badge/phase-6.3%20%E2%80%94%20paint%20%26%20paper-2b7a4f)](docs/paint-paper.md)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
 ---
@@ -16,6 +16,7 @@
 - **The layout is the breakpoint.** *(v6.2)* Components — and now layouts — adapt to the **box they're dropped in**, not the viewport. A data table in a sidebar card-stacks; widen it and it's rows again. A sidebar splits, then stacks. No media queries, no JS, no re-render. Don't take our word for it — [drag the boxes in the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html).
 - **Theming by default.** Every visual is a `--bf-*` custom property — re-skin with a handful of variables, no Sass, no recompile. Tokens ship as W3C DTCG `tokens.json` for Figma / iOS / Android, one seed can derive the whole system ([Studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)), and a dark panel can live inside a light page with zero JS.
 - **JS-free, by default.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>`, accordions are `<details name>`, validation is pure CSS. The few things CSS genuinely can't do (tabs, sortable tables, theme persistence) are tiny opt-in, zero-dependency modules.
+- **Paint & paper.** *(v6.3)* Validation groups that tint when their field is wrong, a sticky table with a "more data" fade, and an opt-in print layer that flattens it all to ink on paper. Zero JavaScript — [see the proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html).
 - **It checks your laces.** *(v6.1)* An opt-in dev checker audits Barefoot's own markup contracts — the stuff axe can't know — right in your console.
 - **Accessible out of the box.** Native elements hand you focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere, AA contrast by default, `forced-colors` hardened, and an axe-core suite in CI proves it.
 - **No "Bootstrap look."** Neutral by default: ink on paper, hairline borders, no shadows, no gradients. The design is yours — we just supply the muscle.
@@ -89,6 +90,18 @@ Still true from v5.0: `table[data-table="adaptive"]` card-stacks, `form[data-for
 
 Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:** [the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) — drag a box, watch it reflow. → [docs/layout.md](docs/layout.md)
 
+## The v6.3 headline: *paint & paper*
+
+Small, visible, export-credible — still zero JavaScript:
+
+| Surface | What it does |
+|---|---|
+| `.bf-form-group` + `.bf-error-text` | The group tints when its field is touched-and-invalid; the message appears via the same `:has()`. |
+| `.bf-table-sticky` | Scroll container, pinned header, pinned leading column, and a "more data" fade in one class. |
+| `print.css` | Flattens container layouts, re-tabulates adaptive tables, prints link destinations, hides `.bf-no-print`. Costs nothing on screen. |
+
+**Try it live:** [the paint & paper proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) — break the email field, scroll the ledger, open print preview. → [docs/paint-paper.md](docs/paint-paper.md)
+
 ---
 
 ## Size (measured, current build)
@@ -96,9 +109,9 @@ Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:**
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 55.73KB | **10.39KB** | 9.10KB |
+| `full.css` | 55.80KB | **10.40KB** | 9.07KB |
 | `js/verify-contracts.js` | 8.29KB | **3.08KB** | 2.62KB |
-| `index.css` | 10.98KB | **2.90KB** | 2.47KB |
+| `index.css` | 11.06KB | **2.91KB** | 2.48KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
@@ -120,6 +133,7 @@ Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:**
 | `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
 | `components/buttons.css` | 2.10KB | **0.62KB** | 0.50KB |
+| `components/print.css` | 1.83KB | **0.62KB** | 0.52KB |
 | `components/command.css` | 2.05KB | **0.59KB** | 0.49KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
 | `components/segmented.css` | 1.23KB | **0.50KB** | 0.37KB |
@@ -128,6 +142,7 @@ Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:**
 | `components/accordion.css` | 1.44KB | **0.49KB** | 0.38KB |
 | `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
 | `js/reveal.js` | 0.88KB | **0.46KB** | 0.38KB |
+| `components/forms-validation.css` | 1.65KB | **0.45KB** | 0.36KB |
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
 | `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
 | `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
@@ -145,6 +160,7 @@ Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:**
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
+| `components/table-sticky.css` | 0.84KB | **0.34KB** | 0.28KB |
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `themes/theming-scope.css` | 1.76KB | **0.32KB** | 0.26KB |
@@ -201,15 +217,18 @@ src/
   components/          buttons, forms, dialog, popover, dropdown,
                        accordion, tabs, carousel, grid, nav, alert,
                        skeleton, table, code, card, badge,
-                       breadcrumbs, pagination, layout primitives — plus *-adaptive.css
+                       breadcrumbs, pagination, layout primitives,
+                       validation, sticky tables, print — plus *-adaptive.css
   js/                  opt-in modules: tabs, table-sort, popover-menu, nav, barefoot, …
   themes/              editorial, dashboard, playful, forest, sunset, custom template
   utilities.css        opt-in helpers
 demo/index.html        conformance page (keyboard walkthroughs)
 demo/studio.html       generative theming editor (v5.0)
 demo/playground.html   resizable layout proof (v6.2)
+demo/paint-paper.html  validation, sticky-table & print proofs (v6.3)
 docs/                  theming, components, javascript, accessibility,
-                       performance, api, adaptive, layout, migration-3/4/5, verify
+                        performance, api, adaptive, layout, paint-paper,
+                        migration-3/4/5, verify
 tests/                 a11y (axe-core), opt-in JS, visual regression,
                        Verify registry + checker engine
 build/                 Lightning CSS bundler + size budget + preview server
@@ -220,9 +239,10 @@ build/                 Lightning CSS bundler + size budget + preview server
 ## Docs
 
 - Live: [docs site](https://coffeetocoffee.github.io/barefoot-css/) and
-  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages) — plus the [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) and [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages) — plus the [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html), [paint & paper proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html), and [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 - [Adaptive components](docs/adaptive.md) — *the* v5.0 feature: container-adaptive by contract
 - [Container-aware layout](docs/layout.md) — the v6.2 layout primitives and playground
+- [Paint & paper](docs/paint-paper.md) — the v6.3 validation groups, sticky tables, and print layer
 - [Theming](docs/theming.md) — tokens, `light-dark()`, `data-bf-theme`, starter themes, the generative ramp
 - [Components](docs/components.md) — markup, behavior, JS status for each component
 - [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
@@ -247,9 +267,9 @@ npm run preview   # serve demo/ at localhost:4173
 
 Hundreds of tests run across **Chromium, Firefox, and WebKit**:
 
-- **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, the theme gallery, and the layout playground — all at **zero violations** — plus keyboard-contract tests.
+- **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, the theme gallery, the layout playground, and the paint & paper proofs (resting + invalid group) — all at **zero violations** — plus keyboard-contract tests.
 - **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End), no-JS-first contracts, popover-menu keyboard nav, theme persistence.
-- **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the layout-primitive suite (v6.2), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
+- **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the layout-primitive suite (v6.2), the paint & paper suite (v6.3), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
 - **Visual regression (`tests/visual.spec.js`)** — full-page light/dark screenshots against committed per-engine baselines.
 
 ```bash

@@ -4,6 +4,33 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.3.0] — 2026-09-11
+
+### Added
+
+- **Validation groups.** New opt-in `components/forms-validation.css`
+  (`.bf-form-group` + `.bf-error-text`): the group tints when any
+  control inside is touched-and-invalid (`:has(:user-invalid)`),
+  the message is revealed by the same `:has()` with an
+  `@starting-style` entrance, and `aria-invalid` mirrors the state
+  for script-driven forms. New `--bf-danger-subtle` token — which
+  also backfills the `form-adaptive.css` summary background that
+  referenced it before it existed.
+- **Sticky table wrapper.** New opt-in `components/table-sticky.css`
+  (`.bf-table-sticky`): scroll container, pinned header row, pinned
+  leading column (logical `inline-start`, RTL mirrors free), corner
+  cell one rung up the `--bf-z-sticky` ladder, and a `@supports`-gated
+  `mask-image` "more data" fade. Covered by Verify's existing
+  `sticky-scroll-focusable` rule — no new rule needed.
+- **Print layer.** New opt-in `components/print.css`: every rule sits
+  inside `@media print` (zero cost on screen) — flattens
+  container-query layouts to one column, re-tabulates adaptive stacks,
+  unsticks sticky cells, prints http(s) link destinations, hides
+  `.bf-no-print`, and extends `break-inside: avoid`.
+- **Paint & paper proofs.** New `demo/paint-paper.html` (own page, so
+  the conformance demo's visual baselines stay untouched), new
+  `docs/paint-paper.md`, and ADR-0017.
+
 ## [6.2.0] — 2026-09-08
 
 ### Added

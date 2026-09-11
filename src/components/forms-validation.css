@@ -1,0 +1,107 @@
+/* Barefoot — form validation groups (v6.3).
+   Opt-in: import this file and wrap a label + control + message in
+   .bf-form-group. The group tints when any control inside is invalid —
+   pure CSS, zero JS.
+
+   <div class="bf-form-group">
+     <label for="email">Email</label>
+     <input id="email" type="email" required aria-describedby="email-err">
+     <small class="bf-error-text" id="email-err">Enter an address like you@example.com.</small>
+   </div>
+
+   The message starts hidden; :has(:user-invalid) reveals it after the
+   user interacts, with an @starting-style entrance. Script-driven forms
+   can mirror the state with aria-invalid="true" — same painting, no
+   interaction heuristic (same convention as forms-base.css). No engine
+   support → the group keeps its resting border and the message stays
+   hidden (degrade by omission).
+
+   A11y note (bring-your-own until v6.5): the browser announces native
+   constraint validation itself; pair every control with an
+   aria-describedby message and keep the message text stable so a future
+   Verify rule can audit the wiring. */
+@layer components {
+  .bf-form-group {
+    display: grid;
+    gap: var(--bf-space-1);
+    padding: var(--bf-space-3);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    transition:
+      border-color var(--bf-transition),
+      background-color var(--bf-transition);
+  }
+
+  /* Touched-and-invalid anywhere inside → danger edge + tint. */
+  .bf-form-group:has(:is(input, select, textarea):user-invalid),
+  .bf-form-group:has([aria-invalid="true"]) {
+    border-color: var(--bf-danger);
+    background: var(--bf-danger-subtle);
+  }
+
+  /* Touched-and-valid everywhere that matters → success edge, no tint
+     (a full-bleed green wash per group is noise; the edge is enough). */
+  .bf-form-group:has(:is(input, select, textarea):user-valid),
+  .bf-form-group:has([aria-invalid="false"]) {
+    border-color: var(--bf-success);
+  }
+
+  /* Invalid wins when a group holds both states at once. */
+  .bf-form-group:has(:is(input, select, textarea):user-invalid, [aria-invalid="true"]):has(
+    :is(input, select, textarea):user-valid,
+    [aria-invalid="false"]
+  ) {
+    border-color: var(--bf-danger);
+    background: var(--bf-danger-subtle);
+  }
+
+  /* The per-group message: hidden until the group turns invalid. */
+  .bf-error-text {
+    display: none;
+    color: var(--bf-danger);
+    font-size: 0.8125rem;
+    opacity: 0;
+    transition:
+      opacity var(--bf-transition),
+      display var(--bf-transition) allow-discrete;
+  }
+
+  .bf-form-group:has(:is(input, select, textarea):user-invalid) .bf-error-text,
+  .bf-form-group:has([aria-invalid="true"]) .bf-error-text {
+    display: block;
+    opacity: 1;
+  }
+
+  @starting-style {
+    .bf-form-group:has(:is(input, select, textarea):user-invalid) .bf-error-text,
+    .bf-form-group:has([aria-invalid="true"]) .bf-error-text {
+      opacity: 0;
+    }
+  }
+
+  /* Entrance fallback for engines without allow-discrete/@starting-style:
+     a keyframe reveal instead of snapping in. Reduced-motion is
+     neutralized by base.css. */
+  @supports not (transition-behavior: allow-discrete) {
+    .bf-form-group:has(:is(input, select, textarea):user-invalid) .bf-error-text,
+    .bf-form-group:has([aria-invalid="true"]) .bf-error-text {
+      animation: bf-error-in var(--bf-transition) ease-out;
+    }
+
+    @keyframes bf-error-in {
+      from {
+        opacity: 0;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  /* Forced colors: hue can't separate states, so the invalid group
+     changes shape instead of color (same stance as forms-base.css). */
+  @media (forced-colors: active) {
+    .bf-form-group:has(:is(input, select, textarea):user-invalid),
+    .bf-form-group:has([aria-invalid="true"]) {
+      border-style: dashed;
+    }
+  }
+}

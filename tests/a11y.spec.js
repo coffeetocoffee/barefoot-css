@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -151,6 +151,25 @@ test.describe("accessibility conformance (axe-core)", () => {
 test.describe("layout playground (v6.2)", () => {
   test("playground has no axe violations", async ({ page }) => {
     await gotoPlayground(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+});
+
+test.describe("paint & paper proofs (v6.3)", () => {
+  test("paint-paper page has no axe violations", async ({ page }) => {
+    await gotoPaintPaper(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("invalid validation group has no axe violations", async ({ page }) => {
+    await gotoPaintPaper(page);
+    // Tint the group (danger border + revealed message) — the broken
+    // state is the feature's whole point, so it must stay clean too.
+    await page.locator(DEMOS.paintPaperEmail).fill("not-an-email");
+    await page.locator(DEMOS.paintPaperEmail).blur();
+    await expect(page.locator(DEMOS.paintPaperError)).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });
