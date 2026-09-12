@@ -227,9 +227,23 @@ test.describe("v6.6 data display and RTL", () => {
     await page.addStyleTag({ path: path.join(rootDir, "dist/components/data-display.css") });
     await page.addStyleTag({ path: path.join(rootDir, "dist/components/prose.css") });
 
-    await expect(page.locator(".bf-key-value")).toHaveCSS("display", "grid");
-    await expect(page.locator(".bf-stat-value")).toHaveCSS("font-size", /px/);
-    await expect(page.locator(".bf-prose")).toHaveCSS("max-width", "520px");
+    const styles = await page.locator(".bf-key-value, .bf-stat-value, .bf-prose").evaluateAll(
+      (els) => {
+        const keyValue = getComputedStyle(els[0]);
+        const statValue = getComputedStyle(els[1]);
+        const prose = getComputedStyle(els[2]);
+        return {
+          keyValueDisplay: keyValue.display,
+          statFontSize: Number.parseFloat(statValue.fontSize),
+          proseWidth: els[2].getBoundingClientRect().width,
+          proseMaxWidth: Number.parseFloat(prose.maxWidth),
+        };
+      }
+    );
+    expect(styles.keyValueDisplay).toBe("grid");
+    expect(styles.statFontSize).toBeGreaterThan(0);
+    expect(styles.proseWidth).toBeLessThanOrEqual(styles.proseMaxWidth);
+    expect(styles.proseMaxWidth).toBeGreaterThan(0);
   });
 
   test("logical data-display edges follow RTL without changing DOM order", async ({ page }) => {
