@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -2159,6 +2159,107 @@ test.describe("paint & paper (v6.3 — validation groups, sticky tables, print)"
     expect(index).not.toContain("forms-validation.css");
     expect(index).not.toContain("print.css");
     expect(index).not.toContain("table-sticky.css");
+  });
+});
+
+test.describe("rhythm & motion (v6.4 — fluid rhythm, staggered entry)", () => {
+  // The container, not the viewport, drives the rhythm. Resize via
+  // setContainerWidth exactly like the adaptive components and v6.2
+  // layout primitives — never the window (ADR-0009 / v5.0 Phase 1).
+  test(".bf-rhythm gap and line-height tighten when narrow, open when wide", async ({ page }) => {
+    await gotoRhythmMotion(page);
+    const rhythm = page.locator(`${DEMOS.rhythmMotionRhythm} .bf-rhythm`);
+
+    await setContainerWidth(page, `${DEMOS.rhythmMotionRhythm} .rm-contain`, "14rem");
+    const narrowGap = await rhythm.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+    const narrowLineHeight = await rhythm.evaluate((el) => parseFloat(getComputedStyle(el).lineHeight));
+
+    await setContainerWidth(page, `${DEMOS.rhythmMotionRhythm} .rm-contain`, "56rem");
+    const wideGap = await rhythm.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+    const wideLineHeight = await rhythm.evaluate((el) => parseFloat(getComputedStyle(el).lineHeight));
+
+    // 14rem < --bf-adaptive-1 (24rem) → tightest; 56rem ≥ --bf-adaptive-3 → generous.
+    expect(narrowGap).toBeLessThan(wideGap);
+    expect(narrowLineHeight).toBeLessThan(wideLineHeight);
+  });
+
+  test(".bf-stagger children animate with sequential delay via view() timeline", async ({ page }) => {
+    await gotoRhythmMotion(page);
+    const stagger = page.locator(`${DEMOS.rhythmMotionStagger} .bf-stagger`);
+    const items = stagger.locator(":scope > *");
+
+    // Ensure we have items
+    expect(await items.count()).toBeGreaterThan(0);
+
+    // Check that animation-delay is set correctly based on --bf-stagger-index
+    const delays = await items.evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).animationDelay)
+    );
+
+    // First item (index 0) should have 0s delay, subsequent items should have increasing delays
+    expect(delays[0]).toBe("0s");
+    for (let i = 1; i < delays.length; i++) {
+      const expected = i * 50; // 50ms per item
+      const actual = parseFloat(delays[i]) * 1000; // convert s to ms
+      expect(actual).toBeGreaterThanOrEqual(expected);
+    }
+  });
+
+  test(".bf-rhythm + .bf-stagger combined: rhythm adapts, stagger delays", async ({ page }) => {
+    await gotoRhythmMotion(page);
+    const combined = page.locator(`${DEMOS.rhythmMotionCombined} .bf-rhythm.bf-stagger`);
+
+    // Rhythm adapts to container
+    await setContainerWidth(page, `${DEMOS.rhythmMotionCombined} .rm-contain`, "14rem");
+    const narrowGap = await combined.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+
+    await setContainerWidth(page, `${DEMOS.rhythmMotionCombined} .rm-contain`, "56rem");
+    const wideGap = await combined.evaluate((el) => parseFloat(getComputedStyle(el).rowGap));
+
+    expect(narrowGap).toBeLessThan(wideGap);
+
+    // Stagger delays still apply
+    const items = combined.locator(":scope > *");
+    const delays = await items.evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).animationDelay)
+    );
+    expect(delays[0]).toBe("0s");
+  });
+
+  test("reduced motion kills stagger animation", async ({ page }) => {
+    await gotoRhythmMotion(page);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
+    const stagger = page.locator(`${DEMOS.rhythmMotionStagger} .bf-stagger`);
+    const items = stagger.locator(":scope > *");
+
+    const animations = await items.evaluateAll((els) =>
+      els.map((el) => getComputedStyle(el).animationName)
+    );
+
+    // All animations should be "none" under reduced motion
+    for (const anim of animations) {
+      expect(anim).toBe("none");
+    }
+  });
+
+  test("v6.4 tokens are declared at :root", async ({ page }) => {
+    await gotoRhythmMotion(page);
+    expect(await tokenValue(page, "--bf-rhythm-gap")).toBe("1rem");
+    expect(await tokenValue(page, "--bf-rhythm-line-height")).toBe("1.6");
+    expect(await tokenValue(page, "--bf-stagger-duration")).toBe(".4s");
+    expect(await tokenValue(page, "--bf-stagger-step")).toBe("50ms");
+    expect(await tokenValue(page, "--bf-stagger-distance")).toBe("1rem");
+  });
+
+  test("v6.4 files stay opt-in: out of full.css and index.css (ADR-0008)", () => {
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    for (const f of ["layout-rhythm.css", "layout-stagger.css"]) {
+      expect(full, `full.css gained ${f}`).not.toContain(f);
+    }
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    expect(index).not.toContain("layout-rhythm.css");
+    expect(index).not.toContain("layout-stagger.css");
   });
 });
 

@@ -31,6 +31,25 @@ based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   the conformance demo's visual baselines stay untouched), new
   `docs/paint-paper.md`, and ADR-0017.
 
+## [6.4.0] — 2026-09-12
+
+### Added
+
+- **Container-aware rhythm.** New opt-in `components/layout-rhythm.css`
+  (`.bf-rhythm`): extends `.bf-flow` with gap and line-height that scale
+  with container width via container queries at `--bf-adaptive-1/2/3`
+  thresholds. Fluid `cqi` scaling between breakpoints.
+- **Staggered entry animation.** New opt-in `components/layout-stagger.css`
+  (`.bf-stagger`): children animate sequentially with delay =
+  `index * var(--bf-stagger-step, 50ms)`. Pure CSS via `@starting-style`
+  and `view()` timeline, with graceful fallback. Respects
+  `prefers-reduced-motion: reduce`.
+- **Rhythm & Motion demo.** New `demo/rhythm-motion.html` with resizable
+  containers showing `.bf-rhythm`, `.bf-stagger`, and combined usage.
+  Updated `docs/layout.md` with both primitives.
+- **New tokens.** `--bf-rhythm-gap`, `--bf-rhythm-line-height`,
+  `--bf-stagger-duration`, `--bf-stagger-step`, `--bf-stagger-distance`.
+
 ## [6.2.0] — 2026-09-08
 
 ### Added

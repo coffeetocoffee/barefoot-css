@@ -116,6 +116,10 @@ export const DEMOS = Object.freeze({
     paintPaperGrid: "#pp-grid",
     paintPaperLink: "#pp-print-link",
     paintPaperNoPrint: "#pp-no-print",
+    // v6.4 — rhythm & motion (demo/rhythm-motion.html).
+    rhythmMotionRhythm: "#rm-rhythm",
+    rhythmMotionStagger: "#rm-stagger",
+    rhythmMotionCombined: "#rm-combined",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -145,6 +149,12 @@ export async function gotoPlayground(page) {
    the sticky table wrapper, and the opt-in print layer. */
 export async function gotoPaintPaper(page) {
   await page.goto("/demo/paint-paper.html");
+}
+
+/* Navigate to the rhythm & motion proofs (v6.4) — container-aware
+   rhythm and staggered entry animations. */
+export async function gotoRhythmMotion(page) {
+  await page.goto("/demo/rhythm-motion.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

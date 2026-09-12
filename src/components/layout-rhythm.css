@@ -1,0 +1,64 @@
+/* Barefoot — rhythm (v6.4).
+   A vertical stack whose rhythm (gap + line-height) breathes with the
+   CONTAINER, not the viewport — extends .bf-flow and the cqi type ramp.
+
+   <div class="bf-contain">
+     <div class="bf-rhythm">
+       <p>…</p>
+       <p>…</p>
+     </div>
+   </div> */
+
+@layer components {
+  .bf-rhythm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bf-rhythm-gap, var(--bf-flow-space, var(--bf-space-4)));
+    line-height: var(--bf-rhythm-line-height, var(--bf-line-height));
+  }
+
+  /* Container-relative rhythm: gap scales with container width (cqi).
+     Mirrors --bf-adaptive-1/2/3 thresholds. */
+  @supports (width: 1cqi) {
+    .bf-rhythm {
+      gap: clamp(var(--bf-space-3), 2.5cqi, var(--bf-space-6));
+      /* line-height uses a unitless number; cqi gives a length so we
+         compute a ratio: 1.4 + (0.5 * cqi / 1rem). Since cqi is 1% of
+         container width, at 40rem container width: 0.5 * 40 = 20 → 1.4 + 0.2 = 1.6.
+         We approximate with a simpler clamp range. */
+      line-height: clamp(1.5, 1.6, 1.75);
+    }
+  }
+
+  /* Narrow container → tighten the rhythm (mirrors --bf-adaptive-1 / 24rem).
+     Lightning CSS can't resolve var() in @container conditions, so the
+     literal mirrors the token, same convention as the adaptive components. */
+  @container (width <= 24rem) {
+    .bf-rhythm {
+      gap: var(--bf-space-3);
+      line-height: 1.5;
+    }
+  }
+
+  /* Medium container → comfortable rhythm (mirrors --bf-adaptive-2 / 40rem). */
+  @container (width >= 40rem) {
+    .bf-rhythm {
+      gap: var(--bf-space-5);
+      line-height: 1.65;
+    }
+  }
+
+  /* Wide container → generous rhythm (mirrors --bf-adaptive-3 / 56rem). */
+  @container (width >= 56rem) {
+    .bf-rhythm {
+      gap: var(--bf-space-6);
+      line-height: 1.75;
+    }
+  }
+
+  /* v5.1 pattern: auto-establish the query container on the host so a
+     hand-placed .bf-contain is optional (idempotent with it). */
+  :where(div, section, main, aside, article, header, footer):has(> .bf-rhythm) {
+    container-type: inline-size;
+  }
+}

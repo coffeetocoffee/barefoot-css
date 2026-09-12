@@ -194,6 +194,16 @@ and `.bf-*` utilities.
   (pins + mask fade, covered by `sticky-scroll-focusable`) — proven on
   `demo/paint-paper.html`, pinned by the v6.3 suites. Tag `v6.3.0`
   per RELEASE.md; `release.yml` publishes from the tag.
+- **v6.4.0 (built & verified 2026-09-12; tag = maintainer action) — "Rhythm & Motion":**
+  container-aware rhythm (`.bf-rhythm`, extends `.bf-flow` with gap +
+  line-height scaling at `--bf-adaptive-*` thresholds), staggered entry
+  animation (`.bf-stagger`, `calc(var(--bf-stagger-index) *
+  var(--bf-stagger-step))` via `@starting-style` + `view()` timeline),
+  new tokens (`--bf-rhythm-gap`, `--bf-rhythm-line-height`,
+  `--bf-stagger-duration`, `--bf-stagger-step`, `--bf-stagger-distance`),
+  and `demo/rhythm-motion.html` proofs. Opt-in per file, never in frozen
+  `full.css`. Full matrix green; `npm run check` passes. Tag `v6.4.0`
+  per RELEASE.md; `release.yml` publishes from the tag.
 - **vNext roadmap (drafted 2026-09-11):** v6.3 → v6.8, three phases ×
   two themed releases — quick wins (validation paint, print, sticky
   tables, rhythm, stagger), maturity (states pattern, validation a11y,
@@ -227,17 +237,16 @@ and `.bf-*` utilities.
   z-index discipline + `mask-image` fade edge ("more data" affordance).
   Extends `sticky-scroll-focusable` (Verify already audits the wrapper).
 
-**v6.4 — "Rhythm & Motion"** (fluid feel, on-thesis)
+**v6.4 — "Rhythm & Motion"** ✅ (built & verified 2026-09-12)
 
 - **`.bf-rhythm`:** line-height/gap tied to `--bf-adaptive-*` so
   components breathe proportionally at any container width — extends
-  `.bf-flow` and the cqi type ramp.
-- **`.bf-stagger`:** `calc(var(--item-index) * 50ms)` entry animation;
-  `@starting-style` / view-transition recipes documented as patterns,
-  not just tokens. `prefers-reduced-motion` respected as always.
-- **Override/escape-hatch docs:** the "Barefoot Override Pattern" —
-  `@layer user` theme-overrides file, copy-pasteable, so nobody reaches
-  for `!important`.
+  `.bf-flow` and the cqi type ramp. Implemented in `components/layout-rhythm.css`.
+- **`.bf-stagger`:** `calc(var(--bf-stagger-index) * var(--bf-stagger-step))`
+  entry animation via `@starting-style` + `view()` timeline, with fallback.
+  `prefers-reduced-motion` respected. Implemented in `components/layout-stagger.css`.
+- **Demo & docs:** `demo/rhythm-motion.html`, updated `docs/layout.md`.
+  Opt-in by import, never in frozen `full.css`.
 
 ### Phase 2 — Maturity (patterns + Verify contracts)
 

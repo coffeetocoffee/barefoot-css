@@ -208,6 +208,16 @@ the base token and every ramp follows.
 | `--bf-switcher-min` | `14rem` | shared-row minimum in .bf-switcher |
 | `--bf-sticky-top` | `0` | offset for .bf-sticky |
 
+### Layout (v6.4: rhythm & stagger)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-rhythm-gap` | `var(--bf-flow-space)` | default .bf-rhythm gap |
+| `--bf-rhythm-line-height` | `var(--bf-line-height)` | default .bf-rhythm line-height |
+| `--bf-stagger-duration` | `400ms` | default stagger animation duration |
+| `--bf-stagger-step` | `50ms` | delay step per stagger item |
+| `--bf-stagger-distance` | `var(--bf-reveal-distance)` | translate distance for stagger |
+
 ### Layout (v1.8: content & media)
 
 | Token | Default | Purpose |

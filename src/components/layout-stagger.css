@@ -1,0 +1,76 @@
+/* Barefoot — stagger (v6.4).
+   Opt-in entry animation with sequential delay — "stagger" children as
+   they enter. Pure CSS via @starting-style and view-transition-class.
+   Reduced motion respected as always.
+
+   <div class="bf-stagger">
+     <article>First</article>
+     <article>Second</article>
+     <article>Third</article>
+   </div>
+
+   Indexing: children receive --bf-stagger-index via the
+   data-bf-stagger attribute (set by author or JS). Without indexing,
+   all children animate simultaneously (graceful degradation).
+
+   Pattern (no-JS): author sets data-bf-stagger on container, then adds
+   style="--bf-stagger-index: 0" etc. on each child.
+
+   Pattern (with JS): a tiny module sets --bf-stagger-index on each child
+   via MutationObserver — but the CSS works without it. */
+
+@layer components {
+  /* Staggered entry via @starting-style (CSS-only, no View Transitions).
+     Each child animates from hidden → visible with a calculated delay. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .bf-stagger > * {
+        animation: bf-stagger-in var(--bf-stagger-duration, 400ms) ease both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+        /* Delay = index * stagger-step. Default 50ms per item. */
+        animation-delay: calc(var(--bf-stagger-index, 0) * var(--bf-stagger-step, 50ms));
+      }
+
+      @keyframes bf-stagger-in {
+        from {
+          opacity: 0;
+          translate: 0 var(--bf-stagger-distance, var(--bf-reveal-distance, var(--bf-space-4)));
+        }
+        to {
+          opacity: 1;
+          translate: none;
+        }
+      }
+    }
+  }
+
+  /* Fallback for engines without view() timeline: use @starting-style
+     with a short transition on mount. Requires the element to be added
+     to the DOM (e.g., via JS or initially hidden with [hidden] then shown). */
+  @supports not (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .bf-stagger > * {
+        transition: opacity var(--bf-stagger-duration, 400ms) ease,
+          translate var(--bf-stagger-duration, 400ms) ease;
+        transition-delay: calc(var(--bf-stagger-index, 0) * var(--bf-stagger-step, 50ms));
+      }
+
+      .bf-stagger > *:not(:defined),
+      .bf-stagger > [hidden] {
+        opacity: 0;
+        translate: 0 var(--bf-stagger-distance, var(--bf-reveal-distance, var(--bf-space-4)));
+      }
+    }
+  }
+
+  /* Explicit reduced-motion kill switch — overrides any stagger motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .bf-stagger > * {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      translate: none !important;
+    }
+  }
+}

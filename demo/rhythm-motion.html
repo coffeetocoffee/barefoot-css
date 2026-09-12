@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Rhythm & Motion</title>
+  <meta name="description" content="Container-aware rhythm and staggered entry animations.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/layout-rhythm.css">
+  <link rel="stylesheet" href="../dist/components/layout-stagger.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .rm-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .rm-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    h3 { margin-block-end: var(--bf-space-2); }
+    .rm-muted { color: var(--bf-muted); max-width: 62ch; }
+
+    /* Stage with width slider */
+    .rm-stage { padding-block-end: var(--bf-space-4); }
+    .rm-controls {
+      display: flex; align-items: center; gap: var(--bf-space-3);
+      margin-block-end: var(--bf-space-3); flex-wrap: wrap;
+    }
+    .rm-controls label { font-weight: var(--bf-font-weight-medium); }
+    .rm-range { flex: 0 1 18rem; max-width: 100%; }
+    .rm-readout {
+      font-family: var(--bf-font-mono); font-size: 0.875rem;
+      color: var(--bf-muted); min-width: 5ch;
+    }
+    .rm-box {
+      resize: both; overflow: auto; max-width: 100%;
+      min-width: 12rem; min-height: 8rem;
+      border: 1px dashed var(--bf-info);
+      border-radius: var(--bf-radius);
+      background: var(--bf-surface);
+    }
+    .rm-contain {
+      container-type: inline-size;
+      padding: var(--bf-space-3);
+    }
+
+    /* Stagger demo */
+    .rm-stagger-box {
+      border: 1px solid var(--bf-border);
+      border-radius: var(--bf-radius);
+      background: var(--bf-surface-alt);
+      padding: var(--bf-space-3);
+    }
+    .rm-stagger-item {
+      padding: var(--bf-space-2) var(--bf-space-3);
+      background: var(--bf-surface);
+      border-radius: var(--bf-radius-sm);
+      border: 1px solid var(--bf-border);
+    }
+    .rm-stagger-item:nth-child(odd) { background: var(--bf-surface-2); }
+
+    /* Restart button */
+    .rm-restart {
+      margin-block-start: var(--bf-space-3);
+    }
+
+    /* Code snippets */
+    .rm-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .rm-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <header class="bf-container rm-head">
+    <p class="bf-overline">Barefoot CSS v6.4</p>
+    <h1>Rhythm & Motion</h1>
+    <p>Container-aware vertical rhythm (<code>.bf-rhythm</code>) and staggered entry animations (<code>.bf-stagger</code>). Resize <em>the box</em>, not your browser window — the layout adapts to its container.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="playground.html">playground</a> · <a href="../docs/layout.md">layout docs</a>.</p>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Rhythm -->
+    <section class="rm-stage" aria-labelledby="rm-rhythm-title">
+      <h2 id="rm-rhythm-title"><code>.bf-rhythm</code> — container-aware vertical rhythm</h2>
+      <p class="rm-muted">A vertical stack whose gap and line-height scale with the container width via container queries (cqi). No media queries. Mirrors the <code>--bf-adaptive-*</code> thresholds.</p>
+      <div class="rm-controls">
+        <label for="rm-rhythm-range">Container width</label>
+        <input type="range" class="rm-range" id="rm-rhythm-range" min="12" max="64" value="40" step="1">
+        <output class="rm-readout" id="rm-rhythm-readout" for="rm-rhythm-range">40rem</output>
+      </div>
+      <div class="rm-box" id="rm-rhythm" data-rm-box style="width:40rem">
+        <div class="rm-contain">
+          <div class="bf-rhythm">
+            <p>A plain paragraph of body text. The vertical rhythm between these blocks is set by the container, not the screen — widen the box and the gap opens up while line-height relaxes.</p>
+            <p>Another block. In a narrow sidebar the same markup reads tight; in a wide column it breathes with generous leading.</p>
+            <p>And a third, to make the rhythm obvious as you drag. The gap and line-height both respond to container width.</p>
+            <p>Even at 56rem+ the rhythm stays generous without overflowing.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Markup</h3>
+      <div class="rm-code"><code><div class="bf-contain">
+  <div class="bf-rhythm">
+    <p>First block…</p>
+    <p>Second block…</p>
+    <p>Third block…</p>
+  </div>
+</div></code></div>
+    </section>
+
+    <!-- Stagger -->
+    <section class="rm-stage" aria-labelledby="rm-stagger-title">
+      <h2 id="rm-stagger-title"><code>.bf-stagger</code> — staggered entry animation</h2>
+      <p class="rm-muted">Children animate in sequence with a calculated delay (<code>calc(var(--bf-stagger-index) * 50ms)</code>). Pure CSS via <code>@starting-style</code> and <code>view()</code> timeline. Respects <code>prefers-reduced-motion</code>.</p>
+
+      <div class="rm-controls">
+        <label for="rm-stagger-count">Items</label>
+        <input type="range" class="rm-range" id="rm-stagger-count" min="1" max="8" value="5" step="1">
+        <output class="rm-readout" id="rm-stagger-count-readout" for="rm-stagger-count">5</output>
+      </div>
+
+      <div class="rm-box rm-stagger-box" id="rm-stagger" style="width: 100%;">
+        <div class="bf-stagger" id="rm-stagger-container" data-bf-stagger>
+          <!-- Items injected by JS below -->
+        </div>
+      </div>
+
+      <div class="rm-restart">
+        <button type="button" class="bf-btn" id="rm-restart-stagger">Restart animation</button>
+      </div>
+
+      <h3>Markup (no-JS authoring)</h3>
+      <div class="rm-code"><code><div class="bf-stagger" data-bf-stagger>
+  <article style="--bf-stagger-index: 0">First</article>
+  <article style="--bf-stagger-index: 1">Second</article>
+  <article style="--bf-stagger-index: 2">Third</article>
+  <article style="--bf-stagger-index: 3">Fourth</article>
+  <article style="--bf-stagger-index: 4">Fifth</article>
+</div></code></div>
+
+      <h3>How it works</h3>
+      <ul style="margin-block-start: var(--bf-space-3); max-width: 62ch; color: var(--bf-muted);">
+        <li>Each child receives a <code>--bf-stagger-index</code> (set by author or JS)</li>
+        <li>Animation delay = <code>calc(index * var(--bf-stagger-step, 50ms))</code></li>
+        <li>Uses <code>animation-timeline: view()</code> for scroll-triggered entry</li>
+        <li>Falls back to <code>@starting-style</code> + transition for engines without view()</li>
+        <li><code>prefers-reduced-motion: reduce</code> kills all motion instantly</li>
+      </ul>
+    </section>
+
+    <!-- Combined: Rhythm + Stagger -->
+    <section class="rm-stage" aria-labelledby="rm-combined-title">
+      <h2 id="rm-combined-title">Combined: <code>.bf-rhythm</code> + <code>.bf-stagger</code></h2>
+      <p class="rm-muted">A rhythmic stack where each item also staggers in. Resize the container to see rhythm adapt; refresh to re-trigger stagger.</p>
+      <div class="rm-controls">
+        <label for="rm-combined-range">Container width</label>
+        <input type="range" class="rm-range" id="rm-combined-range" min="12" max="64" value="40" step="1">
+        <output class="rm-readout" id="rm-combined-readout" for="rm-combined-range">40rem</output>
+      </div>
+      <div class="rm-box" id="rm-combined" data-rm-box style="width:40rem">
+        <div class="rm-contain">
+          <div class="bf-rhythm bf-stagger" id="rm-combined-container" data-bf-stagger>
+            <article class="card" style="--bf-stagger-index: 0"><h3>One</h3><p>First card in the rhythmic stagger.</p></article>
+            <article class="card" style="--bf-stagger-index: 1"><h3>Two</h3><p>Second card — gap and line-height adapt to container.</p></article>
+            <article class="card" style="--bf-stagger-index: 2"><h3>Three</h3><p>Third card — stagger delay is 100ms (2 × 50ms).</p></article>
+            <article class="card" style="--bf-stagger-index: 3"><h3>Four</h3><p>Fourth card — rhythm breathes with the box.</p></article>
+          </div>
+        </div>
+      </div>
+
+      <div class="rm-restart">
+        <button type="button" class="bf-btn" id="rm-restart-combined">Restart animation</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Playground width slider logic (shared)
+    document.querySelectorAll('[data-rm-box]').forEach(box => {
+      const range = document.querySelector(`#${box.id}-range`);
+      const readout = document.querySelector(`#${box.id}-readout`);
+      if (!range || !readout) return;
+      range.addEventListener('input', () => {
+        const w = range.value + 'rem';
+        box.style.width = w;
+        readout.textContent = w;
+      });
+    });
+
+    // Stagger item generation
+    function generateStaggerItems(containerId, count) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        const item = document.createElement('article');
+        item.className = 'rm-stagger-item';
+        item.style.setProperty('--bf-stagger-index', i);
+        item.textContent = `Item ${i + 1} — delay ${i * 50}ms`;
+        container.appendChild(item);
+      }
+    }
+
+    // Initialize stagger demo
+    generateStaggerItems('rm-stagger-container', 5);
+    document.getElementById('rm-stagger-count').addEventListener('input', (e) => {
+      const count = parseInt(e.target.value, 10);
+      document.getElementById('rm-stagger-count-readout').textContent = count;
+      generateStaggerItems('rm-stagger-container', count);
+    });
+
+    // Restart stagger animation by re-adding items
+    function restartStagger(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const items = Array.from(container.children);
+      items.forEach((item, i) => {
+        item.style.animation = 'none';
+        item.offsetHeight; // force reflow
+        item.style.animation = '';
+      });
+    }
+
+    document.getElementById('rm-restart-stagger').addEventListener('click', () => {
+      restartStagger('rm-stagger-container');
+    });
+    document.getElementById('rm-restart-combined').addEventListener('click', () => {
+      restartStagger('rm-combined-container');
+    });
+  </script>
+</body>
+</html>

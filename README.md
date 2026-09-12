@@ -109,9 +109,9 @@ Small, visible, export-credible — still zero JavaScript:
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 55.80KB | **10.40KB** | 9.07KB |
+| `full.css` | 55.98KB | **10.43KB** | 9.11KB |
 | `js/verify-contracts.js` | 8.29KB | **3.08KB** | 2.62KB |
-| `index.css` | 11.06KB | **2.91KB** | 2.48KB |
+| `index.css` | 11.23KB | **2.95KB** | 2.52KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
@@ -158,6 +158,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `js/alert-dismiss.js` | 0.63KB | **0.36KB** | 0.32KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
+| `components/layout-stagger.css` | 1.02KB | **0.34KB** | 0.29KB |
 | `components/badge.css` | 0.94KB | **0.34KB** | 0.26KB |
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
 | `components/table-sticky.css` | 0.84KB | **0.34KB** | 0.28KB |
@@ -173,6 +174,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/card-adaptive.css` | 0.50KB | **0.28KB** | 0.23KB |
 | `components/forms-file.css` | 0.60KB | **0.28KB** | 0.21KB |
 | `components/forms-meter.css` | 0.74KB | **0.28KB** | 0.23KB |
+| `components/layout-rhythm.css` | 0.61KB | **0.28KB** | 0.21KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
