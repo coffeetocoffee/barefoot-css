@@ -5,28 +5,26 @@
 [![npm version](https://img.shields.io/npm/v/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![npm downloads](https://img.shields.io/npm/dm/barefoot-css)](https://www.npmjs.com/package/barefoot-css)
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
-[![v6.3](https://img.shields.io/badge/phase-6.3%20%E2%80%94%20paint%20%26%20paper-2b7a4f)](docs/paint-paper.md)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
+
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
 ## Why Barefoot?
 
-- **Tiny on purpose.** `index.css` is **2.90KB gzipped** — measured, not estimated (receipts below). Import the core plus only the components you use; the *everything* bundle (`full.css`) has been frozen since v4.6, so per-component stays the real story.
-- **The layout is the breakpoint.** *(v6.2)* Components — and now layouts — adapt to the **box they're dropped in**, not the viewport. A data table in a sidebar card-stacks; widen it and it's rows again. A sidebar splits, then stacks. No media queries, no JS, no re-render. Don't take our word for it — [drag the boxes in the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html).
-- **Theming by default.** Every visual is a `--bf-*` custom property — re-skin with a handful of variables, no Sass, no recompile. Tokens ship as W3C DTCG `tokens.json` for Figma / iOS / Android, one seed can derive the whole system ([Studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)), and a dark panel can live inside a light page with zero JS.
-- **JS-free, by default.** Dropdowns are Popover-API menus or `<details>`, modals are `<dialog>`, accordions are `<details name>`, validation is pure CSS. The few things CSS genuinely can't do (tabs, sortable tables, theme persistence) are tiny opt-in, zero-dependency modules.
-- **Paint & paper.** *(v6.3)* Validation groups that tint when their field is wrong, a sticky table with a "more data" fade, and an opt-in print layer that flattens it all to ink on paper. Zero JavaScript — [see the proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html).
-- **It checks your laces.** *(v6.1)* An opt-in dev checker audits Barefoot's own markup contracts — the stuff axe can't know — right in your console.
-- **Accessible out of the box.** Native elements hand you focus traps, Esc-to-close, and ARIA semantics for free. Visible focus everywhere, AA contrast by default, `forced-colors` hardened, and an axe-core suite in CI proves it.
-- **No "Bootstrap look."** Neutral by default: ink on paper, hairline borders, no shadows, no gradients. The design is yours — we just supply the muscle.
+- **Tiny.** Core (`index.css`) is ~3KB gzipped. Import only what you use — no 200KB bundle.
+- **Container-aware, not viewport-aware.** Tables, forms, cards, and layouts adapt to the box they're in. No media queries, no JS. [Try the playground.](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html)
+- **Themeable in minutes.** Every visual is a `--bf-*` variable. No Sass, no rebuild. Tokens ship as W3C DTCG `tokens.json`.
+- **JS-free by default.** Dialogs are `<dialog>`, accordions are `<details>`, menus are popovers. Opt-in zero-dependency JS only where CSS can't reach (tabs, sorting, theme persistence).
+- **Accessible.** Native semantics, visible focus, AA contrast, `forced-colors` support, axe-core tested in CI.
+- **Neutral.** Ink on paper, hairline borders, no shadows. Your design, not ours.
 
 ---
 
 ## Quick start
 
-No build step. Paste this into a plain HTML file and you're styling —
-CDN first, npm second:
+No build step. CDN first, npm second:
 
 ```html
 <!doctype html>
@@ -36,7 +34,7 @@ CDN first, npm second:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Barefoot test drive</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/index.css">
-  <!-- opt-in components + themes, one <link> each: -->
+  <!-- opt-in: one <link> per component / theme -->
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/components/dialog.css"> -->
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/themes/sunset.css"> -->
 </head>
@@ -47,26 +45,14 @@ CDN first, npm second:
 </html>
 ```
 
-Or install it:
-
 ```bash
 npm install barefoot-css
 ```
 
 ```css
-/* CSS — reset + tokens + base, then only what you need */
-@import "barefoot-css";                          /* core: layers, reset, tokens, base */
-@import "barefoot-css/components/dialog.css";     /* opt-in components, one import each */
-```
+@import "barefoot-css";                       /* core: layers, reset, tokens, base */
+@import "barefoot-css/components/dialog.css"; /* opt-in components, one import each */
 
-```html
-<!-- HTML — plain elements, styled by Barefoot -->
-<button>Save</button>
-<input type="email" placeholder="you@example.com">
-```
-
-```css
-/* Make it yours — a handful of variables */
 :root {
   --bf-primary: #2563eb;
   --bf-radius: 0.5rem;
@@ -76,35 +62,24 @@ npm install barefoot-css
 
 ---
 
-## The v6.2 headline: *the layout is the breakpoint*
+## Features
 
-Stop asking "how wide is the screen?" Start asking "how wide am I **here**?" A sidebar, a card, a grid cell — none of them *is* the viewport. v5.0 taught components to sense their **container**; v6.2 teaches layouts the same trick:
-
-| Primitive | What it does |
+| Area | What you get |
 |---|---|
-| `.bf-flow` | Vertical rhythm that breathes with the box — tight in a sidebar, roomy in a column. |
-| `.bf-switcher` | Children share a row while the box is wide; each takes a full row when it's narrow. |
-| `.bf-sidebar` | Aside beside main in a wide box; stacked beneath it in a narrow one. |
-
-Still true from v5.0: `table[data-table="adaptive"]` card-stacks, `form[data-form="adaptive"]` reflows to one column with a zero-JS error summary, `.card[data-card="adaptive"]` flips horizontal↔vertical, `[data-segmented][data-adaptive]` compresses. → [docs/adaptive.md](docs/adaptive.md)
-
-Everything adaptive is **opt-in** (never in frozen `full.css`). **Try it live:** [the playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) — drag a box, watch it reflow. → [docs/layout.md](docs/layout.md)
-
-## The v6.3 headline: *paint & paper*
-
-Small, visible, export-credible — still zero JavaScript:
-
-| Surface | What it does |
-|---|---|
-| `.bf-form-group` + `.bf-error-text` | The group tints when its field is touched-and-invalid; the message appears via the same `:has()`. |
-| `.bf-table-sticky` | Scroll container, pinned header, pinned leading column, and a "more data" fade in one class. |
-| `print.css` | Flattens container layouts, re-tabulates adaptive tables, prints link destinations, hides `.bf-no-print`. Costs nothing on screen. |
-
-**Try it live:** [the paint & paper proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) — break the email field, scroll the ledger, open print preview. → [docs/paint-paper.md](docs/paint-paper.md)
+| Layout | `.bf-flow`, `.bf-switcher`, `.bf-sidebar` — container-aware primitives. Tight in a sidebar, roomy in a column. → [docs/layout.md](docs/layout.md) |
+| Adaptive | Tables card-stack, forms reflow with a zero-JS error summary, cards flip orientation. Opt-in, never in `full.css`. → [docs/adaptive.md](docs/adaptive.md) |
+| Forms & tables | Validation groups that tint on `:has(:user-invalid)`, sticky headers + leading column with a "more data" fade. → [docs/paint-paper.md](docs/paint-paper.md) |
+| Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
+| Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
 
 ---
 
-## Size (measured, current build)
+## Size
+
+Measured from the current build, not estimated. Core stays **under 10KB gzipped** (enforced by `npm run check`).
+
+<details>
+<summary>Full per-file breakdown (raw / gzip / brotli)</summary>
 
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
@@ -200,62 +175,44 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
 <!-- SIZES:END -->
 
-> **Budget:** `index.css` must stay **under 10KB gzipped** — enforced by `npm run check`, which fails the build if it ever creeps over.
+</details>
 
-Opt-in JS (`dist/js/`): nine zero-dependency behavior modules, imported one by one or all together via `barefoot.js`. Internal plumbing (`lifecycle.js`, `remove-on-click.js`) ships alongside but is not public API, and `js/verify.js` is the opt-in dev-only contract checker (never in the barrel). → [docs/javascript.md](docs/javascript.md)
+Opt-in JS (`dist/js/`): zero-dependency modules, imported individually or via `barefoot.js`. `verify.js` is dev-only and never in the barrel. → [docs/javascript.md](docs/javascript.md)
 
 ---
 
-## Browser baseline
+## Browser support
 
-Modern evergreen browsers only — **Chrome 135+ / Firefox 151+ / Safari 26.2+** (ADR-0010). v5.0 leans on container queries, container *style* queries, container units, anchor positioning, the Invoker Commands API, and `oklch()` relative color. Barefoot deliberately does **not** transpile away modern CSS — that's exactly where the size and simplicity come from. Older engines gracefully degrade (e.g. an adaptive table stays a plain table).
+Evergreen only — Chrome 135+, Firefox 151+, Safari 26.2+. No transpiling of modern CSS (container queries, anchor positioning, `oklch()`). Older engines gracefully degrade to plain layouts.
 
 ---
 
 ## Project layout
 
 ```text
-src/
-  index.css            core entry: layers, reset, tokens, base
-  full.css             everything in one file (frozen at 4.6, ADR-0008)
-  layers.css           cascade layer order
-  reset.css, tokens.css, base.css
-  components/          buttons, forms, dialog, popover, dropdown,
-                       accordion, tabs, carousel, grid, nav, alert,
-                       skeleton, table, code, card, badge,
-                       breadcrumbs, pagination, layout primitives,
-                       validation, sticky tables, print — plus *-adaptive.css
-  js/                  opt-in modules: tabs, table-sort, popover-menu, nav, barefoot, …
-  themes/              editorial, dashboard, playful, forest, sunset, custom template
-  utilities.css        opt-in helpers
-demo/index.html        conformance page (keyboard walkthroughs)
-demo/studio.html       generative theming editor (v5.0)
-demo/playground.html   resizable layout proof (v6.2)
-demo/paint-paper.html  validation, sticky-table & print proofs (v6.3)
-docs/                  theming, components, javascript, accessibility,
-                        performance, api, adaptive, layout, paint-paper,
-                        migration-3/4/5, verify
-tests/                 a11y (axe-core), opt-in JS, visual regression,
-                       Verify registry + checker engine
-build/                 Lightning CSS bundler + size budget + preview server
+src/        index.css (core), components/, themes/, js/ (opt-in)
+demo/       conformance demo + playground + paint-paper + studio
+docs/       theming, components, layout, adaptive, accessibility, …
+tests/      a11y (axe), JS, CSS behavior, visual regression
+build/      bundler + size budget + preview server
 ```
+
+`full.css` is frozen since v4.6 — new surfaces ship as separate opt-in files.
 
 ---
 
 ## Docs
 
-- Live: [docs site](https://coffeetocoffee.github.io/barefoot-css/) and
-  [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) (GitHub Pages) — plus the [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html), [paint & paper proofs](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html), and [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
-- [Adaptive components](docs/adaptive.md) — *the* v5.0 feature: container-adaptive by contract
-- [Container-aware layout](docs/layout.md) — the v6.2 layout primitives and playground
-- [Paint & paper](docs/paint-paper.md) — the v6.3 validation groups, sticky tables, and print layer
-- [Theming](docs/theming.md) — tokens, `light-dark()`, `data-bf-theme`, starter themes, the generative ramp
-- [Components](docs/components.md) — markup, behavior, JS status for each component
-- [JavaScript](docs/javascript.md) — the opt-in JS modules (tabs, Esc-close, popover menus)
-- [Accessibility](docs/accessibility.md) — conformance stance and keyboard matrix
-- [Performance](docs/performance.md) — size budgets, measurement, staying under them
-- [Upgrading to v4](docs/migration-4.md) · [Upgrading to v5](docs/migration-5.md)
-- [Status & plan](plan.md) — what's built, what's next, and the decisions behind it
+| Guide | Covers |
+|---|---|
+| [Theming](docs/theming.md) | Tokens, `light-dark()`, `data-bf-theme`, starter themes |
+| [Components](docs/components.md) | Markup, behavior, JS status |
+| [JavaScript](docs/javascript.md) | Opt-in modules |
+| [Adaptive](docs/adaptive.md) / [Layout](docs/layout.md) | Container-aware components & primitives |
+| [Paint & paper](docs/paint-paper.md) | Validation, sticky tables, print |
+| [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |
+| [Migration](docs/migration-4.md) | v4 · [v5](docs/migration-5.md) · [v3](docs/migration-3.md) |
+| [Status & plan](plan.md) | What's built, what's next |
 
 ---
 
@@ -263,31 +220,23 @@ build/                 Lightning CSS bundler + size budget + preview server
 
 ```bash
 npm install
-npm run check     # build + enforce size budget + regenerate docs
+npm run check     # build + size budget + docs + lint
 npm run preview   # serve demo/ at localhost:4173
 ```
 
----
+## Testing
 
-## Testing & CI
-
-Hundreds of tests run across **Chromium, Firefox, and WebKit**:
-
-- **Accessibility (`tests/a11y.spec.js`)** — axe-core conformance on the demo in eight states (resting, dark, contrast, dialog, popover, toast, hamburger nav, invalid form), a per-section contrast sweep, the theme gallery, the layout playground, and the paint & paper proofs (resting + invalid group) — all at **zero violations** — plus keyboard-contract tests.
-- **Opt-in JS (`tests/js.spec.js`)** — tabs (click, arrows, Home/End), no-JS-first contracts, popover-menu keyboard nav, theme persistence.
-- **CSS behavior (`tests/css.spec.js`)** — container-query grids, anchored popovers, theme switching via `startViewTransition`, the adaptive-component suite (v5.0), the layout-primitive suite (v6.2), the paint & paper suite (v6.3), the generative-theming suite (v5.0), and the API-reference audit pinning `docs/api.md` + generated token tables to `src/`.
-- **Visual regression (`tests/visual.spec.js`)** — full-page light/dark screenshots against committed per-engine baselines.
+Chromium by default; Firefox / WebKit / axe / visual via flags:
 
 ```bash
-npm test                          # all tests (Chromium)
-npm run test:a11y                 # axe-core only
-npm run test:ff                   # JS + CSS + visual on Firefox
-npm run test:webkit               # JS + CSS + visual on WebKit/Safari
-npm run test:visual              # compare against baselines
-npm run test:visual:update       # regenerate baselines (deliberately!)
+npm test                 # all suites (Chromium)
+npm run test:a11y        # axe-core only
+npm run test:ff          # Firefox
+npm run test:webkit      # WebKit
+npm run test:visual:update  # regenerate baselines (deliberate only)
 ```
 
-CI (`.github/workflows/ci.yml`) runs six jobs: `build + size budget`, behavior + a11y on Linux/Chromium, behavior on **Firefox** (Linux) and **WebKit** (macOS), and `visual regression` on Windows (bundled webfonts keep baselines machine-independent). Docs + demo deploy to [GitHub Pages](https://coffeetocoffee.github.io/barefoot-css/) on every push to `main`.
+CI runs build + a11y + behavior (Chromium, Firefox, WebKit) + visual regression. Docs + demo deploy to GitHub Pages on every push to `main`.
 
 ---
 
