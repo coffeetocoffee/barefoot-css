@@ -2183,7 +2183,7 @@ test.describe("rhythm & motion (v6.4 — fluid rhythm, staggered entry)", () => 
     expect(narrowLineHeight).toBeLessThan(wideLineHeight);
   });
 
-  test(".bf-stagger children animate with sequential delay via view() timeline", async ({ page }) => {
+  test(".bf-stagger children animate with sequential delay", async ({ page }) => {
     await gotoRhythmMotion(page);
     const stagger = page.locator(`${DEMOS.rhythmMotionStagger} .bf-stagger`);
     const items = stagger.locator(":scope > *");
@@ -2191,9 +2191,17 @@ test.describe("rhythm & motion (v6.4 — fluid rhythm, staggered entry)", () => 
     // Ensure we have items
     expect(await items.count()).toBeGreaterThan(0);
 
-    // Check that animation-delay is set correctly based on --bf-stagger-index
-    const delays = await items.evaluateAll((els) =>
-      els.map((el) => getComputedStyle(el).animationDelay)
+    // Which engine tier? The view() timeline where supported, the
+    // transition fallback elsewhere (degrade by omission — both tiers
+    // carry the sequential delay, so the property under test follows
+    // the same @supports condition the stylesheet uses).
+    const prop = await page.evaluate(() =>
+      CSS.supports("animation-timeline", "view()")
+        ? "animationDelay"
+        : "transitionDelay");
+    const delays = await items.evaluateAll(
+      (els, p) => els.map((el) => getComputedStyle(el)[p]),
+      prop
     );
 
     // First item (index 0) should have 0s delay, subsequent items should have increasing delays
@@ -2218,10 +2226,15 @@ test.describe("rhythm & motion (v6.4 — fluid rhythm, staggered entry)", () => 
 
     expect(narrowGap).toBeLessThan(wideGap);
 
-    // Stagger delays still apply
+    // Stagger delays still apply (same engine tier as above).
     const items = combined.locator(":scope > *");
-    const delays = await items.evaluateAll((els) =>
-      els.map((el) => getComputedStyle(el).animationDelay)
+    const prop = await page.evaluate(() =>
+      CSS.supports("animation-timeline", "view()")
+        ? "animationDelay"
+        : "transitionDelay");
+    const delays = await items.evaluateAll(
+      (els, p) => els.map((el) => getComputedStyle(el)[p]),
+      prop
     );
     expect(delays[0]).toBe("0s");
   });
