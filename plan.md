@@ -1,8 +1,8 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-12 — v6.5.0 "States & Real Validation" built & verified
-(state patterns, validation summaries, Verify contracts); v6.4.0
-"Rhythm & Motion" shipped, v6.3.0 "Paint & Paper" shipped_
+_Last updated: 2026-09-12 — v6.6.0 "Primitives, Patterns & On-Ramp" built &
+verified (data-display primitives, recipes, migration guidance, RTL); v6.5.0
+"States & Real Validation" shipped_
 
 ## Snapshot
 
@@ -48,7 +48,10 @@ _Last updated: 2026-09-12 — v6.5.0 "States & Real Validation" built & verified
   States & Real Validation** (2026-09-12). v6.5 adds opt-in state patterns,
   validation-summary guidance, and Verify contracts for live-region and
   focus-target wiring.
-- **History:** milestones 0.1 → 6.5.0 shipped.
+- **Shipped:** **v6.6.0 — Primitives, Patterns & On-Ramp** (2026-09-12).
+  v6.6 adds opt-in key/value and stat primitives, recipe and migration
+  guidance, the 65ch prose measure, and RTL documentation/tests.
+- **History:** milestones 0.1 → 6.6.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -215,6 +218,12 @@ and `.bf-*` utilities.
   `state-live-contract` and `validation-summary-contract`, and extends
   `describedby-wired` to `.bf-error-text`. `release.yml` publishes from the
   tag.
+- **v6.6.0 — "Primitives, Patterns & On-Ramp" shipped 2026-09-12:** opt-in
+  `components/data-display.css` adds `.bf-key-value` and `.bf-stat`; existing
+  timeline, pagination, breadcrumbs, media, meter/progress, and prose surfaces
+  are consolidated in `docs/recipes.md` with sidebar/table, settings, empty
+  dashboard, and Pico/Bootstrap/Tailwind on-ramps. RTL is documented and
+  tested. `release.yml` publishes from the tag.
 - **vNext roadmap (drafted 2026-09-11):** v6.3 → v6.8, three phases ×
   two themed releases — quick wins (validation paint, print, sticky
   tables, rhythm, stagger), maturity (states pattern, validation a11y,
@@ -272,7 +281,8 @@ and `.bf-*` utilities.
   `aria-live` error summary, focus-first-error contract. Bless native
   constraint validation explicitly; Verify audits the wiring.
 
-**v6.6 — "Primitives, Patterns & On-Ramp"** (completeness + reach)
+**v6.6 — "Primitives, Patterns & On-Ramp"** ✅ (built, verified, and shipped
+2026-09-12; completeness + reach)
 
 - **Data-display primitives:** `dl`/key-value pairs, stat blocks,
   timelines — the elements every dashboard needs.

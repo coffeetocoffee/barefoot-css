@@ -211,6 +211,48 @@ test.describe("v6.5 states", () => {
   });
 });
 
+test.describe("v6.6 data display and RTL", () => {
+  test("key/value pairs, stats, and prose use the opt-in data-display layer", async ({ page }) => {
+    await gotoDemo(page);
+    await page.setContent(`
+      <dl class="bf-key-value">
+        <div><dt>Deploys</dt><dd>24</dd></div>
+      </dl>
+      <article class="bf-stat" data-trend="up">
+        <p class="bf-stat-label">Active users</p>
+        <strong class="bf-stat-value">1,248</strong>
+      </article>
+      <article class="bf-prose"><p>Readable content.</p></article>
+    `);
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/data-display.css") });
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/prose.css") });
+
+    await expect(page.locator(".bf-key-value")).toHaveCSS("display", "grid");
+    await expect(page.locator(".bf-stat-value")).toHaveCSS("font-size", /px/);
+    await expect(page.locator(".bf-prose")).toHaveCSS("max-width", "520px");
+  });
+
+  test("logical data-display edges follow RTL without changing DOM order", async ({ page }) => {
+    await gotoDemo(page);
+    await page.setContent(`
+      <html dir="rtl"><body>
+        <dl class="bf-key-value">
+          <div><dt>الحالة</dt><dd>جاهز</dd></div>
+        </dl>
+      </body></html>
+    `);
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/data-display.css") });
+    const values = await page.locator(".bf-key-value > div").evaluate((el) => ({
+      direction: getComputedStyle(el).direction,
+      textAlign: getComputedStyle(el.querySelector("dd")).textAlign,
+      terms: [...el.children].map((child) => child.textContent),
+    }));
+    expect(values.direction).toBe("rtl");
+    expect(values.textAlign).toBe("end");
+    expect(values.terms).toEqual(["الحالة", "جاهز"]);
+  });
+});
+
 test.describe("anchored popovers (anchor positioning)", () => {
   test("menu popover pins below its own trigger (not the other popover's)", async ({ page }) => {
     await gotoDemo(page);

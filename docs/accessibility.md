@@ -41,6 +41,9 @@ ARIA to the divs" — there are no divs.
   *your* markup (`role="alert"`, `aria-live="polite"`); toasts (Popover
   API) pair `role="status"` / `role="alert"` with an open/close contract
   (`Esc`, click-away). Skeleton is decorative — it never announces.
+- **RTL.** Component geometry uses logical properties, so `dir="rtl"` mirrors
+  edges without changing reading order. Keep document order meaningful and
+  provide text alternatives for directional icons.
 
 ## How each component earns it for free
 

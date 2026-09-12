@@ -182,6 +182,7 @@ All component attributes and their valid values:
 | `data-bf-verify` | `<html>` | `strict` — Verify contract checker throws instead of warning ([verify.md](verify.md)) | 6.1 |
 | `data-bf-stagger` | container for `.bf-stagger` | (boolean) — enables stagger animation on children; set `--bf-stagger-index` on each child | 6.4 |
 | `data-state` | `.bf-state` | `loading`, `empty`, `error` — async state presentation; pair with the live-region contract in `docs/states.md` | 6.5 |
+| `data-trend` | `.bf-stat` | `up`, `down` — visual trend color; never the sole status cue | 6.6 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

@@ -109,7 +109,7 @@ Small, visible, export-credible — still zero JavaScript:
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 55.98KB | **10.43KB** | 9.11KB |
+| `full.css` | 56.00KB | **10.44KB** | 9.12KB |
 | `js/verify-contracts.js` | 10.37KB | **3.53KB** | 3.02KB |
 | `index.css` | 11.23KB | **2.95KB** | 2.52KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
@@ -144,6 +144,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/states.css` | 1.23KB | **0.47KB** | 0.38KB |
 | `js/reveal.js` | 0.88KB | **0.46KB** | 0.38KB |
 | `components/forms-validation.css` | 1.65KB | **0.45KB** | 0.36KB |
+| `components/data-display.css` | 1.33KB | **0.45KB** | 0.36KB |
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
 | `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
 | `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
@@ -193,7 +194,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
 | `components/layout-switcher.css` | 0.27KB | **0.19KB** | 0.15KB |
 | `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
-| `components/prose.css` | 0.30KB | **0.15KB** | 0.13KB |
+| `components/prose.css` | 0.32KB | **0.17KB** | 0.13KB |
 | `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
 <!-- SIZES:END -->
 

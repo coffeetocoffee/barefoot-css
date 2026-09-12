@@ -13,6 +13,7 @@
    comes from the base and component layers; prose only adds rhythm. */
 @layer components {
   .bf-prose {
+    max-inline-size: 65ch;
     color: var(--bf-text);
   }
 

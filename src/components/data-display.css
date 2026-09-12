@@ -1,0 +1,98 @@
+/* Barefoot — dashboard data display (v6.6).
+   Opt-in primitives for the two shapes that recur in dashboard screens:
+   a key/value list and a single prominent statistic. Native <dl> remains
+   the semantic base; these classes only add visual structure.
+
+   <dl class="bf-key-value">
+     <div><dt>Deploys</dt><dd>24</dd></div>
+   </dl>
+   <article class="bf-stat">
+     <p class="bf-stat-label">Active users</p>
+     <strong class="bf-stat-value">1,248</strong>
+   </article> */
+@layer components {
+  .bf-key-value {
+    display: grid;
+    gap: var(--bf-border-width);
+    margin: 0;
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    overflow: hidden;
+  }
+
+  .bf-key-value > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--bf-space-4);
+    padding: var(--bf-space-3) var(--bf-space-4);
+    background: var(--bf-surface);
+  }
+
+  .bf-key-value > div + div {
+    border-block-start: var(--bf-border-width) solid var(--bf-border);
+  }
+
+  .bf-key-value dt {
+    color: var(--bf-muted);
+    font-weight: var(--bf-font-weight-medium);
+  }
+
+  .bf-key-value dd {
+    margin: 0;
+    color: var(--bf-text);
+    text-align: end;
+  }
+
+  .bf-stat {
+    display: grid;
+    gap: var(--bf-space-2);
+    padding: var(--bf-space-4);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    background: var(--bf-surface);
+  }
+
+  .bf-stat-label,
+  .bf-stat-value {
+    margin: 0;
+  }
+
+  .bf-stat-label {
+    color: var(--bf-muted);
+    font-size: var(--bf-type-sm);
+  }
+
+  .bf-stat-value {
+    color: var(--bf-text);
+    font-size: var(--bf-type-xl);
+    line-height: 1.1;
+  }
+
+  .bf-stat[data-trend="up"] .bf-stat-value {
+    color: var(--bf-success);
+  }
+
+  .bf-stat[data-trend="down"] .bf-stat-value {
+    color: var(--bf-danger);
+  }
+
+  @media (width <= 30rem) {
+    .bf-key-value > div {
+      grid-template-columns: 1fr;
+      gap: var(--bf-space-1);
+    }
+
+    .bf-key-value dd {
+      text-align: start;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .bf-stat[data-trend="up"] .bf-stat-value,
+    .bf-stat[data-trend="down"] .bf-stat-value {
+      color: CanvasText;
+      text-decoration: underline;
+      text-decoration-style: dashed;
+    }
+  }
+}

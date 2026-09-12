@@ -4,6 +4,21 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.6.0] — 2026-09-12
+
+### Added
+
+- **Data-display primitives.** New opt-in `components/data-display.css`
+  provides semantic `.bf-key-value` `<dl>` pairs and `.bf-stat` metric blocks,
+  including responsive layout, trend styling, and forced-colors support.
+- **Recipes and migration guidance.** New `docs/recipes.md` covers sidebar +
+  table + filter bar, settings forms with save states, empty dashboards,
+  primitive selection, and on-ramps from Pico, Bootstrap, and Tailwind.
+- **RTL guidance and coverage.** Documented logical-property behavior,
+  preserved DOM reading order, and added an RTL test for data-display edges.
+- **Readable prose measure.** `.bf-prose` now caps long-form content at
+  `65ch`, matching the documented reading measure.
+
 ## [6.5.0] — 2026-09-12
 
 ### Added
