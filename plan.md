@@ -1,8 +1,8 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-11 — v6.3.0 "Paint & Paper" built & verified
-(validation groups, sticky tables, print layer + proofs); v6.2.0
-shipped, v6.1.0 "Barefoot Verify" shipped (tag pushed)_
+_Last updated: 2026-09-12 — v6.5.0 "States & Real Validation" built & verified
+(state patterns, validation summaries, Verify contracts); v6.4.0
+"Rhythm & Motion" shipped, v6.3.0 "Paint & Paper" shipped_
 
 ## Snapshot
 
@@ -44,8 +44,11 @@ shipped, v6.1.0 "Barefoot Verify" shipped (tag pushed)_
   proofs on `demo/paint-paper.html` (own page — the conformance
   demo's visual baselines stay untouched). Full matrix below, then
   commit + tag + push per RELEASE.md.
-- **History:** milestones 0.1 → 6.2.0 shipped; 6.3.0 built & verified
-  (tag pending).
+- **Shipped:** **v6.4.0 — Rhythm & Motion** (2026-09-12) and **v6.5.0 —
+  States & Real Validation** (2026-09-12). v6.5 adds opt-in state patterns,
+  validation-summary guidance, and Verify contracts for live-region and
+  focus-target wiring.
+- **History:** milestones 0.1 → 6.5.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -194,7 +197,7 @@ and `.bf-*` utilities.
   (pins + mask fade, covered by `sticky-scroll-focusable`) — proven on
   `demo/paint-paper.html`, pinned by the v6.3 suites. Tag `v6.3.0`
   per RELEASE.md; `release.yml` publishes from the tag.
-- **v6.4.0 (built & verified 2026-09-12; tag = maintainer action) — "Rhythm & Motion":**
+- **v6.4.0 — "Rhythm & Motion" shipped 2026-09-12:**
   container-aware rhythm (`.bf-rhythm`, extends `.bf-flow` with gap +
   line-height scaling at `--bf-adaptive-*` thresholds), staggered entry
   animation (`.bf-stagger`, `calc(var(--bf-stagger-index) *
@@ -204,6 +207,14 @@ and `.bf-*` utilities.
   and `demo/rhythm-motion.html` proofs. Opt-in per file, never in frozen
   `full.css`. Full matrix green; `npm run check` passes. Tag `v6.4.0`
   per RELEASE.md; `release.yml` publishes from the tag.
+- **v6.5.0 — "States & Real Validation" shipped 2026-09-12:** opt-in
+  `components/states.css` provides loading, empty, and error state surfaces
+  plus `.bf-error-summary`, with reduced-motion and forced-colors handling.
+  `docs/states.md` documents live-region semantics, `aria-busy`, validation
+  summaries, and the focus-first-error seam. Verify adds
+  `state-live-contract` and `validation-summary-contract`, and extends
+  `describedby-wired` to `.bf-error-text`. `release.yml` publishes from the
+  tag.
 - **vNext roadmap (drafted 2026-09-11):** v6.3 → v6.8, three phases ×
   two themed releases — quick wins (validation paint, print, sticky
   tables, rhythm, stagger), maturity (states pattern, validation a11y,
@@ -250,8 +261,8 @@ and `.bf-*` utilities.
 
 ### Phase 2 — Maturity (patterns + Verify contracts)
 
-**v6.5 — "States & Real Validation"** (make "accessible by default"
-auditable)
+**v6.5 — "States & Real Validation"** ✅ (built, verified, and shipped
+2026-09-12; make "accessible by default" auditable)
 
 - **Empty/loading/error states as a pattern** (highest leverage):
   documented composition with `role="status"`, `aria-busy`, live-region
