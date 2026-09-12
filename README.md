@@ -110,7 +110,7 @@ Small, visible, export-credible — still zero JavaScript:
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 55.98KB | **10.43KB** | 9.11KB |
-| `js/verify-contracts.js` | 8.29KB | **3.08KB** | 2.62KB |
+| `js/verify-contracts.js` | 10.37KB | **3.53KB** | 3.02KB |
 | `index.css` | 11.23KB | **2.95KB** | 2.52KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
@@ -141,6 +141,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
 | `components/accordion.css` | 1.44KB | **0.49KB** | 0.38KB |
 | `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
+| `components/states.css` | 1.23KB | **0.47KB** | 0.38KB |
 | `js/reveal.js` | 0.88KB | **0.46KB** | 0.38KB |
 | `components/forms-validation.css` | 1.65KB | **0.45KB** | 0.36KB |
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |

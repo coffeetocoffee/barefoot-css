@@ -177,6 +177,24 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ],
       fixed: `<nav data-nav="header" aria-label="N"><button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="menu">Menu</button><ul id="menu"><li><a href="#">Home</a></li></ul></nav>`,
     },
+    {
+      id: "state-live-contract",
+      broken: [
+        `<section class="bf-state" data-state="loading">Loading…</section>`,
+        `<section class="bf-state" data-state="error" role="status">Failed.</section>`,
+        `<section class="bf-state" data-state="empty">Nothing here.</section>`,
+      ],
+      fixed: `<section class="bf-state" data-state="loading" role="status" aria-busy="true">Loading…</section><section class="bf-state" data-state="empty" role="status">Nothing here.</section><section class="bf-state" data-state="error" role="alert">Failed.</section>`,
+    },
+    {
+      id: "validation-summary-contract",
+      broken: [
+        `<form><div class="bf-error-summary">Fix it.</div><input required></form>`,
+        `<form><div class="bf-error-summary" role="alert">Fix it.</div><input required></form>`,
+        `<div class="bf-error-summary" role="alert" tabindex="-1">Fix it.</div>`,
+      ],
+      fixed: `<form><div class="bf-error-summary" role="alert" tabindex="-1">Fix it.</div><input required></form>`,
+    },
   ];
 
   for (const c of CASES) {

@@ -194,6 +194,23 @@ test.describe("stackable tables", () => {
   });
 });
 
+test.describe("v6.5 states", () => {
+  test("opt-in states layer presents loading, empty, error, and summary surfaces", async ({ page }) => {
+    await gotoDemo(page);
+    await page.setContent(`
+      <section class="bf-state" data-state="loading" role="status" aria-busy="true">Loading</section>
+      <section class="bf-state" data-state="empty" role="status"><h2>Empty</h2></section>
+      <section class="bf-state" data-state="error" role="alert">Error</section>
+      <form><div class="bf-error-summary" role="alert" tabindex="-1">Fix it</div></form>
+    `);
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/states.css") });
+    await expect(page.locator('[data-state="loading"]')).toHaveCSS("display", "grid");
+    await expect(page.locator('[data-state="empty"]')).toHaveCSS("border-style", "dashed");
+    await expect(page.locator('[data-state="error"]')).toHaveCSS("border-color", /rgb/);
+    await expect(page.locator(".bf-error-summary")).toHaveAttribute("tabindex", "-1");
+  });
+});
+
 test.describe("anchored popovers (anchor positioning)", () => {
   test("menu popover pins below its own trigger (not the other popover's)", async ({ page }) => {
     await gotoDemo(page);

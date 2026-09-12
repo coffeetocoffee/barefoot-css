@@ -133,7 +133,7 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   readers already announce the `required` attribute.
 - **Form-level invalid signal** — `form:has(:user-invalid)` draws a
   subtle ring around the whole form once any touched field is invalid.
-  Pair each field with `.bf-field-error` text wired up via
+  Pair each field with `.bf-field-error` or `.bf-error-text` wired up via
   `aria-describedby`.
 - **Validation groups** (v6.3) — wrap a label, a control, and its
   message in `.bf-form-group` (`components/forms-validation.css`):
@@ -141,7 +141,14 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   `.bf-error-text` is revealed by the same `:has()`, with an
   `@starting-style` entrance. `aria-invalid="true"` / `"false"`
   mirrors the state for script-driven forms. Wire controls with
-  `aria-describedby` (full validation auditing lands in v6.5).
+  `aria-describedby` (the full validation contract is audited by Verify in
+  v6.5).
+- **States & real validation** (v6.5) — import `components/states.css` for
+  `.bf-state[data-state="loading|empty|error"]` and `.bf-error-summary`.
+  Loading/empty states use `role="status"`; errors use `role="alert"`.
+  Error summaries use `tabindex="-1"` so opt-in submit code can focus them;
+  Verify audits the live-region, `aria-busy`, focus, and form-ownership
+  contracts. CSS never moves focus or invents ARIA.
 - **Field-level states** — `:user-invalid` / `:user-valid` fire only
   *after* a control is touched (nothing flashes on page load): invalid
   fields get the danger border, valid fields get the success border.

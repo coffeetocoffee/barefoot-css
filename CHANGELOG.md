@@ -4,6 +4,23 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.5.0] — 2026-09-12
+
+### Added
+
+- **States & real validation.** New opt-in `components/states.css` provides
+  `.bf-state` loading, empty, and error surfaces plus `.bf-error-summary`,
+  with reduced-motion and forced-colors handling. `docs/states.md` documents
+  the live-region composition, `aria-busy`, validation summaries, and the
+  focus-first-error seam.
+- **Validation Verify contracts.** New `state-live-contract` and
+  `validation-summary-contract` rules audit live-region semantics, loading
+  state busy status, focusable error summaries, and form ownership. The
+  existing `describedby-wired` rule now covers both `.bf-field-error` and
+  `.bf-error-text`.
+- **State documentation and tests.** The component/API/Verify docs and
+  Chromium CSS and Verify suites now cover the v6.5 patterns and contracts.
+
 ## [6.3.0] — 2026-09-11
 
 ### Added

@@ -57,9 +57,11 @@ that quote drifts. Seed rules:
 | `popover-target-exists` | `popovertarget` resolves to a live `[popover]` id | 6.1 |
 | `sticky-scroll-focusable` | sticky-table scroll wrapper has `tabindex="0"` + an accessible name (WCAG 2.1.1) | 6.1 |
 | `skip-link-first` | `.bf-skip-link` is the first element in `<body>` and its `href` resolves | 6.1 |
-| `describedby-wired` | every `.bf-field-error` is referenced by some control's `aria-describedby` | 6.1 |
+| `describedby-wired` | every `.bf-field-error` or `.bf-error-text` is referenced by some control's `aria-describedby` | 6.1 |
 | `module-pairing` | dismiss/chips/toast controls whose opt-in JS module isn't loaded | 6.1 |
 | `nav-complete-contract` | hamburger toggle points at an id'd direct `<ul>` of its nav | 6.1 |
+| `state-live-contract` | loading/empty/error state has live-region semantics and loading has `aria-busy` | 6.5 |
+| `validation-summary-contract` | error summary is assertive, focusable, and owned by a form | 6.5 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -152,7 +154,7 @@ before it takes the first Tab stop) and its `href` must resolve.
 
 ### `describedby-wired`
 
-Every `.bf-field-error` must be referenced by some control's
+Every `.bf-field-error` or `.bf-error-text` must be referenced by some control's
 `aria-describedby` — an unwired error is never announced with its field.
 
 ```html
@@ -208,6 +210,37 @@ an `id`. An incomplete contract is never armed for collapse.
           aria-expanded="false" aria-controls="site-menu">Menu</button>
   <ul id="site-menu">…</ul>
 </nav>
+```
+
+### `state-live-contract`
+
+Loading and empty states use `role="status"`; error states use `role="alert"`.
+Loading regions also carry `aria-busy="true"` while work is pending.
+
+```html
+<!-- ✗ broken: no live semantics and no busy state -->
+<section class="bf-state" data-state="loading">Loading…</section>
+
+<!-- ✓ fixed -->
+<section class="bf-state" data-state="loading" role="status" aria-busy="true">
+  Loading…
+</section>
+<section class="bf-state" data-state="error" role="alert">Failed.</section>
+```
+
+### `validation-summary-contract`
+
+An error summary uses `role="alert"` and `tabindex="-1"` so focus can land on it before the first invalid field.
+
+```html
+<!-- ✗ broken: not assertive and not a focus target -->
+<form><div class="bf-error-summary">Fix it.</div><input required></form>
+
+<!-- ✓ fixed -->
+<form>
+  <div class="bf-error-summary" role="alert" tabindex="-1">Fix it.</div>
+  <input required>
+</form>
 ```
 
 ## CI contract-packs

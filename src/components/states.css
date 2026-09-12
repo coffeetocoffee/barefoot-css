@@ -1,0 +1,85 @@
+/* Barefoot — async and empty states (v6.5).
+   Opt-in composition for content that is loading, empty, or unavailable.
+   The author supplies the live-region semantics; CSS never announces or
+   hides content on its own.
+
+   <section class="bf-state" data-state="loading" role="status"
+            aria-busy="true">Loading projects…</section>
+   <section class="bf-state" data-state="empty" role="status">…</section>
+   <section class="bf-state" data-state="error" role="alert">…</section>
+
+   Error summaries use .bf-error-summary and tabindex="-1" so an async
+   form can move focus to the summary before the first invalid control. */
+@layer components {
+  .bf-state {
+    display: grid;
+    gap: var(--bf-space-2);
+    padding: var(--bf-space-5);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    background: var(--bf-surface);
+  }
+
+  .bf-state > :first-child {
+    margin-block-start: 0;
+  }
+
+  .bf-state > :last-child {
+    margin-block-end: 0;
+  }
+
+  .bf-state[data-state="empty"] {
+    justify-items: center;
+    text-align: center;
+    border-style: dashed;
+    color: var(--bf-muted);
+  }
+
+  .bf-state[data-state="empty"] :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--bf-text);
+  }
+
+  .bf-state[data-state="loading"] {
+    color: var(--bf-muted);
+  }
+
+  .bf-state[data-state="loading"]::before {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--bf-border);
+    border-block-start-color: var(--bf-primary);
+    border-radius: var(--bf-radius-full);
+    animation: bf-state-spin 0.8s linear infinite;
+    content: "";
+  }
+
+  .bf-state[data-state="error"],
+  .bf-error-summary {
+    border-color: var(--bf-danger);
+    background: var(--bf-danger-subtle);
+  }
+
+  .bf-error-summary {
+    padding: var(--bf-space-3);
+    border: var(--bf-border-width) solid var(--bf-danger);
+    border-radius: var(--bf-radius);
+    color: var(--bf-text);
+  }
+
+  @keyframes bf-state-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bf-state[data-state="loading"]::before {
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .bf-state[data-state="error"],
+    .bf-error-summary {
+      border-style: dashed;
+    }
+  }
+}

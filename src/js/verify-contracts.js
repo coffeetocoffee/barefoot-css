@@ -137,7 +137,7 @@ export const VERIFY_RULES = [
     fix: 'wire the field error to its control with aria-describedby="<error-id>" (docs/components.md, Forms)',
     docs: "docs/components.md",
     quote: [
-      "Pair each field with `.bf-field-error` text wired up via `aria-describedby`.",
+      "Pair each field with `.bf-field-error` or `.bf-error-text` wired up via `aria-describedby`.",
     ],
   },
 
@@ -192,6 +192,57 @@ export const VERIFY_RULES = [
     docs: "docs/components.md",
     quote: [
       "A header nav without a complete contract (toggle + id'd list) is never armed for collapse.",
+    ],
+  },
+
+  {
+    id: "state-live-contract",
+    select: ".bf-state[data-state]",
+    check(el) {
+      const state = el.getAttribute("data-state");
+      const role = el.getAttribute("role");
+      const live = el.getAttribute("aria-live");
+      if (state === "loading" && el.getAttribute("aria-busy") !== "true") {
+        return 'a loading state must carry aria-busy="true" while its region is pending';
+      }
+      if (state === "error" && role !== "alert" && live !== "assertive") {
+        return 'an error state must use role="alert" or aria-live="assertive"';
+      }
+      if (state !== "error" && role !== "status" && live !== "polite") {
+        return 'a non-error state must use role="status" or aria-live="polite"';
+      }
+      return null;
+    },
+    fix: 'give the state an appropriate live-region contract: loading/empty use role="status" and error uses role="alert" (docs/states.md)',
+    docs: "docs/states.md",
+    quote: [
+      "Loading and empty states use `role=\"status\"`; error states use `role=\"alert\"`.",
+    ],
+  },
+
+  {
+    id: "validation-summary-contract",
+    select: ".bf-error-summary",
+    check(el, ctx) {
+      const role = el.getAttribute("role");
+      const live = el.getAttribute("aria-live");
+      if (role !== "alert" && live !== "assertive") {
+        return 'an error summary must use role="alert" or aria-live="assertive"';
+      }
+      if (el.getAttribute("tabindex") !== "-1") {
+        return 'an error summary must use tabindex="-1" so focus can land on it before the first invalid field';
+      }
+      const form = el.closest("form");
+      if (!form) return "an error summary must be inside the form it describes";
+      if (!form.querySelector("input, select, textarea")) {
+        return "an error summary must describe a form with at least one control";
+      }
+      return null;
+    },
+    fix: 'place the summary inside its form with role="alert" and tabindex="-1" (docs/states.md)',
+    docs: "docs/states.md",
+    quote: [
+      "An error summary uses `role=\"alert\"` and `tabindex=\"-1\"` so focus can land on it before the first invalid field.",
     ],
   },
 ];
