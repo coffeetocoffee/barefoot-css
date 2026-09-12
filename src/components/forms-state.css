@@ -1,0 +1,32 @@
+/* Barefoot — declarative form states (v6.7).
+   The author owns the state attribute; this layer only maps it to visible
+   affordances. Without the attribute, native constraint validation remains
+   unchanged. */
+@layer components {
+  form[data-state="invalid"] {
+    border-inline-start: 3px solid var(--bf-danger);
+    padding-inline-start: var(--bf-space-3);
+  }
+
+  form[data-state="invalid"] :where(input, select, textarea):invalid {
+    border-color: var(--bf-danger);
+  }
+
+  form[data-state="invalid"] .bf-error-summary {
+    display: block;
+  }
+
+  form[data-state="loading"] {
+    cursor: progress;
+  }
+
+  form[data-state="loading"] :where(button, input, select, textarea) {
+    pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    form[data-state="invalid"] {
+      border-inline-start-style: dashed;
+    }
+  }
+}

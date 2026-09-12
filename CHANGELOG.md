@@ -4,6 +4,24 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.7.0] — 2026-09-12
+
+### Added
+
+- **Combined Architecture & Global release.** v6.7 and v6.8 are delivered as
+  one opt-in scope without changing `index.css` or frozen `full.css`.
+- **Declarative form states.** `components/forms-state.css` maps explicit
+  `data-state="invalid|loading"` form states to visual affordances while
+  leaving validity, focus, and live-region semantics with the application.
+- **Usage audits.** Verify now catches non-native button roles and broken
+  page structure with traceable `native-button-contract` and
+  `page-structure-contract` rules.
+- **Script-aware typography.** `components/script-type.css` and new tokens
+  provide `:lang()` metrics for CJK and Arabic-family scripts.
+- **Global navigation guidance.** `docs/architecture.md` documents the
+  existing cross-document View Transition layer and safe, omission-based
+  Speculation Rules usage.
+
 ## [6.6.0] — 2026-09-12
 
 ### Added

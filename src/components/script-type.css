@@ -1,0 +1,20 @@
+/* Barefoot — script-aware typography (v6.7/v6.8).
+   Opt in when a document serves multilingual content. :lang() keeps the
+   adjustment semantic and lets nested passages mirror their own script. */
+@layer components {
+  :lang(ja),
+  :lang(ko),
+  :lang(zh) {
+    font-family: var(--bf-font-cjk);
+    line-height: var(--bf-line-height-cjk);
+  }
+
+  :lang(ar),
+  :lang(he),
+  :lang(fa),
+  :lang(ur) {
+    font-family: var(--bf-font-arabic);
+    line-height: var(--bf-line-height-arabic);
+    letter-spacing: normal;
+  }
+}

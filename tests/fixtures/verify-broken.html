@@ -16,6 +16,7 @@
 </head>
 <body>
   <main id="main">
+    <h1>Broken fixture</h1>
     <!-- popover-target-exists (x2): one dead id, one non-popover target -->
     <button type="button" popovertarget="ghost">Menu 1</button>
     <button type="button" popovertarget="plain">Menu 2</button>
@@ -50,6 +51,8 @@
       <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="menu">Menu</button>
       <ul id="real-menu"><li><a href="#">Home</a></li></ul>
     </nav>
+    <div role="button">Not a native button</div>
+    <main><p>Second main landmark</p></main>
   </main>
 
   <!-- skip-link-first: present but NOT the first element in <body> -->

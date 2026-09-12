@@ -243,6 +243,35 @@ An error summary uses `role="alert"` and `tabindex="-1"` so focus can land on it
 </form>
 ```
 
+### `native-button-contract`
+
+Verify audits only framework-owned semantic shape, not generic HTML. It warns
+when a `div[role="button"]` is used instead of a native button or when a page
+has more than one `main` landmark.
+
+```html
+<!-- ✗ broken: a div does not get native button keyboard behavior -->
+<div role="button">Save</div>
+
+<!-- ✓ fixed -->
+<button type="button">Save</button>
+```
+
+### `page-structure-contract`
+
+Keep one `<main>` landmark per page. Verify reports a duplicate main when a
+page surface is present; heading conformance remains the responsibility of
+axe and the application.
+
+```html
+<!-- ✗ broken: two page landmarks -->
+<main><h1>One</h1></main>
+<main><h1>Two</h1></main>
+
+<!-- ✓ fixed -->
+<main><h1>One</h1></main>
+```
+
 ## CI contract-packs
 
 The same rules, pinned in your own Playwright suite — no checker on the

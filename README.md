@@ -109,9 +109,9 @@ Small, visible, export-credible — still zero JavaScript:
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 56.00KB | **10.44KB** | 9.12KB |
-| `js/verify-contracts.js` | 10.37KB | **3.53KB** | 3.02KB |
-| `index.css` | 11.23KB | **2.95KB** | 2.52KB |
+| `full.css` | 56.21KB | **10.54KB** | 9.21KB |
+| `js/verify-contracts.js` | 11.51KB | **3.84KB** | 3.27KB |
+| `index.css` | 11.45KB | **3.04KB** | 2.60KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
@@ -181,6 +181,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
+| `components/forms-state.css` | 0.48KB | **0.25KB** | 0.17KB |
 | `themes/coastal.css` | 0.44KB | **0.24KB** | 0.20KB |
 | `themes/custom.css` | 0.45KB | **0.23KB** | 0.19KB |
 | `components/code.css` | 0.40KB | **0.22KB** | 0.16KB |
@@ -195,6 +196,7 @@ Small, visible, export-credible — still zero JavaScript:
 | `components/layout-switcher.css` | 0.27KB | **0.19KB** | 0.15KB |
 | `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
 | `components/prose.css` | 0.32KB | **0.17KB** | 0.13KB |
+| `components/script-type.css` | 0.25KB | **0.14KB** | 0.10KB |
 | `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
 <!-- SIZES:END -->
 

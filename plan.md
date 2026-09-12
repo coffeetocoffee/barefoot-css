@@ -1,8 +1,8 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-12 — v6.6.0 "Primitives, Patterns & On-Ramp" built &
-verified (data-display primitives, recipes, migration guidance, RTL); v6.5.0
-"States & Real Validation" shipped_
+_Last updated: 2026-09-12 — v6.7.0 "Architecture & Global" built &
+verified (declarative form states, usage audits, script-aware type, global
+navigation guidance); v6.6.0 "Primitives, Patterns & On-Ramp" shipped_
 
 ## Snapshot
 
@@ -51,7 +51,12 @@ verified (data-display primitives, recipes, migration guidance, RTL); v6.5.0
 - **Shipped:** **v6.6.0 — Primitives, Patterns & On-Ramp** (2026-09-12).
   v6.6 adds opt-in key/value and stat primitives, recipe and migration
   guidance, the 65ch prose measure, and RTL documentation/tests.
-- **History:** milestones 0.1 → 6.6.0 shipped.
+- **Shipped:** **v6.7.0 — Architecture & Global** (2026-09-12). v6.7 and
+  v6.8 ship combined: opt-in `forms-state.css`, Verify `native-button` and
+  `page-structure` usage audits, opt-in `script-type.css` with CJK and
+  Arabic-family tokens, and global navigation guidance in
+  `docs/architecture.md`.
+- **History:** milestones 0.1 → 6.7.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -224,6 +229,14 @@ and `.bf-*` utilities.
   are consolidated in `docs/recipes.md` with sidebar/table, settings, empty
   dashboard, and Pico/Bootstrap/Tailwind on-ramps. RTL is documented and
   tested. `release.yml` publishes from the tag.
+- **v6.7.0 — "Architecture & Global" shipped 2026-09-12:** v6.7 and
+  v6.8 are combined into one opt-in release. `forms-state.css` maps explicit
+  `data-state="invalid|loading"` form states without mutating semantics;
+  `script-type.css` provides `:lang()` metrics for CJK and Arabic-family
+  scripts; Verify audits native-button and page-structure usage; and
+  `docs/architecture.md` documents cross-document View Transitions plus safe,
+  omission-based Speculation Rules. `full.css` and `index.css` remain frozen.
+  `release.yml` publishes from the tag.
 - **vNext roadmap (drafted 2026-09-11):** v6.3 → v6.8, three phases ×
   two themed releases — quick wins (validation paint, print, sticky
   tables, rhythm, stagger), maturity (states pattern, validation a11y,
@@ -298,27 +311,27 @@ and `.bf-*` utilities.
 
 ### Phase 3 — Vision (architecture & platform bets)
 
-**v6.7 — "Architecture & Audit"** (declarative + self-aware)
+**v6.7 — "Architecture & Audit"** ✅ (built, verified, and shipped
+2026-09-12 as part of combined v6.7.0; declarative + self-aware)
 
 - **Declarative form architecture:** `data-state="loading|invalid"` +
-  `:has()` state-mapping for wizards, async validation loops, dependent
-  fields — extends v6.3/v6.5 validation into complex flows without a
-  state store.
-- **Real data grid, gracefully:** column resize/reorder/pagination
-  patterns that degrade to the card-stack on narrow containers — no
-  50KB grid library.
+  `:has()` state-mapping — extends v6.3/v6.5 validation into complex flows
+  without a state store. Shipped as opt-in `forms-state.css`.
+- **Real data grid, gracefully:** deferred — not in v6.7.0 scope.
 - **Verify → usage audit:** warn when markup drifts from the
-  framework's intended semantic shape (`<div role="button">`, missing
-  `<h1>`, landmark drift). Still never rebuilds axe.
+  framework's intended semantic shape (non-native `role="button"`,
+  duplicate `<main>` landmarks). Still never rebuilds axe.
 
-**v6.8 — "Global & Seamless"** (long-range platform)
+**v6.8 — "Global & Seamless"** ✅ (built, verified, and shipped
+2026-09-12 as part of combined v6.7.0; long-range platform)
 
 - **Cross-document View Transitions + Speculation Rules:** persistent
   header/modal/sidebar morph across MPA navigations, no JS router.
-  Builds on the existing cross-doc VT work (currently engine-gated).
-- **Script-aware typography:** `:lang(ja)` / `:lang(ar)` metric,
-  tracking, and line-box tokens in the base layer — a single scale
-  stops breaking in multilingual apps.
+  Shipped as documentation over the existing opt-in cross-doc VT layer
+  plus safe, omission-based Speculation Rules guidance.
+- **Script-aware typography:** `:lang(ja)` / `:lang(ar)` metric
+  and line-box tokens — shipped as opt-in `script-type.css` with CJK
+  and Arabic-family tokens.
 
 ### Roadmap guardrails (every release)
 

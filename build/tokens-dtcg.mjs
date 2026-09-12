@@ -285,7 +285,7 @@ function classify(name, value, tokens, mode) {
     return { type: "fontWeight", value: parseFloat(v) };
   }
 
-  if (name === "--bf-font" || name === "--bf-font-mono") {
+  if (name === "--bf-font" || name === "--bf-font-mono" || name === "--bf-font-cjk" || name === "--bf-font-arabic") {
     return { type: "fontFamily", value: v };
   }
 

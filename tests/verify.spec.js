@@ -49,6 +49,8 @@ const SEED_IDS = [
   "describedby-wired",
   "module-pairing",
   "nav-complete-contract",
+  "native-button-contract",
+  "page-structure-contract",
 ];
 
 test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
@@ -194,6 +196,16 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
         `<div class="bf-error-summary" role="alert" tabindex="-1">Fix it.</div>`,
       ],
       fixed: `<form><div class="bf-error-summary" role="alert" tabindex="-1">Fix it.</div><input required></form>`,
+    },
+    {
+      id: "native-button-contract",
+      broken: [`<div role="button">Save</div>`],
+      fixed: `<button type="button">Save</button>`,
+    },
+    {
+      id: "page-structure-contract",
+      broken: [`<main><h1>One</h1></main><main><h1>Two</h1></main>`],
+      fixed: `<main><h1>One</h1></main>`,
     },
   ];
 

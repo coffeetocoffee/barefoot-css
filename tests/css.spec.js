@@ -2028,6 +2028,32 @@ test.describe("v4.6 navigation transitions (cross-document view transitions)", (
   });
 });
 
+test.describe("v6.7 combined architecture and global surfaces", () => {
+  test("opt-in form state layer maps declared invalid and loading states", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.setContent(`
+      <link rel="stylesheet" href="/dist/index.css">
+      <link rel="stylesheet" href="/dist/components/forms-state.css">
+      <form id="invalid" data-state="invalid"><input required></form>
+      <form id="loading" data-state="loading"><button>Save</button></form>
+    `);
+    await expect(page.locator("#invalid")).toHaveCSS("border-inline-start-style", "solid");
+    await expect(page.locator("#invalid input")).toHaveCSS("border-top-color", /rgb/);
+    await expect(page.locator("#loading")).toHaveCSS("cursor", "progress");
+  });
+
+  test("script-aware layer exposes language-specific metrics", async ({ page }) => {
+    await page.goto("/demo/");
+    await page.setContent(`
+      <link rel="stylesheet" href="/dist/index.css">
+      <link rel="stylesheet" href="/dist/components/script-type.css">
+      <p id="cjk" lang="ja">日本語</p><p id="arabic" lang="ar">العربية</p>
+    `);
+    await expect(page.locator("#cjk")).toHaveCSS("line-height", "28px");
+    await expect(page.locator("#arabic")).toHaveCSS("line-height", "29.6px");
+  });
+});
+
 test.describe("layout primitives (v6.2 — the layout is the breakpoint)", () => {
   // The container, not the viewport, drives the layout. Each primitive is
   // resized by width (setContainerWidth) exactly like the adaptive

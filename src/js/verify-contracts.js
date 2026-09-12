@@ -245,4 +245,34 @@ export const VERIFY_RULES = [
       "An error summary uses `role=\"alert\"` and `tabindex=\"-1\"` so focus can land on it before the first invalid field.",
     ],
   },
+
+  {
+    id: "native-button-contract",
+    select: 'div[role="button"], span[role="button"]',
+    wcag: "4.1.2",
+    check() {
+      return "a role=\"button\" on a div or span cannot provide native keyboard and form behavior";
+    },
+    fix: "use a native <button type=\"button\"> instead of a non-button element with role=\"button\" (docs/architecture.md)",
+    docs: "docs/architecture.md",
+    quote: [
+      "Verify audits only framework-owned semantic shape, not generic HTML.",
+      "It warns when a `div[role=\"button\"]` is used instead of a native button or when a page has more than one `main` landmark.",
+    ],
+  },
+
+  {
+    id: "page-structure-contract",
+    select: "main:has(h1)",
+    check() {
+      const mains = document.querySelectorAll("main").length;
+      if (mains > 1) return `the document has ${mains} main landmarks; keep one main landmark per page`;
+      return null;
+    },
+    fix: "keep one <main> landmark per page (docs/architecture.md)",
+    docs: "docs/architecture.md",
+    quote: [
+      "It warns when a `div[role=\"button\"]` is used instead of a native button or when a page has more than one `main` landmark.",
+    ],
+  },
 ];

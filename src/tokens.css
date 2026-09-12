@@ -15,7 +15,12 @@
       "Helvetica Neue", Arial, sans-serif; /* body font */
     --bf-font-mono: ui-monospace, "SF Mono", "Cascadia Mono",
       "Segoe UI Mono", Menlo, Consolas, monospace; /* code font */
+    --bf-font-cjk: system-ui, "Yu Gothic", "Hiragino Kaku Gothic ProN",
+      "Noto Sans CJK JP", sans-serif; /* CJK script font */
+    --bf-font-arabic: system-ui, "Noto Naskh Arabic", "Amiri", sans-serif; /* Arabic script font */
     --bf-line-height: 1.6; /* body leading */
+    --bf-line-height-cjk: 1.75; /* CJK script leading */
+    --bf-line-height-arabic: 1.85; /* connected-script leading */
 
     /* ---- Font weight (v2.6) ----
        Named steps so a theme can re-map emphasis in one place —
