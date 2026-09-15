@@ -1,0 +1,85 @@
+/* Barefoot — row selection (v7.2, "Data Story").
+   Opt-in: import "barefoot-css/components/table-select.css".
+
+   Row selection for tables and data grids: the app toggles the state,
+   CSS paints it, and the semantics stay native. The selection lives on
+   the rows; a select-all control in the header is optional:
+
+    <div class="bf-grid-shell">
+
+     <table>
+       <thead><tr>
+         <th><input type="checkbox" class="bf-select-all" aria-label="Select all rows"></th>
+         <th>Service</th>
+       </tr></thead>
+       <tbody>
+         <tr aria-selected="false"><td><input type="checkbox" aria-label="Select api"></td><td>api</td></tr>
+       </tbody>
+     </table>
+     <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">…</div>
+   </div>
+
+   - aria-selected on the row is the source of truth; the paint follows it.
+     (aria-multiselectable is not valid on a <table> — it belongs to the
+     grid/listbox/tree roles, and adopting role="grid" would claim arrow-key
+     navigation the platform does not give a table. Row checkboxes carry
+     the "many at once" affordance.)
+   - The select-all checkbox's checked/indeterminate state is JS-owned on
+     purpose: CSS cannot set it truthfully, and a painted check on an
+     unchecked control is a WCAG 4.1.2 lie. Verify's selection-complete
+     audits the wiring: every row states selection, and the select-all
+     control carries an accessible name.
+   - .bf-bulk-bar hides unless its shell has a selected row — pure :has(),
+     no JS, so a server-rendered selection shows its actions immediately.
+     The app owns the announcement (a "N selected" status region); CSS
+     reveals, it never announces. */
+@layer components {
+  /* Selected row: the primary tint. :where() drops the row half of the
+     specificity so the base table's tr:hover always wins — the same
+     precedence trick as data-striped in table.css. */
+  :where(tbody tr[aria-selected="true"]) {
+    background: var(--bf-primary-subtle);
+  }
+
+  /* The selection column stays narrow and centered on its control. */
+  :where(thead, tbody) :where(th, td):has(input[type="checkbox"]) {
+    width: 1%;
+    padding-inline: var(--bf-space-2);
+    text-align: center;
+  }
+
+  /* A row being selected is also its own affordance under forced colors:
+     the system palette erases the tint, so the shape carries it — an
+     inline-start bar, like the states layer's partial rule. */
+  @media (forced-colors: active) {
+    :where(tbody tr[aria-selected="true"]) {
+      border-inline-start: 3px solid ButtonText;
+    }
+  }
+
+  /* Bulk actions bar: hidden until the shell holds a selection. The
+     actions are real buttons; with no selection there is nothing to
+     act on, so the bar is not merely hidden visually — it is display:
+     none and leaves the tab order. */
+  .bf-bulk-bar {
+    display: none;
+    align-items: center;
+    gap: var(--bf-space-3);
+    padding: var(--bf-space-3);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+    background: var(--bf-surface-alt);
+  }
+
+  .bf-grid-shell:has(tbody tr[aria-selected="true"]) .bf-bulk-bar {
+    display: flex;
+  }
+
+  /* The count line inside the bar ("3 selected") is the status the bar
+     exists to carry; the app keeps it truthful. */
+  .bf-bulk-bar .bf-bulk-count {
+    margin-inline-end: auto;
+    font-size: var(--bf-type-sm);
+    color: var(--bf-muted);
+  }
+}

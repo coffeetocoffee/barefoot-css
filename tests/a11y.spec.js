@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -188,6 +188,28 @@ test.describe("states & events proofs (v7.0)", () => {
     // minus the busy signal must stay clean too.
     await page.locator(DEMOS.statesBusyToggle).uncheck();
     await expect(page.locator(DEMOS.statesBusyEmpty)).toHaveCSS("border-style", "dashed");
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+});
+
+test.describe("data story proofs (v7.2)", () => {
+  test("data-story page has no axe violations", async ({ page }) => {
+    await gotoDataStory(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("compact density, a selection, and the empty state stay clean", async ({ page }) => {
+    // The dense + selected + filtered-empty states are the ones that
+    // could break: cramped controls, a nameless bulk bar, a region that
+    // announces nothing.
+    await gotoDataStory(page);
+    await page.getByRole("button", { name: "Compact" }).click();
+    await page.locator(`${DEMOS.dataStoryBody} tr`).first().locator("input").click();
+    await expect(page.locator(DEMOS.dataStoryBulkBar)).toBeVisible();
+    await page.locator(DEMOS.dataStoryFilterInput).fill("no-such-service");
+    await expect(page.locator(DEMOS.dataStoryEmpty)).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
   });

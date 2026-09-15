@@ -146,7 +146,7 @@ All component attributes and their valid values:
 | `data-bf-sort` | `<table>` | (boolean) | 3.3 |
 | `data-segmented` | `<fieldset>` | (boolean) | 3.3 |
 | `data-timeline` | `<ol>` | (boolean) | 3.3 |
-| `data-density` | `<html>` | `compact` | 3.4 |
+| `data-density` | `<html>`, any element | `compact`, `comfortable` — flips the spacing/type scale and the `--bf-density` style-query axis (docs/components.md, Density) | 3.4, 7.2 |
 | `data-layout` | wrapper div | `sidebar` | 4.3 |
 | `data-area` | child of `[data-layout]` | `header`, `nav`, `main`, `aside`, `footer` | 4.3 |
 | `data-collapse` | `[data-layout="sidebar"]` | (boolean) | 4.3 |
@@ -183,6 +183,7 @@ All component attributes and their valid values:
 | `data-bf-stagger` | container for `.bf-stagger` | (boolean) — enables stagger animation on children; set `--bf-stagger-index` on each child | 6.4 |
 | `data-state` | `.bf-state`, `<form>` | `loading`, `refreshing`, `error`, `empty`, `partial`, `full`, `stale`, `fresh`, `optimistic`, `confirmed`, `rolled-back`, `invalid` — single-valued; precedence when several hold is `loading > error > empty > partial > full` (docs/states.md); `invalid` is the declarative form-state value (docs/architecture.md) | 6.5, 6.7, 7.0 |
 | `data-trend` | `.bf-stat` | `up`, `down` — visual trend color; never the sole status cue | 6.6 |
+| `data-sort` | `<th>` | `asc`, `desc` — the declarative mirror of `aria-sort`; paints the sort arrow without the module (docs/components.md, Table) | 7.2 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

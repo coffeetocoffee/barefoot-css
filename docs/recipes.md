@@ -34,6 +34,79 @@ Import `layout-sidebar.css`, `table-sticky.css`, and the form files you use.
 The scroll region contract is intentional: Verify audits its focusability and
 accessible name.
 
+## Filter bar + table + empty state + pagination
+
+The data view, composed: a filter bar, a sortable and selectable table,
+the empty state for a filter that matches nothing, and pagination. The
+app owns the state (the filter, the selection set); CSS paints;
+`js/table-sort.js` sorts; the platform does the rest.
+
+```html
+<div class="bf-grid-shell">
+  <nav aria-label="Filter deployments">
+    <label>Search <input type="search"></label>
+    <label>Status <select><option>All</option><option>Healthy</option></select></label>
+  </nav>
+
+  <div class="bf-table-sticky" role="region" aria-label="Deployments" tabindex="0">
+    <table data-bf-sort data-grid >
+      <caption>Recent deployments</caption>
+      <thead><tr>
+        <th><input type="checkbox" class="bf-select-all" aria-label="Select all"></th>
+        <th><button type="button">Service</button></th>
+        <th><button type="button">Deploys</button></th>
+      </tr></thead>
+      <tbody>
+        <tr aria-selected="false">
+          <td><input type="checkbox" aria-label="Select api"></td>
+          <td>api</td><td>12</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bf-empty-state" role="status" hidden>
+    <span aria-hidden="true">◌</span>
+    <h3>No deployments match</h3>
+    <p>Widen the search to see them again.</p>
+  </div>
+
+  <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+    <span class="bf-bulk-count" role="status">0 selected</span>
+    <button type="button">Restart selected</button>
+  </div>
+
+  <nav data-pagination aria-label="Pages">
+    <a href="?page=1" aria-current="page">1</a>
+    <a href="?page=2">2</a>
+  </nav>
+</div>
+```
+
+Import `table-sticky.css`, `table-select.css`, `data-grid.css`,
+`states.css`, `pagination.css`, and `density.css` if the view is dense.
+The seams, and who owns them:
+
+- **Selection** — toggle `aria-selected` per row and keep the select-all
+  checkbox's `checked`/`indeterminate` truthful in the same handler; the
+  bulk bar appears on its own (`:has()`, zero JS) when a row is selected,
+  and its `.bf-bulk-count` is a `role="status"` span so the count is
+  announced. Verify's `selection-complete` audits the wiring.
+- **Sorting** — `js/table-sort.js` maintains `aria-sort` and reports
+  `bf:sort`; a page that sorted on the server writes `data-sort` instead.
+  Verify's `aria-sort-wired` audits the pair.
+- **Empty** — the empty state is the table's partner, not its
+  replacement: show it only while a filter is live and nothing matches,
+  and focus the filter control (or its "clear" action) when it appears.
+- **Density** — wrap the shell in `data-density="compact"` for a dense
+  dashboard view; the padding and type scale together. (A custom number
+  belongs at `:root`, not on the subtree — see
+  [Density](components.md#density-v72).)
+- **Pagination** — `aria-current="page"` on the current item, which is
+  not a link.
+
+Proven on `demo/data-story.html`.
+
 ## Settings form + save state
 
 Keep the form native and let the v6.5 state contract describe asynchronous

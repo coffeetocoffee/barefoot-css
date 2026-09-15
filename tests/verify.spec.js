@@ -27,7 +27,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { gotoDemo, mountFixture } from "./helpers.js";
+import { gotoDemo, gotoDataStory, mountFixture } from "./helpers.js";
 // The suite consumes the pack, not src/ directly — one registry, two
 // formats, and the pack re-exports the registry it shares with the
 // engine (ADR-0015).
@@ -225,6 +225,30 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ],
       fixed: `<div data-bf-tabs><div role="tablist"><button id="t1" role="tab" aria-controls="p1">One</button></div><div id="p1" role="tabpanel" aria-labelledby="t1">Panel</div></div>`,
     },
+    {
+      id: "aria-sort-wired",
+      broken: [
+        // Two columns claim the sort at once — sorting is single-column.
+        `<table data-bf-sort><thead><tr><th aria-sort="ascending">A</th><th aria-sort="descending" data-sort="asc">B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>`,
+        // "asc" is not an ARIA value.
+        `<table data-bf-sort><thead><tr><th aria-sort="asc"><button type="button">A</button></th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>`,
+        // The arrow with no control behind it — decoration, not a sort.
+        `<table data-bf-sort><thead><tr><th aria-sort="ascending">A</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>`,
+        // The declarative mirror disagrees with the semantic value.
+        `<table data-bf-sort><thead><tr><th aria-sort="descending" data-sort="asc"><button type="button">A</button></th></tr></thead><tbody><tr><td>1</td></tr></tbody></table>`,
+      ],
+      fixed: `<table data-bf-sort><thead><tr><th aria-sort="ascending" data-sort="asc"><button type="button">A</button></th><th><button type="button">B</button></th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>`,
+    },
+    {
+      id: "selection-complete",
+      broken: [
+        // A select-all checkbox with no accessible name.
+        `<table><thead><tr><th><input type="checkbox"></th><th>A</th></tr></thead><tbody><tr aria-selected="false"><td>1</td></tr></tbody></table>`,
+        // A select-all grid with an unmarked row.
+        `<table><thead><tr><th><input type="checkbox" aria-label="Select all rows"></th><th>A</th></tr></thead><tbody><tr aria-selected="true"><td>1</td></tr><tr><td>2</td></tr></tbody></table>`,
+      ],
+      fixed: `<table><thead><tr><th><input type="checkbox" aria-label="Select all rows"></th><th>A</th></tr></thead><tbody><tr aria-selected="true"><td><input type="checkbox" aria-label="Select a"></td><td>1</td></tr><tr aria-selected="false"><td><input type="checkbox" aria-label="Select b"></td><td>2</td></tr></tbody></table>`,
+    },
   ];
 
   for (const c of CASES) {
@@ -250,6 +274,15 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
 
   test("dogfood: demo/index.html produces zero violations with every module armed", async ({ page }) => {
     await gotoDemo(page);
+    const violations = await runPack(page);
+    expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
+  });
+
+  test("dogfood: the v7.2 composed fixture (demo/data-story.html) is clean with every module armed", async ({ page }) => {
+    // The data-story page is the new rules' proof surface: a sortable
+    // table (aria-sort-wired) and a multi-select grid (selection-complete)
+    // that must hold the contracts the registry states.
+    await gotoDataStory(page);
     const violations = await runPack(page);
     expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
   });
@@ -601,8 +634,10 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // verify.js rides the 2KB default, but the registry's explicit
     // budget must exist — a refactor renaming files would otherwise
     // leave it policed only by the family default with less headroom.
+    // 5120 at v7.0, 6656 at v7.2 (two more quoted rules) — bumps are
+    // deliberate, in review, and pinned here.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(5120);
+    expect(budgets["js/verify-contracts.js"]).toBe(6656);
     expect(budgets["js/barefoot.js"]).toBe(1024);
   });
 });

@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
-Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
@@ -69,6 +69,7 @@ npm install barefoot-css
 | Layout | `.bf-flow`, `.bf-switcher`, `.bf-sidebar` — container-aware primitives. Tight in a sidebar, roomy in a column. → [docs/layout.md](docs/layout.md) |
 | Adaptive | Tables card-stack, forms reflow with a zero-JS error summary, cards flip orientation. Opt-in, never in `full.css`. → [docs/adaptive.md](docs/adaptive.md) |
 | Forms & tables | Validation groups that tint on `:has(:user-invalid)`, sticky headers + leading column with a "more data" fade. → [docs/paint-paper.md](docs/paint-paper.md) |
+| Data story | A density scale (`data-density`, one multiplier for padding and type), server-rendered sort (`data-sort`), and row selection with a zero-JS bulk-actions bar. → [docs/components.md](docs/components.md) |
 | Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
 | Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
 
@@ -84,9 +85,9 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 56.21KB | **10.54KB** | 9.21KB |
-| `js/verify-contracts.js` | 13.46KB | **4.40KB** | 3.76KB |
-| `index.css` | 11.45KB | **3.04KB** | 2.60KB |
+| `full.css` | 56.59KB | **10.59KB** | 9.26KB |
+| `js/verify-contracts.js` | 17.94KB | **5.68KB** | 4.87KB |
+| `index.css` | 11.49KB | **3.05KB** | 2.61KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
@@ -101,12 +102,12 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
+| `components/states.css` | 2.78KB | **0.79KB** | 0.68KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
-| `components/states.css` | 2.73KB | **0.77KB** | 0.67KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
+| `components/table.css` | 2.13KB | **0.69KB** | 0.58KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
 | `js/remove-on-click.js` | 1.25KB | **0.66KB** | 0.54KB |
-| `components/table.css` | 1.80KB | **0.64KB** | 0.54KB |
 | `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
 | `components/buttons.css` | 2.10KB | **0.62KB** | 0.50KB |
@@ -133,6 +134,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/nav-adaptive.css` | 0.75KB | **0.38KB** | 0.29KB |
 | `components/pagination.css` | 0.86KB | **0.38KB** | 0.28KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
+| `components/table-select.css` | 0.69KB | **0.35KB** | 0.27KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
 | `components/layout-stagger.css` | 1.02KB | **0.34KB** | 0.29KB |
@@ -140,6 +142,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/alert.css` | 0.85KB | **0.34KB** | 0.26KB |
 | `components/table-sticky.css` | 0.84KB | **0.34KB** | 0.28KB |
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
+| `components/density.css` | 2.97KB | **0.32KB** | 0.26KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `themes/theming-scope.css` | 1.76KB | **0.32KB** | 0.26KB |
 | `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |

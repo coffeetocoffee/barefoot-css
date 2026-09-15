@@ -9,7 +9,33 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, mountFixture } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoDataStory, mountFixture } from "./helpers.js";
+
+/* Subscribe on document before acting; the bf:* events bubble and report
+   what the module did. Elements in detail are serialized in-page — a DOM
+   node cannot cross the Playwright boundary. Shared by the v7.0 event
+   contract block and the v7.2 composed fixture block. */
+async function armEvents(page, types) {
+  await page.evaluate((types) => {
+    window.__bfEvents = [];
+    const strip = (v) =>
+      v instanceof Element
+        ? { tag: v.tagName.toLowerCase(), text: v.textContent.trim().slice(0, 40) }
+        : v;
+    for (const t of types) {
+      document.addEventListener(t, (e) => {
+        window.__bfEvents.push({
+          type: e.type,
+          detail: Object.fromEntries(
+            Object.entries(e.detail).map(([k, v]) => [k, strip(v)])
+          ),
+        });
+      });
+    }
+  }, types);
+}
+
+const events = (page) => page.evaluate(() => window.__bfEvents);
 
 test.describe("opt-in JS: tabs", () => {
   test("click switches panels and aria-selected", async ({ page }) => {
@@ -678,31 +704,6 @@ test.describe("opt-in JS: theme persistence", () => {
 test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
   const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-  /* Subscribe on document before acting; the events bubble and report
-     what the module did. Elements in detail are serialized in-page —
-     a DOM node cannot cross the Playwright boundary. */
-  async function armEvents(page, types) {
-    await page.evaluate((types) => {
-      window.__bfEvents = [];
-      const strip = (v) =>
-        v instanceof Element
-          ? { tag: v.tagName.toLowerCase(), text: v.textContent.trim().slice(0, 40) }
-          : v;
-      for (const t of types) {
-        document.addEventListener(t, (e) => {
-          window.__bfEvents.push({
-            type: e.type,
-            detail: Object.fromEntries(
-              Object.entries(e.detail).map(([k, v]) => [k, strip(v)])
-            ),
-          });
-        });
-      }
-    }, types);
-  }
-
-  const events = (page) => page.evaluate(() => window.__bfEvents);
-
   test("bf:themechange reports the new theme and the one it replaced", async ({ page }) => {
     await gotoDemo(page);
     await armEvents(page, ["bf:themechange"]);
@@ -828,5 +829,74 @@ test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
         "new CustomEvent"
       );
     }
+  });
+});
+
+
+test.describe("opt-in JS: the composed data fixture (v7.2)", () => {
+  /* demo/data-story.html is the proof page: the app owns selection and
+     filter state, js/table-sort.js sorts, and CSS paints. These pin the
+     composition — the module side of the contract, plus the demo's
+     select-all wiring. */
+  test("sorting the composed table reports bf:sort", async ({ page }) => {
+    await gotoDataStory(page);
+    await armEvents(page, ["bf:sort"]);
+    // The 4th button is "Deploys"; its th.cellIndex is 4 because the
+    // select-all checkbox header counts too.
+    await page.locator(`${DEMOS.dataStoryTable} thead th button`).nth(3).click();
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      { type: "bf:sort", detail: { column: 4, direction: "asc" } },
+    ]);
+    // The module keeps the semantic attribute truthful on the table.
+    await expect(
+      page.locator(`${DEMOS.dataStoryTable} thead th`).nth(4)
+    ).toHaveAttribute("aria-sort", "ascending");
+  });
+
+  test("row selection toggles aria-selected, the count, and the bulk bar", async ({ page }) => {
+    await gotoDataStory(page);
+    const row = page.locator(`${DEMOS.dataStoryBody} tr`).first();
+    const box = row.locator("input[type=checkbox]");
+    const bar = page.locator(DEMOS.dataStoryBulkBar);
+
+    await expect(bar).toHaveCSS("display", "none");
+    await box.click();
+    await expect(row).toHaveAttribute("aria-selected", "true");
+    await expect(bar).toBeVisible();
+    await expect(page.locator(DEMOS.dataStoryCount)).toHaveText("1 selected");
+
+    await box.click();
+    await expect(row).toHaveAttribute("aria-selected", "false");
+    await expect(bar).toHaveCSS("display", "none");
+  });
+
+  test("select-all marks every row and reports indeterminate on partial clears", async ({ page }) => {
+    await gotoDataStory(page);
+    const all = page.locator(DEMOS.dataStorySelectAll);
+    await all.click();
+    await expect(all).toBeChecked();
+    expect(await all.evaluate((el) => el.indeterminate)).toBe(false);
+    await expect(page.locator(DEMOS.dataStoryCount)).toHaveText("6 selected");
+    await expect(
+      page.locator(`${DEMOS.dataStoryBody} tr[aria-selected="true"]`)
+    ).toHaveCount(6);
+
+    // Clear one row: the control becomes indeterminate — the app owns
+    // the checkbox's own state because CSS cannot check it truthfully.
+    await page.locator(`${DEMOS.dataStoryBody} tr`).first().locator("input").click();
+    expect(await all.evaluate((el) => el.indeterminate)).toBe(true);
+    await expect(page.locator(DEMOS.dataStoryCount)).toHaveText("5 selected");
+  });
+
+  test("a filter that matches nothing shows the empty state, and clearing restores the rows", async ({ page }) => {
+    await gotoDataStory(page);
+    const q = page.locator(DEMOS.dataStoryFilterInput);
+    await q.fill("no-such-service");
+    await expect(page.locator(DEMOS.dataStoryEmpty)).toBeVisible();
+    await expect(page.locator(DEMOS.dataStoryBody)).toBeEmpty();
+
+    await page.getByRole("button", { name: "Clear filters" }).click();
+    await expect(page.locator(DEMOS.dataStoryEmpty)).toBeHidden();
+    await expect(page.locator(`${DEMOS.dataStoryBody} tr`)).toHaveCount(6);
   });
 });

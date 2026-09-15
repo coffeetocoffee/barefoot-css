@@ -64,6 +64,8 @@ that quote drifts. Seed rules:
 | `validation-summary-contract` | error summary is assertive, focusable, and owned by a form | 6.5 |
 | `state-conflict` | a `.bf-state` whose `data-state` is not one documented value — a typo, or two states in one attribute | 7.0 |
 | `event-contract` | a tab's `aria-controls` resolves, so the `bf:tabactivate` payload is truthful | 7.0 |
+| `aria-sort-wired` | a sortable table's `aria-sort` is a valid direction, on one column, backed by the sort button; `data-sort` agrees with it (WCAG 4.1.2) | 7.2 |
+| `selection-complete` | a multi-select table with a select-all control names the control and states `aria-selected` on every row (WCAG 4.1.2) | 7.2 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -309,12 +311,82 @@ act on, and the module hides a panel that does not exist.
 
 <!-- ✓ fixed -->
 <div data-bf-tabs>
-  <div role="tablist" aria-label="Sections">
+  <div role="tablist">
     <button id="tab-1" role="tab" aria-controls="panel-1">One</button>
   </div>
   <div id="panel-1" role="tabpanel" aria-labelledby="tab-1">…</div>
 </div>
 ```
+
+### `aria-sort-wired`
+
+Sorting is single-column: `aria-sort` lives on one `<th>` at a time, its only valid values are `ascending` and `descending`, and a sorted column carries the sort button — an arrow without the control is decoration. A server-rendered sort declares the same state with `data-sort="asc"` or `data-sort="desc"` and gets the identical arrow; the two attributes must agree when both are present.
+
+```html
+<!-- ✗ broken: two columns claim the sort, and neither has a control -->
+<table data-bf-sort>
+  <thead><tr>
+    <th aria-sort="ascending">Service</th>
+    <th aria-sort="descending" data-sort="asc">Deploys</th>
+  </tr></thead>
+  <tbody><tr><td>api</td><td>12</td></tr></tbody>
+</table>
+
+<!-- ✗ broken: "asc" is not an ARIA value -->
+<table data-bf-sort>
+  <thead><tr><th aria-sort="asc"><button type="button">Service</button></th></tr></thead>
+  <tbody><tr><td>api</td></tr></tbody>
+</table>
+
+<!-- ✓ fixed: one sorted column, the button behind it, a valid direction -->
+<table data-bf-sort>
+  <thead><tr>
+    <th aria-sort="ascending" data-sort="asc"><button type="button">Service</button></th>
+    <th><button type="button">Deploys</button></th>
+  </tr></thead>
+  <tbody><tr><td>api</td><td>12</td></tr></tbody>
+</table>
+```
+
+A table with no `aria-sort` at all (before its first sort, or without the module) is not a violation — the rule only audits tables that claim an order.
+
+### `selection-complete`
+
+A multi-select table with a select-all control must state `aria-selected` on every row and name the select-all control — a nameless checkbox and a half-marked grid are invisible to assistive technology. The rule matches any table whose rows carry `aria-selected` and stays silent on tables without a select-all control (bring-your-own row selection) and on every table that completes the contract.
+
+```html
+<!-- ✗ broken: the select-all checkbox has no name -->
+<table>
+  <thead><tr><th><input type="checkbox"></th><th>Service</th></tr></thead>
+  <tbody><tr aria-selected="false"><td><input type="checkbox"></td><td>api</td></tr></tbody>
+</table>
+
+<!-- ✗ broken: a select-all grid with an unmarked row -->
+<table>
+  <thead><tr>
+    <th><input type="checkbox" class="bf-select-all" aria-label="Select all rows"></th>
+    <th>Service</th>
+  </tr></thead>
+  <tbody>
+    <tr aria-selected="true"><td><input type="checkbox" checked></td><td>api</td></tr>
+    <tr><td><input type="checkbox"></td><td>web</td></tr>
+  </tbody>
+</table>
+
+<!-- ✓ fixed: named control, selection stated on every row -->
+<table>
+  <thead><tr>
+    <th><input type="checkbox" class="bf-select-all" aria-label="Select all rows"></th>
+    <th>Service</th>
+  </tr></thead>
+  <tbody>
+    <tr aria-selected="true"><td><input type="checkbox" checked aria-label="Select api"></td><td>api</td></tr>
+    <tr aria-selected="false"><td><input type="checkbox" aria-label="Select web"></td><td>web</td></tr>
+  </tbody>
+</table>
+```
+
+The select-all's `checked`/`indeterminate` state is not audited here — it is JS-owned, because CSS cannot check a box truthfully (a painted check on an unchecked control is its own WCAG 4.1.2 lie). Name every row's checkbox too; the row's `aria-selected` is the contract, the checkbox is how a user reaches it.
 
 ## CI contract-packs
 

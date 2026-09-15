@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -286,6 +286,147 @@ test.describe("v7.0 state machine", () => {
     // The panel takes the parent's block size — not a panel floating
     // inside it (the v6 flex column only sized to its content).
     expect(Math.abs(ch - ph), "empty state fills the parent").toBeLessThan(4);
+  });
+});
+
+test.describe("v7.2 data story", () => {
+  const cellPadding = (page, sel) =>
+    page.locator(sel).first().evaluate((el) => getComputedStyle(el).paddingInlineStart);
+
+  test("the density scale tokens default to 1", async ({ page }) => {
+    await gotoDataStory(page);
+    expect(await tokenValue(page, "--bf-space-scale")).toBe("1");
+    expect(await tokenValue(page, "--bf-type-scale")).toBe("1");
+  });
+
+  test("data-density=compact flips the scales and the style-query axis on the subtree", async ({ page }) => {
+    await gotoDataStory(page);
+    const target = page.locator(DEMOS.dataStoryDensityTarget);
+    const cell = `${DEMOS.dataStoryDensityTable} tbody td`;
+
+    const before = await cellPadding(page, cell);
+    await page.getByRole("button", { name: "Compact" }).click();
+    await expect(target).toHaveAttribute("data-density", "compact");
+    // The style-query axis follows the attribute (v5.0 density story).
+    expect(
+      await target.evaluate((el) => getComputedStyle(el).getPropertyValue("--bf-density"))
+    ).toBe("compact");
+    const after = await cellPadding(page, cell);
+    expect(parseFloat(after), "compact padding is tighter than comfortable").toBeLessThan(
+      parseFloat(before)
+    );
+  });
+
+  test("a custom page-wide dial shrinks padding and type", async ({ page }) => {
+    await gotoDataStory(page);
+    const cell = `${DEMOS.dataStoryDensityTable} tbody td`;
+    const heading = "#ds-density-title";
+
+    const beforePad = await cellPadding(page, cell);
+    // The section heading reads --bf-type-xl (base.css), so it tracks
+    // the type dial — the caption in the probe table is a literal and
+    // does not.
+    const beforeType = await page
+      .locator(heading)
+      .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+    await page.getByRole("button", { name: "Page 0.85" }).click();
+    // A page-wide custom step is the dial at :root — the tokens the
+    // panel reads follow it.
+    expect(
+      await page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue("--bf-space-scale")
+      )
+    ).toBe("0.85");
+    expect(await cellPadding(page, cell), "the spacing tokens follow the dial").not.toBe(
+      beforePad
+    );
+    expect(parseFloat(await cellPadding(page, cell))).toBeLessThan(parseFloat(beforePad));
+    expect(
+      await page.locator(heading).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+      "--bf-type-scale moves type with the space scale"
+    ).toBeLessThan(beforeType);
+  });
+
+  test("data-density=comfortable restores the default inside a compact subtree", async ({ page }) => {
+    await gotoDataStory(page);
+    const target = page.locator(DEMOS.dataStoryDensityTarget);
+    // Compact first, then comfortable — the explicit value wins on the
+    // subtree it is declared on.
+    await page.getByRole("button", { name: "Compact" }).click();
+    await expect(target).toHaveAttribute("data-density", "compact");
+    await page.getByRole("button", { name: "Comfortable" }).click();
+    await expect(target).toHaveAttribute("data-density", "comfortable");
+    expect(
+      await target.evaluate((el) => getComputedStyle(el).getPropertyValue("--bf-density"))
+    ).toBe("comfortable");
+    // The comfortable cell reads the unscaled base again (0.75rem = 12px).
+    expect(await cellPadding(page, `${DEMOS.dataStoryDensityTable} tbody td`)).toBe("12px");
+  });
+
+  test("data-sort paints the arrow without a button (server-rendered sort)", async ({ page }) => {
+    await gotoDataStory(page);
+    const sorted = page.locator(`${DEMOS.dataStoryStaticSort} thead th[data-sort="desc"]`);
+    const plain = page.locator(`${DEMOS.dataStoryStaticSort} thead th:not([data-sort])`);
+    expect(await sorted.evaluate((el) => getComputedStyle(el, "::after").content)).toBe('"↓"');
+    // A column with no sort state paints nothing.
+    expect(await plain.evaluate((el) => getComputedStyle(el, "::after").content)).toBe("none");
+  });
+
+  test("aria-sort and data-sort both paint the arrow on a button header", async ({ page }) => {
+    await gotoDemo(page);
+    await page.setContent(`
+      <table data-bf-sort>
+        <thead><tr>
+          <th aria-sort="ascending"><button type="button">A</button></th>
+          <th data-sort="desc"><button type="button">B</button></th>
+          <th><button type="button">C</button></th>
+        </tr></thead>
+        <tbody><tr><td>1</td><td>2</td><td>3</td></tr></tbody>
+      </table>
+    `);
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/table.css") });
+    const arrow = (th) =>
+      page.locator(th).evaluate((el) => getComputedStyle(el.querySelector("button"), "::after").content);
+    expect(await arrow('thead th[aria-sort="ascending"]')).toBe('"↑"');
+    expect(await arrow('thead th[data-sort="desc"]')).toBe('"↓"');
+    // An unsorted column keeps the neutral affordance.
+    expect(await arrow("thead th:last-child")).toBe('"↕"');
+  });
+
+  test("aria-selected paints the row and the bulk bar reveals via :has()", async ({ page }) => {
+    await gotoDemo(page);
+    await page.setContent(`
+      <div class="bf-grid-shell">
+        <table>
+          <thead><tr>
+            <th><input type="checkbox" class="bf-select-all" aria-label="Select all rows"></th>
+            <th>Service</th>
+          </tr></thead>
+          <tbody>
+            <tr aria-selected="false"><td><input type="checkbox" aria-label="Select api"></td><td>api</td></tr>
+          </tbody>
+        </table>
+        <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+          <span class="bf-bulk-count" role="status">0 selected</span>
+        </div>
+      </div>
+    `);
+    await page.addStyleTag({ path: path.join(rootDir, "dist/index.css") });
+    await page.addStyleTag({ path: path.join(rootDir, "dist/components/table-select.css") });
+
+    const row = page.locator("tbody tr");
+    const bar = page.locator(DEMOS.dataStoryBulkBar);
+    const tint = await tokenColor(page, "--bf-primary-subtle");
+
+    // No selection: the bar is gone from the tab order, the row is plain.
+    await expect(bar).toHaveCSS("display", "none");
+    await expect(row).not.toHaveCSS("background-color", tint);
+
+    // A selected row reveals the bar and takes the tint — pure CSS.
+    await row.evaluate((el) => el.setAttribute("aria-selected", "true"));
+    await expect(bar).toHaveCSS("display", "flex");
+    await expect(row).toHaveCSS("background-color", tint);
   });
 });
 

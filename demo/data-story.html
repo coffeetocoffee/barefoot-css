@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Data Story</title>
+  <meta name="description" content="The v7.2 data story: the density scale, sortable and selectable tables, and the composed filter → table → empty state → pagination recipe.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/data-grid.css">
+  <link rel="stylesheet" href="../dist/components/table-sticky.css">
+  <link rel="stylesheet" href="../dist/components/table-select.css">
+  <link rel="stylesheet" href="../dist/components/states.css">
+  <link rel="stylesheet" href="../dist/components/density.css">
+  <link rel="stylesheet" href="../dist/components/pagination.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .ds-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .ds-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .ds-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .ds-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .ds-filter { display: flex; flex-wrap: wrap; gap: var(--bf-space-3); align-items: flex-end; }
+    .ds-filter label { display: grid; gap: var(--bf-space-1); }
+    .ds-density-target { border: 1px dashed var(--bf-info); border-radius: var(--bf-radius); padding: var(--bf-space-3); }
+    .ds-density-target table { margin-block: 0; }
+    .ds-log { max-block-size: 12rem; overflow-y: auto; margin-block: 0; }
+    .ds-log:empty::after { content: "Sort the table — bf:sort reports the column and direction."; color: var(--bf-muted); }
+  </style>
+</head>
+<body>
+  <header class="bf-container ds-head">
+    <p class="bf-overline">Barefoot CSS v7.2</p>
+    <h1>Data Story</h1>
+    <p>The density scale, sort and selection contracts, and one composed recipe: filter bar → sortable and selectable table → empty state → pagination. The app owns the state; the platform and the tokens do the rest.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="states.html">states &amp; events</a> · <a href="../docs/recipes.md#filter-bar--table---empty-state---pagination">the recipe</a> · <a href="../docs/components.md#density">density docs</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Density -->
+    <section aria-labelledby="ds-density-title">
+      <h2 id="ds-density-title">The density scale</h2>
+      <p class="bf-muted">One multiplier — <code>--bf-space-scale</code> — cascades through every spacing step, and <code>--bf-type-scale</code> through the type scale. Flip the subtree with <code>data-density</code>, or set the dials at <code>:root</code> for a page-wide custom step.</p>
+      <div role="group" aria-label="Density of the panel below" class="bf-row bf-gap-2">
+        <button type="button" data-ds-density="comfortable" aria-pressed="true">Comfortable</button>
+        <button type="button" data-ds-density="compact" aria-pressed="false">Compact</button>
+        <button type="button" data-ds-density="custom" aria-pressed="false">Page 0.85</button>
+      </div>
+      <div class="ds-density-target" id="ds-density-target">
+        <table data-grid id="ds-density-table">
+          <caption>Density probe — padding and type read the same tokens</caption>
+          <thead><tr><th>Service</th><th>Region</th><th>Deploys</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Service">api</td><td data-label="Region">us-east</td><td data-label="Deploys">12</td></tr>
+            <tr><td data-label="Service">web</td><td data-label="Region">eu-west</td><td data-label="Deploys">3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Markup</h3>
+      <div class="ds-code"><code>&lt;div data-density="compact"&gt;…&lt;/div&gt;
+:root { --bf-space-scale: 0.85; --bf-type-scale: 0.95; }</code></div>
+    </section>
+
+    <!-- Composed fixture -->
+    <section aria-labelledby="ds-grid-title">
+      <h2 id="ds-grid-title">One composed recipe</h2>
+      <p class="bf-muted">Filter bar, a sortable and selectable table with a sticky header, a bulk-actions bar that appears with a selection, the empty state when the filter matches nothing, and pagination. Verify audits the sort and selection wiring.</p>
+
+      <div class="bf-grid-shell" id="ds-shell">
+        <nav aria-label="Filter deployments" class="ds-filter">
+          <label>
+            Search
+            <input type="search" id="ds-q" placeholder="api, web…" autocomplete="off">
+          </label>
+          <label>
+            Status
+            <select id="ds-status">
+              <option value="">All</option>
+              <option>Healthy</option>
+              <option>Degraded</option>
+              <option>Down</option>
+            </select>
+          </label>
+          <button type="button" id="ds-clear" data-variant="ghost">Clear</button>
+        </nav>
+
+        <div class="bf-table-sticky" role="region" aria-label="Deployments table" tabindex="0" id="ds-scroll">
+          <table data-bf-sort data-grid id="ds-table">
+            <caption>Recent deployments — sortable headers, selectable rows</caption>
+            <thead><tr>
+              <th><input type="checkbox" class="bf-select-all" aria-label="Select all deployments" id="ds-select-all"></th>
+              <th><button type="button">Service</button></th>
+              <th><button type="button">Region</button></th>
+              <th><button type="button">Status</button></th>
+              <th><button type="button">Deploys</button></th>
+            </tr></thead>
+            <tbody id="ds-body"></tbody>
+          </table>
+        </div>
+
+        <div class="bf-empty-state" id="ds-empty" role="status" hidden>
+          <span aria-hidden="true">◌</span>
+          <h3>No deployments match</h3>
+          <p>Nothing fits that filter. Widen the search or clear it to see all six.</p>
+          <button type="button" id="ds-empty-clear" data-variant="ghost">Clear filters</button>
+        </div>
+
+        <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+          <span class="bf-bulk-count" id="ds-count" role="status">0 selected</span>
+          <button type="button" id="ds-restart">Restart selected</button>
+          <button type="button" id="ds-retire" data-variant="ghost">Retire selected</button>
+        </div>
+
+        <nav data-pagination aria-label="Deployment pages">
+          <a href="#ds-grid-title" aria-current="page">1</a>
+          <a href="#ds-grid-title">2</a>
+          <a href="#ds-grid-title">3</a>
+        </nav>
+      </div>
+      <h3>Event log</h3>
+      <ol class="ds-log" id="ds-log" aria-label="bf:* events on this page"></ol>
+    </section>
+
+    <!-- Declarative sort -->
+    <section aria-labelledby="ds-static-title">
+      <h2 id="ds-static-title">Server-rendered sort</h2>
+      <p class="bf-muted"><code>data-sort="asc|desc"</code> on a <code>&lt;th&gt;</code> paints the arrow without the module — the declarative mirror of <code>aria-sort</code>. Pair it with the semantic attribute when the sort is real; alone it is a presentational hint for a table that sorted on the server.</p>
+      <table id="ds-static">
+        <caption>Deployments, sorted by deploys on the server</caption>
+        <thead><tr>
+          <th data-sort="desc">Deploys</th>
+          <th>Service</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>12</td><td>api</td></tr>
+          <tr><td>8</td><td>cache</td></tr>
+          <tr><td>3</td><td>web</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+
+    /* ---- The composed fixture's own state (demo-only; the app owns
+       state, CSS paints, the platform sorts — see docs/recipes.md). ---- */
+    const DATA = [
+      { service: "api", region: "us-east", status: "Healthy", deploys: 12 },
+      { service: "web", region: "eu-west", status: "Degraded", deploys: 3 },
+      { service: "worker", region: "us-west", status: "Healthy", deploys: 5 },
+      { service: "cron", region: "ap-south", status: "Down", deploys: 1 },
+      { service: "cache", region: "eu-west", status: "Healthy", deploys: 8 },
+      { service: "queue", region: "us-east", status: "Degraded", deploys: 2 },
+    ];
+    const selected = new Set();
+
+    const body = document.getElementById("ds-body");
+    const empty = document.getElementById("ds-empty");
+    const count = document.getElementById("ds-count");
+    const selectAll = document.getElementById("ds-select-all");
+    const q = document.getElementById("ds-q");
+    const status = document.getElementById("ds-status");
+
+    function matches(row) {
+      const needle = q.value.trim().toLowerCase();
+      return (
+        (!needle || row.service.includes(needle) || row.region.includes(needle)) &&
+        (!status.value || row.status === status.value)
+      );
+    }
+
+    function render() {
+      const view = DATA.filter(matches);
+      body.replaceChildren(
+        ...view.map((row) => {
+          const tr = document.createElement("tr");
+          const on = selected.has(row.service);
+          tr.setAttribute("aria-selected", on ? "true" : "false");
+          tr.innerHTML = `<td><input type="checkbox" aria-label="Select ${row.service}"${
+            on ? " checked" : ""
+          }></td><td data-label="Service">${row.service}</td><td data-label="Region">${
+            row.region
+          }</td><td data-label="Status">${row.status}</td><td data-label="Deploys">${
+            row.deploys
+          }</td>`;
+          const box = tr.querySelector("input");
+          box.addEventListener("change", () => {
+            if (box.checked) selected.add(row.service);
+            else selected.delete(row.service);
+            tr.setAttribute("aria-selected", box.checked ? "true" : "false");
+            syncSelectAll();
+          });
+          return tr;
+        })
+      );
+      // The empty state is the table's partner, not its replacement: it
+      // shows only when the filter is live and nothing matches.
+      empty.hidden = !(view.length === 0 && (q.value || status.value));
+      syncSelectAll();
+    }
+
+    function syncSelectAll() {
+      const view = DATA.filter(matches);
+      const selectedInView = view.filter((r) => selected.has(r.service));
+      // The control's own state is JS-owned: CSS cannot check a box
+      // truthfully, and a painted check on an unchecked control lies.
+      selectAll.checked = view.length > 0 && selectedInView.length === view.length;
+      selectAll.indeterminate =
+        selectedInView.length > 0 && selectedInView.length < view.length;
+      count.textContent = `${selected.size} selected`;
+    }
+
+    selectAll.addEventListener("change", () => {
+      const view = DATA.filter(matches);
+      for (const row of view) {
+        if (selectAll.checked) selected.add(row.service);
+        else selected.delete(row.service);
+      }
+      render();
+    });
+
+    function clearFilters() {
+      q.value = "";
+      status.value = "";
+      render();
+    }
+    q.addEventListener("input", render);
+    status.addEventListener("change", render);
+    document.getElementById("ds-clear").addEventListener("click", clearFilters);
+    document.getElementById("ds-empty-clear").addEventListener("click", () => {
+      clearFilters();
+      q.focus();
+    });
+
+    // Bulk actions: the bar reveals via :has() when a row is selected;
+    // the action is demo-only feedback.
+    document.getElementById("ds-restart").addEventListener("click", () => {
+      count.textContent = `Restart requested for ${selected.size}…`;
+    });
+    document.getElementById("ds-retire").addEventListener("click", () => {
+      count.textContent = `Retire requested for ${selected.size}…`;
+    });
+
+    render();
+
+    /* ---- Density dial ---- */
+    const target = document.getElementById("ds-density-target");
+    for (const btn of document.querySelectorAll("[data-ds-density]")) {
+      btn.addEventListener("click", () => {
+        for (const b of document.querySelectorAll("[data-ds-density]")) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        }
+        const mode = btn.dataset.dsDensity;
+        // A page-wide custom step is a :root-level dial; a subtree step
+        // is the attribute. A custom number on a subtree would not
+        // inherit (custom properties substitute at the declaring
+        // element), so the two mechanisms are not interchangeable.
+        document.documentElement.style.removeProperty("--bf-space-scale");
+        document.documentElement.style.removeProperty("--bf-type-scale");
+        if (mode === "custom") {
+          target.removeAttribute("data-density");
+          document.documentElement.style.setProperty("--bf-space-scale", "0.85");
+          document.documentElement.style.setProperty("--bf-type-scale", "0.95");
+        } else {
+          target.setAttribute("data-density", mode);
+        }
+      });
+    }
+
+    /* ---- Event log (the bf:* contract) ---- */
+    const log = document.getElementById("ds-log");
+    document.addEventListener("bf:sort", (e) => {
+      const li = document.createElement("li");
+      li.textContent = `${e.type} — column ${e.detail.column}, ${e.detail.direction}`;
+      log.prepend(li);
+      while (log.children.length > 8) log.lastChild.remove();
+    });
+  </script>
+</body>
+</html>

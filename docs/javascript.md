@@ -298,9 +298,9 @@ Styles live in `components/nav.css`; the module drives the collapse.
 ## 9. Sortable tables (`js/table-sort.js`)
 
 No native element sorts rows — that puts this in the tabs tier of
-opt-in JS. The semantics stay yours: triggers are real `<button>`s you
-author inside header cells; the module only reorders `<tbody>` rows and
-maintains `aria-sort` on the active column's `th`.
+opt-in JS (ADR-0019). The semantics stay yours: triggers are real
+`<button>`s you author inside header cells; the module only reorders
+`<tbody>` rows and maintains `aria-sort` on the active column's `th`.
 
 ```html
 <table data-bf-sort>
@@ -321,6 +321,18 @@ maintains `aria-sort` on the active column's `th`.
   text compares case-insensitively with `localeCompare`.
 - Rows move by re-appending existing nodes — no innerHTML round-trip,
   so listeners inside cells survive.
+- **Events:** each sort dispatches `bf:sort` on the table with
+  `{ column, direction }` — column index, `"asc"` / `"desc"`. Sync a
+  URL, a "sorted by" label, or a second view from it (see
+  [Events](#events-v70)).
+- **Server-rendered sort:** the same arrow paints from
+  `data-sort="asc|desc"` on the `<th>` with no module at all — the
+  declarative mirror of `aria-sort`. Use it when the sort already
+  happened upstream; the module owns `aria-sort` when it does the
+  sorting.
+- **Contracts:** Verify's `aria-sort-wired` audits the pair — one sorted
+  column, a valid direction, the button behind it, and agreement
+  between the two attributes (see [Verify](verify.md)).
 - **No-JS first:** without the module nothing sorts; the table is plain
   but valid, buttons inert. Header-button styles (muted voice, ↕/↑/↓
   indicator) live in `components/table.css`.

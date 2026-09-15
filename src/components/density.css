@@ -1,0 +1,120 @@
+/* Barefoot — density scale (v7.2, "Data Story").
+   Opt-in: import "barefoot-css/components/density.css".
+
+   One multiplier, two axes: --bf-space-scale (1 = comfortable,
+   0.75 = compact) multiplies every spacing step, --bf-type-scale
+   (1 / 0.9375) every type step, so a subtree — or the page — compresses
+   without re-declaring a single padding by hand.
+
+   <html data-density="compact">          → whole page compact
+   <div data-density="compact">…          → a subtree (a table, a sidebar)
+   <div data-density="comfortable">…      → restore 1 inside a compact page
+
+   Two ways to set the dial, and one inheritance limit worth knowing:
+
+   - data-density on an element re-declares the scaled tokens on that
+     element, so the whole subtree inherits the compressed values.
+   - --bf-space-scale / --bf-type-scale at :root (declared after this
+     import) is a custom page-wide step — any number, not just 0.75.
+   - A custom number on a *subtree* does not travel: custom properties
+     substitute their var() references at the element that declares
+     them, so an inherited calc arrives with the dial already baked in.
+     Scale a subtree with data-density; scale the page with the tokens.
+
+   Layout safety: the scale multiplies resolved lengths, so padding, gaps,
+   and control heights shrink together — every dimension that reads a
+   token moves in proportion, so nothing reflows past its container.
+   Type stays readable by design: the compact type step is 0.9375
+   (15px body), never 0.75 — packing information must not cost legibility.
+
+   Precedence, stated plainly: data-density="compact" also matches the
+   v3.4 compact preset in tokens.css, which is unlayered and therefore
+   wins the cascade for the spacing tokens it re-declares. Under compact,
+   spacing comes from that preset and the scale reads 0.75 for
+   consistency; the dial is live for the comfortable value, for a custom
+   page-wide number, and for the type axis (the preset does not touch
+   type). */
+@layer components {
+  :root {
+    /* Re-express the tokens as their base literal × the scale. The
+       literals mirror tokens.css verbatim — one place to retune the
+       comfortable base. A page-level custom scale (above) overrides the
+       dial here and every token below follows it. */
+    --bf-space-1: calc(0.25rem * var(--bf-space-scale));
+    --bf-space-2: calc(0.5rem * var(--bf-space-scale));
+    --bf-space-3: calc(0.75rem * var(--bf-space-scale));
+    --bf-space-4: calc(1rem * var(--bf-space-scale));
+    --bf-space-5: calc(1.5rem * var(--bf-space-scale));
+    --bf-space-6: calc(2rem * var(--bf-space-scale));
+    --bf-space-7: calc(3rem * var(--bf-space-scale));
+    --bf-space-8: calc(4rem * var(--bf-space-scale));
+    --bf-control-height: calc(2.5rem * var(--bf-space-scale));
+
+    --bf-type-xs: calc(0.75rem * var(--bf-type-scale));
+    --bf-type-sm: calc(0.875rem * var(--bf-type-scale));
+    --bf-type-base: calc(1rem * var(--bf-type-scale));
+    --bf-type-md: calc(clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem) * var(--bf-type-scale));
+    --bf-type-lg: calc(clamp(1.125rem, 1rem + 0.625vw, 1.375rem) * var(--bf-type-scale));
+    --bf-type-xl: calc(clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem) * var(--bf-type-scale));
+    --bf-type-2xl: calc(clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem) * var(--bf-type-scale));
+
+    --bf-space-scale: 1;
+    --bf-type-scale: 1;
+  }
+
+  /* Compact — the documented pair: space at 0.75×, type at a readable
+     0.9375×, and the v5 style-query axis flipped so adaptive components
+     that read --bf-density compress in lockstep. The scaled tokens are
+     re-declared here (not just the dials) because a custom property
+     substitutes its references at the element that declares it — an
+     inherited calc would otherwise arrive with the dial baked in. */
+  [data-density="compact"] {
+    --bf-space-scale: 0.75;
+    --bf-type-scale: 0.9375;
+    --bf-density: compact;
+
+    --bf-space-1: calc(0.25rem * var(--bf-space-scale));
+    --bf-space-2: calc(0.5rem * var(--bf-space-scale));
+    --bf-space-3: calc(0.75rem * var(--bf-space-scale));
+    --bf-space-4: calc(1rem * var(--bf-space-scale));
+    --bf-space-5: calc(1.5rem * var(--bf-space-scale));
+    --bf-space-6: calc(2rem * var(--bf-space-scale));
+    --bf-space-7: calc(3rem * var(--bf-space-scale));
+    --bf-space-8: calc(4rem * var(--bf-space-scale));
+    --bf-control-height: calc(2.5rem * var(--bf-space-scale));
+
+    --bf-type-xs: calc(0.75rem * var(--bf-type-scale));
+    --bf-type-sm: calc(0.875rem * var(--bf-type-scale));
+    --bf-type-base: calc(1rem * var(--bf-type-scale));
+    --bf-type-md: calc(clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem) * var(--bf-type-scale));
+    --bf-type-lg: calc(clamp(1.125rem, 1rem + 0.625vw, 1.375rem) * var(--bf-type-scale));
+    --bf-type-xl: calc(clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem) * var(--bf-type-scale));
+    --bf-type-2xl: calc(clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem) * var(--bf-type-scale));
+  }
+
+  /* Explicit comfortable — restores the default inside a compact subtree
+     (a comfortable card on a dense dashboard). */
+  [data-density="comfortable"] {
+    --bf-space-scale: 1;
+    --bf-type-scale: 1;
+    --bf-density: comfortable;
+
+    --bf-space-1: calc(0.25rem * var(--bf-space-scale));
+    --bf-space-2: calc(0.5rem * var(--bf-space-scale));
+    --bf-space-3: calc(0.75rem * var(--bf-space-scale));
+    --bf-space-4: calc(1rem * var(--bf-space-scale));
+    --bf-space-5: calc(1.5rem * var(--bf-space-scale));
+    --bf-space-6: calc(2rem * var(--bf-space-scale));
+    --bf-space-7: calc(3rem * var(--bf-space-scale));
+    --bf-space-8: calc(4rem * var(--bf-space-scale));
+    --bf-control-height: calc(2.5rem * var(--bf-space-scale));
+
+    --bf-type-xs: calc(0.75rem * var(--bf-type-scale));
+    --bf-type-sm: calc(0.875rem * var(--bf-type-scale));
+    --bf-type-base: calc(1rem * var(--bf-type-scale));
+    --bf-type-md: calc(clamp(1rem, 0.9375rem + 0.3125vw, 1.125rem) * var(--bf-type-scale));
+    --bf-type-lg: calc(clamp(1.125rem, 1rem + 0.625vw, 1.375rem) * var(--bf-type-scale));
+    --bf-type-xl: calc(clamp(1.375rem, 1.125rem + 1.25vw, 1.875rem) * var(--bf-type-scale));
+    --bf-type-2xl: calc(clamp(1.75rem, 1.375rem + 1.875vw, 2.5rem) * var(--bf-type-scale));
+  }
+}

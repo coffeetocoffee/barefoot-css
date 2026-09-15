@@ -811,6 +811,52 @@ support, carousel controls + autoplay) and their markup.
   [JavaScript](javascript.md)); the buttons are re-skinned to inherit
   the th voice, with ↕/↑/↓ indicators following the module's
   maintained `aria-sort`. Without JS nothing sorts — a plain table.
+  Sorting is single-column: `aria-sort` lives on one `<th>` at a time, its only valid values are `ascending` and `descending`, and a sorted column carries the sort button — an arrow without the control is decoration.
+- **Server-rendered sort** (v7.2) — a page that sorted on the server
+  declares the same state with `data-sort="asc"` or `data-sort="desc"` and gets the identical arrow; the two attributes must agree when both are present.
+  It pairs with `aria-sort` (the semantic value) for tables whose sort
+  is interactive; alone it is a presentational hint that a column is
+  already ordered. Verify's `aria-sort-wired` audits the whole contract.
+- **Row selection** (v7.2, opt-in `components/table-select.css`) —
+  the state on the rows, an optional select-all control in the header;
+  CSS paints, the app toggles:
+
+  ```html
+  <div class="bf-grid-shell">
+    <table>
+      <thead><tr>
+        <th><input type="checkbox" class="bf-select-all"
+                   aria-label="Select all rows"></th>
+        <th>Service</th>
+      </tr></thead>
+      <tbody>
+        <tr aria-selected="false">
+          <td><input type="checkbox" aria-label="Select api"></td>
+          <td>api</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+      <span class="bf-bulk-count" role="status">0 selected</span>
+      <button type="button">Restart</button>
+    </div>
+  </div>
+  ```
+
+  `aria-selected` on the row is the source of truth (the older
+  `tr[data-selected]` on `data-grid` still paints, but the ARIA
+  attribute is the documented way). A multi-select table with a select-all control must state `aria-selected` on every row and name the select-all control — a nameless checkbox and a half-marked grid are invisible to assistive technology.
+  Note that `aria-multiselectable` is not valid on a `<table>` — it
+  belongs to the `grid`/`listbox`/`tree` roles, and adopting
+  `role="grid"` would claim arrow-key navigation the platform does not
+  give a table; the row checkboxes carry the "many at once" affordance.
+  The select-all's checked/indeterminate state is yours to set: CSS
+  cannot check a box truthfully, and a painted check on an unchecked
+  control is a WCAG 4.1.2 lie. `.bf-bulk-bar` hides until its shell
+  holds a selection (`:has()`, zero JS — server-rendered selections get
+  their actions immediately); keep the count in a `role="status"` span
+  so the change is announced, not just shown. Verify's
+  `selection-complete` audits the wiring.
 - **A11y:** `<th>`/`<caption>` do the work for screen readers; sorting
   state is announced via `aria-sort`; sticky variants are purely
   presentational and change no semantics.
@@ -1119,6 +1165,50 @@ forms, same one-liner:
 
 - Extends `components/table.css`: `data-grid` on a `<table>` makes each `<th>` `resize: horizontal` (drag the inline-end edge) and opts into a container-query stack at `≤40rem` (same breakpoint as `data-table="stack"`). Composes with `sticky-head` — header stays pinned while you resize.
 - **JS:** none. **A11y:** same as table — semantic `<th>`/`<caption>` plus optional `aria-sort` from `js/table-sort.js`; the resize handle is presentational.
+
+## Density (v7.2)
+
+Opt-in: `import "barefoot-css/components/density.css"`. One multiplier
+cascades to every spacing step and every type step, so a subtree — or
+the page — compresses without re-declaring a single padding.
+
+```html
+<html data-density="compact">                        <!-- whole page -->
+<div data-density="compact">…</div>                  <!-- a subtree -->
+<div data-density="comfortable">…</div>              <!-- restore inside -->
+<style>:root { --bf-space-scale: 0.85; --bf-type-scale: 0.95; }</style>
+```
+
+- `--bf-space-scale` (default `1`, compact `0.75`) multiplies
+  `--bf-space-1…8` and `--bf-control-height`; `--bf-type-scale`
+  (default `1`, compact `0.9375`) multiplies the type scale. Compact
+  type stays at 15px body on purpose — packing information must not cost
+  legibility.
+- `data-density` on any element sets both dials for its subtree, and
+  flips `--bf-density`, the v5.0 style-query axis — so adaptive
+  components that read `--bf-density: compact` compress in lockstep.
+  `data-density="comfortable"` restores the default inside a compact
+  page (a comfortable card on a dense dashboard).
+- **Two ways to set the dial, and one inheritance limit.** The attribute
+  re-declares the scaled tokens on its element, so a whole subtree
+  inherits them. The tokens at `:root` (declared after this import) are
+  a custom page-wide step — any number, not just `0.75`. A custom number
+  set on a *subtree* does neither: custom properties substitute their
+  `var()` references at the element that declares them, so an inherited
+  `calc()` arrives with the dial already baked in. Scale a subtree with
+  the attribute; scale the page with the tokens.
+- **Precedence, stated plainly:** `data-density="compact"` also matches
+  the v3.4 compact preset in `tokens.css`, which is unlayered and wins
+  the cascade for the spacing tokens it re-declares. Under compact,
+  spacing comes from that preset and `--bf-space-scale` reads `0.75` for
+  consistency. The dial itself is live for the `comfortable` value, for
+  a custom page-wide number, and for the type axis (the preset does not
+  touch type).
+- Layout safety: the scale multiplies resolved lengths, so padding,
+  gaps, and control heights move in proportion — nothing reflows past
+  its container.
+- **JS:** none. **A11y:** none of the contracts change — density is
+  geometry, not semantics; type stays above the readable floor.
 
 ## Print (v6.3)
 

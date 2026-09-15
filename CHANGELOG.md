@@ -4,6 +4,59 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.2.0] — 2026-09-15
+
+### Added
+
+- **Data Story — the density scale.** Opt-in `components/density.css`
+  turns density into one multiplier: `--bf-space-scale` (1 = comfortable,
+  0.75 = compact) cascades through every spacing step and
+  `--bf-type-scale` (1 / 0.9375) through the type scale. `data-density`
+  on any element scales its subtree and flips the v5 style-query axis;
+  `data-density="comfortable"` restores the default inside a compact
+  page. The v3.4 compact preset stays the no-import path and wins the
+  cascade under `compact`; the type axis and a custom page-wide step are
+  new. `index.css` gains only the two additive tokens.
+- **Server-rendered sort.** `data-sort="asc|desc"` on a `<th>` paints the
+  sort arrow with no module at all — the declarative mirror of
+  `aria-sort`, for pages that sorted upstream. The two attributes must
+  agree when both are present.
+- **Row selection.** Opt-in `components/table-select.css` paints
+  `aria-selected` rows, keeps the selection column tight, and reveals a
+  `.bf-bulk-bar` through `:has()` when the shell holds a selection —
+  zero JS, so a server-rendered selection gets its actions immediately.
+  `aria-multiselectable` is deliberately not used (it is not valid on a
+  `<table>`; `role="grid"` would overclaim keyboard navigation); the row
+  checkboxes carry the multi-select affordance.
+- **Two new Verify rules.** `aria-sort-wired` (WCAG 4.1.2) audits a
+  sortable table's `aria-sort`: one sorted column, a valid direction, the
+  sort button behind the arrow, and `data-sort` agreement.
+  `selection-complete` (WCAG 4.1.2) audits a select-all grid: the control
+  is named (axe exempts checkboxes from its label rule — this is the gap
+  Verify closes) and every row states `aria-selected`. Both quote their
+  docs sentence; both are pinned by test.
+- **Composed recipe.** `demo/data-story.html` proves the whole view —
+  filter bar, sortable and selectable sticky table, bulk bar, empty
+  state, pagination, and the density dial — on its own page, so the
+  conformance demo's visual baselines stay untouched. `docs/recipes.md`
+  carries it with the ownership table.
+- **`js/table-sort.js` graduates** to ADR-0019: why row sorting is opt-in
+  JS (no native element sorts rows), the event contract, the
+  server-rendered mirror, and the Verify rule, all in the docs.
+
+### Changed
+
+- The registry budget moves 5120 → 6656 bytes gzip, deliberately in
+  review (two new rules, quoted docs prose).
+- `components/states.css`: `.bf-state[hidden]` and
+  `.bf-empty-state[hidden]` now honor the `hidden` attribute — the
+  panels set `display: grid`, which was overriding it.
+- `docs/api.md` extends `data-density` (`comfortable`) and adds
+  `data-sort`; `docs/components.md` gains the Density section and the
+  sort/selection contracts; `docs/verify.md` documents the two new
+  rules; `docs/javascript.md` graduates the table-sort section;
+  `docs/recipes.md` gains the composed recipe.
+
 ## [7.0.0] — 2026-09-15
 
 ### Added

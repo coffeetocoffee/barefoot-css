@@ -220,6 +220,14 @@
        (v3.4, below) so the existing density axis feeds the v5 style query. */
     --bf-density: comfortable;
 
+    /* Density scale (v7.2) — the multiplier the opt-in density layer
+       (components/density.css) cascades through the spacing and type
+       tokens: 1 = comfortable (the documented default), 0.75 = compact.
+       The preset in tokens.css stays the no-import compact path; import
+       the layer to trade the hard remap for the scale. */
+    --bf-space-scale: 1;   /* multiplier on every --bf-space-* step */
+    --bf-type-scale: 1;    /* multiplier on every --bf-type-* step */
+
     /* Fluid, container-relative type scale (cqi). Adaptive components use
        these instead of the viewport-clamped --bf-type-* so type tracks the
        component's box, not the screen. */

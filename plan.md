@@ -1,9 +1,9 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-15 — v7.0.0 "State Machine & Events" built &
-verified (state vocabulary + precedence, composed empty state, the
-`bf:*` event contract, two new Verify rules); v6.7.0 "Architecture &
-Global" shipped_
+_Last updated: 2026-09-15 — v7.2.0 "Data Story" built & verified (density
+scale, server-rendered sort, row selection, two new Verify rules, the
+composed recipe, `js/table-sort.js` graduates); v7.0.0 "State Machine &
+Events" built & verified_
 
 ## Snapshot
 
@@ -76,7 +76,35 @@ Global" shipped_
   The registry budget moved 4096 → 5120 bytes gzip, deliberately in review
   (two new rules, quoted docs prose), and the Phase 4 budget test pins the
   new number.
-- **History:** milestones 0.1 → 7.0.0 shipped.
+- **Built & verified:** **v7.2.0 — "Data Story"** (2026-09-15; tag =
+  maintainer action). Density as one multiplier: `data-density` /
+  `--bf-space-scale` (1 / 0.75) cascades through every spacing step and
+  `--bf-type-scale` (1 / 0.9375) through the type scale; `data-density`
+  on any element scales its subtree and flips the v5 style-query axis,
+  `data-density="comfortable"` restores the default inside a compact
+  page. Server-rendered sort (`data-sort="asc|desc"`) paints the arrow
+  with no module — the declarative mirror of `aria-sort`. Row selection
+  (opt-in `components/table-select.css`): `aria-selected` tint, a tight
+  selection column, and a `.bf-bulk-bar` revealed by `:has()` on a
+  selection — zero JS. Two new Verify rules: `aria-sort-wired` (a sortable
+  table's `aria-sort` must be set, single, valid, button-backed, and in
+  agreement with `data-sort`) and `selection-complete` (a select-all grid
+  must name its control and state `aria-selected` on every row) — both
+  quote their docs sentence, both pinned by test. `demo/data-story.html`
+  proves the whole composed view on its own page (visual baselines
+  untouched). `js/table-sort.js` graduates (ADR-0019, event contract,
+  server-rendered mirror, Verify rule, docs). `components/states.css`
+  now honors `[hidden]`; the registry budget moves 5120 → 6656 bytes
+  gzip (two more quoted rules, deliberately in review). `npm run check`
+  green; full matrix below.
+- **Verification (2026-09-15, v7.2 matrix):** Chromium 296 passed / 2
+  engine-gated skips · Firefox 259 / 12 · WebKit 264 / 7 — zero failures;
+  visual regression untouched (the proof page ships beside the conformance
+  demo, not inside it); axe green including the data-story page with a live
+  selection and its busy/empty states. Skips are engine-gated (interest
+  invokers, SDA, `popover=hint`, cross-doc VT; the v4.8 forced-colors
+  tests are Chromium-gated emulation).
+- **History:** milestones 0.1 → 7.2.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -272,7 +300,7 @@ and `.bf-*` utilities.
 > every gate pinned by test. `index.css` budget untouched.
 
 **v7.0 — "State Machine & Events" (foundation, must come first)** ✅
-(built & verified 2026-09-15; tag = maintainer action)
+(shipped 2026-09-15)
 
 - **States v2 with precedence:** `loading > error > empty > partial > full`, plus
   `stale/refreshing/fresh` and `optimistic → confirmed → rolled-back`. "Don't show
@@ -287,18 +315,20 @@ and `.bf-*` utilities.
 - Parked (moved from Next, not in v7 scope): `:has()` content-driven morphogenesis and
   anchor-laid-out layering (v5.3); engine-gated test skips un-block as floors land (see Watch-list).
 
-**v7.1 — "Data Story" (needs v7.0)**
+**v7.2 — "Data Story" (needs v7.0)** ✅
+(shipped 2026-09-15)
 
 - **Density system:** `data-density` / `--bf-space-scale: 1 / 0.75` cascading to padding
-  and type without breaking layout. Comfortable/compact globally.
+  and type without breaking layout. Comfortable/compact globally. ✅
 - **Sort + selection contracts:** `aria-sort` on `<th>` audited (not decoration),
-  `.bf-sort-asc/desc` via `data-*`, row selection `aria-selected / aria-multiselectable`,
-  bulk-actions-on-selection pattern.
-- **Composed fixture:** filter-bar + table + empty-state + pagination as one tested recipe.
-  `js/table-sort.js` graduates from footnote to ADR + events + docs section.
-- Verify: `aria-sort-wired`, `selection-complete`. Non-goal: no virtualization, no charting.
+  `.bf-sort-asc/desc` via `data-*`, row selection `aria-selected` (with a
+  `.bf-bulk-bar` revealed by `:has()`), bulk-actions-on-selection pattern. ✅
+- **Composed fixture:** filter-bar + table + empty-state + pagination as one tested recipe
+  (`demo/data-story.html`). `js/table-sort.js` graduates from footnote to ADR-0019 +
+  events + docs section. ✅
+- Verify: `aria-sort-wired`, `selection-complete`. Non-goal: no virtualization, no charting. ✅
 
-**v7.2 — "Form Architecture" (needs v7.0 + v7.1)**
+**v7.4 — "Form Architecture" (needs v7.0 + v7.1)**
 
 - **Async contract:** `data-async-pending` + spinner + live-region + debounce that doesn't
   fight native `:user-invalid`. "Username taken" must work alongside `required/pattern`.
@@ -309,7 +339,7 @@ and `.bf-*` utilities.
   CSS only reveals. Ban Rube Goldberg `:has()` chains.
 - Verify: `async-live`, `stepper-complete`. Non-goal: no framework bindings.
 
-**v7.3 — "Keyboard & A11y Beyond Component" (needs real data + forms)**
+**v7.8 — "Keyboard & A11y Beyond Component" (needs real data + forms)**
 
 - **Roving-focus micro-JS (<1KB):** menus/tablists get arrow-key navigation. Pure-CSS
   popover documented as mouse/tap-only until module loads — no handwaving "accessible
@@ -321,7 +351,7 @@ and `.bf-*` utilities.
   `prefers-reduced-transparency/data`. Audit reading order *after* container reflow.
 - Verify: `roving-focus`, `reading-order-after-reflow`.
 
-**v7.4 — "Resilience & Coexistence" (independent, push late)**
+**v8.0 — "Resilience & Coexistence" (independent, push late)**
 
 - **Fluid i18n primitives:** `min/max/fit-content + clamp()` `.bf-elastic` buttons/cards
   that survive German +30% and user content. Expansion kills more layouts than direction.
@@ -331,7 +361,7 @@ and `.bf-*` utilities.
   selection, form-print. No shallow middle.
 - Verify: `coexistence-clean`. Non-goal: no Shadow-DOM injection, no framework adapters yet.
 
-**v7.5 — "DX Governance" (polices everything above, ships last)**
+**v8.5 — "DX Governance" (polices everything above, ships last)**
 
 - **`.bf-debug` audit mode:** outline layer boundaries, flag deep `:has()` in red (perf),
   flag orphan `data-state` without hook. Makes architecture visible.

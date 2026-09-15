@@ -316,4 +316,94 @@ export const VERIFY_RULES = [
       "The `bf:tabactivate` payload names the active tab and panel by id — a tab whose `aria-controls` points at nothing dispatches an event a listener cannot act on.",
     ],
   },
+
+  {
+    id: "aria-sort-wired",
+    select: "table[data-bf-sort]",
+    wcag: "4.1.2",
+    check(el) {
+      const heads = [...el.querySelectorAll("thead th")];
+      const sorted = heads.filter((th) => th.hasAttribute("aria-sort"));
+      if (sorted.length > 1) {
+        return `the table claims ${sorted.length} sorted columns at once — sorting is single-column, so aria-sort lives on one th at a time`;
+      }
+      for (const th of sorted) {
+        const value = th.getAttribute("aria-sort");
+        // ARIA spells these out; any other value is invalid, not merely
+        // undocumented — "asc"/"desc" are the usual typos.
+        if (value !== "ascending" && value !== "descending") {
+          return `aria-sort="${value}" is not a valid value — ARIA allows only "ascending" or "descending"`;
+        }
+        // The arrow is decoration; the button is the control. A sorted
+        // column without one looks sorted but nothing sorts it.
+        if (!th.querySelector("button")) {
+          return 'aria-sort sits on a <th> with no sort button — the arrow is decoration with no control behind it';
+        }
+      }
+      // The declarative mirror (data-sort) must agree with the semantic
+      // one when both are present — a disagreement is two sorts telling
+      // different stories.
+      const DIRECTION = { asc: "ascending", desc: "descending" };
+      for (const th of heads) {
+        const declared = th.getAttribute("data-sort");
+        if (!declared) continue;
+        const aria = th.getAttribute("aria-sort");
+        if (aria && aria !== DIRECTION[declared]) {
+          return `data-sort="${declared}" and aria-sort="${aria}" disagree on the same column — the declarative mirror must match the semantic value`;
+        }
+      }
+      return null;
+    },
+    fix: 'keep aria-sort on one sortable column at a time, with a real sort button in its th, using only "ascending"/"descending"; match data-sort to it (docs/components.md, Table)',
+    docs: "docs/components.md",
+    quote: [
+      "Sorting is single-column: `aria-sort` lives on one `<th>` at a time, its only valid values are `ascending` and `descending`, and a sorted column carries the sort button — an arrow without the control is decoration.",
+      "a page that sorted on the server declares the same state with `data-sort=\"asc\"` or `data-sort=\"desc\"` and gets the identical arrow; the two attributes must agree when both are present",
+    ],
+  },
+
+  {
+    id: "selection-complete",
+    select: "table:has(tbody tr[aria-selected])",
+    wcag: "4.1.2",
+    check(el, ctx) {
+      // A table whose rows carry selection states. The select-all
+      // control implies every row is selectable; without one, row
+      // selection is bring-your-own and this rule stays silent.
+      const selectAll =
+        el.querySelector('thead input[type="checkbox"]') ||
+        el.querySelector('thead [role="checkbox"]');
+      if (!selectAll) return null;
+
+      // A nameless select-all checkbox passes axe (checkboxes are exempt
+      // from its label rule) but is invisible to assistive technology —
+      // exactly the gap Verify exists to close.
+      const label = (selectAll.getAttribute("aria-label") || "").trim();
+      const labelledby = (selectAll.getAttribute("aria-labelledby") || "").trim();
+      const enclosing = selectAll.closest("label");
+      const named =
+        !!label ||
+        (labelledby &&
+          labelledby.split(/\s+/).every((id) => ctx.byId(id))) ||
+        (enclosing && !!enclosing.textContent.trim());
+      if (!named) {
+        return "the select-all checkbox has no accessible name — give it aria-label, aria-labelledby, or a wrapping label";
+      }
+
+      // Completeness: a select-all grid states selection on every row —
+      // unmarked rows are selectable rows assistive technology cannot see.
+      const unmarked = [...el.querySelectorAll("tbody tr")].filter(
+        (tr) => !tr.hasAttribute("aria-selected")
+      );
+      if (unmarked.length > 0) {
+        return `${unmarked.length} row(s) of the selectable table carry no aria-selected — a select-all grid must state selection on every row`;
+      }
+      return null;
+    },
+    fix: "name the select-all control and state aria-selected on every row of a selectable table (docs/components.md, Table)",
+    docs: "docs/components.md",
+    quote: [
+      "A multi-select table with a select-all control must state `aria-selected` on every row and name the select-all control — a nameless checkbox and a half-marked grid are invisible to assistive technology.",
+    ],
+  },
 ];

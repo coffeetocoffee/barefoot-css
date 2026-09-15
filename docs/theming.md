@@ -262,6 +262,8 @@ the base token and every ramp follows.
 | `--bf-adaptive-2` | `40rem` | two-up / compressed density |
 | `--bf-adaptive-3` | `56rem` | full desktop density |
 | `--bf-density` | `comfortable` |  |
+| `--bf-space-scale` | `1` | multiplier on every --bf-space-* step |
+| `--bf-type-scale` | `1` | multiplier on every --bf-type-* step |
 | `--bf-type-cqi-xs` | `clamp(0.7rem, 0.66rem + 0.25cqi, 0.8rem)` |  |
 | `--bf-type-cqi-sm` | `clamp(0.8rem, 0.72rem + 0.5cqi, 0.95rem)` |  |
 | `--bf-type-cqi-md` | `clamp(0.95rem, 0.82rem + 0.9cqi, 1.15rem)` |  |

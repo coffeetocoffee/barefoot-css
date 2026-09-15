@@ -136,6 +136,14 @@
     to { transform: rotate(360deg); }
   }
 
+  /* The hidden attribute must win: these panels set display: grid, which
+     would otherwise ignore it (author rules beat the UA [hidden] rule at
+     equal specificity). A state panel that a page hides stays hidden. */
+  .bf-state[hidden],
+  .bf-empty-state[hidden] {
+    display: none;
+  }
+
   /* The composed empty state (v7.0): the panel IS the space. A
      decorative glyph, a heading, an explanation, and the way out —
      grid-centered, and it fills the parent. Give the parent a definite

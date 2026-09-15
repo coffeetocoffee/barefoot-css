@@ -126,6 +126,17 @@ export const DEMOS = Object.freeze({
     statesBusyToggle: "#st-busy-toggle",
     statesEmptyState: "#st-empty-state",
     statesFillParent: "#st-fill",
+    // v7.2 — data story (demo/data-story.html).
+    dataStoryDensityTarget: "#ds-density-target",
+    dataStoryDensityTable: "#ds-density-table",
+    dataStoryTable: "#ds-table",
+    dataStoryBody: "#ds-body",
+    dataStorySelectAll: "#ds-select-all",
+    dataStoryEmpty: "#ds-empty",
+    dataStoryBulkBar: ".bf-bulk-bar",
+    dataStoryCount: "#ds-count",
+    dataStoryFilterInput: "#ds-q",
+    dataStoryStaticSort: "#ds-static",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -168,6 +179,13 @@ export async function gotoRhythmMotion(page) {
    composed empty state, and the bf:* event contract. */
 export async function gotoStates(page) {
   await page.goto("/demo/states.html");
+}
+
+/* Navigate to the data story proofs (v7.2) — the density scale, the
+   sortable/selectable composed fixture, the server-rendered sort, and
+   the bulk-actions bar. */
+export async function gotoDataStory(page) {
+  await page.goto("/demo/data-story.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two
