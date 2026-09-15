@@ -93,9 +93,10 @@ export const DEMOS = Object.freeze({
    storage: "#storage",
    tipPop: "#tip-pop",
    tipTrigger: "#tip-trigger",
-  toastErrorTrigger: "#toast-error-trigger",
-  toastTrigger: "#toast-trigger",
-  toastUploadTrigger: "#toast-upload-trigger",
+   toastErrorTrigger: "#toast-error-trigger",
+   toastTrigger: "#toast-trigger",
+   toastUploadTrigger: "#toast-upload-trigger",
+   toastAutoTrigger: "#toast-auto-trigger",
    typography: "#typography",
     studioReflow: "#studio-reflow",
     studioHue: "#studio-hue",
@@ -120,6 +121,11 @@ export const DEMOS = Object.freeze({
     rhythmMotionRhythm: "#rm-rhythm",
     rhythmMotionStagger: "#rm-stagger",
     rhythmMotionCombined: "#rm-combined",
+    // v7.0 — states & events (demo/states.html).
+    statesBusyEmpty: "#st-busy-empty",
+    statesBusyToggle: "#st-busy-toggle",
+    statesEmptyState: "#st-empty-state",
+    statesFillParent: "#st-fill",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -155,6 +161,13 @@ export async function gotoPaintPaper(page) {
    rhythm and staggered entry animations. */
 export async function gotoRhythmMotion(page) {
   await page.goto("/demo/rhythm-motion.html");
+}
+
+/* Navigate to the states & events proofs (v7.0) — the state machine
+   families, the don't-show-empty-while-loading precedence, the
+   composed empty state, and the bf:* event contract. */
+export async function gotoStates(page) {
+  await page.goto("/demo/states.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

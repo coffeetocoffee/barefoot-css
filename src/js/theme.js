@@ -22,7 +22,7 @@
    import { initTheme, setTheme } from "…" → manual init / programmatic
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, emit } from "./lifecycle.js";
 
 const STORAGE_KEY = "barefoot-theme";
 
@@ -53,8 +53,12 @@ export function setTheme(theme) {
     console.warn(`[barefoot-css] theme: ignored invalid theme "${theme}"`);
     return;
   }
+  const previous = document.documentElement.dataset.bfTheme ?? null;
   const apply = () => {
     document.documentElement.dataset.bfTheme = theme;
+    // Report the change (v7.0 event contract): listeners hear the new
+    // theme and the one it replaced, after the attribute is set.
+    emit(document, "bf:themechange", { theme, from: previous });
   };
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"

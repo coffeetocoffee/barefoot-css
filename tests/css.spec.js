@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -208,6 +208,84 @@ test.describe("v6.5 states", () => {
     await expect(page.locator('[data-state="empty"]')).toHaveCSS("border-style", "dashed");
     await expect(page.locator('[data-state="error"]')).toHaveCSS("border-color", /rgb/);
     await expect(page.locator(".bf-error-summary")).toHaveAttribute("tabindex", "-1");
+  });
+});
+
+test.describe("v7.0 state machine", () => {
+  const pseudoWidth = (page, sel) =>
+    page.locator(sel).first().evaluate((el) => getComputedStyle(el, "::before").width);
+
+  test("pending family: loading, refreshing, and optimistic all draw the spinner", async ({ page }) => {
+    await gotoStates(page);
+    for (const sel of [
+      '[data-state="loading"]',
+      '[data-state="refreshing"]',
+      '[data-state="optimistic"]',
+    ]) {
+      expect(
+        await pseudoWidth(page, sel),
+        `${sel} should paint the pending spinner pseudo`
+      ).toBe("20px");
+    }
+  });
+
+  test("freshness and failure families paint their affordances", async ({ page }) => {
+    await gotoStates(page);
+    const grid = ".st-grid ";
+    expect(
+      await page.locator(`${grid}[data-state="stale"]`).first().evaluate((el) => getComputedStyle(el).borderStyle)
+    ).toBe("dashed");
+    // partial: an inline-start bar, not a boxed surface.
+    const partial = page.locator(`${grid}[data-state="partial"]`).first();
+    await expect(partial).toHaveCSS("border-inline-start-width", "3px");
+    await expect(partial).toHaveCSS(
+      "border-inline-start-color",
+      await tokenColor(page, "--bf-info")
+    );
+    // fresh / confirmed take the success accent; rolled-back takes danger.
+    for (const state of ["fresh", "confirmed"]) {
+      await expect(
+        page.locator(`${grid}[data-state="${state}"]`).first()
+      ).toHaveCSS("border-color", await tokenColor(page, "--bf-success"));
+    }
+    await expect(
+      page.locator(`${grid}[data-state="rolled-back"]`).first()
+    ).toHaveCSS("border-color", await tokenColor(page, "--bf-danger"));
+  });
+
+  test("full is deliberately unpainted — the base surface, nothing more", async ({ page }) => {
+    await gotoStates(page);
+    await expect(page.locator('.st-grid [data-state="full"]').first()).toHaveCSS(
+      "border-color",
+      await tokenColor(page, "--bf-border")
+    );
+    expect(await pseudoWidth(page, '.st-grid [data-state="full"]')).toBe("auto");
+  });
+
+  test("precedence: a busy region never paints the empty surface", async ({ page }) => {
+    await gotoStates(page);
+    const box = page.locator(DEMOS.statesBusyEmpty);
+    const toggle = page.locator(DEMOS.statesBusyToggle);
+    // Busy + empty: pending wins — solid border and a spinner, no
+    // centered dashed emptiness.
+    await expect(box).toHaveCSS("border-style", "solid");
+    expect(await box.evaluate((el) => getComputedStyle(el, "::before").width)).toBe("20px");
+    // Settled: the empty surface returns.
+    await toggle.uncheck();
+    await expect(box).toHaveCSS("border-style", "dashed");
+    expect(await box.evaluate((el) => getComputedStyle(el, "::before").width)).toBe("auto");
+  });
+
+  test(".bf-empty-state fills its parent's remaining space", async ({ page }) => {
+    await gotoStates(page);
+    const parent = page.locator(DEMOS.statesFillParent);
+    const child = page.locator(DEMOS.statesEmptyState);
+    const ph = (await parent.boundingBox()).height;
+    const ch = (await child.boundingBox()).height;
+    expect(ph).toBeGreaterThan(100);
+    // The panel takes the parent's block size — not a panel floating
+    // inside it (the v6 flex column only sized to its content).
+    expect(Math.abs(ch - ph), "empty state fills the parent").toBeLessThan(4);
   });
 });
 

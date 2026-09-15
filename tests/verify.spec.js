@@ -207,6 +207,24 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       broken: [`<main><h1>One</h1></main><main><h1>Two</h1></main>`],
       fixed: `<main><h1>One</h1></main>`,
     },
+    {
+      id: "state-conflict",
+      broken: [
+        // Two states in one attribute — the precedence table, not the
+        // attribute, decides what shows.
+        `<section class="bf-state" data-state="loading empty" role="status">Both</section>`,
+        // A value outside the documented set (typo).
+        `<section class="bf-state" data-state="loadng" role="status">Typo</section>`,
+      ],
+      fixed: `<section class="bf-state" data-state="loading" role="status" aria-busy="true">Loading</section>`,
+    },
+    {
+      id: "event-contract",
+      broken: [
+        `<div data-bf-tabs><div role="tablist"><button role="tab" aria-controls="nope">One</button></div></div>`,
+      ],
+      fixed: `<div data-bf-tabs><div role="tablist"><button id="t1" role="tab" aria-controls="p1">One</button></div><div id="p1" role="tabpanel" aria-labelledby="t1">Panel</div></div>`,
+    },
   ];
 
   for (const c of CASES) {
@@ -584,7 +602,7 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // budget must exist — a refactor renaming files would otherwise
     // leave it policed only by the family default with less headroom.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(4096);
+    expect(budgets["js/verify-contracts.js"]).toBe(5120);
     expect(budgets["js/barefoot.js"]).toBe(1024);
   });
 });

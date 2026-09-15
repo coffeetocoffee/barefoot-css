@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — States & Events</title>
+  <meta name="description" content="The v7.0 state machine: state families, precedence, the composed empty state, and the bf:* event contract.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/states.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .st-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .st-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .st-grid {
+      display: grid;
+      gap: var(--bf-space-3);
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+    .st-grid .bf-state { min-block-size: 8rem; }
+    .st-grid .bf-state h3 { margin-block: 0; font-size: var(--bf-type-md); }
+    .st-grid .bf-state p { margin-block: 0; }
+    .st-fill-parent { display: grid; block-size: 22rem; border: 1px dashed var(--bf-info); border-radius: var(--bf-radius); }
+    .st-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .st-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .st-log { max-block-size: 14rem; overflow-y: auto; margin-block: 0; }
+    .st-log:empty::after { content: "Interact with anything on this page — every bf:* event lands here."; color: var(--bf-muted); }
+    .st-events-table { width: 100%; }
+  </style>
+</head>
+<body>
+  <header class="bf-container st-head">
+    <p class="bf-overline">Barefoot CSS v7.0</p>
+    <h1>States &amp; Events</h1>
+    <p>The state machine: one <code>data-state</code> value, painted by family, with a defined precedence when several conditions hold. Plus the <code>bf:*</code> event contract — every opt-in module reports what it did, so a page can extend it instead of forking it.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="playground.html">playground</a> · <a href="../docs/states.md">states docs</a> · <a href="../docs/javascript.md#events-v70">events docs</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- State families -->
+    <section aria-labelledby="st-families-title">
+      <h2 id="st-families-title">The families</h2>
+      <p class="bf-muted">Every documented <code>data-state</code> value, painted by its family. The region's own text is the real status; the paint only reinforces it.</p>
+      <div class="st-grid">
+        <section class="bf-state" data-state="loading" role="status" aria-busy="true">
+          <h3>loading</h3>
+          <p>Nothing has arrived yet.</p>
+        </section>
+        <section class="bf-state" data-state="refreshing" role="status" aria-busy="true">
+          <h3>refreshing</h3>
+          <p>Content held while it reloads.</p>
+        </section>
+        <section class="bf-state" data-state="optimistic" role="status" aria-busy="true">
+          <h3>optimistic</h3>
+          <p>Saved locally — server confirmation pending.</p>
+        </section>
+        <section class="bf-state" data-state="error" role="alert">
+          <h3>error</h3>
+          <p>The request failed; retry.</p>
+        </section>
+        <section class="bf-state" data-state="rolled-back" role="alert">
+          <h3>rolled-back</h3>
+          <p>The server rejected it; reverted to the draft.</p>
+        </section>
+        <section class="bf-state" data-state="empty" role="status">
+          <h3>empty</h3>
+          <p>Nothing here yet.</p>
+        </section>
+        <section class="bf-state" data-state="stale" role="status">
+          <h3>stale</h3>
+          <p>Shown, but known to be outdated.</p>
+        </section>
+        <section class="bf-state" data-state="partial" role="status">
+          <h3>partial</h3>
+          <p>An incomplete set, not an empty one.</p>
+        </section>
+        <section class="bf-state" data-state="fresh" role="status">
+          <h3>fresh</h3>
+          <p>Updated a moment ago.</p>
+        </section>
+        <section class="bf-state" data-state="confirmed" role="status">
+          <h3>confirmed</h3>
+          <p>The optimistic change stuck.</p>
+        </section>
+        <section class="bf-state" data-state="full" role="status">
+          <h3>full</h3>
+          <p>Deliberately unpainted — nothing to flag.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- Precedence -->
+    <section aria-labelledby="st-precedence-title">
+      <h2 id="st-precedence-title">Don't show empty while loading</h2>
+      <p class="bf-muted">A region still pending never paints the empty surface. Toggle the busy signal on this empty region — <code>aria-busy="true"</code> wins, because "nothing here" about data that has not arrived is a lie.</p>
+      <label>
+        <input type="checkbox" id="st-busy-toggle" checked>
+        Region is pending (<code>aria-busy="true"</code>)
+      </label>
+      <section class="bf-state" data-state="empty" role="status" id="st-busy-empty" aria-busy="true">
+        <h3>No projects yet</h3>
+        <p>Projects load on open — this panel stays pending until they land.</p>
+      </section>
+    </section>
+
+    <!-- Composed empty state -->
+    <section aria-labelledby="st-empty-title">
+      <h2 id="st-empty-title"><code>.bf-empty-state</code> — the panel is the space</h2>
+      <p class="bf-muted">A decorative glyph, a heading, an explanation, and the way out — grid-centered, filling the parent's remaining space. The dashed frame below is the parent's definite block size; the panel inside takes all of it.</p>
+      <div class="st-fill-parent" id="st-fill">
+        <div class="bf-empty-state" id="st-empty-state">
+          <span aria-hidden="true">◌</span>
+          <h3>No projects yet</h3>
+          <p>Create your first project, or import one from a template.</p>
+          <div class="bf-row bf-gap-2">
+            <button type="button" data-variant="primary">New project</button>
+            <button type="button" data-variant="ghost">Import</button>
+          </div>
+        </div>
+      </div>
+      <h3>Markup</h3>
+      <div class="st-code"><code>&lt;div style="display: grid; block-size: 22rem"&gt;
+  &lt;div class="bf-empty-state"&gt;
+    &lt;span aria-hidden="true"&gt;◌&lt;/span&gt;
+    &lt;h3&gt;No projects yet&lt;/h3&gt;
+    &lt;p&gt;Create your first project, or import one from a template.&lt;/p&gt;
+    &lt;button type="button" data-variant="primary"&gt;New project&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></div>
+    </section>
+
+    <!-- Events -->
+    <section aria-labelledby="st-events-title">
+      <h2 id="st-events-title">The <code>bf:*</code> event contract</h2>
+      <p class="bf-muted">Act with any surface below — switch the theme, change the tab, sort the table, remove a chip, dismiss the alert, open the toast. Every module reports what it did as a bubbling <code>CustomEvent</code>; the log is one <code>document</code> listener.</p>
+
+      <div class="bf-row bf-gap-3 bf-align-start" style="align-items: flex-start">
+        <div style="flex: 1 1 24rem; min-inline-size: 0">
+          <div data-bf-tabs id="st-tabs">
+            <div role="tablist" aria-label="Deploy targets">
+              <button id="st-tab-1" role="tab" aria-controls="st-panel-1" aria-selected="true">Production</button>
+              <button id="st-tab-2" role="tab" aria-controls="st-panel-2" aria-selected="false">Staging</button>
+              <button id="st-tab-3" role="tab" aria-controls="st-panel-3" aria-selected="false">Preview</button>
+            </div>
+            <div id="st-panel-1" role="tabpanel" aria-labelledby="st-tab-1" tabindex="0"><p>Production deploys are locked behind a manual approval.</p></div>
+            <div id="st-panel-2" role="tabpanel" aria-labelledby="st-tab-2" tabindex="0"><p>Staging rebuilds on every push to <code>main</code>.</p></div>
+            <div id="st-panel-3" role="tabpanel" aria-labelledby="st-tab-3" tabindex="0"><p>Preview environments expire after 48 hours.</p></div>
+          </div>
+
+          <table class="st-events-table" data-bf-sort>
+            <caption>Click a header to sort — <code>bf:sort</code> reports the column and direction.</caption>
+            <thead><tr>
+              <th><button type="button">Service</button></th>
+              <th><button type="button">Deploys</button></th>
+            </tr></thead>
+            <tbody>
+              <tr><td>api</td><td>12</td></tr>
+              <tr><td>web</td><td>3</td></tr>
+              <tr><td>worker</td><td>5</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Stack</h3>
+          <p class="bf-row bf-gap-2">
+            <span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>
+            <span data-chip>js<button type="button" data-chip-remove aria-label="Remove js">×</button></span>
+            <span data-chip>a11y<button type="button" data-chip-remove aria-label="Remove a11y">×</button></span>
+          </p>
+
+          <div data-alert="danger" role="alert" id="st-alert">
+            <p>Deploy failed.</p>
+            <button type="button" data-alert-dismiss aria-label="Dismiss the deploy failure">×</button>
+          </div>
+
+          <button type="button" popovertarget="st-toast">Show toast</button>
+          <div popover="manual" id="st-toast" data-kind="toast" data-duration="2500" role="status">
+            <p>Deploy succeeded.</p>
+            <button type="button" popovertarget="st-toast">Close</button>
+          </div>
+        </div>
+
+        <div style="flex: 1 1 20rem; min-inline-size: 0">
+          <h3 id="st-log-title">Event log</h3>
+          <ol class="st-log" id="st-log" aria-labelledby="st-log-title"></ol>
+          <h3>Listener</h3>
+          <div class="st-code"><code>document.addEventListener(
+  "bf:themechange" /* … */,
+  (e) =&gt; log(e.type, e.detail)
+);</code></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+
+    const log = document.getElementById("st-log");
+    function entry(type, detail) {
+      const li = document.createElement("li");
+      const keys = Object.values(detail).map((v) =>
+        v && typeof v === "object" ? v.id || "element" : String(v)
+      );
+      li.textContent = `${type} — ${keys.join(", ")}`;
+      log.prepend(li);
+      while (log.children.length > 12) log.lastChild.remove();
+    }
+
+    for (const type of [
+      "bf:themechange",
+      "bf:tabactivate",
+      "bf:sort",
+      "bf:chipremove",
+      "bf:alertdismiss",
+      "bf:toastdismiss",
+    ]) {
+      document.addEventListener(type, (e) => entry(e.type, e.detail));
+    }
+
+    // Precedence toggle: the busy signal suppresses the empty paint.
+    const busyToggle = document.getElementById("st-busy-toggle");
+    const busyEmpty = document.getElementById("st-busy-empty");
+    busyToggle.addEventListener("change", () => {
+      if (busyToggle.checked) busyEmpty.setAttribute("aria-busy", "true");
+      else busyEmpty.removeAttribute("aria-busy");
+    });
+  </script>
+</body>
+</html>

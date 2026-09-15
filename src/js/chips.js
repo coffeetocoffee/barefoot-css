@@ -19,7 +19,10 @@ import { removeOnClick } from "./remove-on-click.js";
 arm("chips");
 
 export function initChips(root = document) {
-  removeOnClick(root, "chips", "[data-chip]", "[data-chip-remove]");
+  removeOnClick(root, "chips", "[data-chip]", "[data-chip-remove]", {
+    type: "bf:chipremove",
+    key: "chip",
+  });
 }
 
 onDomReady(() => initChips());

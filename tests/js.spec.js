@@ -674,3 +674,159 @@ test.describe("opt-in JS: theme persistence", () => {
     expect(stored).toBeNull();
   });
 });
+
+test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
+  const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+  /* Subscribe on document before acting; the events bubble and report
+     what the module did. Elements in detail are serialized in-page —
+     a DOM node cannot cross the Playwright boundary. */
+  async function armEvents(page, types) {
+    await page.evaluate((types) => {
+      window.__bfEvents = [];
+      const strip = (v) =>
+        v instanceof Element
+          ? { tag: v.tagName.toLowerCase(), text: v.textContent.trim().slice(0, 40) }
+          : v;
+      for (const t of types) {
+        document.addEventListener(t, (e) => {
+          window.__bfEvents.push({
+            type: e.type,
+            detail: Object.fromEntries(
+              Object.entries(e.detail).map(([k, v]) => [k, strip(v)])
+            ),
+          });
+        });
+      }
+    }, types);
+  }
+
+  const events = (page) => page.evaluate(() => window.__bfEvents);
+
+  test("bf:themechange reports the new theme and the one it replaced", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:themechange"]);
+    await page.getByRole("button", { name: "Dark" }).click();
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      { type: "bf:themechange", detail: { theme: "dark", from: "auto" } },
+    ]);
+    await page.getByRole("button", { name: "Contrast" }).click();
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      { type: "bf:themechange", detail: { theme: "dark", from: "auto" } },
+      { type: "bf:themechange", detail: { theme: "contrast", from: "dark" } },
+    ]);
+  });
+
+  test("bf:tabactivate reports the index plus the tab and panel ids", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:tabactivate"]);
+    await page.locator('[data-bf-tabs] [role="tab"]').nth(1).click();
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      {
+        type: "bf:tabactivate",
+        detail: { index: 1, tab: "tab-details", panel: "panel-details" },
+      },
+    ]);
+  });
+
+  test("bf:sort reports the column index and direction on each click", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:sort"]);
+    const points = page
+      .locator(`${DEMOS.demoSortTable} thead th button`)
+      .nth(2);
+    await points.click();
+    await points.click();
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      { type: "bf:sort", detail: { column: 2, direction: "asc" } },
+      { type: "bf:sort", detail: { column: 2, direction: "desc" } },
+    ]);
+  });
+
+  test("bf:chipremove fires on the chip while it is still in the tree", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:chipremove"]);
+    await page
+      .locator(`${DEMOS.demoChips} [data-chip-remove][aria-label="Remove css"]`)
+      .click();
+    const got = await events(page);
+    expect(got).toHaveLength(1);
+    expect(got[0].type).toBe("bf:chipremove");
+    expect(got[0].detail.chip.tag).toBe("span");
+    expect(got[0].detail.chip.text).toContain("css");
+  });
+
+  test("bf:alertdismiss fires when the notice is dismissed", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:alertdismiss"]);
+    await page.locator("[data-alert-dismiss]").first().click();
+    const got = await events(page);
+    expect(got).toHaveLength(1);
+    expect(got[0].type).toBe("bf:alertdismiss");
+    expect(got[0].detail.alert.tag).toBe("div");
+  });
+
+  test("bf:toastdismiss fires when the timer expires (not on manual close)", async ({ page }) => {
+    await gotoDemo(page);
+    await armEvents(page, ["bf:toastdismiss"]);
+    await page.locator(DEMOS.toastAutoTrigger).click();
+    // The auto-dismiss toast has a 3s duration; the event fires before
+    // the hide, so a listener still sees the open toast.
+    await expect
+      .poll(async () => (await events(page)).length, { timeout: 8000 })
+      .toBeGreaterThanOrEqual(1);
+    const got = await events(page);
+    expect(got.every((e) => e.type === "bf:toastdismiss")).toBe(true);
+    expect(got[0].detail.toast.tag).toBe("div");
+  });
+
+  test("events are observational: listeners cannot cancel a removal", async ({ page }) => {
+    await gotoDemo(page);
+    await page.evaluate(() => {
+      document.addEventListener("bf:chipremove", (e) => e.preventDefault());
+    });
+    const chip = page.locator(`${DEMOS.demoChips} [data-chip]`).first();
+    const before = await page.locator(`${DEMOS.demoChips} [data-chip]`).count();
+    await chip.locator("[data-chip-remove]").click();
+    await expect
+      .poll(async () => page.locator(`${DEMOS.demoChips} [data-chip]`).count())
+      .toBe(before - 1);
+  });
+
+  test("every emitted event name and payload is documented", () => {
+    // Docs-from-source for the event contract: each name a module
+    // dispatches must appear in docs/javascript.md.
+    const docs = fs.readFileSync(
+      path.join(rootDir, "docs/javascript.md"),
+      "utf8"
+    );
+    for (const name of [
+      "bf:themechange",
+      "bf:tabactivate",
+      "bf:sort",
+      "bf:chipremove",
+      "bf:alertdismiss",
+      "bf:toastdismiss",
+    ]) {
+      expect(docs, `${name} missing from docs/javascript.md`).toContain(name);
+    }
+  });
+
+  test("modules dispatch through the shared emit seam, never ad-hoc CustomEvents", () => {
+    for (const name of [
+      "theme",
+      "tabs",
+      "table-sort",
+      "toast",
+      "remove-on-click",
+    ]) {
+      const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
+      expect(src, `${name}.js dispatches through lifecycle emit`).toContain(
+        'from "./lifecycle.js"'
+      );
+      expect(src, `${name}.js builds its own CustomEvent`).not.toContain(
+        "new CustomEvent"
+      );
+    }
+  });
+});

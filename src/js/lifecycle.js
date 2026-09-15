@@ -12,13 +12,19 @@
      calls it when it arms against markup that uses a deprecated
      surface; pages that never touch it stay silent. Set-backed per
      module instance — one page load = at most one warning per key.
-   - arm(name) / isArmed(name): the arming registry Verify reads. A
-     behavior module records itself at import ("imported = armed"), so
-     js/verify.js can tell a dead-looking control whose module never
-     loaded from one whose module did. Module-instance state, not DOM
-     attributes — it needs no page surface and survives fixture
-     document swaps. Only modules a registry rule audits arm today
-     (chips, alert-dismiss, toast); others join if rules need them.
+    - arm(name) / isArmed(name): the arming registry Verify reads. A
+      behavior module records itself at import ("imported = armed"), so
+      js/verify.js can tell a dead-looking control whose module never
+      loaded from one whose module did. Module-instance state, not DOM
+      attributes — it needs no page surface and survives fixture
+      document swaps. Only modules a registry rule audits arm today
+      (chips, alert-dismiss, toast); others join if rules need them.
+    - emit(target, type, detail): the bf:* event contract (v7.0). Every
+      behavior module dispatches a namespaced CustomEvent when it acts,
+      with a documented payload, so a page can extend a module instead
+      of forking it. Bubbling and non-cancelling: the event reports what
+      happened, it never changes what happens — listeners observe, they
+      don't vote.
 
     Ships as-is like its siblings; behavior modules import it relatively,
     so dist/js/ travels as one directory — which it always is, being a
@@ -57,4 +63,12 @@ export function arm(name) {
 
 export function isArmed(name) {
   return armedModules.has(name);
+}
+
+/* Dispatch a bf:* event (v7.0). Bubbles, so a listener on document
+   hears every module's report; detail carries the documented payload.
+   Never cancelable — modules act, events report; a listener that could
+   veto would make module behavior depend on page wiring. */
+export function emit(target, type, detail) {
+  target.dispatchEvent(new CustomEvent(type, { bubbles: true, detail }));
 }

@@ -28,7 +28,7 @@
    import { initTableSort } from "…"        → manual init for dynamic content
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, emit } from "./lifecycle.js";
 
 /* Per-table toggle state, keyed weakly — gone when the table is. */
 const sortState = new WeakMap();
@@ -76,6 +76,10 @@ function sortColumn(table, col) {
       th.removeAttribute("aria-sort");
     }
   }
+
+  // Report the sort (v7.0 event contract): the column index and the
+  // direction, so a page can sync its own UI to the table's order.
+  emit(table, "bf:sort", { column: col, direction: dir });
 }
 
 export function initTableSort(root = document) {

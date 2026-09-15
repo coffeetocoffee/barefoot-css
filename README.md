@@ -85,25 +85,27 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.21KB | **10.54KB** | 9.21KB |
-| `js/verify-contracts.js` | 11.51KB | **3.84KB** | 3.27KB |
+| `js/verify-contracts.js` | 13.46KB | **4.40KB** | 3.76KB |
 | `index.css` | 11.45KB | **3.04KB** | 2.60KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
-| `js/table-sort.js` | 3.28KB | **1.51KB** | 1.26KB |
+| `js/table-sort.js` | 3.48KB | **1.61KB** | 1.35KB |
+| `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
+| `js/lifecycle.js` | 2.95KB | **1.38KB** | 1.15KB |
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
-| `js/theme.js` | 2.80KB | **1.31KB** | 1.06KB |
+| `js/tabs.js` | 2.88KB | **1.28KB** | 1.08KB |
 | `js/popover-menu.js` | 2.46KB | **1.20KB** | 1.00KB |
-| `js/tabs.js` | 2.51KB | **1.13KB** | 0.95KB |
-| `js/lifecycle.js` | 2.19KB | **1.07KB** | 0.89KB |
+| `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
-| `js/toast.js` | 2.77KB | **1.02KB** | 0.83KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
+| `components/states.css` | 2.73KB | **0.77KB** | 0.67KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
+| `js/remove-on-click.js` | 1.25KB | **0.66KB** | 0.54KB |
 | `components/table.css` | 1.80KB | **0.64KB** | 0.54KB |
 | `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
@@ -115,24 +117,22 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/carousel.css` | 1.19KB | **0.50KB** | 0.41KB |
 | `components/dialog.css` | 1.13KB | **0.49KB** | 0.42KB |
 | `components/accordion.css` | 1.44KB | **0.49KB** | 0.38KB |
-| `js/remove-on-click.js` | 0.85KB | **0.48KB** | 0.39KB |
-| `components/states.css` | 1.23KB | **0.47KB** | 0.38KB |
 | `js/reveal.js` | 0.88KB | **0.46KB** | 0.38KB |
 | `components/forms-validation.css` | 1.65KB | **0.45KB** | 0.36KB |
 | `components/data-display.css` | 1.33KB | **0.45KB** | 0.36KB |
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
 | `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
+| `js/chips.js` | 0.72KB | **0.43KB** | 0.36KB |
 | `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
 | `components/table-adaptive.css` | 0.99KB | **0.41KB** | 0.32KB |
 | `themes/seed-system.css` | 1.48KB | **0.41KB** | 0.35KB |
 | `components/forms-checks.css` | 1.07KB | **0.41KB** | 0.31KB |
-| `js/chips.js` | 0.67KB | **0.41KB** | 0.33KB |
 | `js/return-focus.js` | 0.65KB | **0.40KB** | 0.30KB |
 | `components/media.css` | 0.92KB | **0.39KB** | 0.31KB |
+| `js/alert-dismiss.js` | 0.69KB | **0.39KB** | 0.32KB |
 | `components/nav-adaptive.css` | 0.75KB | **0.38KB** | 0.29KB |
 | `components/pagination.css` | 0.86KB | **0.38KB** | 0.28KB |
 | `components/chip.css` | 0.81KB | **0.37KB** | 0.29KB |
-| `js/alert-dismiss.js` | 0.63KB | **0.36KB** | 0.32KB |
 | `components/tabs.css` | 0.78KB | **0.35KB** | 0.26KB |
 | `components/timeline.css` | 0.84KB | **0.34KB** | 0.27KB |
 | `components/layout-stagger.css` | 1.02KB | **0.34KB** | 0.29KB |
@@ -207,7 +207,8 @@ build/      bundler + size budget + preview server
 |---|---|
 | [Theming](docs/theming.md) | Tokens, `light-dark()`, `data-bf-theme`, starter themes |
 | [Components](docs/components.md) | Markup, behavior, JS status |
-| [JavaScript](docs/javascript.md) | Opt-in modules |
+| [JavaScript](docs/javascript.md) | Opt-in modules + the `bf:*` event contract |
+| [States](docs/states.md) | State machine, empty states, validation summaries |
 | [Adaptive](docs/adaptive.md) / [Layout](docs/layout.md) | Container-aware components & primitives |
 | [Paint & paper](docs/paint-paper.md) | Validation, sticky tables, print |
 | [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |

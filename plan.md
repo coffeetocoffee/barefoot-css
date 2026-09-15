@@ -1,8 +1,9 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-12 — v6.7.0 "Architecture & Global" built &
-verified (declarative form states, usage audits, script-aware type, global
-navigation guidance); v6.6.0 "Primitives, Patterns & On-Ramp" shipped_
+_Last updated: 2026-09-15 — v7.0.0 "State Machine & Events" built &
+verified (state vocabulary + precedence, composed empty state, the
+`bf:*` event contract, two new Verify rules); v6.7.0 "Architecture &
+Global" shipped_
 
 ## Snapshot
 
@@ -56,7 +57,26 @@ navigation guidance); v6.6.0 "Primitives, Patterns & On-Ramp" shipped_
   `page-structure` usage audits, opt-in `script-type.css` with CJK and
   Arabic-family tokens, and global navigation guidance in
   `docs/architecture.md`.
-- **History:** milestones 0.1 → 6.7.0 shipped.
+- **Built & verified:** **v7.0.0 — "State Machine & Events"** (2026-09-15;
+  tag = maintainer action). The v7 foundation: the full `data-state`
+  vocabulary with precedence `loading > error > empty > partial > full` and
+  the freshness / optimistic-mutation axes (opt-in `states.css`); the one
+  hard paint rule — a busy region never renders the empty surface; the
+  `.bf-empty-state` composition that fills its parent; the `bf:*` event
+  contract (`bf:themechange`, `bf:tabactivate`, `bf:sort`, `bf:chipremove`,
+  `bf:alertdismiss`, `bf:toastdismiss` — bubbling, observational, documented
+  payloads); and two new Verify rules (`state-conflict`, `event-contract`).
+  Proven on `demo/states.html` (own page — conformance baselines untouched),
+  pinned by the v7.0 suites. Full matrix below; `npm run check` green.
+- **Verification (2026-09-15, v7.0 matrix):** Chromium 283 passed / 2
+  engine-gated skips · Firefox 248 / 12 · WebKit 253 / 7 — zero failures;
+  visual regression green on all three (win32 baselines untouched — the
+  new proof page ships beside the conformance demo, not inside it); axe
+  green including the states page in its busy and settled-empty states.
+  The registry budget moved 4096 → 5120 bytes gzip, deliberately in review
+  (two new rules, quoted docs prose), and the Phase 4 budget test pins the
+  new number.
+- **History:** milestones 0.1 → 7.0.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -243,9 +263,93 @@ and `.bf-*` utilities.
   missing primitives, recipes, RTL), long bets (declarative forms, data
   grid, usage audit, cross-doc VT, script-aware type). See the
   [vNext roadmap](#vnext-roadmap--v63--v68-draft-2026-09-11) section.
-- **Parked candidates** (not planned): `:has()` content-driven
-  morphogenesis and anchor-laid-out layering (v5.3); engine-gated test
-  skips un-block as floors land (watch-list).
+
+## v7 roadmap — v7.0 → v7.5 (draft, 2026-09-12)
+
+> Combined from B.txt (tactical/DX) + C.txt (structural). Principle: "CSS presents state. JS mutates state."
+> Every release stays on-thesis: opt-in by import, never in frozen `full.css` (ADR-0008),
+> degrade by omission, every a11y contract gets a Verify rule or explicit bring-your-own statement,
+> every gate pinned by test. `index.css` budget untouched.
+
+**v7.0 — "State Machine & Events" (foundation, must come first)** ✅
+(built & verified 2026-09-15; tag = maintainer action)
+
+- **States v2 with precedence:** `loading > error > empty > partial > full`, plus
+  `stale/refreshing/fresh` and `optimistic → confirmed → rolled-back`. "Don't show
+  empty while loading" as contract. Extends `components/states.css`, opt-in.
+- **`.bf-empty-state` composition:** grid-centered icon + headline + p + CTA that fills
+  remaining parent space. No more hand-rolled flex centering.
+- **`bf:*` CustomEvent contract:** every opt-in JS (`theme`, `tabs`, `table-sort`, `toast`,
+  `chips`, `alert-dismiss`) dispatches a namespaced event with documented payload
+  (`bf:themechange`, `bf:sort`, `bf:tabactivate`, …). Modules become extendable, not dead ends.
+- Verify: `state-conflict`, `event-contract`. Docs: `docs/states.md` v2, the Events
+  section in `docs/javascript.md`. Non-goal: no new components, no virtualization.
+- Parked (moved from Next, not in v7 scope): `:has()` content-driven morphogenesis and
+  anchor-laid-out layering (v5.3); engine-gated test skips un-block as floors land (see Watch-list).
+
+**v7.1 — "Data Story" (needs v7.0)**
+
+- **Density system:** `data-density` / `--bf-space-scale: 1 / 0.75` cascading to padding
+  and type without breaking layout. Comfortable/compact globally.
+- **Sort + selection contracts:** `aria-sort` on `<th>` audited (not decoration),
+  `.bf-sort-asc/desc` via `data-*`, row selection `aria-selected / aria-multiselectable`,
+  bulk-actions-on-selection pattern.
+- **Composed fixture:** filter-bar + table + empty-state + pagination as one tested recipe.
+  `js/table-sort.js` graduates from footnote to ADR + events + docs section.
+- Verify: `aria-sort-wired`, `selection-complete`. Non-goal: no virtualization, no charting.
+
+**v7.2 — "Form Architecture" (needs v7.0 + v7.1)**
+
+- **Async contract:** `data-async-pending` + spinner + live-region + debounce that doesn't
+  fight native `:user-invalid`. "Username taken" must work alongside `required/pattern`.
+- **Wizard/stepper:** step ownership, `aria-current="step"`, back-preserves-input guidance.
+- **Field-array, upload progress, fieldset opinion:** "add another phone", `forms-file.css`
+  progress story, `<fieldset>/<legend>` density guidance.
+- Strict boundary documented: Field B shows iff Field A checked = JS sets `data-state`,
+  CSS only reveals. Ban Rube Goldberg `:has()` chains.
+- Verify: `async-live`, `stepper-complete`. Non-goal: no framework bindings.
+
+**v7.3 — "Keyboard & A11y Beyond Component" (needs real data + forms)**
+
+- **Roving-focus micro-JS (<1KB):** menus/tablists get arrow-key navigation. Pure-CSS
+  popover documented as mouse/tap-only until module loads — no handwaving "accessible
+  by default".
+- **Per-pattern keyboard maps:** sort roving focus, filter Esc-to-clear,
+  dialog-in-dialog focus handling.
+- **Adaptive SR story:** `<table>` → cards at container width is a semantic shift; add
+  narration / role guidance. Add `prefers-contrast` (distinct from forced-colors),
+  `prefers-reduced-transparency/data`. Audit reading order *after* container reflow.
+- Verify: `roving-focus`, `reading-order-after-reflow`.
+
+**v7.4 — "Resilience & Coexistence" (independent, push late)**
+
+- **Fluid i18n primitives:** `min/max/fit-content + clamp()` `.bf-elastic` buttons/cards
+  that survive German +30% and user content. Expansion kills more layouts than direction.
+- **Side-by-side contract:** `@layer` coexistence with Tailwind preflight / Bootstrap
+  reboot / existing `:root`, CDN+npm hybrid, `@import` vs `<link>` tradeoffs.
+- **Print — full or cut:** `@page`, break-before/orphans/widows, print-this-table column
+  selection, form-print. No shallow middle.
+- Verify: `coexistence-clean`. Non-goal: no Shadow-DOM injection, no framework adapters yet.
+
+**v7.5 — "DX Governance" (polices everything above, ships last)**
+
+- **`.bf-debug` audit mode:** outline layer boundaries, flag deep `:has()` in red (perf),
+  flag orphan `data-state` without hook. Makes architecture visible.
+- **CSS `warnOnce`:** dev-only audit for deprecated class/token/attr
+  ("uses `--bf-old`, aliased since 4.2, dies in 7.0"). Split Verify: contracts vs deprecations.
+- **`perf-budget.mjs`:** parse/eval, `:has()` recalc, container-query, `view()` timeline,
+  sticky mask paint — not just gzip bytes.
+- **Recipe fixtures:** every `recipes.md` pattern gets `tests/fixtures/*.html`,
+  matrix-tested + visually baselined so prose can't drift.
+- **Acceptance gate:** one monstrous dashboard — 500 rows × 15 cols, wizard form,
+  DE/AR translations, keyboard-only navigable. Whatever needs a hack = v7.6 scope.
+
+### Roadmap guardrails (v7, every release)
+
+- Opt-in by import · never in `full.css` · `index.css` budget untouched
+- `data-*` additions update `docs/api.md` both directions (audit stays green)
+- New demo furniture gets its own page so conformance baselines stay untouched
+- No virtualized grid, no wrappers, no build step (Non-goals fence holds)
 
 ## vNext roadmap — v6.3 → v6.8 (draft, 2026-09-11)
 

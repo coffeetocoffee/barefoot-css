@@ -62,6 +62,8 @@ that quote drifts. Seed rules:
 | `nav-complete-contract` | hamburger toggle points at an id'd direct `<ul>` of its nav | 6.1 |
 | `state-live-contract` | loading/empty/error state has live-region semantics and loading has `aria-busy` | 6.5 |
 | `validation-summary-contract` | error summary is assertive, focusable, and owned by a form | 6.5 |
+| `state-conflict` | a `.bf-state` whose `data-state` is not one documented value — a typo, or two states in one attribute | 7.0 |
+| `event-contract` | a tab's `aria-controls` resolves, so the `bf:tabactivate` payload is truthful | 7.0 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -270,6 +272,48 @@ axe and the application.
 
 <!-- ✓ fixed -->
 <main><h1>One</h1></main>
+```
+
+### `state-conflict`
+
+`data-state` is single-valued. Two states written into one attribute (or a
+value that is not in the documented set) means the attribute is trying to do
+the precedence table's job — write one value, the highest that applies.
+
+```html
+<!-- ✗ broken: both loading and empty at once — the precedence table, not
+     the attribute, decides what shows -->
+<section class="bf-state" data-state="loading empty" role="status">…</section>
+
+<!-- ✗ broken: a value the layer does not paint -->
+<section class="bf-state" data-state="loadng" role="status">…</section>
+
+<!-- ✓ fixed: one value, loading wins while the request is in flight -->
+<section class="bf-state" data-state="loading" role="status" aria-busy="true">…</section>
+```
+
+### `event-contract`
+
+The `bf:tabactivate` payload names the active tab and panel by id — a tab
+whose `aria-controls` points at nothing dispatches an event a listener cannot
+act on, and the module hides a panel that does not exist.
+
+```html
+<!-- ✗ broken: aria-controls resolves to no id in the document -->
+<div data-bf-tabs>
+  <div role="tablist" aria-label="Sections">
+    <button id="tab-1" role="tab" aria-controls="panel-ghost">One</button>
+  </div>
+  <div id="panel-1" role="tabpanel" aria-labelledby="tab-1">…</div>
+</div>
+
+<!-- ✓ fixed -->
+<div data-bf-tabs>
+  <div role="tablist" aria-label="Sections">
+    <button id="tab-1" role="tab" aria-controls="panel-1">One</button>
+  </div>
+  <div id="panel-1" role="tabpanel" aria-labelledby="tab-1">…</div>
+</div>
 ```
 
 ## CI contract-packs

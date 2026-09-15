@@ -275,4 +275,45 @@ export const VERIFY_RULES = [
       "It warns when a `div[role=\"button\"]` is used instead of a native button or when a page has more than one `main` landmark.",
     ],
   },
+
+  {
+    id: "state-conflict",
+    select: ".bf-state[data-state]",
+    check(el) {
+      const VALID = new Set([
+        "loading", "refreshing", "error", "empty", "partial", "full",
+        "stale", "fresh", "optimistic", "confirmed", "rolled-back", "invalid",
+      ]);
+      const state = el.getAttribute("data-state") || "";
+      // A value outside the set is either a typo or two states written
+      // into one attribute — the precedence table, not the attribute,
+      // decides what shows when several conditions hold.
+      if (!VALID.has(state)) {
+        return `data-state="${state}" is not one documented state — write a single value; when several conditions hold, precedence is loading > error > empty > partial > full`;
+      }
+      return null;
+    },
+    fix: "write one documented data-state value; when several conditions hold, the precedence is loading > error > empty > partial > full (docs/states.md)",
+    docs: "docs/states.md",
+    quote: [
+      "`data-state` stays single-valued; when several conditions hold at once the precedence is loading > error > empty > partial > full, with freshness (`stale` → `refreshing` → `fresh`) and an optimistic mutation cycle (`optimistic` → `confirmed` → `rolled-back`) as the other two axes.",
+    ],
+  },
+
+  {
+    id: "event-contract",
+    select: '[data-bf-tabs] [role="tab"][aria-controls]',
+    check(el, ctx) {
+      const id = el.getAttribute("aria-controls");
+      if (!ctx.byId(id)) {
+        return `aria-controls="${id}" resolves to nothing, so the bf:tabactivate payload names a panel that does not exist`;
+      }
+      return null;
+    },
+    fix: "point aria-controls at the existing panel id so the bf:tabactivate payload is truthful (docs/javascript.md, Events)",
+    docs: "docs/javascript.md",
+    quote: [
+      "The `bf:tabactivate` payload names the active tab and panel by id — a tab whose `aria-controls` points at nothing dispatches an event a listener cannot act on.",
+    ],
+  },
 ];

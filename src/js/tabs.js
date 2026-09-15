@@ -16,7 +16,7 @@
    import { initTabs } from "…"     → manual init for dynamic content
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, emit } from "./lifecycle.js";
 import { createRover } from "./roving-index.js";
 
 export function initTabs(root = document) {
@@ -43,12 +43,21 @@ export function initTabs(root = document) {
     group.setAttribute("data-bf-tabs-js", "");
 
     const select = (tab) => {
+      const index = tabs.indexOf(tab);
       tabs.forEach((t, i) => {
         const active = t === tab;
         t.setAttribute("aria-selected", String(active));
         t.tabIndex = active ? 0 : -1;
         panels[i].hidden = !active;
       });
+      // Report the activation (v7.0 event contract): index plus the tab
+      // and panel ids when the markup names them, so a listener can
+      // correlate the change without re-reading the DOM.
+      emit(
+        group,
+        "bf:tabactivate",
+        { index, tab: tab.id || null, panel: panels[index]?.id || null }
+      );
     };
 
     const rove = createRover(

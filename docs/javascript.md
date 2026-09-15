@@ -50,6 +50,36 @@ import { initTabs } from "barefoot-css/js/tabs.js";
 initTabs(document.getElementById("app"));
 ```
 
+## Events (v7.0)
+
+Every behavior module dispatches a namespaced `CustomEvent` when it acts, so
+a page can extend a module instead of forking it — subscribe on `document`
+(the events bubble) or on the component itself:
+
+| Event | Dispatched by | `detail` |
+|---|---|---|
+| `bf:themechange` | `js/theme.js` (on `document`) | `{ theme, from }` — the new theme and the one it replaced |
+| `bf:tabactivate` | `js/tabs.js` (on the `[data-bf-tabs]` group) | `{ index, tab, panel }` — ids when the markup names them, else `null` |
+| `bf:sort` | `js/table-sort.js` (on the table) | `{ column, direction }` — column index, `"asc"` / `"desc"` |
+| `bf:chipremove` | `js/chips.js` (on the chip, before removal) | `{ chip }` |
+| `bf:alertdismiss` | `js/alert-dismiss.js` (on the alert, before removal) | `{ alert }` |
+| `bf:toastdismiss` | `js/toast.js` (on the toast, before it hides) | `{ toast }` |
+
+```js
+import "barefoot-css/js/barefoot.js";
+
+document.addEventListener("bf:themechange", (e) => {
+  console.log(`theme is now ${e.detail.theme} (was ${e.detail.from})`);
+});
+```
+
+- **Observational, not cancellable.** The module acts, the event reports; a
+  listener that could veto would make module behavior depend on page wiring.
+  React *after* the fact — the DOM is already updated when the event fires
+  (removal events fire while the element is still in the tree, so a listener
+  can read it before it goes).
+- **The payload is only as good as the markup.** The `bf:tabactivate` payload names the active tab and panel by id — a tab whose `aria-controls` points at nothing dispatches an event a listener cannot act on. Verify's `event-contract` rule catches exactly that.
+
 All ten share two internal primitives from `js/lifecycle.js`
 (`onDomReady`, `bindOnce`) — not public API, just plumbing that makes
 every `init*` call idempotent: re-running an init on markup that was

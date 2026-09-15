@@ -16,7 +16,10 @@ import { removeOnClick } from "./remove-on-click.js";
 arm("alert-dismiss");
 
 export function initAlertDismiss(root = document) {
-  removeOnClick(root, "alert-dismiss", "[data-alert]", "[data-alert-dismiss]");
+  removeOnClick(root, "alert-dismiss", "[data-alert]", "[data-alert-dismiss]", {
+    type: "bf:alertdismiss",
+    key: "alert",
+  });
 }
 
 onDomReady(() => initAlertDismiss());

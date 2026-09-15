@@ -4,6 +4,44 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.0.0] — 2026-09-15
+
+### Added
+
+- **State machine & events — the v7 foundation.** `components/states.css`
+  gains the full state vocabulary: `data-state` stays single-valued, with
+  precedence `loading > error > empty > partial > full` when several
+  conditions hold, plus freshness (`stale` → `refreshing` → `fresh`) and an
+  optimistic mutation cycle (`optimistic` → `confirmed` → `rolled-back`).
+  The layer paints the families; the app writes one value. Opt-in, never in
+  frozen `full.css`.
+- **One precedence rule the CSS enforces: don't show empty while loading.** A
+  region carrying both `aria-busy="true"` and `data-state="empty"` renders as
+  pending — an empty panel is a lie about data that has not arrived.
+- **`.bf-empty-state` composition.** Grid-centered glyph + heading +
+  explanation + action that fills its parent's remaining space. No more
+  hand-rolled flex centering.
+- **The `bf:*` event contract.** Every opt-in behavior module dispatches a
+  namespaced, bubbling `CustomEvent` with a documented payload:
+  `bf:themechange`, `bf:tabactivate`, `bf:sort`, `bf:chipremove`,
+  `bf:alertdismiss`, `bf:toastdismiss`. Events are observational (never
+  cancellable) — modules act, listeners react. Modules become extendable
+  instead of dead ends.
+- **Two new Verify rules.** `state-conflict` rejects a `data-state` value that
+  is not one documented state (a typo, or two states written into one
+  attribute); `event-contract` catches a tab whose `aria-controls` resolves to
+  nothing, which would make the `bf:tabactivate` payload a lie. Both quote
+  their docs sentence; both are pinned by test.
+- **Proof page.** `demo/states.html` shows every family, the precedence
+  toggle, the composed empty state, and a live event log — its own page, so
+  the conformance demo's visual baselines stay untouched.
+
+### Changed
+
+- `docs/api.md` extends the `data-state` value list; `docs/states.md` gains
+  the state-machine section; `docs/javascript.md` gains the Events reference;
+  `docs/verify.md` documents the two new rules.
+
 ## [6.7.0] — 2026-09-12
 
 ### Added

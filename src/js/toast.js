@@ -13,7 +13,7 @@
    import "barefoot/js/toast.js"
 */
 
-import { onDomReady, bindOnce, arm } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm, emit } from "./lifecycle.js";
 
 arm("toast");
 
@@ -30,6 +30,9 @@ function initToasts(root = document) {
 
     const dismiss = () => {
       if (timerId) clearTimeout(timerId);
+      // Report the auto-dismiss before hiding (v7.0 event contract):
+      // a listener learns which toast timed out while it is still open.
+      emit(toast, "bf:toastdismiss", { toast });
       toast.hidePopover();
     };
 

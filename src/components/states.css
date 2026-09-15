@@ -1,4 +1,5 @@
-/* Barefoot — async and empty states (v6.5).
+/* Barefoot — async and empty states (v6.5), state machine vocabulary
+   and the composed empty state (v7.0).
    Opt-in composition for content that is loading, empty, or unavailable.
    The author supplies the live-region semantics; CSS never announces or
    hides content on its own.
@@ -9,7 +10,17 @@
    <section class="bf-state" data-state="error" role="alert">…</section>
 
    Error summaries use .bf-error-summary and tabindex="-1" so an async
-   form can move focus to the summary before the first invalid control. */
+   form can move focus to the summary before the first invalid control.
+
+   v7.0 state machine — data-state stays single-valued; when several
+   conditions hold at once the precedence is loading > error > empty >
+   partial > full, with freshness (stale → refreshing → fresh) and an
+   optimistic mutation cycle (optimistic → confirmed → rolled-back) as
+   the other two axes. The application writes one value at a time,
+   picking by that order; the layer paints the families. One precedence
+   rule the CSS enforces itself: a region still pending
+   (aria-busy="true") never paints the empty surface — "don't show empty
+   while loading" (see docs/states.md). */
 @layer components {
   .bf-state {
     display: grid;
@@ -39,11 +50,22 @@
     color: var(--bf-text);
   }
 
-  .bf-state[data-state="loading"] {
+  /* The pending family: loading (nothing yet), refreshing (content
+     held while it reloads), and optimistic (the submitted state is
+     already shown, confirmation pending). Any of them may also be
+     signalled by aria-busy="true" alone — a busy region gets the
+     pending paint whatever its data-state says. */
+  .bf-state[data-state="loading"],
+  .bf-state[data-state="refreshing"],
+  .bf-state[data-state="optimistic"],
+  .bf-state[aria-busy="true"] {
     color: var(--bf-muted);
   }
 
-  .bf-state[data-state="loading"]::before {
+  .bf-state[data-state="loading"]::before,
+  .bf-state[data-state="refreshing"]::before,
+  .bf-state[data-state="optimistic"]::before,
+  .bf-state[aria-busy="true"]::before {
     width: 1.25rem;
     height: 1.25rem;
     border: 2px solid var(--bf-border);
@@ -53,10 +75,54 @@
     content: "";
   }
 
+  /* Optimistic content stays visible (it is the point) — a raised
+     surface marks it as pending confirmation. */
+  .bf-state[data-state="optimistic"] {
+    background: var(--bf-surface-alt);
+  }
+
+  /* The failure family: error (existing) and rolled-back (an optimistic
+     mutation the server rejected — the UI already undid it). */
   .bf-state[data-state="error"],
+  .bf-state[data-state="rolled-back"],
   .bf-error-summary {
     border-color: var(--bf-danger);
     background: var(--bf-danger-subtle);
+  }
+
+  /* Stale: content is shown but known to be outdated — dashed like
+     empty, but left-aligned, because it holds real content. */
+  .bf-state[data-state="stale"] {
+    border-style: dashed;
+    color: var(--bf-muted);
+  }
+
+  /* Partial: a set that is incomplete, not empty — an inline-start
+     bar, not a boxed surface. */
+  .bf-state[data-state="partial"] {
+    border-inline-start: 3px solid var(--bf-info);
+    padding-inline-start: var(--bf-space-3);
+  }
+
+  /* Fresh / confirmed: a positive resolution. The accent is
+     reinforcement only — the region's own text carries the status, so
+     forced-colors keeps the shape and drops the hue. `full` is
+     deliberately unpainted: nothing to flag, nothing to draw. */
+  .bf-state[data-state="fresh"],
+  .bf-state[data-state="confirmed"] {
+    border-color: var(--bf-success);
+    background: color-mix(in oklab, var(--bf-success), transparent 88%);
+  }
+
+  /* The one precedence rule the layer enforces in paint: a pending
+     region never shows the empty surface. aria-busy="true" together
+     with data-state="empty" means the load is still in flight — the
+     empty panel would read "nothing here" about data that has not
+     arrived, so the pending paint wins (docs/states.md). */
+  .bf-state[aria-busy="true"][data-state="empty"] {
+    justify-items: stretch;
+    text-align: start;
+    border-style: solid;
   }
 
   .bf-error-summary {
@@ -70,14 +136,62 @@
     to { transform: rotate(360deg); }
   }
 
+  /* The composed empty state (v7.0): the panel IS the space. A
+     decorative glyph, a heading, an explanation, and the way out —
+     grid-centered, and it fills the parent. Give the parent a definite
+     block size and let this be its only child (a grid or flex parent
+     hands the remaining space over); no hand-rolled centering. */
+  .bf-empty-state {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: var(--bf-space-2);
+    padding: var(--bf-space-8) var(--bf-space-5);
+    text-align: center;
+    color: var(--bf-muted);
+    background: var(--bf-surface);
+    border: var(--bf-border-width) dashed var(--bf-border);
+    border-radius: var(--bf-radius-lg);
+    block-size: 100%;
+    min-block-size: 0;
+  }
+
+  /* Glyph slot — whatever leads the panel (an svg, an emoji) reads as
+     an illustration, sized from the type scale rather than fixed px. */
+  .bf-empty-state > :where(:first-child) {
+    font-size: var(--bf-type-xl);
+    line-height: 1;
+  }
+
+  .bf-empty-state :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 0;
+    color: var(--bf-text);
+  }
+
+  .bf-empty-state p {
+    max-width: 40ch;
+    margin-block: 0;
+  }
+
+  /* Action row breathes above the explanation; buttons keep their own
+     component styling. */
+  .bf-empty-state > :where(.bf-row, button, a) {
+    margin-block-start: var(--bf-space-3);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .bf-state[data-state="loading"]::before {
+    .bf-state[data-state="loading"]::before,
+    .bf-state[data-state="refreshing"]::before,
+    .bf-state[data-state="optimistic"]::before,
+    .bf-state[aria-busy="true"]::before {
       animation: none;
     }
   }
 
   @media (forced-colors: active) {
     .bf-state[data-state="error"],
+    .bf-state[data-state="rolled-back"],
+    .bf-state[data-state="stale"],
     .bf-error-summary {
       border-style: dashed;
     }

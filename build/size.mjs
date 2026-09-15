@@ -16,8 +16,10 @@ const GZIP_BUDGET = 10 * 1024;
 const DEFAULT_JS_BUDGET = 2048;
 const JS_BUDGETS = {
   // The registry is data-heavy by design: every rule quotes the docs
-  // sentence that states its contract (ADR-0015).
-  "js/verify-contracts.js": 4096,
+  // sentence that states its contract (ADR-0015). v7.0's state-conflict
+  // and event-contract rules pushed the quoted prose past 4KB — bumped
+  // deliberately in review, not silently.
+  "js/verify-contracts.js": 5120,
   // The barrel is imports only — growth here means something regressed.
   "js/barefoot.js": 1024,
 };
