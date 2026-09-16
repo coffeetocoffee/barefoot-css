@@ -137,6 +137,27 @@ export const DEMOS = Object.freeze({
     dataStoryCount: "#ds-count",
     dataStoryFilterInput: "#ds-q",
     dataStoryStaticSort: "#ds-static",
+    // v7.4 — form architecture (demo/form-architecture.html).
+    faAsyncGroup: "#fa-async-group",
+    faAsyncStatus: "#fa-async-status",
+    faUsername: "#fa-username",
+    faUsernameError: "#fa-username-error",
+    faWizard: "#fa-wizard",
+    faStepper: "#fa-stepper",
+    faStepProfile: "#fa-step-profile",
+    faNext: "#fa-next",
+    faBack: "#fa-back",
+    faSubmit: "#fa-submit",
+    faDone: "#fa-done",
+    faBillingSame: "#fa-billing-same",
+    faBillingStreet: "#fa-billing-street",
+    faPhones: "#fa-phones",
+    faPhoneAdd: "#fa-phone-add",
+    faPhoneRows: "#fa-phones-rows",
+    faUploadRow: "#fa-upload-row",
+    faUploadInput: "#fa-upload-input",
+    faUploadStatus: "#fa-upload-status",
+    faUploadProgress: "#fa-upload-progress",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -186,6 +207,13 @@ export async function gotoStates(page) {
    the bulk-actions bar. */
 export async function gotoDataStory(page) {
   await page.goto("/demo/data-story.html");
+}
+
+/* Navigate to the form architecture proofs (v7.4) — the async validation
+   contract, the wizard stepper, the conditional-field boundary, the
+   field array, and upload progress. */
+export async function gotoFormArchitecture(page) {
+  await page.goto("/demo/form-architecture.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -212,6 +212,43 @@ test.describe("data story proofs (v7.2)", () => {
     await expect(page.locator(DEMOS.dataStoryEmpty)).toBeVisible();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
+  });
+});
+
+test.describe("form architecture proofs (v7.4)", () => {
+  test("form-architecture page has no axe violations", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("an async field in flight and its taken result stay clean", async ({ page }) => {
+    // The pending state is the feature's whole point: a busy field, a
+    // live region narrating it, and then the failure result — axe must
+    // clear both ends of the round trip.
+    await gotoFormArchitecture(page);
+    await page.locator(DEMOS.faUsername).fill("ada");
+    // Text lands in the same tick as the busy flag — assert it first so
+    // the busy assertion polls from inside the pending window.
+    await expect(page.locator(DEMOS.faAsyncStatus)).toContainText("Checking");
+    await expect(page.locator(DEMOS.faAsyncGroup)).toHaveAttribute("aria-busy", "true");
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+    await expect(page.locator(DEMOS.faUsernameError)).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+
+  test("the wizard's second step and the field array stay clean", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    // A row added to the array is a fresh control that needs a label.
+    await page.getByRole("button", { name: "Add another phone" }).click();
+    await page.locator(`${DEMOS.faPhoneRows} .bf-field-array-row`).nth(1).locator("input").fill("555-0101");
+    // Advance the wizard: a visible panel and a moved current step.
+    await page.locator("#fa-email").fill("lovelace@example.com");
+    await page.locator("#fa-password").fill("hunter2222");
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 });
 

@@ -4,6 +4,53 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.4.0] — 2026-09-16
+
+### Added
+
+- **Form Architecture — the async validation contract.** Opt-in
+  `components/forms-async.css` paints a field whose value is checked
+  somewhere else: set `data-async-pending` + `aria-busy="true"` on the
+  wrapper while the check is in flight, and keep a `role="status"`
+  `.bf-async-text` region in the DOM — swap its text, never toggle the
+  node, so the announcement fires. The failure result is an ordinary
+  `aria-invalid="true"` + `.bf-error-text`, so "username taken" composes
+  with `required`/`pattern` instead of fighting them.
+- **Field arrays.** Opt-in `components/field-array.css` is "add another
+  phone": `.bf-field-array` on a `<fieldset>` with a `<legend>`, one
+  `.bf-field-array-row` per value. The array is JS-owned (append, remove,
+  renumber, move focus off the doomed row); CSS only aligns.
+- **The state boundary, written down.** One observed fact is one `:has()`
+  and is fine in pure CSS; a three-deep condition chain is a state machine
+  pretending to be a stylesheet — JS sets `data-state`, CSS only reveals.
+  Plus the wizard contract: `aria-current="step"` is single-valued and on
+  a step `<li>`, and panels hide with `hidden` (never removed) so back
+  preserves input.
+- **Two new Verify rules.** `async-live` (WCAG 4.1.2) audits a pending
+  field's `aria-busy` + live region — a decorative spinner alone announces
+  nothing. `stepper-complete` (WCAG 4.1.2) audits a wizard stepper's
+  single `aria-current="step"` on a tracked `<li>`. Both quote their docs
+  sentence; both are pinned by test; both stay silent where the surface
+  is absent.
+- **`docs/forms.md`** is the contract layer: the ownership table, the
+  debounce guidance, the wizard pattern, field arrays, upload progress,
+  and the fieldset opinion. ADR-0020 records the decisions.
+- **`demo/form-architecture.html`** proves the async field, the wizard,
+  both sides of the conditional boundary, the field array, and upload
+  progress on one page — its own page, so the conformance demo's visual
+  baselines stay untouched.
+
+### Changed
+
+- `docs/api.md` adds `data-async-pending` and corrects the `data-stepper`
+  row to the shape the CSS and demo have always used (wrapper of an
+  `<ol>`, or the `<ol>` itself). `docs/components.md` gains the Forms and
+  Stepper v7.4 sections; `docs/verify.md` documents the two new rules.
+- The registry budget holds at 6656 bytes gzip (measured 6530 after the
+  two quoted rules) — the v7.2 headroom absorbed them; no bump.
+- No new tokens: the async paint reuses `--bf-info` / `--bf-info-subtle`.
+  `index.css` and `full.css` remain untouched (ADR-0008).
+
 ## [7.2.0] — 2026-09-15
 
 ### Added

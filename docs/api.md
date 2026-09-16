@@ -120,7 +120,7 @@ All component attributes and their valid values:
 | `data-switch` | `input[type="checkbox"]` | (boolean) | 1.1 |
 | `data-accordion` | `<details>` | (boolean) | 0.1 |
 | `data-autogrow` | `<textarea>` | (boolean) | 1.5 |
-| `data-stepper` | `<ol>` | (boolean) | 1.9 |
+| `data-stepper` | wrapper of an `<ol>` (or the `<ol>` itself) | (boolean) | 1.9 |
 | `data-orientation` | `[data-stepper]` | `vertical` | 1.9 |
 | `data-input-group` | wrapper div | (boolean) | 1.9 |
 | `data-alert` | any element | `danger`, `success`, `info`, `warning` | 1.7 |
@@ -184,6 +184,7 @@ All component attributes and their valid values:
 | `data-state` | `.bf-state`, `<form>` | `loading`, `refreshing`, `error`, `empty`, `partial`, `full`, `stale`, `fresh`, `optimistic`, `confirmed`, `rolled-back`, `invalid` — single-valued; precedence when several hold is `loading > error > empty > partial > full` (docs/states.md); `invalid` is the declarative form-state value (docs/architecture.md) | 6.5, 6.7, 7.0 |
 | `data-trend` | `.bf-stat` | `up`, `down` — visual trend color; never the sole status cue | 6.6 |
 | `data-sort` | `<th>` | `asc`, `desc` — the declarative mirror of `aria-sort`; paints the sort arrow without the module (docs/components.md, Table) | 7.2 |
+| `data-async-pending` | field wrapper (`.bf-form-group` or any control wrapper) | (boolean) — a control whose value is being checked async; pair with `aria-busy="true"` and a `role="status"` region (docs/forms.md) | 7.4 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

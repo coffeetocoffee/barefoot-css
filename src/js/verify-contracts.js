@@ -363,6 +363,64 @@ export const VERIFY_RULES = [
   },
 
   {
+    id: "async-live",
+    select: "[data-async-pending]",
+    wcag: "4.1.2",
+    check(el) {
+      // The pending paint is an info tint and a spinner — neither is an
+      // announcement. aria-busy tells assistive technology the field's
+      // value is provisional; the live region tells it what happened.
+      if (el.getAttribute("aria-busy") !== "true") {
+        return 'an async-pending field must carry aria-busy="true" while its check is in flight';
+      }
+      const isLive =
+        el.matches('[role="status"], [role="alert"], [aria-live]') ||
+        !!el.querySelector('[role="status"], [role="alert"], [aria-live]');
+      if (!isLive) {
+        return 'an async-pending field needs a role="status" region announcing the outcome — a decorative spinner alone announces nothing';
+      }
+      return null;
+    },
+    fix: 'give the pending field aria-busy="true" and a role="status" region that announces the check (docs/forms.md, Async validation)',
+    docs: "docs/forms.md",
+    quote: [
+      "An async-pending field carries `aria-busy=\"true\"` and a `role=\"status\"` region that announces the outcome — a decorative spinner alone announces nothing.",
+    ],
+  },
+
+  {
+    id: "stepper-complete",
+    select: "[data-stepper]",
+    wcag: "4.1.2",
+    check(el) {
+      // A stepper with no current step is a completed tracker (a receipt,
+      // a done flow) — the rule audits wizards, which mark where the user
+      // is. Silence there is correct, not a gap.
+      const current = [...el.querySelectorAll('[aria-current="step"]')];
+      if (current.length === 0) return null;
+      if (current.length > 1) {
+        return `the stepper marks ${current.length} steps as current — aria-current="step" belongs on one step at a time`;
+      }
+      // The list is the stepper's structure; the marker belongs to one of
+      // its items. data-stepper may sit on the wrapper or on the <ol>
+      // itself (both shapes ship), so accept either.
+      const list = el.matches("ol") ? el : el.querySelector("ol");
+      if (!list) {
+        return "a wizard stepper tracks its steps in an <ol> — the list semantics are the structure the current step belongs to";
+      }
+      if (!current[0].closest("li")) {
+        return 'aria-current="step" must sit on a step <li> of the stepper\'s list — a current marker on markup the stepper does not track is a step the user is not on';
+      }
+      return null;
+    },
+    fix: 'mark exactly one step aria-current="step", on an <li> of the stepper\'s <ol> (docs/forms.md, Wizard)',
+    docs: "docs/forms.md",
+    quote: [
+      "A wizard stepper marks exactly one step with `aria-current=\"step\"`, on an `<li>` of its `<ol>` — a current marker on markup the stepper does not track is a step the user is not on.",
+    ],
+  },
+
+  {
     id: "selection-complete",
     select: "table:has(tbody tr[aria-selected])",
     wcag: "4.1.2",

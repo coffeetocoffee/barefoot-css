@@ -27,7 +27,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { gotoDemo, gotoDataStory, mountFixture } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, mountFixture } from "./helpers.js";
 // The suite consumes the pack, not src/ directly — one registry, two
 // formats, and the pack re-exports the registry it shares with the
 // engine (ADR-0015).
@@ -249,6 +249,28 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ],
       fixed: `<table><thead><tr><th><input type="checkbox" aria-label="Select all rows"></th><th>A</th></tr></thead><tbody><tr aria-selected="true"><td><input type="checkbox" aria-label="Select a"></td><td>1</td></tr><tr aria-selected="false"><td><input type="checkbox" aria-label="Select b"></td><td>2</td></tr></tbody></table>`,
     },
+    {
+      id: "async-live",
+      broken: [
+        // The pending paint with no busy signal and no announcement.
+        `<div class="bf-form-group" data-async-pending><input id="u" type="text"><small class="bf-async-text" role="status">Checking…</small></div>`,
+        // Busy is declared, but nothing carries the outcome.
+        `<div class="bf-form-group" data-async-pending aria-busy="true"><input id="u" type="text"></div>`,
+      ],
+      fixed: `<div class="bf-form-group" data-async-pending aria-busy="true"><input id="u" type="text" aria-describedby="u-async"><small class="bf-async-text" id="u-async" role="status">Checking…</small></div>`,
+    },
+    {
+      id: "stepper-complete",
+      broken: [
+        // Two steps claim the current position at once.
+        `<div data-stepper><ol><li aria-current="step">A</li><li aria-current="step">B</li></ol></div>`,
+        // The current marker is not a step of the stepper's list.
+        `<div data-stepper><ol><li>A</li></ol><p aria-current="step">You are on step 2</p></div>`,
+        // A wizard with no list structure at all.
+        `<div data-stepper><p aria-current="step">Step 2</p></div>`,
+      ],
+      fixed: `<div data-stepper><ol><li data-complete>A</li><li aria-current="step">B</li><li>C</li></ol></div>`,
+    },
   ];
 
   for (const c of CASES) {
@@ -285,6 +307,27 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
     await gotoDataStory(page);
     const violations = await runPack(page);
     expect(violations, JSON.stringify(violations, null, 2)).toEqual([]);
+  });
+
+  test("dogfood: the v7.4 form-architecture page is clean, mid-async and mid-wizard", async ({ page }) => {
+    // The form-architecture page is the two new rules' proof surface:
+    // an async field in flight (async-live) and a wizard stepper
+    // (stepper-complete). Sweep it resting, then mid-flight — the
+    // pending state is exactly when aria-busy matters.
+    await gotoFormArchitecture(page);
+    await page.locator(DEMOS.faUsername).fill("ada");
+    await expect(page.locator(DEMOS.faAsyncStatus)).toContainText("Checking");
+    await expect(page.locator(DEMOS.faAsyncGroup)).toHaveAttribute("aria-busy", "true");
+    expect(await runPack(page), JSON.stringify(await runPack(page))).toEqual([]);
+
+    // Advance the wizard: the current step moves, and the contract
+    // holds on step two.
+    await page.locator(DEMOS.faUsername).fill("lovelace");
+    await page.locator("#fa-email").fill("lovelace@example.com");
+    await page.locator("#fa-password").fill("hunter2222");
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
+    expect(await runPack(page)).toEqual([]);
   });
 });
 

@@ -66,6 +66,8 @@ that quote drifts. Seed rules:
 | `event-contract` | a tab's `aria-controls` resolves, so the `bf:tabactivate` payload is truthful | 7.0 |
 | `aria-sort-wired` | a sortable table's `aria-sort` is a valid direction, on one column, backed by the sort button; `data-sort` agrees with it (WCAG 4.1.2) | 7.2 |
 | `selection-complete` | a multi-select table with a select-all control names the control and states `aria-selected` on every row (WCAG 4.1.2) | 7.2 |
+| `async-live` | an async-pending field carries `aria-busy="true"` and a live region announcing the outcome (WCAG 4.1.2) | 7.4 |
+| `stepper-complete` | a wizard stepper marks exactly one `aria-current="step"`, on an `<li>` of its `<ol>` (WCAG 4.1.2) | 7.4 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -387,6 +389,68 @@ A multi-select table with a select-all control must state `aria-selected` on eve
 ```
 
 The select-all's `checked`/`indeterminate` state is not audited here — it is JS-owned, because CSS cannot check a box truthfully (a painted check on an unchecked control is its own WCAG 4.1.2 lie). Name every row's checkbox too; the row's `aria-selected` is the contract, the checkbox is how a user reaches it.
+
+### `async-live`
+
+An async-pending field carries `aria-busy="true"` and a `role="status"` region that announces the outcome — a decorative spinner alone announces nothing.
+
+```html
+<!-- ✗ broken: the info tint and spinner are present, but nothing is
+     announced and assistive technology can't mark the value provisional -->
+<div class="bf-form-group" data-async-pending>
+  <label for="username">Username</label>
+  <input id="username" type="text">
+  <small class="bf-async-text">Checking availability…</small>
+</div>
+
+<!-- ✗ broken: busy is declared, but no live region carries the outcome -->
+<div class="bf-form-group" data-async-pending aria-busy="true">
+  <label for="username">Username</label>
+  <input id="username" type="text">
+</div>
+
+<!-- ✓ fixed: the pending state is declared and the region announces it -->
+<div class="bf-form-group" data-async-pending aria-busy="true">
+  <label for="username">Username</label>
+  <input id="username" type="text" aria-describedby="username-async">
+  <small class="bf-async-text" id="username-async" role="status">
+    Checking availability…
+  </small>
+</div>
+```
+
+The rule audits only the pending state itself — the debounce timing and the failure result (an ordinary `aria-invalid="true"` + `.bf-error-text`) are guidance in [forms.md](forms.md), not contracts.
+
+### `stepper-complete`
+
+A wizard stepper marks exactly one step with `aria-current="step"`, on an `<li>` of its `<ol>` — a current marker on markup the stepper does not track is a step the user is not on.
+
+```html
+<!-- ✗ broken: two steps claim the current position at once -->
+<div data-stepper>
+  <ol>
+    <li aria-current="step">…</li>
+    <li aria-current="step">…</li>
+  </ol>
+</div>
+
+<!-- ✗ broken: the current marker is not a step of the stepper's list -->
+<div data-stepper>
+  <ol><li>…</li></ol>
+  <p aria-current="step">You are on step 2</p>
+</div>
+
+<!-- ✓ fixed: one current step, on a step item of the stepper's <ol> -->
+<div data-stepper>
+  <ol>
+    <li data-complete>…</li>
+    <li aria-current="step">…</li>
+    <li>…</li>
+  </ol>
+</div>
+```
+
+A stepper with no `aria-current="step"` is not a violation — it is a tracker of completed steps (a receipt, a finished flow), and the rule stays silent. Back-preserves-input and panel ownership are guidance in [forms.md](forms.md), not audited contracts.
 
 ## CI contract-packs
 

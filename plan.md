@@ -1,9 +1,11 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-15 — v7.2.0 "Data Story" built & verified (density
-scale, server-rendered sort, row selection, two new Verify rules, the
-composed recipe, `js/table-sort.js` graduates); v7.0.0 "State Machine &
-Events" built & verified_
+_Last updated: 2026-09-16 — v7.4.0 "Form Architecture" built & verified
+(async validation contract, wizard + state boundary, field arrays, two
+new Verify rules, `docs/forms.md`, ADR-0020); v7.2.0 "Data Story" built &
+verified (density scale, server-rendered sort, row selection, two new
+Verify rules, the composed recipe, `js/table-sort.js` graduates); v7.0.0
+"State Machine & Events" built & verified_
 
 ## Snapshot
 
@@ -104,7 +106,42 @@ Events" built & verified_
   selection and its busy/empty states. Skips are engine-gated (interest
   invokers, SDA, `popover=hint`, cross-doc VT; the v4.8 forced-colors
   tests are Chromium-gated emulation).
-- **History:** milestones 0.1 → 7.2.0 shipped.
+- **Built & verified:** **v7.4.0 — "Form Architecture"** (2026-09-16; tag
+  = maintainer action). The async contract as an opt-in layer
+  (`components/forms-async.css`): `data-async-pending` + `aria-busy` on
+  the wrapper, a `role="status"` `.bf-async-text` region that stays in the
+  DOM (text swapped, never toggled, so the announcement fires; renders
+  only while it holds text), a decorative spinner that is a pseudo-element
+  of the message, and a failure that lands on the existing validation
+  surface (`aria-invalid="true"` + `.bf-error-text`) — so "username taken"
+  composes with `required`/`pattern` by construction: the debounce never
+  fires while the control is natively invalid. Field arrays
+  (`components/field-array.css`): `.bf-field-array` on a `<fieldset>` +
+  `<legend>`, one `.bf-field-array-row` per value, `min-inline-size: 0`
+  (the fieldset min-content trap), focus moved before removal and labels
+  renumbered by the app. The state boundary is written down: one observed
+  fact = one `:has()` (pure CSS is right); a three-deep chain is banned —
+  JS sets `data-state`, CSS only reveals. The wizard contract:
+  `aria-current="step"` single-valued on a step `<li>`, panels hidden with
+  `hidden` (never removed — back preserves input, the `:user-valid` state,
+  and focus), native validation on leave with the summary taking focus.
+  Two new Verify rules: `async-live` (WCAG 4.1.2 — busy + live region; a
+  spinner alone announces nothing) and `stepper-complete` (WCAG 4.1.2 —
+  one current step on a tracked `<li>`; a stepper with no current step is
+  a completed tracker, not a violation). `docs/forms.md` is the contract
+  layer; ADR-0020 records the decisions; `demo/form-architecture.html`
+  proves it all on its own page (baselines untouched). No new tokens
+  (the paint reuses `--bf-info` / `--bf-info-subtle`); the registry budget
+  holds at 6656 bytes gzip (measured 6530). `npm run check` green; full
+  matrix below.
+- **Verification (2026-09-16, v7.4 matrix):** Chromium 312 passed / 2
+  engine-gated skips · Firefox 272 / 12 · WebKit 277 / 7 — zero failures;
+  visual regression untouched; axe green on the form-architecture page
+  resting, mid-async, with the taken result, on the wizard's second step,
+  and with a field-array row added. Skips are the documented engine-gated
+  ones (interest invokers, SDA, `popover=hint`, cross-doc VT,
+  base-select; the forced-colors tests are Chromium-gated emulation).
+- **History:** milestones 0.1 → 7.4.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -228,6 +265,17 @@ and `.bf-*` utilities.
 
 - **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
   action only; `release.yml` takes over on the tag push.
+- **v7.4.0 — "Form Architecture" (built & verified 2026-09-16; tag =
+  maintainer action):** the async contract (`components/forms-async.css`:
+  `data-async-pending` + `aria-busy` + a `role="status"` region that is
+  swapped, never toggled; a failure lands on `aria-invalid` +
+  `.bf-error-text`), field arrays (`components/field-array.css`), the
+  state boundary (one `:has()` or JS sets `data-state`), the wizard
+  contract (`aria-current="step"` single-valued, `hidden` panels so back
+  preserves input), and two Verify rules (`async-live`,
+  `stepper-complete`). `docs/forms.md` + ADR-0020;
+  `demo/form-architecture.html` proves it on its own page. Tag `v7.4.0`
+  per RELEASE.md; `release.yml` publishes from the tag.
 - **Barefoot Verify — all phases complete (2026-09-08); release tag
   pending the maintainer:** the contract registry
   (`src/js/verify-contracts.js`), ADR-0015, the checker engine
@@ -328,16 +376,17 @@ and `.bf-*` utilities.
   events + docs section. ✅
 - Verify: `aria-sort-wired`, `selection-complete`. Non-goal: no virtualization, no charting. ✅
 
-**v7.4 — "Form Architecture" (needs v7.0 + v7.1)**
+**v7.4 — "Form Architecture" (needs v7.0 + v7.1)** ✅
+(shipped 2026-09-16)
 
 - **Async contract:** `data-async-pending` + spinner + live-region + debounce that doesn't
-  fight native `:user-invalid`. "Username taken" must work alongside `required/pattern`.
-- **Wizard/stepper:** step ownership, `aria-current="step"`, back-preserves-input guidance.
+  fight native `:user-invalid`. "Username taken" must work alongside `required/pattern`. ✅
+- **Wizard/stepper:** step ownership, `aria-current="step"`, back-preserves-input guidance. ✅
 - **Field-array, upload progress, fieldset opinion:** "add another phone", `forms-file.css`
-  progress story, `<fieldset>/<legend>` density guidance.
+  progress story, `<fieldset>/<legend>` density guidance. ✅
 - Strict boundary documented: Field B shows iff Field A checked = JS sets `data-state`,
-  CSS only reveals. Ban Rube Goldberg `:has()` chains.
-- Verify: `async-live`, `stepper-complete`. Non-goal: no framework bindings.
+  CSS only reveals. Ban Rube Goldberg `:has()` chains. ✅
+- Verify: `async-live`, `stepper-complete`. Non-goal: no framework bindings. ✅
 
 **v7.8 — "Keyboard & A11y Beyond Component" (needs real data + forms)**
 

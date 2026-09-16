@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Form Architecture</title>
+  <meta name="description" content="The v7.4 form architecture: the async validation contract, a wizard stepper, the conditional-field boundary, field arrays, and upload progress.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/forms-validation.css">
+  <link rel="stylesheet" href="../dist/components/forms-async.css">
+  <link rel="stylesheet" href="../dist/components/field-array.css">
+  <link rel="stylesheet" href="../dist/components/states.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .fa-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .fa-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .fa-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .fa-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .fa-log { max-block-size: 12rem; overflow-y: auto; margin-block: 0; }
+    .fa-log:empty::after { content: "Interact — the log records what the app mutated and what CSS painted."; color: var(--bf-muted); }
+    /* The conditional-field boundary, demo side: one observed fact is
+       one :has() — fine in pure CSS. The second panel below is the
+       boundary itself: two conditions cannot be a stylesheet. */
+    .fa-cond:has(#fa-billing-same:checked) [data-hidden-when-checked] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="bf-container fa-head">
+    <p class="bf-overline">Barefoot CSS v7.4</p>
+    <h1>Form Architecture</h1>
+    <p>The async validation contract, a wizard stepper, the conditional-field boundary, field arrays, and upload progress. The app owns the state; the tokens and the platform present it.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="states.html">states &amp; events</a> · <a href="data-story.html">data story</a> · <a href="../docs/forms.md">the contract</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Async validation -->
+    <section aria-labelledby="fa-async-title">
+      <h2 id="fa-async-title">Async validation</h2>
+      <p class="bf-muted">A field whose value is checked somewhere else. The app debounces on input, sets <code>data-async-pending</code> + <code>aria-busy</code> while the check is in flight, and lands the failure on the same surface as a native error. Try <code>ada</code> (taken) or anything else (free) — and notice a too-short value never fires the check: native <code>pattern</code> answers first.</p>
+      <div class="bf-form-group" id="fa-async-group">
+        <label for="fa-username">Username</label>
+        <input id="fa-username" name="username" type="text" required
+               pattern="[a-z]{3,}" autocomplete="username"
+               aria-describedby="fa-async-status fa-username-error">
+        <small class="bf-async-text" id="fa-async-status" role="status"></small>
+        <small class="bf-error-text" id="fa-username-error" role="alert">That one is taken. Try another.</small>
+      </div>
+      <h3>Contract</h3>
+      <div class="fa-code"><code>&lt;div class="bf-form-group" data-async-pending aria-busy="true"&gt;
+  …&lt;small class="bf-async-text" role="status"&gt;Checking availability…&lt;/small&gt;
+  …&lt;small class="bf-error-text" role="alert"&gt;That one is taken.&lt;/small&gt;
+&lt;/div&gt;</code></div>
+    </section>
+
+    <!-- Wizard -->
+    <section aria-labelledby="fa-wizard-title">
+      <h2 id="fa-wizard-title">Wizard / stepper</h2>
+      <p class="bf-muted">A stepper plus one panel per step. <code>aria-current="step"</code> is single-valued and moves in the same handler that swaps the panel; panels are hidden with <code>hidden</code>, never removed, so back preserves input. Next validates the panel it leaves using native constraint validation.</p>
+      <form id="fa-wizard" novalidate aria-labelledby="fa-wizard-title">
+        <div data-stepper id="fa-stepper">
+          <ol>
+            <li aria-current="step">
+              <div data-step><span data-step-circle>1</span><span data-step-label>Account</span></div>
+            </li>
+            <li>
+              <div data-step><span data-step-circle>2</span><span data-step-label>Profile</span></div>
+            </li>
+            <li>
+              <div data-step><span data-step-circle>3</span><span data-step-label>Review</span></div>
+            </li>
+          </ol>
+        </div>
+
+        <section id="fa-step-account" aria-labelledby="fa-step-account-h">
+          <h3 id="fa-step-account-h">Account</h3>
+          <div class="bf-form-group">
+            <label for="fa-email">Email</label>
+            <input id="fa-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="bf-form-group">
+            <label for="fa-password">Password</label>
+            <input id="fa-password" name="password" type="password" required minlength="8" autocomplete="new-password">
+          </div>
+        </section>
+
+        <section id="fa-step-profile" hidden aria-labelledby="fa-step-profile-h">
+          <h3 id="fa-step-profile-h">Profile</h3>
+          <div class="bf-form-group">
+            <label for="fa-name">Display name</label>
+            <input id="fa-name" name="name" type="text" required>
+          </div>
+          <div class="bf-form-group">
+            <label for="fa-bio">Bio</label>
+            <textarea id="fa-bio" name="bio" rows="2" data-autogrow></textarea>
+          </div>
+        </section>
+
+        <section id="fa-step-review" hidden aria-labelledby="fa-step-review-h">
+          <h3 id="fa-step-review-h">Review</h3>
+          <p class="bf-muted">Sign up with the details above. Nothing leaves this page.</p>
+        </section>
+
+        <div class="bf-error-summary" id="fa-wizard-summary" role="alert" tabindex="-1" hidden>
+          <strong>Fix the highlighted fields to continue.</strong>
+        </div>
+
+        <div class="bf-row bf-gap-2">
+          <button type="button" id="fa-back" data-variant="ghost" disabled>Back</button>
+          <button type="button" id="fa-next">Next</button>
+          <button type="submit" id="fa-submit" hidden>Create account</button>
+        </div>
+
+        <div class="bf-state" id="fa-done" data-state="confirmed" role="status" hidden>
+          <h3>Account created</h3>
+          <p>Check the event log for what just happened.</p>
+        </div>
+      </form>
+    </section>
+
+    <!-- Conditional boundary -->
+    <section aria-labelledby="fa-cond-title">
+      <h2 id="fa-cond-title">The conditional boundary</h2>
+      <p class="bf-muted">One observed fact is one selector — pure CSS is right. <code>Field B shows iff Field A checked</code> needs no script:</p>
+      <form class="fa-cond" id="fa-conditional-form" aria-labelledby="fa-cond-title">
+        <div class="bf-form-group">
+          <label>
+            <input type="checkbox" id="fa-billing-same">
+            Billing address is the same as shipping
+          </label>
+        </div>
+        <div data-hidden-when-checked class="bf-form-group">
+          <label for="fa-billing-street">Billing street</label>
+          <input id="fa-billing-street" name="billing-street" type="text" autocomplete="address-line1">
+        </div>
+      </form>
+      <p class="bf-muted">The moment the condition is not a single observed fact — billing shows iff same-as-shipping is unchecked <em>and</em> the country is Germany <em>and</em> the plan is paid — stop. A three-deep <code>:has()</code> chain recalculates on every keystroke and cannot be read. JS sets <code>data-state</code>; CSS only reveals:</p>
+      <div class="fa-code"><code>form[data-ready="de-pro"]:has(#fa-plan[value="pro"]:checked) [data-de-fields] { display: block; }</code></div>
+    </section>
+
+    <!-- Field array -->
+    <section aria-labelledby="fa-phones-title">
+      <h2 id="fa-phones-title">Field array</h2>
+      <p class="bf-muted">"Add another phone." The array is JS-owned — append, remove, renumber, and move focus off a doomed row — CSS only aligns.</p>
+      <fieldset class="bf-field-array" id="fa-phones">
+        <legend>Phone numbers</legend>
+        <div id="fa-phones-rows"></div>
+        <button type="button" id="fa-phone-add">Add another phone</button>
+      </fieldset>
+    </section>
+
+    <!-- Upload progress -->
+    <section aria-labelledby="fa-upload-title">
+      <h2 id="fa-upload-title">Upload progress</h2>
+      <p class="bf-muted">The async contract at file scale: the row is pending while the upload runs, the live region narrates it, and a themed <code>&lt;progress&gt;</code> bar carries the shape readers can see.</p>
+      <div class="bf-form-group" id="fa-upload-row">
+        <label for="fa-upload-input">Report</label>
+        <input id="fa-upload-input" type="file" accept=".pdf,.txt" aria-describedby="fa-upload-status">
+        <progress id="fa-upload-progress" max="100" value="0" aria-describedby="fa-upload-status"></progress>
+        <small class="bf-async-text" id="fa-upload-status" role="status"></small>
+      </div>
+    </section>
+
+    <h3>Event log</h3>
+    <ol class="fa-log" id="fa-log" aria-label="App mutations on this page"></ol>
+
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+
+    const log = document.getElementById("fa-log");
+    function note(text) {
+      const li = document.createElement("li");
+      li.textContent = text;
+      log.prepend(li);
+      while (log.children.length > 10) log.lastChild.remove();
+    }
+
+    /* ---- Async validation (debounce; never fires while natively
+       invalid — the pattern failure is already the answer). ---- */
+    const TAKEN = new Set(["ada", "admin", "barefoot"]);
+    const asyncGroup = document.getElementById("fa-async-group");
+    const username = document.getElementById("fa-username");
+    const asyncStatus = document.getElementById("fa-async-status");
+    const usernameError = document.getElementById("fa-username-error");
+    let asyncTimer = 0;
+
+    function settleAsync() {
+      const value = username.value.trim();
+      if (TAKEN.has(value)) {
+        username.setAttribute("aria-invalid", "true");
+        asyncStatus.textContent = "";
+        note(`async: “${value}” is taken`);
+      } else {
+        username.setAttribute("aria-invalid", "false");
+        asyncStatus.textContent = `“${value}” is available.`;
+        note(`async: “${value}” is available`);
+      }
+      asyncGroup.removeAttribute("data-async-pending");
+      asyncGroup.setAttribute("aria-busy", "false");
+    }
+
+    username.addEventListener("input", () => {
+      clearTimeout(asyncTimer);
+      // Editing again clears the previous outcome — the value changed.
+      username.setAttribute("aria-invalid", "false");
+      const value = username.value.trim();
+      if (!value) {
+        asyncStatus.textContent = "";
+        asyncGroup.removeAttribute("data-async-pending");
+        asyncGroup.setAttribute("aria-busy", "false");
+        return;
+      }
+      // The boundary: native validation answers first. A value that
+      // fails pattern never starts a server check.
+      if (!username.checkValidity()) {
+        asyncStatus.textContent = "";
+        asyncGroup.removeAttribute("data-async-pending");
+        asyncGroup.setAttribute("aria-busy", "false");
+        return;
+      }
+      asyncTimer = setTimeout(() => {
+        // Text first, then pending — the region exists when the message
+        // lands, so the announcement fires.
+        asyncStatus.textContent = "Checking availability…";
+        asyncGroup.setAttribute("data-async-pending", "");
+        asyncGroup.setAttribute("aria-busy", "true");
+        setTimeout(settleAsync, 1000);
+      }, 350);
+    });
+
+    /* ---- Wizard: the app moves one current step + one panel; hidden,
+       never removed, keeps the values. ---- */
+    const wizard = document.getElementById("fa-wizard");
+    const stepper = document.getElementById("fa-stepper");
+    const stepEls = ["fa-step-account", "fa-step-profile", "fa-step-review"]
+      .map((id) => document.getElementById(id));
+    const stepLis = [...stepper.querySelectorAll("li")];
+    const backButton = document.getElementById("fa-back");
+    const nextButton = document.getElementById("fa-next");
+    const submitButton = document.getElementById("fa-submit");
+    const summary = document.getElementById("fa-wizard-summary");
+    let step = 0;
+
+    function paintStep() {
+      stepLis.forEach((li, i) => {
+        if (i === step) li.setAttribute("aria-current", "step");
+        else li.removeAttribute("aria-current");
+        if (i < step) li.setAttribute("data-complete", "");
+        else li.removeAttribute("data-complete");
+      });
+      stepEls.forEach((el, i) => {
+        el.hidden = i !== step;
+      });
+      backButton.disabled = step === 0;
+      nextButton.hidden = step === stepEls.length - 1;
+      submitButton.hidden = step !== stepEls.length - 1;
+    }
+
+    function firstInvalidIn(panel) {
+      for (const el of wizard.elements) {
+        if (panel.contains(el) && typeof el.checkValidity === "function" && !el.checkValidity()) {
+          return el;
+        }
+      }
+      return null;
+    }
+
+    nextButton.addEventListener("click", () => {
+      const bad = firstInvalidIn(stepEls[step]);
+      if (bad) {
+        // Focus the summary and let the user move to the first invalid
+        // control — the tabindex="-1" seam exists for exactly this
+        // (docs/states.md); CSS cannot move focus. reportValidity()
+        // shows the native bubble first (it also moves focus to the
+        // first invalid control in some engines, so the summary takes
+        // focus after it, not before).
+        summary.hidden = false;
+        wizard.reportValidity();
+        summary.focus();
+        return;
+      }
+      summary.hidden = true;
+      step = Math.min(step + 1, stepEls.length - 1);
+      paintStep();
+      note(`wizard: moved to step ${step + 1} (${stepEls[step].querySelector("h3").textContent})`);
+    });
+
+    backButton.addEventListener("click", () => {
+      summary.hidden = true;
+      step = Math.max(step - 1, 0);
+      paintStep();
+      note(`wizard: back to step ${step + 1} (input preserved)`);
+    });
+
+    wizard.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const bad = firstInvalidIn(stepEls[step]);
+      if (bad) {
+        summary.hidden = false;
+        wizard.reportValidity();
+        summary.focus();
+        return;
+      }
+      document.getElementById("fa-done").hidden = false;
+      note(`wizard: submitted — ${username.value || "no username"}, ${document.getElementById("fa-email").value}`);
+    });
+
+    paintStep();
+
+    /* ---- Field array: clone, renumber, and move focus before removal. ---- */
+    const phoneRows = document.getElementById("fa-phones-rows");
+    let phoneCount = 0;
+
+    function rowMarkup(i) {
+      return `<label for="fa-phone-${i}">Phone ${i}</label>
+        <input id="fa-phone-${i}" name="phone" type="tel" autocomplete="tel">
+        <button type="button" class="bf-field-remove" aria-label="Remove phone ${i}" data-remove>Remove</button>`;
+    }
+
+    function addPhone(focusIt) {
+      phoneCount += 1;
+      const row = document.createElement("div");
+      row.className = "bf-field-array-row";
+      row.innerHTML = rowMarkup(phoneCount);
+      phoneRows.append(row);
+      row.querySelector("[data-remove]").addEventListener("click", () => {
+        const nextRow = row.nextElementSibling;
+        // Focus moves before removal — a doomed control must not strand
+        // focus on <body>.
+        if (nextRow) nextRow.querySelector("input").focus();
+        else document.getElementById("fa-phone-add").focus();
+        row.remove();
+        renumber();
+        note(`field-array: removed a row — ${phoneRows.children.length} left`);
+      });
+      if (focusIt) row.querySelector("input").focus();
+      return row;
+    }
+
+    function renumber() {
+      [...phoneRows.children].forEach((row, i) => {
+        const n = i + 1;
+        row.querySelector("label").textContent = `Phone ${n}`;
+        row.querySelector("label").htmlFor = `fa-phone-${n}`;
+        const input = row.querySelector("input");
+        input.id = `fa-phone-${n}`;
+        row.querySelector("[data-remove]").setAttribute("aria-label", `Remove phone ${n}`);
+      });
+    }
+
+    document.getElementById("fa-phone-add").addEventListener("click", () => {
+      addPhone(true);
+      note(`field-array: added a row — ${phoneRows.children.length} now`);
+    });
+    addPhone(false);
+
+    /* ---- Upload progress: pending row + live narration + the bar. ---- */
+    const uploadRow = document.getElementById("fa-upload-row");
+    const uploadInput = document.getElementById("fa-upload-input");
+    const uploadStatus = document.getElementById("fa-upload-status");
+    const uploadProgress = document.getElementById("fa-upload-progress");
+    let uploadTimer = 0;
+
+    uploadInput.addEventListener("change", () => {
+      clearInterval(uploadTimer);
+      const file = uploadInput.files[0];
+      if (!file) return;
+      uploadProgress.value = 0;
+      uploadStatus.textContent = `Uploading ${file.name}…`;
+      uploadRow.setAttribute("data-async-pending", "");
+      uploadRow.setAttribute("aria-busy", "true");
+      uploadTimer = setInterval(() => {
+        uploadProgress.value = Math.min(100, uploadProgress.value + 17);
+        uploadStatus.textContent = `Uploading ${file.name}… ${Math.round(uploadProgress.value)}%`;
+        if (uploadProgress.value >= 100) {
+          clearInterval(uploadTimer);
+          uploadRow.removeAttribute("data-async-pending");
+          uploadRow.setAttribute("aria-busy", "false");
+          uploadStatus.textContent = `Uploaded ${file.name}.`;
+          note(`upload: ${file.name} complete`);
+        }
+      }, 160);
+    });
+  </script>
+</body>
+</html>

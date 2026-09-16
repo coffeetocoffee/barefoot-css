@@ -1,0 +1,106 @@
+/* Barefoot — async form fields (v7.4, "Form Architecture").
+   The contract for a control whose value is checked somewhere else — a
+   username availability probe, a uniqueness query, an upload in flight.
+   The application owns the timing: debounce on input and never fire the
+   check while the control is natively invalid (that is the "doesn't
+   fight :user-invalid" half of the contract — the pending paint and the
+   invalid paint never meet). It sets data-async-pending on the field's
+   wrapper while the check is in flight; this layer only paints.
+
+   The outcome lands on the same surfaces native validation uses: a
+   failure sets aria-invalid="true" and fills .bf-error-text, so
+   "username taken" reads exactly like "enter a valid email", and a
+   success clears the region.
+
+   Opt-in: import this file, then:
+
+   <div class="bf-form-group" data-async-pending aria-busy="true">
+     <label for="username">Username</label>
+     <input id="username" type="text" required pattern="[a-z]{3,}"
+            aria-describedby="username-async username-taken">
+     <small class="bf-async-text" id="username-async" role="status">
+       Checking availability…
+     </small>
+     <small class="bf-error-text" id="username-taken" role="alert">
+       That one is taken. Try another.
+     </small>
+   </div>
+
+   The message is a live region that stays in the DOM: swap its text,
+   don't toggle the node, or the announcement never fires. It renders
+   only while it holds text (an empty region paints nothing). The
+   spinner is a pseudo-element of the message, so it is decorative by
+   construction — the region's text is the real status. Verify's
+   async-live rule audits the aria-busy + live-region half (docs/forms.md).
+   Without this file the attribute paints nothing and the markup stays a
+   plain form (degrade by omission). */
+@layer components {
+  /* The pending paint lives on the wrapper — the same .bf-form-group the
+     validation layer tints, or any block wrapper of one control. The
+     control itself keeps its own native state; the group carries the
+     "a check is in flight" affordance. */
+  .bf-form-group[data-async-pending] {
+    border-color: var(--bf-info);
+    background: var(--bf-info-subtle);
+  }
+
+  /* A pending subtree reads as busy — the cursor says "wait" without
+     disabling the control (the user may keep typing; the debounce
+     restarts). */
+  [data-async-pending] :where(input, select, textarea) {
+    cursor: progress;
+  }
+
+  /* The message region: present whenever it holds text, hidden when
+     empty (clear it to "" rather than removing it — the live region
+     must survive the value change to announce it). */
+  .bf-async-text {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--bf-space-2);
+    margin: 0;
+    color: var(--bf-muted);
+    font-size: var(--bf-type-sm);
+  }
+
+  .bf-async-text:empty {
+    display: none;
+  }
+
+  /* The spinner is the message's affordance, so it shows only while the
+     check is in flight. A pseudo-element is unreachable by the global
+     reduced-motion rule in base.css, so this file carries its own guard
+     (ADR-0007) — the region's text remains as the announcement. */
+  [data-async-pending] .bf-async-text::before {
+    content: "";
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--bf-border);
+    border-block-start-color: var(--bf-info);
+    border-radius: var(--bf-radius-full);
+    animation: bf-async-spin 0.8s linear infinite;
+  }
+
+  @keyframes bf-async-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-async-pending] .bf-async-text::before {
+      animation: none;
+    }
+  }
+
+  /* Forced colors: hue can't separate "checking" from "invalid", so the
+     pending group changes shape instead of color (same stance as
+     forms-validation.css). */
+  @media (forced-colors: active) {
+    .bf-form-group[data-async-pending] {
+      border-style: dashed;
+    }
+  }
+}

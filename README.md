@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
-Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
@@ -69,6 +69,7 @@ npm install barefoot-css
 | Layout | `.bf-flow`, `.bf-switcher`, `.bf-sidebar` — container-aware primitives. Tight in a sidebar, roomy in a column. → [docs/layout.md](docs/layout.md) |
 | Adaptive | Tables card-stack, forms reflow with a zero-JS error summary, cards flip orientation. Opt-in, never in `full.css`. → [docs/adaptive.md](docs/adaptive.md) |
 | Forms & tables | Validation groups that tint on `:has(:user-invalid)`, sticky headers + leading column with a "more data" fade. → [docs/paint-paper.md](docs/paint-paper.md) |
+| Form architecture | The async validation contract (`data-async-pending` + live region), wizard steppers, field arrays — plus the CSS-vs-JS state boundary. → [docs/forms.md](docs/forms.md) |
 | Data story | A density scale (`data-density`, one multiplier for padding and type), server-rendered sort (`data-sort`), and row selection with a zero-JS bulk-actions bar. → [docs/components.md](docs/components.md) |
 | Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
 | Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
@@ -86,7 +87,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.59KB | **10.59KB** | 9.26KB |
-| `js/verify-contracts.js` | 17.94KB | **5.68KB** | 4.87KB |
+| `js/verify-contracts.js` | 20.69KB | **6.38KB** | 5.52KB |
 | `index.css` | 11.49KB | **3.05KB** | 2.61KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
@@ -124,6 +125,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/layout.css` | 1.62KB | **0.44KB** | 0.37KB |
 | `components/data-grid.css` | 0.98KB | **0.43KB** | 0.34KB |
 | `js/chips.js` | 0.72KB | **0.43KB** | 0.36KB |
+| `components/forms-async.css` | 0.84KB | **0.42KB** | 0.33KB |
 | `components/skeleton.css` | 0.93KB | **0.41KB** | 0.33KB |
 | `components/table-adaptive.css` | 0.99KB | **0.41KB** | 0.32KB |
 | `themes/seed-system.css` | 1.48KB | **0.41KB** | 0.35KB |
@@ -150,6 +152,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
 | `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
+| `components/field-array.css` | 0.60KB | **0.29KB** | 0.23KB |
 | `components/form-adaptive.css` | 0.54KB | **0.29KB** | 0.23KB |
 | `components/card-adaptive.css` | 0.50KB | **0.28KB** | 0.23KB |
 | `components/forms-file.css` | 0.60KB | **0.28KB** | 0.21KB |
@@ -214,6 +217,7 @@ build/      bundler + size budget + preview server
 | [States](docs/states.md) | State machine, empty states, validation summaries |
 | [Adaptive](docs/adaptive.md) / [Layout](docs/layout.md) | Container-aware components & primitives |
 | [Paint & paper](docs/paint-paper.md) | Validation, sticky tables, print |
+| [Form architecture](docs/forms.md) | Async validation, wizards, field arrays, the state boundary |
 | [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |
 | [Migration](docs/migration-4.md) | v4 · [v5](docs/migration-5.md) · [v3](docs/migration-3.md) |
 | [Status & plan](plan.md) | What's built, what's next |

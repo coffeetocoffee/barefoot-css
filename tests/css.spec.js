@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, gotoFormArchitecture, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -3129,5 +3129,150 @@ test.describe("adaptive components (v5.1)", () => {
     expect(await thead.evaluate((el) => getComputedStyle(el).display)).not.toBe("none");
     await setContainerWidth(page, DEMOS.demoTableAdaptiveAutowrapWrap, "20rem");
     expect(await thead.evaluate((el) => getComputedStyle(el).display)).toBe("none");
+  });
+});
+
+test.describe("form architecture (v7.4)", () => {
+  test("the async contract: empty region paints nothing, pending paints info + spinner, a failure is an ordinary field error", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    const group = page.locator(DEMOS.faAsyncGroup);
+    const status = page.locator(DEMOS.faAsyncStatus);
+
+    // Idle: the live region holds no text and paints nothing.
+    expect(await status.evaluate((el) => getComputedStyle(el).display)).toBe("none");
+
+    // The pending state is transient, so a polling assertion can skip
+    // its whole window under load. Install a no-miss observer first: it
+    // captures the paint at the instant the attribute flips, whenever
+    // that is (the debounce decides when).
+    const pending = group.evaluate((el) =>
+      new Promise((resolve) => {
+        const capture = () => {
+          if (el.getAttribute("aria-busy") !== "true") return;
+          // Read the paint after the group's 150ms border transition
+          // settles, or the captured color is mid-fade.
+          setTimeout(() => {
+            const message = el.querySelector(".bf-async-text");
+            resolve({
+              border: getComputedStyle(el).borderColor,
+              spin: getComputedStyle(message, "::before").animationName,
+              text: message.textContent,
+            });
+          }, 250);
+        };
+        capture();
+        new MutationObserver(capture).observe(el, {
+          attributes: true,
+          attributeFilter: ["aria-busy"],
+        });
+        setTimeout(() => resolve(null), 5000);
+      })
+    );
+
+    await page.locator(DEMOS.faUsername).fill("ada");
+    const paint = await pending;
+    expect(paint, "the pending state fired").not.toBeNull();
+    expect(paint.text).toContain("Checking");
+    // The pending tint is the info token — not the danger one.
+    expect(paint.border).toBe(await tokenColor(page, "--bf-info"));
+    // The spinner is the message's own pseudo (decorative by construction).
+    expect(paint.spin).toBe("bf-async-spin");
+
+    // The failure lands on the validation layer's surface: the message
+    // clears, the field declares itself invalid, and the error text the
+    // existing layer reveals is the same one a native failure would show.
+    await expect(status).toHaveText("");
+    await expect(page.locator(DEMOS.faUsername)).toHaveAttribute("aria-invalid", "true");
+    await expect(page.locator(DEMOS.faUsernameError)).toBeVisible();
+    await expect(group).toHaveAttribute("aria-busy", "false");
+  });
+
+  test("the debounce never fights native validation: a too-short value fires no check", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    await page.locator(DEMOS.faUsername).fill("ab"); // pattern="[a-z]{3,}"
+    await page.waitForTimeout(900); // past debounce + check window
+    await expect(page.locator(DEMOS.faAsyncGroup)).not.toHaveAttribute("data-async-pending", "");
+    expect(await page.locator(DEMOS.faAsyncStatus).evaluate((el) => getComputedStyle(el).display)).toBe("none");
+  });
+
+  test("the wizard: one current step, panels hidden not removed, back preserves input", async ({ page }) => {
+    await gotoFormArchitecture(page);
+
+    // Next on an empty panel: native validation answers, the summary
+    // takes focus (the tabindex="-1" seam is why it exists).
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.locator("#fa-wizard-summary")).toBeVisible();
+    await expect(page.locator("#fa-wizard-summary")).toBeFocused();
+
+    await page.locator("#fa-email").fill("lovelace@example.com");
+    await page.locator("#fa-password").fill("hunter2222");
+    await page.getByRole("button", { name: "Next" }).click();
+
+    await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
+    // Exactly one current step, on the second li; the first is complete.
+    await expect(page.locator(`${DEMOS.faStepper} [aria-current="step"]`)).toHaveCount(1);
+    await expect(page.locator(`${DEMOS.faStepper} li`).nth(1)).toHaveAttribute("aria-current", "step");
+    await expect(page.locator(`${DEMOS.faStepper} li`).first()).toHaveAttribute("data-complete", "");
+    // Back: the account panel comes back with its values intact —
+    // hidden, not removed.
+    await page.locator(DEMOS.faBack).click();
+    await expect(page.locator("#fa-step-account")).toBeVisible();
+    await expect(page.locator("#fa-email")).toHaveValue("lovelace@example.com");
+    // And forward again: the profile panel survived the round trip.
+    await page.getByRole("button", { name: "Next" }).click();
+    await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
+  });
+
+  test("the conditional boundary: one :has() reveals and hides in pure CSS", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    const street = page.locator(DEMOS.faBillingStreet);
+    await expect(street).toBeVisible();
+    await page.locator(DEMOS.faBillingSame).check();
+    await expect(street).toBeHidden();
+    await page.locator(DEMOS.faBillingSame).uncheck();
+    await expect(street).toBeVisible();
+  });
+
+  test("the field array: adds a labelled row, renumbers after removal, moves focus off the doomed row", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    await page.getByRole("button", { name: "Add another phone" }).click();
+    const rows = page.locator(`${DEMOS.faPhoneRows} .bf-field-array-row`);
+    await expect(rows).toHaveCount(2);
+    await expect(rows.nth(1).locator("label")).toHaveText("Phone 2");
+    await expect(rows.nth(1).locator("input")).toHaveAttribute("id", "fa-phone-2");
+
+    // Removing the first row: focus moves to the next row's control
+    // first, then the labels renumber.
+    await rows.first().locator("button").click();
+    await expect(rows).toHaveCount(1);
+    await expect(page.locator(DEMOS.faPhoneRows)).toContainText("Phone 1");
+    await expect(page.locator(DEMOS.faPhoneRows + " input")).toBeFocused();
+  });
+
+  test("upload progress: the row is pending while the bar runs, and the same contract announces it", async ({ page }) => {
+    await gotoFormArchitecture(page);
+    await page.locator(DEMOS.faUploadInput).setInputFiles({
+      name: "report.pdf",
+      mimeType: "application/pdf",
+      buffer: Buffer.from("barefoot upload probe"),
+    });
+    await expect(page.locator(DEMOS.faUploadRow)).toHaveAttribute("aria-busy", "true");
+    await expect(page.locator(DEMOS.faUploadStatus)).toContainText("Uploading report.pdf");
+    // The bar is the visible shape; the region is the announcement.
+    // (<progress> is not an input — read its value directly.)
+    await expect(async () => {
+      expect(await page.locator(DEMOS.faUploadProgress).evaluate((el) => el.value)).toBe(100);
+    }).toPass({ timeout: 5000 });
+    await expect(page.locator(DEMOS.faUploadStatus)).toHaveText("Uploaded report.pdf.");
+    await expect(page.locator(DEMOS.faUploadRow)).toHaveAttribute("aria-busy", "false");
+  });
+
+  test("v7.4 files stay opt-in: out of full.css and index.css (ADR-0008 / ADR-0020)", () => {
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    for (const f of ["forms-async.css", "field-array.css"]) {
+      expect(full, `full.css gained ${f}`).not.toContain(f);
+      expect(index, `index.css gained ${f}`).not.toContain(f);
+    }
   });
 });

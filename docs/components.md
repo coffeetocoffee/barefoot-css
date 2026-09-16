@@ -178,6 +178,20 @@ Tests resize **containers**, not the window — see `setContainerWidth` in
   `forms-range.css`, `forms-file.css`, `forms-color.css`, `forms-meter.css`.
   Every shard builds on `forms-base.css`. `forms-validation.css` (v6.3 group
   tint + error reveal) stands alongside them — same tokens, no dependency.
+- **Async validation** (v7.4) — `components/forms-async.css` paints a field
+  whose value is checked somewhere else ("username taken"): set
+  `data-async-pending` + `aria-busy="true"` on the wrapper and keep a
+  `role="status"` `.bf-async-text` region in the DOM — swap its text, never
+  toggle the node. The failure result is an ordinary `aria-invalid="true"` +
+  `.bf-error-text`, so it composes with `required`/`pattern` instead of
+  fighting them. The full contract — debounce, the state boundary, the
+  wizard pattern, field arrays — is [forms.md](forms.md), and Verify's
+  `async-live` audits it.
+- **Field arrays** (v7.4) — `components/field-array.css` is "add another
+  phone": `.bf-field-array` on a `<fieldset>` with a `<legend>`, one
+  `.bf-field-array-row` per value (label above, control growing, remove
+  button parked at the inline end). The array is JS-owned; CSS only aligns
+  — focus handling and renumbering are in [forms.md](forms.md).
 
 ## Dialog (modal)
 
@@ -504,6 +518,11 @@ support, carousel controls + autoplay) and their markup.
   `aria-current="step"` on the active one. Completed circles fill from
   `--bf-success`, current from `--bf-primary`, pending stay muted — and
   the connecting lines follow completion.
+- **As a wizard** (v7.4): pair the stepper with one panel per step, hide
+  panels with the `hidden` attribute (never remove them — back must
+  preserve input), and move `aria-current="step"` in the same handler that
+  swaps the panel. Verify's `stepper-complete` audits the marker itself;
+  the panel ownership and focus contracts are in [forms.md](forms.md).
 - **`data-orientation="vertical"`** stacks the steps (default is
   horizontal).
 - **JS:** none.

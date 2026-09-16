@@ -1,0 +1,66 @@
+/* Barefoot — field arrays (v7.4, "Form Architecture").
+   "Add another phone." There is no native element for a variable-length
+   list of repeated controls, so this is one of the few places a class
+   exists: .bf-field-array on a <fieldset> (the <legend> names the whole
+   list), one .bf-field-array-row per value, and an add button at the end.
+   The array itself is JS-owned — append a row, focus its control, remove
+   a row and move focus deliberately; CSS only aligns.
+
+   <fieldset class="bf-field-array">
+     <legend>Phone numbers</legend>
+     <div class="bf-field-array-row">
+       <label for="phone-1">Phone 1</label>
+       <input id="phone-1" name="phone" type="tel" required>
+       <button type="button" class="bf-field-remove"
+               aria-label="Remove phone 1">×</button>
+     </div>
+     <button type="button">Add another phone</button>
+   </fieldset>
+
+   A removed row's control must not keep focus stranded: move focus to the
+   next row's control, or to the add button for the last one. The remove
+   button's accessible name should name which row it removes. */
+@layer components {
+  .bf-field-array {
+    display: grid;
+    gap: var(--bf-space-3);
+    /* A fieldset's UA min-content width would overflow a narrow column —
+       the same reason grid tracks never trust item min-content. */
+    min-inline-size: 0;
+    margin: 0;
+    padding: var(--bf-space-3);
+    border: var(--bf-border-width) solid var(--bf-border);
+    border-radius: var(--bf-radius);
+  }
+
+  .bf-field-array > legend {
+    padding-inline: var(--bf-space-1);
+    color: var(--bf-muted);
+    font-size: var(--bf-type-sm);
+  }
+
+  /* The label spans the row; the control grows and the remove button
+     parks at its inline end. Grid placement is implicit: label takes
+     row 1 (both columns), control + button take row 2. */
+  .bf-field-array-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--bf-space-2);
+  }
+
+  .bf-field-array-row > label {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--bf-space-1);
+  }
+
+  .bf-field-array-row > :where(input, select, textarea) {
+    width: 100%;
+    min-inline-size: 0;
+  }
+
+  .bf-field-remove {
+    flex: none;
+  }
+}
