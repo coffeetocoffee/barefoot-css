@@ -464,4 +464,77 @@ export const VERIFY_RULES = [
       "A multi-select table with a select-all control must state `aria-selected` on every row and name the select-all control — a nameless checkbox and a half-marked grid are invisible to assistive technology.",
     ],
   },
+
+  {
+    id: "roving-focus",
+    select: ['[role="tablist"]', '[popover][data-kind="menu"]'],
+    wcag: "2.1.1",
+    check(el, ctx) {
+      // A popover menu opens natively — popovertarget is a platform
+      // primitive — but nothing in the platform moves focus into it on
+      // open, and no native element answers the arrow keys. That is the
+      // module's entire justification, and a page running the surface
+      // without it is pointer-only. "Accessible by default" would be a
+      // lie, so the rule names the gap instead of waving at it.
+      if (el.matches('[popover][data-kind="menu"]')) {
+        if (!ctx.armed("popover-menu")) {
+          return 'this popover menu is pointer-only — js/popover-menu.js is not loaded, so focus never enters it and the arrow keys do nothing';
+        }
+        return null;
+      }
+      // Tablist: roving tabindex keeps exactly one Tab stop. Zero stops
+      // means the widget can never be entered at all — a violation with
+      // or without the module. Several stops is only wrong once the
+      // module owns the pattern: without JS, every tab reachable by Tab
+      // is the valid no-JS default (click to switch).
+      const tabs = [...el.querySelectorAll('[role="tab"]')];
+      if (tabs.length === 0) return null;
+      const stops = tabs.filter((t) => t.tabIndex === 0);
+      if (stops.length === 0) {
+        return 'the tablist has no tab stop — every tab is tabindex="-1", so keyboard users cannot enter it (WCAG 2.1.1)';
+      }
+      if (stops.length > 1 && ctx.armed("tabs")) {
+        return `${stops.length} tabs are tab stops at once — roving tabindex keeps one Tab stop; move the rest to tabindex="-1"`;
+      }
+      return null;
+    },
+    fix: 'keep one tab stop in a tablist (tabindex="0" on the active tab, "-1" on the rest) and load js/popover-menu.js so a popover menu answers the keyboard (docs/keyboard.md)',
+    docs: "docs/keyboard.md",
+    quote: [
+      "A roving-tabindex surface keeps exactly one Tab stop: a tablist whose tabs are all `tabindex=\"-1\"` can never be entered, and one where several are tab stops makes every tab one.",
+      "A popover menu without `js/popover-menu.js` is pointer-only — no native primitive moves focus into it on open or answers the arrow keys.",
+    ],
+  },
+
+  {
+    id: "reading-order-after-reflow",
+    select: ['[data-table~="adaptive"]', '[data-card="adaptive"]', '[data-form="adaptive"]'],
+    wcag: "1.3.2",
+    check(el) {
+      // Container reflow changes *layout*, not the tree: the card-stacked
+      // table is still the same <table> in the same order, so a screen
+      // reader's sequence and the visual one agree. The two CSS ways to
+      // break that promise are `order` on an item and a reversed flex
+      // direction — both invisible to axe, both real the moment the
+      // container reflows. The scan reads computed style (as
+      // sticky-scroll-focusable does), so a rule reordering inside an
+      // inactive @container is silent until the container reaches that
+      // state, and a static reorder is caught at rest.
+      for (const node of [el, ...el.querySelectorAll("*")]) {
+        const cs = getComputedStyle(node);
+        if (cs.order !== "0") {
+          return "an item inside the reflowing container carries a CSS order — visual order after reflow must stay the reading order the DOM promises (WCAG 1.3.2)";
+        }
+        if (cs.flexDirection.includes("reverse")) {
+          return "the reflowing container reverses its flex direction — visual order after reflow must stay the reading order the DOM promises (WCAG 1.3.2)";
+        }
+      }
+      return null;
+    },
+    fix: "remove order and reversed flex direction from inside an adaptive container; reflow may relayout, never reorder (docs/adaptive.md)",
+    docs: "docs/adaptive.md",
+    quote: [
+      "Adaptive reflow must never reorder the DOM: `order` on an item and a reversed flex direction both paint a reading sequence the markup does not promise (WCAG 1.3.2), so neither appears inside a reflowing container.",
+    ],
+  },
 ];

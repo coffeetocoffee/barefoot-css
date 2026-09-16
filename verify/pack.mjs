@@ -56,6 +56,7 @@ export const ALL_MODULES = Object.freeze([
   "tooltip",
   "reveal",
   "theme",
+  "filter-clear",
 ]);
 
 const DEFAULT_BASE = "/dist/";

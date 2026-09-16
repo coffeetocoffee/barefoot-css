@@ -2749,6 +2749,139 @@ test.describe("v4.8 validation icons & forced colors", () => {
   });
 });
 
+test.describe("v7.8 accessibility preference layer (a11y-prefs.css)", () => {
+  /* The layer is opt-in, so the suite carries its own fixture page that
+     imports it alongside the kit — the media queries need real tokens
+     and a real skeleton to act on. CDP emulates the features
+     Playwright's emulateMedia() doesn't expose (prefers-contrast,
+     prefers-reduced-transparency); Chromium only, like forced-colors. */
+  const PREFS_FIXTURE = "/barefoot-prefs-fixture.html";
+  const PREFS_HTML = `<!doctype html><html><head>
+    <link rel="stylesheet" href="/dist/full.css">
+    <link rel="stylesheet" href="/dist/components/a11y-prefs.css">
+  </head><body>
+    <main>
+      <span id="probe-border" style="border: var(--bf-border-width) solid">b</span>
+      <div class="skeleton" id="probe-skel" style="height: 1rem"></div>
+    </main>
+  </body></html>`;
+
+  async function emulateFeature(page, name, value) {
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Emulation.setEmulatedMedia", {
+      features: [{ name, value }],
+    });
+    return cdp;
+  }
+
+  async function clearFeature(cdp) {
+    await cdp.send("Emulation.setEmulatedMedia", { features: [] });
+    await cdp.detach();
+  }
+
+  test("the layer stays opt-in: out of full.css and index.css (ADR-0008)", () => {
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    expect(full, "full.css gained a11y-prefs.css").not.toContain("a11y-prefs.css");
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    expect(index).not.toContain("a11y-prefs.css");
+  });
+
+  test("the layer answers all three documented preferences", () => {
+    const src = fs.readFileSync(
+      path.join(rootDir, "src/components/a11y-prefs.css"),
+      "utf8"
+    );
+    for (const f of [
+      "prefers-contrast",
+      "prefers-reduced-transparency",
+      "prefers-reduced-data",
+    ]) {
+      expect(src, `${f} missing from a11y-prefs.css`).toContain(f);
+    }
+  });
+
+  test("prefers-contrast: more keeps the core palette swap; the layer thickens borders and flattens tints", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "CDP media emulation is chromium-gated");
+    await page.route(PREFS_FIXTURE, (route) =>
+      route.fulfill({ contentType: "text/html", body: PREFS_HTML })
+    );
+    await page.goto(PREFS_FIXTURE);
+    // Baseline first: the layer must be inert until the preference
+    // lands — no cost, no surprise. The subtle tint is an alpha wash.
+    expect(await tokenColor(page, "--bf-muted")).toBe("rgb(90, 90, 90)");
+    expect(await tokenColor(page, "--bf-danger-subtle")).toContain("/");
+
+    const cdp = await emulateFeature(page, "prefers-contrast", "more");
+    try {
+      // The core's unlayered palette swap still owns the colors — the
+      // opt-in layer never fights the framework's own stance.
+      await expect.poll(() => tokenColor(page, "--bf-muted")).toBe("rgb(64, 64, 64)");
+      // The layer's share: the shared border width doubles (2px, not a
+      // 1.5px nudge — half pixels snap back to a device pixel at 1x) and
+      // the alpha tints flatten to solid mixes.
+      await expect
+        .poll(() =>
+          page.locator("#probe-border").evaluate((el) => getComputedStyle(el).borderWidth)
+        )
+        .toBe("2px");
+      await expect.poll(() => tokenColor(page, "--bf-danger-subtle")).not.toContain("/");
+    } finally {
+      await clearFeature(cdp);
+    }
+    // Inert again once the preference clears.
+    await expect.poll(() => tokenColor(page, "--bf-muted")).toBe("rgb(90, 90, 90)");
+  });
+
+  test("prefers-reduced-transparency: flatten the backdrop and stop the shimmer", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "CDP media emulation is chromium-gated");
+    await page.route(PREFS_FIXTURE, (route) =>
+      route.fulfill({ contentType: "text/html", body: PREFS_HTML })
+    );
+    await page.goto(PREFS_FIXTURE);
+    expect(await tokenColor(page, "--bf-backdrop")).toBe("rgba(0, 0, 0, 0.5)");
+    expect(
+      await page.locator("#probe-skel").evaluate((el) => getComputedStyle(el, "::after").display)
+    ).toBe("block");
+
+    const cdp = await emulateFeature(page, "prefers-reduced-transparency", "reduce");
+    try {
+      // The backdrop stops compositing the page through the dialog.
+      await expect.poll(() => tokenColor(page, "--bf-backdrop")).toBe("rgb(0, 0, 0)");
+      // The shimmer is a transparency sweep — the pseudo goes away,
+      // the placeholder stays.
+      await expect
+        .poll(() =>
+          page.locator("#probe-skel").evaluate((el) => getComputedStyle(el, "::after").display)
+        )
+        .toBe("none");
+    } finally {
+      await clearFeature(cdp);
+    }
+  });
+
+  test("prefers-reduced-data is written forward-compatible — no engine implements it yet", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "CDP media emulation is chromium-gated");
+    await page.route(PREFS_FIXTURE, (route) =>
+      route.fulfill({ contentType: "text/html", body: PREFS_HTML })
+    );
+    await page.goto(PREFS_FIXTURE);
+    // The watch-list item: Chromium parses the query and never matches
+    // it. The rule is here for the day an engine ships it — pinned so
+    // that day is a test update, not a silent no-op.
+    const cdp = await emulateFeature(page, "prefers-reduced-data", "reduce");
+    try {
+      expect(
+        await page.evaluate(() => matchMedia("(prefers-reduced-data: reduce)").matches)
+      ).toBe(false);
+      expect(
+        await page.locator("#probe-skel").evaluate((el) => getComputedStyle(el, "::after").display)
+      ).toBe("block");
+    } finally {
+      await clearFeature(cdp);
+    }
+  });
+});
+
 test.describe("v4.8 DTCG tokens.json export", () => {
   // Source-parse tests: the generator runs in-node against src/tokens.css,
   // no page and no dist/ needed.

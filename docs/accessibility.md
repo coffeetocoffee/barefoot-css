@@ -41,6 +41,9 @@ ARIA to the divs" — there are no divs.
   *your* markup (`role="alert"`, `aria-live="polite"`); toasts (Popover
   API) pair `role="status"` / `role="alert"` with an open/close contract
   (`Esc`, click-away). Skeleton is decorative — it never announces.
+- **User preferences (v7.8).** The opt-in `components/a11y-prefs.css`
+  layer answers three preferences the core palette doesn't assume (see
+  [below](#user-preferences-v78)).
 - **RTL.** Component geometry uses logical properties, so `dir="rtl"` mirrors
   edges without changing reading order. Keep document order meaningful and
   provide text alternatives for directional icons.
@@ -85,7 +88,39 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 - **Popover menus** are non-modal by design (roving focus, not a modal
   trap) — correct for menus, wrong for blocking actions; use dialog for
   those. The opt-in `js/popover-menu.js` adds arrow-key nav + focus
-  restore.
+  restore. **Without it the menu is pointer-only:** the Popover API opens
+  it, but no native primitive moves focus in or answers the arrow keys.
+  Verify's `roving-focus` rule says so in your console instead of
+  letting "accessible by default" go unsaid. The full per-pattern map —
+  native vs. opt-in, keys per surface — is [keyboard.md](keyboard.md).
+
+## User preferences (v7.8)
+
+The core palette is built for the *median* user: muted text at 5.9:1,
+hairline borders, alpha tints. Three preferences live outside that
+assumption, and the opt-in layer `components/a11y-prefs.css` answers them.
+Import it once, after the core:
+
+```css
+@import "barefoot-css";
+@import "barefoot-css/components/a11y-prefs.css";
+```
+
+| Preference | What the layer does |
+|---|---|
+| `prefers-contrast: more` | The core already swaps the palette to black-on-white (in `tokens.css`, unlayered — the framework's own stance wins where the two overlap). The layer adds what the swap leaves behind: the shared border width doubles (`--bf-border-width: 2px`) and the alpha state tints flatten to solid mixes. Distinct from `forced-colors` — that one already gets shape, not color (above). |
+| `prefers-reduced-transparency: reduce` | Every alpha the core didn't flatten: the dialog backdrop goes solid, the subtle state tints mix *into* the surface instead of compositing over it, and the skeleton shimmer (a transparency sweep) disappears. (The core already drops the shadows.) |
+| `prefers-reduced-data: reduce` | Decorative repaint goes — the skeleton shimmer stops. **Bring your own:** the payload that actually costs bytes (images, fonts, script) is the page's to budget ([performance.md](performance.md)); CSS cannot decline it for you. |
+
+Honest scoping on the third row: **no engine implements
+`prefers-reduced-data` yet** (watch-list in [plan.md](../plan.md)). The rule is
+written and tested *forward-compatible* — it parses, never matches where the
+feature is unimplemented, and the day an engine ships it the shimmer stops
+without a release. The other two are emulated in the test matrix (CDP,
+Chromium-gated like forced-colors).
+
+Without the layer, all of this is inert: the file is additive, never edits a
+core token at source, and stays out of frozen `full.css` (ADR-0008).
 
 ## Conformance matrix (from demo/index.html)
 

@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, gotoKeyboard, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -249,6 +249,48 @@ test.describe("form architecture proofs (v7.4)", () => {
     await page.getByRole("button", { name: "Next" }).click();
     await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+});
+
+test.describe("keyboard & a11y proofs (v7.8)", () => {
+  test("keyboard page has no axe violations", async ({ page }) => {
+    await gotoKeyboard(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("an open popover menu and a filtered list stay clean", async ({ page }) => {
+    // The menu in its open state (focus inside it) and a filter that has
+    // hidden list items are the two states that could break.
+    await gotoKeyboard(page);
+    await page.getByRole("button", { name: "Actions" }).click();
+    await expect(page.locator(DEMOS.keyboardMenu)).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+    await page.keyboard.press("Escape");
+    await page.locator(DEMOS.keyboardFilter).fill("css");
+    await expect(page.locator(DEMOS.keyboardStack + " li:not([hidden])")).toHaveCount(1);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+
+  test("the nested dialog's inner dialog is clean while open", async ({ page }) => {
+    await gotoKeyboard(page);
+    await page.getByRole("button", { name: "Open the deploy dialog" }).click();
+    await expect(page.locator(DEMOS.keyboardOuterDialog)).toBeVisible();
+    await page.getByRole("button", { name: "Read the policy" }).click();
+    await expect(page.locator(DEMOS.keyboardInnerDialog)).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+
+  test("the tablist keeps exactly one tab stop (roving tabindex)", async ({ page }) => {
+    // The structural contract the Verify rule audits, checked from the
+    // a11y side too: one stop, the active one.
+    await gotoKeyboard(page);
+    const tabs = page.locator(`${DEMOS.keyboardTabs} [role="tab"]`);
+    const stops = await tabs.evaluateAll((els) =>
+      els.map((el) => el.tabIndex)
+    );
+    expect(stops).toEqual([0, -1, -1]);
   });
 });
 

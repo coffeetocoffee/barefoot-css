@@ -452,6 +452,71 @@ A wizard stepper marks exactly one step with `aria-current="step"`, on an `<li>`
 
 A stepper with no `aria-current="step"` is not a violation — it is a tracker of completed steps (a receipt, a finished flow), and the rule stays silent. Back-preserves-input and panel ownership are guidance in [forms.md](forms.md), not audited contracts.
 
+### `roving-focus` (WCAG 2.1.1)
+
+A roving-tabindex surface keeps exactly one Tab stop, and a popover menu needs its module to answer the keyboard at all.
+
+```html
+<!-- ✗ broken: every tab is removed from the Tab order — the list can't be entered -->
+<div role="tablist">
+  <button role="tab" tabindex="-1">One</button>
+  <button role="tab" tabindex="-1">Two</button>
+</div>
+
+<!-- ✗ broken: the tabs module is loaded but every tab is still a stop -->
+<div role="tablist">
+  <button role="tab" tabindex="0">One</button>
+  <button role="tab" tabindex="0">Two</button>
+</div>
+
+<!-- ✗ broken: the menu opens natively, but no module moves focus in or answers the arrows -->
+<button type="button" popovertarget="menu">Actions</button>
+<div popover id="menu" data-kind="menu">…</div>
+<!-- (no import of js/popover-menu.js) -->
+
+<!-- ✓ fixed: one tab stop, and the menu's module loaded -->
+<div role="tablist">
+  <button role="tab" tabindex="0">One</button>
+  <button role="tab" tabindex="-1">Two</button>
+</div>
+<button type="button" popovertarget="menu">Actions</button>
+<div popover id="menu" data-kind="menu">…</div>
+```
+
+The tablist half is silent when the tabs module isn't loaded and every tab is a plain Tab stop — that is the valid no-JS default (each tab reachable, click to switch); the rule only speaks up when the module owns the pattern and the stops have drifted. See [keyboard.md](keyboard.md) for the full map.
+
+### `reading-order-after-reflow` (WCAG 1.3.2)
+
+Adaptive reflow must never reorder the DOM — neither `order` nor a reversed flex direction may appear inside a reflowing container.
+
+```html
+<!-- ✗ broken: order paints a sequence the DOM does not promise -->
+<form data-form="adaptive">
+  <div class="bf-row">
+    <div style="order: 2">First in markup</div>
+    <div>Second in markup</div>
+  </div>
+</form>
+
+<!-- ✗ broken: a reversed flex direction is the other way reflow reorders -->
+<form data-form="adaptive">
+  <div class="bf-row" style="flex-direction: row-reverse">
+    <div>First in markup</div>
+    <div>Second in markup</div>
+  </div>
+</form>
+
+<!-- ✓ fixed: the DOM order is the visual order, at every container width -->
+<form data-form="adaptive">
+  <div class="bf-row">
+    <div>First in markup</div>
+    <div>Second in markup</div>
+  </div>
+</form>
+```
+
+The rule reads computed style inside every adaptive surface (table, card, form), so a reordering that only applies inside an inactive `@container` state stays silent until the container reaches it — and a static reorder is caught at rest. The reasoning lives in [adaptive.md](adaptive.md).
+
 ## CI contract-packs
 
 The same rules, pinned in your own Playwright suite — no checker on the

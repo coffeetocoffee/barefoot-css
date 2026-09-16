@@ -1,7 +1,7 @@
 # Barefoot — Opt-in JavaScript
 
 Barefoot's CSS is **zero-JS**. When native elements aren't quite enough,
-ten small opt-in modules add the missing behavior. Each is a single
+eleven small opt-in modules add the missing behavior. Each is a single
 ES module, **zero dependencies**, and ships readable in `dist/js/`.
 
 | Module | Adds |
@@ -12,11 +12,12 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
 | `js/chips.js` | Removes `[data-chip]` tags on × click |
 | `js/nav.js` | Responsive header nav: hamburger toggle, Esc-close |
-| `js/table-sort.js` | Sorts `table[data-bf-sort]` rows from header buttons |
+| `js/table-sort.js` | Sorts `table[data-bf-sort]` rows from header buttons; arrows rove the header row |
 | `js/toast.js` | Toast auto-dismiss: timed, pause-on-hover |
 | `js/tooltip.js` | Hover tooltip fallback for engines without interest invokers |
+| `js/filter-clear.js` | Escape clears `input[data-bf-filter]` and reports `bf:filterclear` |
 | `js/theme.js` | Theme toggle + persistence for `[data-bf-theme-btn]` buttons |
-| `js/barefoot.js` | All ten in one import |
+| `js/barefoot.js` | All eleven in one import |
 | `js/verify.js` | Dev-only contract checker: warns when Barefoot markup is subtly broken ([verify.md](verify.md)) |
 
 Deprecated surfaces keep working through 3.x and warn once per page
@@ -29,7 +30,7 @@ here, so this page can't drift from the bytes.
 ## Loading
 
 ```html
-<!-- all ten -->
+<!-- all eleven -->
 <script type="module">
   import "barefoot-css/js/barefoot.js";
 </script>
@@ -64,6 +65,7 @@ a page can extend a module instead of forking it — subscribe on `document`
 | `bf:chipremove` | `js/chips.js` (on the chip, before removal) | `{ chip }` |
 | `bf:alertdismiss` | `js/alert-dismiss.js` (on the alert, before removal) | `{ alert }` |
 | `bf:toastdismiss` | `js/toast.js` (on the toast, before it hides) | `{ toast }` |
+| `bf:filterclear` | `js/filter-clear.js` (on the input) | `{ value: "" }` — the filter reset; re-run the page's filter on the (now empty) input |
 
 ```js
 import "barefoot-css/js/barefoot.js";
@@ -315,6 +317,10 @@ opt-in JS (ADR-0019). The semantics stay yours: triggers are real
 - Click a header button once for ascending, again for descending; the
   active column's `th` gets `aria-sort="ascending|descending"` and the
   others are cleared.
+- **Keyboard (v7.8):** →/← move focus between the header buttons (clamped at
+  the ends — the same roving seam tabs use), Enter/Space sorts. Tab still
+  visits every button natively; the arrows cover the rest. See
+  [keyboard.md](keyboard.md).
 - Comparison is numeric-aware: if every non-empty cell in the column
   parses as a number (whitespace and thousands commas tolerated), rows
   compare numerically — `12` sorts after `3`, not after `1`. Otherwise
@@ -421,7 +427,38 @@ do: wiring switcher buttons and remembering the choice.
 
 - For dynamic content: `import { initTheme, setTheme } from "barefoot-css/js/theme.js"`.
 
-## 13. Declarative command wiring (`command` / `commandfor`) — zero JS
+## 13. Filter input — Escape clears (`js/filter-clear.js`)
+
+New in v7.8. Find-in-page bars, search boxes, list filters: Escape means "reset."
+No native primitive clears an input on Escape — the platform gives you a text
+field and a keyboard event — so this module is that one shared line.
+
+```html
+<label for="q">Filter the stack</label>
+<input type="search" id="q" data-bf-filter placeholder="css, js, …">
+```
+
+Escape clears the value and dispatches `bf:filterclear` (bubbling,
+`detail: { value: "" }`) so a page's filter logic re-runs on the reset. Empty
+input + Escape is a no-op — there is nothing to clear and nothing to report:
+
+```js
+import "barefoot-css/js/filter-clear.js";
+
+const q = document.getElementById("q");
+q.addEventListener("bf:filterclear", () => refilter(q));
+q.addEventListener("input", () => refilter(q));
+```
+
+- **No-JS first:** without the module the input is a plain text field — typing
+  still works, the page just doesn't get an Escape reset for free.
+- **The platform's own keys are untouched:** Enter submits the form, Tab moves
+  on, and the module never prevents a key it doesn't own.
+- For dynamic content: `import { initFilterClear } from "barefoot-css/js/filter-clear.js"`.
+- The keyboard contract this module finishes is documented in
+  [keyboard.md](keyboard.md) — the full per-pattern map of native vs. opt-in.
+
+## 14. Declarative command wiring (`command` / `commandfor`) — zero JS
 
 New in v5.0: the **Invoker Commands API** (`command` / `commandfor`) is
 green across the whole v5 floor (Chrome 135, Firefox 144, Safari 26.2), so
@@ -460,7 +497,7 @@ target element's `id`.
   `showModal()` there. See the `demo-command` section on the conformance
   demo for a live, keyboard-walkable example.
 
-## 14. Contract checker (`js/verify.js`) — dev-only, not in the barrel
+## 15. Contract checker (`js/verify.js`) — dev-only, not in the barrel
 
 Full documentation: [docs/verify.md](verify.md). The short version:
 

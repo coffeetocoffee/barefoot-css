@@ -1,6 +1,9 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-16 — v7.4.0 "Form Architecture" built & verified
+_Last updated: 2026-09-16 — v7.8.0 "Keyboard & A11y Beyond Component" built &
+verified (per-pattern keyboard map, sort-header roving, filter Esc-to-clear,
+nested-dialog proofs, the user-preference layer, two new Verify rules,
+`docs/keyboard.md`, ADR-0021); v7.4.0 "Form Architecture" built & verified
 (async validation contract, wizard + state boundary, field arrays, two
 new Verify rules, `docs/forms.md`, ADR-0020); v7.2.0 "Data Story" built &
 verified (density scale, server-rendered sort, row selection, two new
@@ -141,7 +144,34 @@ Verify rules, the composed recipe, `js/table-sort.js` graduates); v7.0.0
   and with a field-array row added. Skips are the documented engine-gated
   ones (interest invokers, SDA, `popover=hint`, cross-doc VT,
   base-select; the forced-colors tests are Chromium-gated emulation).
-- **History:** milestones 0.1 → 7.4.0 shipped.
+- **Built & verified:** **v7.8.0 — "Keyboard & A11y Beyond Component"**
+  (2026-09-16; tag = maintainer action). The per-pattern keyboard map
+  (`docs/keyboard.md`: native vs. opt-in per surface, the honest
+  pointer-only line for unmoduled popover menus); sort-header arrow roving
+  through the shared `createRover` seam (no new key math); the filter
+  Esc-to-clear module (`js/filter-clear.js`, 0.86KB gzip, `bf:filterclear`
+  event, barrel-joined); nested dialogs proven native (Esc layering on all
+  three engines; focus return pinned on Chromium/Firefox — WebKit lands
+  focus on the outer dialog / `<body>`, stated in docs + suite with the
+  reason attached); the opt-in user-preference layer
+  (`components/a11y-prefs.css`: doubled border width + flattened tints
+  under `prefers-contrast`, solid backdrop / flattened tints / no shimmer
+  under reduced transparency, forward-compatible shimmer rule under
+  reduced data); and two new Verify rules (`roving-focus`,
+  `reading-order-after-reflow`). `tabs.js` / `popover-menu.js` now `arm()`.
+  `demo/keyboard.html` proves it all on its own page (baselines untouched).
+  The registry budget moves 6656 → 8192 bytes gzip (deliberately in
+  review). `npm run check` green; full matrix below.
+- **Verification (2026-09-16, v7.8 matrix):** Chromium 328 passed / 2
+  engine-gated skips · Firefox 281 / 15 · WebKit 286 / 11 — zero failures;
+  visual regression green on all three (win32 baselines untouched — the
+  keyboard page ships beside the conformance demo, not inside it); axe
+  green (34/34) including the keyboard page resting, with an open popover
+  menu, with a filtered list, and with the nested inner dialog open plus
+  the one-tab-stop structural check. New skips are the documented
+  engine-gated ones (the CDP media-emulation prefs tests and the
+  WebKit dialog focus-return test, each with its reason string).
+- **History:** milestones 0.1 → 7.8.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -265,6 +295,16 @@ and `.bf-*` utilities.
 
 - **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
   action only; `release.yml` takes over on the tag push.
+- **v7.8.0 — "Keyboard & A11y Beyond Component" (built & verified
+  2026-09-16; tag = maintainer action):** the per-pattern keyboard map
+  (`docs/keyboard.md`), sort-header arrow roving via the shared seam,
+  the filter Esc-to-clear module (`js/filter-clear.js`, `bf:filterclear`),
+  nested dialogs proven native (layering everywhere, focus return on
+  Chromium/Firefox), the opt-in user-preference layer
+  (`components/a11y-prefs.css`), and two Verify rules (`roving-focus`,
+  `reading-order-after-reflow`). `docs/keyboard.md` + ADR-0021;
+  `demo/keyboard.html` proves it on its own page. Tag `v7.8.0`
+  per RELEASE.md; `release.yml` publishes from the tag.
 - **v7.4.0 — "Form Architecture" (built & verified 2026-09-16; tag =
   maintainer action):** the async contract (`components/forms-async.css`:
   `data-async-pending` + `aria-busy` + a `role="status"` region that is
@@ -388,17 +428,23 @@ and `.bf-*` utilities.
   CSS only reveals. Ban Rube Goldberg `:has()` chains. ✅
 - Verify: `async-live`, `stepper-complete`. Non-goal: no framework bindings. ✅
 
-**v7.8 — "Keyboard & A11y Beyond Component" (needs real data + forms)**
+**v7.8 — "Keyboard & A11y Beyond Component" (needs real data + forms)** ✅
+(shipped 2026-09-16)
 
 - **Roving-focus micro-JS (<1KB):** menus/tablists get arrow-key navigation. Pure-CSS
   popover documented as mouse/tap-only until module loads — no handwaving "accessible
-  by default".
+  by default". ✅ (The seam predates v7.8 via ADR-0006; v7.8 adds the sort-header
+  rover, the `roving-focus` audit, and the written contract.)
 - **Per-pattern keyboard maps:** sort roving focus, filter Esc-to-clear,
-  dialog-in-dialog focus handling.
+  dialog-in-dialog focus handling. ✅ (`docs/keyboard.md` + `demo/keyboard.html`;
+  dialogs proven native, no module — the one honest gap is WebKit focus return,
+  pinned with its reason.)
 - **Adaptive SR story:** `<table>` → cards at container width is a semantic shift; add
   narration / role guidance. Add `prefers-contrast` (distinct from forced-colors),
-  `prefers-reduced-transparency/data`. Audit reading order *after* container reflow.
-- Verify: `roving-focus`, `reading-order-after-reflow`.
+  `prefers-transparency/data`. Audit reading order *after* container reflow. ✅
+  (`a11y-prefs.css`, the adaptive.md SR section, `reading-order-after-reflow`.
+  `prefers-reduced-data` ships forward-compatible — no engine implements it yet.)
+- Verify: `roving-focus`, `reading-order-after-reflow`. ✅
 
 **v8.0 — "Resilience & Coexistence" (independent, push late)**
 
@@ -755,6 +801,16 @@ muscle-memory says *resize the browser*.
   2026.** Graduated in v5.1 as a progressive-enhancement headline
   (`@supports`-gated); Firefox users get the chevron fallback, and the
   gated test skips stay until Firefox ships.
+- `prefers-reduced-data` — **no engine implements it** (probed Sep 2026:
+  Chromium parses the query and never matches, even under CDP emulation).
+  `a11y-prefs.css` carries the rule forward-compatible so the day an
+  engine ships it, the shimmer stops without a release; the payload
+  savings stay bring-your-own either way.
+- WebKit nested-dialog focus return — **engine gap, not a missing
+  feature.** Layering (Esc closes topmost first) is correct; focus lands
+  on the outer `<dialog>` (inner close) and `<body>` (outer close)
+  instead of the opener. Pinned with reason strings; no polyfill module
+  (a framework that imitates the platform stops being one).
 
 ## Decision log
 

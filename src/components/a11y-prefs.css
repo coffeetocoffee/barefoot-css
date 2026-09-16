@@ -1,0 +1,88 @@
+/* Barefoot — accessibility preferences (v7.8, "Keyboard & A11y Beyond
+   Component"). Opt-in layer finishing three user preferences the core
+   starts but does not finish.
+
+   The core already answers two of these in tokens.css (unlayered, so it
+   wins where the two overlap — the framework's own accessibility stance
+   beats an opt-in layer):
+   - prefers-contrast: more swaps the palette to black-on-white;
+   - prefers-reduced-transparency: reduce drops the shadows.
+
+   What the core leaves behind is what this layer adds:
+
+   - prefers-contrast: more — the swap leaves hairlines at their normal
+     width and the state tints as 12% alpha washes. Here boundaries
+     thicken and the tints flatten to solid mixes (a state region that
+     composites over nothing reads by its boundary and its text).
+   - prefers-reduced-transparency: reduce — the backdrop stops showing
+     the page through the dialog, the focus-ring and state tints mix
+     *into* the surface instead of over it, and the skeleton shimmer (a
+     transparency sweep) disappears.
+   - prefers-reduced-data: reduce — CSS cannot withhold the real payload:
+     images, fonts, and script are the page's bytes to budget (see
+     docs/performance.md). What this layer can drop is decorative
+     repaint, so the skeleton shimmer stops repainting forever. No
+     engine implements the feature yet (watch-list, plan.md); the rule
+     is written forward-compatible — the day one ships, the shimmer
+     stops without a release.
+
+   Import once, anywhere after the core:
+
+     @import "barefoot-css/components/a11y-prefs.css";
+
+   Never in frozen full.css (ADR-0008). Overrides stay light-dark()
+   pairs where the token is a pair (ADR-0005) and are additive — without
+   this file the core behavior is byte-for-byte untouched, and index.css
+   doesn't pay for preferences the user may never set. Degrade by
+   omission: engines without a preference simply never match. */
+@layer components {
+  /* ---- More contrast: boundaries over subtlety. The core owns the
+     palette swap; the layer owns everything the swap leaves thin or
+     translucent. The width doubles rather than nudging: 1.5px snaps
+     back to a device pixel at 1x, so half-measures are invisible
+     exactly where this preference matters most. ---- */
+  @media (prefers-contrast: more) {
+    :root {
+      --bf-border-width: 2px;
+      /* A 12% tint over a black-on-white palette is a whisper; mixed
+         into the surface it is the same color, composited over
+         nothing — the boundary and the text carry the state. */
+      --bf-danger-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-danger) 12%);
+      --bf-success-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-success) 12%);
+      --bf-info-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-info) 12%);
+      --bf-warning-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-warning) 12%);
+    }
+  }
+
+  /* ---- Reduced transparency: flatten every alpha the core didn't.
+     A tint at 12% over the page and the same 12% mixed into the surface
+     are the same color; only the compositing differs, and compositing is
+     what this preference asks to remove. ---- */
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --bf-backdrop: #000000;
+      --bf-primary-muted: color-mix(in oklab, var(--bf-primary), var(--bf-surface) 75%);
+      --bf-danger-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-danger) 12%);
+      --bf-success-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-success) 12%);
+      --bf-info-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-info) 12%);
+      --bf-warning-subtle: color-mix(in oklab, var(--bf-surface), var(--bf-warning) 12%);
+    }
+
+    /* The shimmer is a transparency sweep across a base surface —
+       removing the pseudo keeps the placeholder, loses the alpha. */
+    .skeleton::after {
+      display: none;
+    }
+  }
+
+  /* ---- Reduced data: stop the decorative repaint. Honest scoping:
+       the bytes that matter are images, fonts, and script, and CSS
+       cannot decline those for you — bring your own budget
+       (docs/performance.md). What this layer owns is paint the page
+       does not need: the infinite shimmer. ---- */
+  @media (prefers-reduced-data: reduce) {
+    .skeleton::after {
+      display: none;
+    }
+  }
+}

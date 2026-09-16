@@ -163,6 +163,25 @@ Because every adaptive component keeps its native element and semantics:
 - **`prefers-reduced-motion`:** layout changes are not motion; no animation is
   introduced by adapting.
 
+### Screen readers and the reading order (v7.8)
+
+A table that card-stacks is a semantic shift worth saying out loud: the `<thead>`
+hides, and each cell captions itself with `data-label` so the column header
+still reads with the value. What does *not* shift is the order — the a11y tree
+and the DOM stay byte-identical, so the sequence a screen reader reads is the
+sequence the cards paint. That identity is the whole a11y story of adaptive
+layout, and it is a promise the page can break in exactly two ways:
+
+Adaptive reflow must never reorder the DOM: `order` on an item and a reversed
+flex direction both paint a reading sequence the markup does not promise
+(WCAG 1.3.2), so neither appears inside a reflowing container.
+
+Verify's `reading-order-after-reflow` rule audits both — it reads computed style
+inside every adaptive surface and warns when the visual sequence has drifted
+from the tree. If the reordering belongs there (a column you deliberately
+mirror), remove the rule's surface or reorder the DOM; the warning is the
+framework asking which one you meant.
+
 ## Browser support
 
 All four components require the v5.0 floor (ADR-0010): container queries +

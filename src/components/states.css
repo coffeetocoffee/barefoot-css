@@ -111,7 +111,9 @@
   .bf-state[data-state="fresh"],
   .bf-state[data-state="confirmed"] {
     border-color: var(--bf-success);
-    background: color-mix(in oklab, var(--bf-success), transparent 88%);
+    /* The token, not an inline mix, so a11y-prefs.css can flatten the
+       alpha for prefers-reduced-transparency (same default value). */
+    background: var(--bf-success-subtle);
   }
 
   /* The one precedence rule the layer enforces in paint: a pending

@@ -185,6 +185,7 @@ All component attributes and their valid values:
 | `data-trend` | `.bf-stat` | `up`, `down` — visual trend color; never the sole status cue | 6.6 |
 | `data-sort` | `<th>` | `asc`, `desc` — the declarative mirror of `aria-sort`; paints the sort arrow without the module (docs/components.md, Table) | 7.2 |
 | `data-async-pending` | field wrapper (`.bf-form-group` or any control wrapper) | (boolean) — a control whose value is being checked async; pair with `aria-busy="true"` and a `role="status"` region (docs/forms.md) | 7.4 |
+| `data-bf-filter` | `<input>`, `<textarea>` | (boolean) — Escape clears the value and reports `bf:filterclear` (docs/keyboard.md) | 7.8 |
 
 Platform-gated styling carries no attribute of its own: single
 `<select>`s pick up the `::picker(select)` skin only where the engine

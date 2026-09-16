@@ -158,6 +158,16 @@ export const DEMOS = Object.freeze({
     faUploadInput: "#fa-upload-input",
     faUploadStatus: "#fa-upload-status",
     faUploadProgress: "#fa-upload-progress",
+    // v7.8 — keyboard & a11y beyond component (demo/keyboard.html).
+    keyboardMenu: "#kb-menu",
+    keyboardTabs: "#kb-tabs",
+    keyboardSort: "#kb-sort",
+    keyboardFilter: "#kb-filter",
+    keyboardStack: "#kb-stack",
+    keyboardFilterCount: "#kb-filter-count",
+    keyboardOuterDialog: "#kb-outer",
+    keyboardInnerDialog: "#kb-inner",
+    keyboardFocusReport: "#kb-focus-report",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -214,6 +224,13 @@ export async function gotoDataStory(page) {
    field array, and upload progress. */
 export async function gotoFormArchitecture(page) {
   await page.goto("/demo/form-architecture.html");
+}
+
+/* Navigate to the keyboard & a11y proofs (v7.8) — roving focus across
+   menus, tablists and sort headers, filter Esc-to-clear, nested-dialog
+   focus, and the user-preference layers. */
+export async function gotoKeyboard(page) {
+  await page.goto("/demo/keyboard.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

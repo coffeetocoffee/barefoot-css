@@ -20,7 +20,9 @@ const JS_BUDGETS = {
   // and event-contract rules pushed the quoted prose past 4KB — bumped
   // deliberately in review, not silently. v7.2's aria-sort-wired and
   // selection-complete pushed it past 5KB — same reason, same review.
-  "js/verify-contracts.js": 6656,
+  // v7.8's roving-focus and reading-order-after-reflow pushed it past
+  // 7KB — same reason, same review.
+  "js/verify-contracts.js": 8192,
   // The barrel is imports only — growth here means something regressed.
   "js/barefoot.js": 1024,
 };

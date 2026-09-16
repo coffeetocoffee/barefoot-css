@@ -4,6 +4,57 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.8.0] — 2026-09-16
+
+### Added
+
+- **Keyboard beyond the component — the per-pattern map.** `docs/keyboard.md`
+  is the honest table of native vs. opt-in, pattern by pattern: what the
+  platform gives you for free and what the module finishes. `demo/keyboard.html`
+  proves every row on its own page — conformance baselines untouched.
+- **Sort-header roving.** `js/table-sort.js` moves focus between header
+  buttons under →/← (clamped at the ends, Home/End jump), through the same
+  `createRover` seam tabs and menus share — no new arrow-key math anywhere.
+  Enter/Space still sorts; Tab still visits every button natively.
+- **Filter Esc-to-clear.** New opt-in `js/filter-clear.js` (0.86KB gzip):
+  Escape on a non-empty `input[data-bf-filter]` clears the value and reports
+  `bf:filterclear` (`detail: { value: "" }`) so the page's filter re-runs.
+  Empty input + Escape is a no-op. Joins the `barefoot.js` barrel.
+- **Nested dialogs, documented not moduled.** Esc closes the inner dialog
+  first, Tab stays topmost, focus returns to the opener — all native, so no
+  `js/dialog-*.js` exists by design. Engine gap stated: WebKit closes the
+  layering correctly but lands focus on the outer dialog (inner close) and
+  `<body>` (outer close); the suite pins layering on all three engines and
+  focus return on Chromium/Firefox with the reason attached.
+- **The user-preference layer.** Opt-in `components/a11y-prefs.css` finishes
+  what the core starts: under `prefers-contrast: more` the shared border
+  width doubles and the alpha state tints flatten (the core's palette swap
+  still owns the colors); under `prefers-reduced-transparency` the backdrop
+  goes solid, tints mix into the surface, and the skeleton shimmer stops;
+  under `prefers-reduced-data` the shimmer stops too — forward-compatible,
+  since no engine implements the feature yet. Never in `full.css`.
+- **Two new Verify rules.** `roving-focus` (WCAG 2.1.1) audits the
+  one-tab-stop contract on tablists and names the pointer-only gap on a
+  popover menu whose module isn't loaded. `reading-order-after-reflow`
+  (WCAG 1.3.2) audits computed `order` / reversed flex direction inside
+  adaptive surfaces. Both quote their docs sentence; both pinned by test.
+- **`tabs.js` and `popover-menu.js` now `arm()`** so the checker can tell a
+  loaded keyboard module from missing support. ADR-0021 records the
+  decisions.
+
+### Changed
+
+- `docs/api.md` adds `data-bf-filter`; `docs/javascript.md` documents the
+  eleventh module, the `bf:filterclear` event, and sort-header roving;
+  `docs/verify.md` documents the two new rules; `docs/adaptive.md` gains the
+  screen-reader reflow story; `docs/accessibility.md` gains the preference
+  layer (including what the core already did).
+- The registry budget moves 6656 → 8192 bytes gzip (two more quoted rules,
+  deliberately in review). The `states.css` fresh/confirmed background now
+  uses the `--bf-success-subtle` token (same value) so the transparency
+  layer can flatten it.
+- No new color tokens. `index.css` and `full.css` remain untouched (ADR-0008).
+
 ## [7.4.0] — 2026-09-16
 
 ### Added

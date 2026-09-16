@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Keyboard &amp; A11y</title>
+  <meta name="description" content="The v7.8 keyboard maps: roving focus, sort headers, filter Esc-to-clear, nested dialogs, and the user-preference layers.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/a11y-prefs.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .kb-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .kb-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .kb-map { width: 100%; }
+    .kb-map code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .kb-log { max-block-size: 14rem; overflow-y: auto; margin-block: 0; }
+    .kb-log:empty::after { content: "Use a keyboard anywhere on this page — the bf:* events land here."; color: var(--bf-muted); }
+    .kb-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .kb-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .kb-focus { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .kb-list { margin-block: 0; display: grid; gap: var(--bf-space-1); }
+    .kb-pref-grid { display: grid; gap: var(--bf-space-3); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+    .kb-pref { border: var(--bf-border-width) solid var(--bf-border); border-radius: var(--bf-radius); padding: var(--bf-space-3); }
+    .kb-pref h3 { margin-block: 0 var(--bf-space-1); font-size: var(--bf-type-md); }
+    .kb-pref p { margin-block: 0; }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+
+  <header class="bf-container kb-head">
+    <p class="bf-overline">Barefoot CSS v7.8</p>
+    <h1>Keyboard &amp; A11y, beyond the component</h1>
+    <p>Every surface below is a native element with its keyboard contract intact — and where the platform stops short (arrow-key roving, sort headers, filter Escape, focus into a popover menu), one small opt-in module finishes the sentence. Nothing here is a div with an <code>onclick</code>.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="playground.html">playground</a> · <a href="../docs/keyboard.md">keyboard docs</a> · <a href="../docs/accessibility.md">a11y docs</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- The map -->
+    <section aria-labelledby="kb-map-title">
+      <h2 id="kb-map-title">The keyboard map</h2>
+      <p class="bf-muted">One row per pattern: what the platform gives you for free, and what the opt-in module adds. The full table with markup is <a href="../docs/keyboard.md">in the docs</a>.</p>
+      <table class="kb-map">
+        <caption>Pattern keyboard contracts — native vs. the opt-in module</caption>
+        <thead><tr>
+          <th>Pattern</th>
+          <th>Native keyboard</th>
+          <th>Opt-in JS adds</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Popover menu</td><td>Tab reaches the trigger; Enter opens it</td><td><code>js/popover-menu.js</code> — arrows, Home/End, focus moves in, Esc/Tab closes and returns focus</td></tr>
+          <tr><td>Tabs</td><td>Tab through every tab; Enter/click switches</td><td><code>js/tabs.js</code> — roving tabindex, arrows, Home/End</td></tr>
+          <tr><td>Sortable table</td><td>Tab through the header buttons; Enter sorts</td><td><code>js/table-sort.js</code> — arrows move between the sort buttons</td></tr>
+          <tr><td>Filter input</td><td>Plain text editing</td><td><code>js/filter-clear.js</code> — Escape clears and reports <code>bf:filterclear</code></td></tr>
+          <tr><td>Dialog (nested too)</td><td>Tab trap, Esc closes, focus returns to the opener</td><td>Nothing — <code>showModal()</code> is one native line</td></tr>
+          <tr><td>Accordion</td><td>Enter/Space toggles, arrow keys natively</td><td>Nothing</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="bf-row bf-gap-3 bf-align-start" style="align-items: flex-start">
+      <div style="flex: 1 1 26rem; min-inline-size: 0">
+
+        <!-- Popover menu -->
+        <section aria-labelledby="kb-menu-title">
+          <h2 id="kb-menu-title">Popover menu</h2>
+          <p class="bf-muted">Open it, then press <kbd>↓</kbd>/<kbd>↑</kbd> (and <kbd>Home</kbd>/<kbd>End</kbd>) to move between items, <kbd>Esc</kbd> or <kbd>Tab</kbd> to close — focus lands back on the trigger. Without <code>js/popover-menu.js</code> the same menu opens but is pointer-only; Verify's <code>roving-focus</code> rule says so in your console.</p>
+          <p>
+            <button type="button" popovertarget="kb-menu" data-variant="primary">Actions</button>
+            <div popover id="kb-menu" data-kind="menu" aria-label="Actions">
+              <button type="button">Rename</button>
+              <button type="button">Duplicate</button>
+              <button type="button">Archive</button>
+              <a href="#kb-map-title">Jump to the map</a>
+            </div>
+          </p>
+        </section>
+
+        <!-- Tabs -->
+        <section aria-labelledby="kb-tabs-title">
+          <h2 id="kb-tabs-title">Tabs</h2>
+          <p class="bf-muted">One Tab stop for the whole list; arrows move it and switch the panel, <kbd>Home</kbd>/<kbd>End</kbd> jump to the ends. Without the module every tab is a Tab stop and all panels show — the no-JS floor.</p>
+          <div data-bf-tabs id="kb-tabs">
+            <div role="tablist" aria-label="Environments">
+              <button id="kb-tab-1" role="tab" aria-controls="kb-panel-1" aria-selected="true">Production</button>
+              <button id="kb-tab-2" role="tab" aria-controls="kb-panel-2" aria-selected="false">Staging</button>
+              <button id="kb-tab-3" role="tab" aria-controls="kb-panel-3" aria-selected="false">Preview</button>
+            </div>
+            <div id="kb-panel-1" role="tabpanel" aria-labelledby="kb-tab-1" tabindex="0"><p>Production is locked behind a manual approval.</p></div>
+            <div id="kb-panel-2" role="tabpanel" aria-labelledby="kb-tab-2" tabindex="0"><p>Staging rebuilds on every push to <code>main</code>.</p></div>
+            <div id="kb-panel-3" role="tabpanel" aria-labelledby="kb-tab-3" tabindex="0"><p>Preview environments expire after 48 hours.</p></div>
+          </div>
+        </section>
+
+        <!-- Sortable table -->
+        <section aria-labelledby="kb-sort-title">
+          <h2 id="kb-sort-title">Sortable table</h2>
+          <p class="bf-muted">Focus a header button, then press <kbd>→</kbd>/<kbd>←</kbd> to move between the sort controls — the same roving math the tablist uses, clamped at the ends. <kbd>Enter</kbd>/<kbd>Space</kbd> sorts (a real button, so it always did).</p>
+          <table data-bf-sort id="kb-sort">
+            <caption>Arrow keys rove the header row; the sort reports <code>bf:sort</code>.</caption>
+            <thead><tr>
+              <th><button type="button">Service</button></th>
+              <th><button type="button">Deploys</button></th>
+            </tr></thead>
+            <tbody>
+              <tr><td>api</td><td>12</td></tr>
+              <tr><td>web</td><td>3</td></tr>
+              <tr><td>worker</td><td>5</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Filter -->
+        <section aria-labelledby="kb-filter-title">
+          <h2 id="kb-filter-title">Filter — Escape clears</h2>
+          <p class="bf-muted">Type to filter the list; press <kbd>Esc</kbd> to clear the input — the module reports <code>bf:filterclear</code> so a page's filter logic re-runs. No native primitive clears an input on Escape; the module is that one shared line.</p>
+          <label for="kb-filter">Filter the stack</label>
+          <input type="search" id="kb-filter" data-bf-filter placeholder="css, js, …">
+          <p class="bf-muted" id="kb-filter-count" role="status" aria-live="polite">6 of 6 shown</p>
+          <ul class="kb-list" id="kb-stack">
+            <li>CSS</li><li>JS</li><li>HTML</li><li>A11y</li><li>Tokens</li><li>Themes</li>
+          </ul>
+        </section>
+
+        <!-- Nested dialogs -->
+        <section aria-labelledby="kb-dialog-title">
+          <h2 id="kb-dialog-title">Nested dialogs</h2>
+          <p class="bf-muted">A dialog opened from inside a dialog is still one topmost layer: <kbd>Esc</kbd> closes the inner one first, <kbd>Tab</kbd> stays inside the top dialog, and focus returns to the button that opened it — all native, no module. The line below tracks focus live.</p>
+          <p>
+            <button type="button" id="kb-outer-open">Open the deploy dialog</button>
+            <span class="bf-focus" id="kb-focus-report" role="status" aria-live="polite">focus: —</span>
+          </p>
+          <dialog id="kb-outer" aria-labelledby="kb-outer-title">
+            <form method="dialog">
+              <h2 id="kb-outer-title">Confirm deployment</h2>
+              <p>Deploys to production need a policy acknowledgment.</p>
+              <p>
+                <button type="button" id="kb-inner-open">Read the policy</button>
+                <button type="submit" value="cancel" data-variant="ghost">Cancel</button>
+              </p>
+            </form>
+          </dialog>
+          <dialog id="kb-inner" aria-labelledby="kb-inner-title">
+            <form method="dialog">
+              <h2 id="kb-inner-title">Deployment policy</h2>
+              <p>Deploys are atomic and reversible for 30 minutes.</p>
+              <p><button type="submit" value="ok" data-variant="primary">Got it</button></p>
+            </form>
+          </dialog>
+        </section>
+
+        <!-- Preferences -->
+        <section aria-labelledby="kb-prefs-title">
+          <h2 id="kb-prefs-title">User preferences</h2>
+          <p class="bf-muted">The opt-in <code>components/a11y-prefs.css</code> layer (imported on this page) answers three preferences the core palette doesn't assume — set one in your OS and reload:</p>
+          <div class="kb-pref-grid">
+            <div class="kb-pref">
+              <h3><code>prefers-contrast: more</code></h3>
+              <p>The core swaps the palette to black-on-white; the layer doubles the shared border width and flattens the alpha tints. Not <code>forced-colors</code> — that one already gets shape, not color.</p>
+            </div>
+            <div class="kb-pref">
+              <h3><code>prefers-reduced-transparency: reduce</code></h3>
+              <p>Every alpha flattens: the dialog backdrop goes solid, subtle tints mix into the surface, and the skeleton stops sweeping.</p>
+            </div>
+            <div class="kb-pref">
+              <h3><code>prefers-reduced-data: reduce</code></h3>
+              <p>Decorative repaint goes — the shimmer stops. The real payload (images, fonts, JS) is yours to budget; the docs say so.</p>
+            </div>
+          </div>
+          <p class="bf-muted" style="margin-block-start: var(--bf-space-3)">A skeleton, so the preference has something to act on: <span class="skeleton" style="display: inline-block; inline-size: 12rem; block-size: 1rem; vertical-align: middle"></span></p>
+        </section>
+
+      </div>
+
+      <div style="flex: 1 1 20rem; min-inline-size: 0">
+        <h3 id="kb-log-title">Event log</h3>
+        <ol class="kb-log" id="kb-log" aria-labelledby="kb-log-title"></ol>
+        <h3>Listener</h3>
+        <div class="kb-code"><code>document.addEventListener(
+  "bf:filterclear",
+  (e) =&gt; refilter(e.target)
+);</code></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+
+    const log = document.getElementById("kb-log");
+    function entry(type, detail) {
+      const li = document.createElement("li");
+      const keys = Object.values(detail).map((v) => String(v));
+      li.textContent = `${type} — ${keys.join(", ") || "—"}`;
+      log.prepend(li);
+      while (log.children.length > 12) log.lastChild.remove();
+    }
+    for (const type of [
+      "bf:themechange",
+      "bf:tabactivate",
+      "bf:sort",
+      "bf:filterclear",
+    ]) {
+      document.addEventListener(type, (e) => entry(e.type, e.detail));
+    }
+
+    // Filter: plain input events for typing, bf:filterclear for the reset.
+    const filter = document.getElementById("kb-filter");
+    const stack = document.getElementById("kb-stack");
+    const count = document.getElementById("kb-filter-count");
+    const items = [...stack.querySelectorAll("li")];
+    function refilter() {
+      const q = filter.value.trim().toLowerCase();
+      let shown = 0;
+      for (const li of items) {
+        const hit = li.textContent.toLowerCase().includes(q);
+        li.hidden = !hit;
+        if (hit) shown++;
+      }
+      count.textContent = `${shown} of ${items.length} shown`;
+    }
+    filter.addEventListener("input", refilter);
+    filter.addEventListener("bf:filterclear", refilter);
+
+    // Nested dialogs: showModal() is the one native line each. Esc,
+    // focus trapping, and focus return are the platform's.
+    const outer = document.getElementById("kb-outer");
+    const inner = document.getElementById("kb-inner");
+    document.getElementById("kb-outer-open").addEventListener("click", () => outer.showModal());
+    document.getElementById("kb-inner-open").addEventListener("click", () => inner.showModal());
+
+    // Focus reporter — proves the focus-return contract visibly.
+    const report = document.getElementById("kb-focus-report");
+    document.addEventListener("focusin", (e) => {
+      const el = e.target;
+      const label =
+        el.id ? `#${el.id}` :
+        el.tagName.toLowerCase() === "button" ? `button: ${el.textContent.trim()}` :
+        el.tagName.toLowerCase();
+      report.textContent = `focus: ${label}`;
+    });
+  </script>
+</body>
+</html>

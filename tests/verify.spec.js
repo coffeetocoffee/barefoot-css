@@ -27,7 +27,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, mountFixture } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, mountFixture } from "./helpers.js";
 // The suite consumes the pack, not src/ directly — one registry, two
 // formats, and the pack re-exports the registry it shares with the
 // engine (ADR-0015).
@@ -271,6 +271,35 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ],
       fixed: `<div data-stepper><ol><li data-complete>A</li><li aria-current="step">B</li><li>C</li></ol></div>`,
     },
+    {
+      id: "roving-focus",
+      broken: [
+        // Every tab is removed from the Tab order — the list can never
+        // be entered, with or without the module.
+        `<div role="tablist"><button role="tab" tabindex="-1">A</button><button role="tab" tabindex="-1">B</button></div>`,
+        // The tabs module is armed but every tab is still a stop —
+        // drift from the roving contract the module owns.
+        `<div role="tablist"><button role="tab" tabindex="0">A</button><button role="tab" tabindex="0">B</button></div>`,
+        // A popover menu whose keyboard module is not loaded: it opens
+        // natively, but nothing moves focus in or answers the arrows.
+        `<button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#">Edit</a></div>`,
+      ],
+      // The tablist cases need tabs armed (or not — the zero-stop case
+      // fires either way); the menu case needs popover-menu unloaded.
+      brokenArmed: ["tabs"],
+      fixed: `<div role="tablist"><button role="tab" tabindex="0">A</button><button role="tab" tabindex="-1">B</button></div><button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#">Edit</a></div>`,
+    },
+    {
+      id: "reading-order-after-reflow",
+      broken: [
+        // A CSS order inside a reflowing container: the card view would
+        // paint a sequence the DOM does not promise.
+        `<form data-form="adaptive"><div class="bf-row" style="display:flex"><div style="order: 2">A</div><div>B</div></div></form>`,
+        // A reversed flex direction is the other way reflow reorders.
+        `<form data-form="adaptive"><div class="bf-row" style="display:flex; flex-direction: row-reverse"><div>A</div><div>B</div></div></form>`,
+      ],
+      fixed: `<form data-form="adaptive"><div class="bf-row" style="display:flex"><div>A</div><div>B</div></div></form>`,
+    },
   ];
 
   for (const c of CASES) {
@@ -328,6 +357,14 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
     await page.getByRole("button", { name: "Next" }).click();
     await expect(page.locator(DEMOS.faStepProfile)).toBeVisible();
     expect(await runPack(page)).toEqual([]);
+  });
+
+  test("dogfood: the v7.8 keyboard page is clean with every module armed", async ({ page }) => {
+    // The keyboard page is the two new rules' proof surface: a popover
+    // menu (roving-focus, armed), a tablist the tabs module owns (one
+    // tab stop), and no reordering inside any adaptive container.
+    await gotoKeyboard(page);
+    expect(await runPack(page), JSON.stringify(await runPack(page))).toEqual([]);
   });
 });
 
@@ -677,10 +714,10 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // verify.js rides the 2KB default, but the registry's explicit
     // budget must exist — a refactor renaming files would otherwise
     // leave it policed only by the family default with less headroom.
-    // 5120 at v7.0, 6656 at v7.2 (two more quoted rules) — bumps are
-    // deliberate, in review, and pinned here.
+    // 5120 at v7.0, 6656 at v7.2, 8192 at v7.8 (two more quoted rules)
+    // — bumps are deliberate, in review, and pinned here.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(6656);
+    expect(budgets["js/verify-contracts.js"]).toBe(8192);
     expect(budgets["js/barefoot.js"]).toBe(1024);
   });
 });

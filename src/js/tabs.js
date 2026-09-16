@@ -16,8 +16,10 @@
    import { initTabs } from "…"     → manual init for dynamic content
 */
 
-import { onDomReady, bindOnce, emit } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm, emit } from "./lifecycle.js";
 import { createRover } from "./roving-index.js";
+
+arm("tabs");
 
 export function initTabs(root = document) {
   const groups = root.querySelectorAll("[data-bf-tabs]");

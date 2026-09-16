@@ -8,9 +8,11 @@
     import "barefoot/js/popover-menu.js"
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm } from "./lifecycle.js";
 import { createRover } from "./roving-index.js";
 import { refocusOpener } from "./return-focus.js";
+
+arm("popover-menu");
 
 export function initPopoverMenus(root = document) {
   const menus = root.querySelectorAll('[popover][data-kind="menu"]');

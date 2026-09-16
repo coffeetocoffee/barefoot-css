@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
-Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [keyboard & a11y](https://coffeetocoffee.github.io/barefoot-css/demo/keyboard.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
@@ -70,6 +70,7 @@ npm install barefoot-css
 | Adaptive | Tables card-stack, forms reflow with a zero-JS error summary, cards flip orientation. Opt-in, never in `full.css`. → [docs/adaptive.md](docs/adaptive.md) |
 | Forms & tables | Validation groups that tint on `:has(:user-invalid)`, sticky headers + leading column with a "more data" fade. → [docs/paint-paper.md](docs/paint-paper.md) |
 | Form architecture | The async validation contract (`data-async-pending` + live region), wizard steppers, field arrays — plus the CSS-vs-JS state boundary. → [docs/forms.md](docs/forms.md) |
+| Keyboard & a11y | Per-pattern keyboard maps (sort-header roving, filter Esc-to-clear, nested dialogs), the roving-tabindex contract, and the opt-in user-preference layer. → [docs/keyboard.md](docs/keyboard.md) |
 | Data story | A density scale (`data-density`, one multiplier for padding and type), server-rendered sort (`data-sort`), and row selection with a zero-JS bulk-actions bar. → [docs/components.md](docs/components.md) |
 | Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
 | Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
@@ -87,24 +88,25 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.59KB | **10.59KB** | 9.26KB |
-| `js/verify-contracts.js` | 20.69KB | **6.38KB** | 5.52KB |
+| `js/verify-contracts.js` | 24.68KB | **7.54KB** | 6.51KB |
 | `index.css` | 11.49KB | **3.05KB** | 2.61KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
+| `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
 | `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
-| `js/table-sort.js` | 3.48KB | **1.61KB** | 1.35KB |
 | `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/lifecycle.js` | 2.95KB | **1.38KB** | 1.15KB |
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
-| `js/tabs.js` | 2.88KB | **1.28KB** | 1.08KB |
-| `js/popover-menu.js` | 2.46KB | **1.20KB** | 1.00KB |
+| `js/tabs.js` | 2.90KB | **1.29KB** | 1.09KB |
+| `js/popover-menu.js` | 2.49KB | **1.21KB** | 1.01KB |
 | `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
+| `js/filter-clear.js` | 1.65KB | **0.86KB** | 0.71KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
-| `components/states.css` | 2.78KB | **0.79KB** | 0.68KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
+| `components/states.css` | 2.75KB | **0.76KB** | 0.66KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/table.css` | 2.13KB | **0.69KB** | 0.58KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
@@ -145,11 +147,11 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/table-sticky.css` | 0.84KB | **0.34KB** | 0.28KB |
 | `themes/playful.css` | 0.59KB | **0.33KB** | 0.29KB |
 | `components/density.css` | 2.97KB | **0.32KB** | 0.26KB |
+| `js/barefoot.js` | 0.62KB | **0.32KB** | 0.28KB |
 | `themes/editorial.css` | 0.58KB | **0.32KB** | 0.27KB |
 | `themes/theming-scope.css` | 1.76KB | **0.32KB** | 0.26KB |
 | `components/grid.css` | 1.23KB | **0.31KB** | 0.25KB |
 | `components/forms-range.css` | 0.91KB | **0.31KB** | 0.23KB |
-| `js/barefoot.js` | 0.57KB | **0.30KB** | 0.25KB |
 | `components/empty-state.css` | 0.57KB | **0.30KB** | 0.24KB |
 | `components/spinner.css` | 0.61KB | **0.30KB** | 0.25KB |
 | `components/field-array.css` | 0.60KB | **0.29KB** | 0.23KB |
@@ -160,6 +162,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/layout-rhythm.css` | 0.61KB | **0.28KB** | 0.21KB |
 | `themes/forest.css` | 0.47KB | **0.27KB** | 0.23KB |
 | `themes/dashboard.css` | 0.50KB | **0.26KB** | 0.22KB |
+| `components/a11y-prefs.css` | 0.94KB | **0.26KB** | 0.22KB |
 | `themes/sunset.css` | 0.44KB | **0.25KB** | 0.21KB |
 | `components/breadcrumbs.css` | 0.51KB | **0.25KB** | 0.18KB |
 | `components/forms-state.css` | 0.48KB | **0.25KB** | 0.17KB |
@@ -218,6 +221,7 @@ build/      bundler + size budget + preview server
 | [Adaptive](docs/adaptive.md) / [Layout](docs/layout.md) | Container-aware components & primitives |
 | [Paint & paper](docs/paint-paper.md) | Validation, sticky tables, print |
 | [Form architecture](docs/forms.md) | Async validation, wizards, field arrays, the state boundary |
+| [Keyboard](docs/keyboard.md) | Per-pattern keyboard maps, roving focus, nested dialogs, user preferences |
 | [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |
 | [Migration](docs/migration-4.md) | v4 · [v5](docs/migration-5.md) · [v3](docs/migration-3.md) |
 | [Status & plan](plan.md) | What's built, what's next |

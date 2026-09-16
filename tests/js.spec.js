@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoDataStory, mountFixture } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoDataStory, gotoKeyboard, mountFixture } from "./helpers.js";
 
 /* Subscribe on document before acting; the bf:* events bubble and report
    what the module did. Elements in detail are serialized in-page — a DOM
@@ -808,6 +808,7 @@ test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
       "bf:chipremove",
       "bf:alertdismiss",
       "bf:toastdismiss",
+      "bf:filterclear",
     ]) {
       expect(docs, `${name} missing from docs/javascript.md`).toContain(name);
     }
@@ -819,6 +820,7 @@ test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
       "tabs",
       "table-sort",
       "toast",
+      "filter-clear",
       "remove-on-click",
     ]) {
       const src = fs.readFileSync(path.join(rootDir, "src/js", `${name}.js`), "utf8");
@@ -898,5 +900,119 @@ test.describe("opt-in JS: the composed data fixture (v7.2)", () => {
     await page.getByRole("button", { name: "Clear filters" }).click();
     await expect(page.locator(DEMOS.dataStoryEmpty)).toBeHidden();
     await expect(page.locator(`${DEMOS.dataStoryBody} tr`)).toHaveCount(6);
+  });
+});
+
+test.describe("opt-in JS: keyboard beyond the component (v7.8)", () => {
+  /* demo/keyboard.html is the proof page — every surface below is a
+     native element first, with the module finishing the keyboard
+     sentence the platform left unfinished. */
+
+  test("sort header buttons rove under arrow keys and clamp at the ends", async ({ page }) => {
+    await gotoKeyboard(page);
+    const buttons = page.locator(`${DEMOS.keyboardSort} thead th button`);
+
+    await buttons.nth(0).focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(buttons.nth(1)).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(buttons.nth(0)).toBeFocused();
+
+    await page.keyboard.press("End");
+    await expect(buttons.nth(1)).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(buttons.nth(0)).toBeFocused();
+
+    // Clamp, not wrap: a header row has ends (menus wrap; tablists and
+    // header rows clamp).
+    await page.keyboard.press("ArrowLeft");
+    await expect(buttons.nth(0)).toBeFocused();
+
+    // The rover moves focus only — Enter still sorts (real buttons).
+    await page.keyboard.press("Enter");
+    await expect(
+      page.locator(`${DEMOS.keyboardSort} thead th`).first()
+    ).toHaveAttribute("aria-sort", "ascending");
+  });
+
+  test("filter: Escape clears the input and reports bf:filterclear", async ({ page }) => {
+    await gotoKeyboard(page);
+    await armEvents(page, ["bf:filterclear"]);
+    const filter = page.locator(DEMOS.keyboardFilter);
+    // Hidden items stay in the DOM — count what's shown.
+    const shown = page.locator(`${DEMOS.keyboardStack} li:not([hidden])`);
+
+    // Typing filters through the page's own listener.
+    await filter.fill("css");
+    await expect(shown).toHaveCount(1);
+    await expect(page.locator(DEMOS.keyboardFilterCount)).toHaveText("1 of 6 shown");
+
+    // Escape resets the input and the list; the module reports it.
+    await page.keyboard.press("Escape");
+    await expect(filter).toHaveValue("");
+    await expect(shown).toHaveCount(6);
+    await expect(page.locator(DEMOS.keyboardFilterCount)).toHaveText("6 of 6 shown");
+    await expect.poll(() => events(page), { timeout: 4000 }).toEqual([
+      { type: "bf:filterclear", detail: { value: "" } },
+    ]);
+  });
+
+  test("filter: Escape on an empty input is a no-op — nothing to report", async ({ page }) => {
+    await gotoKeyboard(page);
+    await armEvents(page, ["bf:filterclear"]);
+    const filter = page.locator(DEMOS.keyboardFilter);
+
+    await filter.focus();
+    await page.keyboard.press("Escape");
+    expect(await events(page)).toEqual([]);
+  });
+
+  test("nested dialogs: Esc closes the topmost dialog first", async ({ page }) => {
+    // showModal() is the one native line; the close layering — Esc
+    // dismisses only the topmost dialog — is the platform's, on every
+    // engine. Focus return is asserted separately (WebKit gaps it).
+    await gotoKeyboard(page);
+    const outer = page.locator(DEMOS.keyboardOuterDialog);
+    const inner = page.locator(DEMOS.keyboardInnerDialog);
+
+    await page.getByRole("button", { name: "Open the deploy dialog" }).click();
+    await expect(outer).toBeVisible();
+    await page.getByRole("button", { name: "Read the policy" }).click();
+    await expect(inner).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(inner).toBeHidden();
+    await expect(outer).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(outer).toBeHidden();
+  });
+
+  test("nested dialogs: Esc-close returns focus to the opener", async ({ page, browserName }) => {
+    // Engine-gated: WebKit moves focus to the outer <dialog> element
+    // instead of the opener on inner close, and strands it on <body>
+    // instead of the trigger on outer close. Close layering (above)
+    // holds everywhere; focus return is Chromium/Firefox-only.
+    test.skip(
+      browserName === "webkit",
+      "WebKit does not return focus to a nested dialog's opener on Esc"
+    );
+    await gotoKeyboard(page);
+    const report = page.locator(DEMOS.keyboardFocusReport);
+
+    await page.getByRole("button", { name: "Open the deploy dialog" }).click();
+    await expect(page.getByRole("button", { name: "Read the policy" })).toBeFocused();
+
+    await page.getByRole("button", { name: "Read the policy" }).click();
+    await expect(page.getByRole("button", { name: "Got it" })).toBeFocused();
+
+    // Esc closes only the topmost dialog; focus lands back on the
+    // button that opened it (still inside the outer dialog).
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Read the policy" })).toBeFocused();
+
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("button", { name: "Open the deploy dialog" })).toBeFocused();
+    await expect(report).toContainText("#kb-outer-open");
   });
 });

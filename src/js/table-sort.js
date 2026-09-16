@@ -29,6 +29,7 @@
 */
 
 import { onDomReady, bindOnce, emit } from "./lifecycle.js";
+import { createRover } from "./roving-index.js";
 
 /* Per-table toggle state, keyed weakly — gone when the table is. */
 const sortState = new WeakMap();
@@ -90,7 +91,16 @@ export function initTableSort(root = document) {
     if (triggers.length === 0 || !table.tBodies[0]) continue;
     if (!bindOnce(table, "table-sort")) continue;
 
+    // Arrow/Home/End roving across the header row (v7.8): the sort
+    // buttons are a horizontal line of controls, so the same rover the
+    // tablist uses moves focus between them — Tab still works natively
+    // (one stop per column), arrows cover the rest. Clamp, not wrap: a
+    // header row has ends. Enter/Space activate natively (they are
+    // real buttons).
+    const rove = createRover(() => [...triggers], { axis: "horizontal" });
+
     for (const trigger of triggers) {
+      trigger.addEventListener("keydown", rove);
       trigger.addEventListener("click", () => {
         const th = trigger.closest("th");
         if (th) sortColumn(table, th.cellIndex);
