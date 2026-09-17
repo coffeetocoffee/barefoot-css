@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Resilience &amp; Coexistence</title>
+  <meta name="description" content="The v8.0 proofs: elastic boxes that survive German +30% text expansion, the side-by-side contract for living next to another reset, and print full-or-cut.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <link rel="stylesheet" href="../dist/components/elastic.css">
+  <link rel="stylesheet" href="../dist/components/coexistence.css">
+  <link rel="stylesheet" href="../dist/components/print.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .rs-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .rs-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .rs-code { background: var(--bf-surface-alt); padding: var(--bf-space-3); border-radius: var(--bf-radius); overflow-x: auto; }
+    .rs-code code { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    /* The two probe cells are identical: 10rem wide, hidden overflow, so
+       the difference is entirely the button's own sizing. */
+    .rs-cell { inline-size: 10rem; overflow: hidden; border: var(--bf-border-width) dashed var(--bf-border); padding: var(--bf-space-2); border-radius: var(--bf-radius); }
+    .rs-cell button { inline-size: 100%; }
+    .rs-readout { font-family: var(--bf-font-mono); font-size: 0.875rem; color: var(--bf-muted); }
+    .rs-stage { border: var(--bf-border-width) solid var(--bf-border); border-radius: var(--bf-radius); padding: var(--bf-space-4); background: var(--bf-surface-alt); }
+    .rs-status { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .rs-grid { display: grid; gap: var(--bf-space-3); grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); }
+    @media print {
+      /* The page's own print recipe: the wide table's section prints
+         landscape is NOT done here (document-level choice) — the table
+         cuts to its first three columns via data-print="cols-3". */
+      .rs-cell { inline-size: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+
+  <header class="bf-container rs-head">
+    <p class="bf-overline">Barefoot CSS v8.0</p>
+    <h1>Resilience &amp; coexistence</h1>
+    <p>Three things v7 assumed away: that text stops where you wrote it, that Barefoot owns the document, and that paper is a narrow screen. This page proves the answers — boxes that absorb a ~30% German expansion, a contract for living next to another framework's reset, and print that is either full or cut, never a clipped half.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="keyboard.html">keyboard</a> · <a href="../docs/coexistence.md">coexistence docs</a> · <a href="../docs/layout.md#elastic-bf-elastic--v80">elastic docs</a> · <a href="../docs/paint-paper.md#print-full-or-cut--v80">print docs</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- Elastic -->
+    <section aria-labelledby="rs-elastic-title">
+      <h2 id="rs-elastic-title">Elastic — expansion, not direction, breaks layouts</h2>
+      <p class="bf-muted">Two identical 10rem cells. The plain button's longest word is wider than the cell, so it overflows. The elastic button (<code>.bf-elastic</code>) clamps itself between a floor and the readable measure and breaks the word instead. Swap the language and watch the row below reflow — no media query, no JS.</p>
+      <div class="rs-grid">
+        <div>
+          <h3>Plain <code>&lt;button&gt;</code></h3>
+          <div class="rs-cell" id="rs-plain-cell">
+            <button type="button" id="rs-plain-btn">Geschwindigkeitsüberschreitungsprüfung</button>
+          </div>
+        </div>
+        <div>
+          <h3><code>.bf-elastic</code> button</h3>
+          <div class="rs-cell" id="rs-elastic-cell">
+            <button type="button" class="bf-elastic" id="rs-elastic-btn">Geschwindigkeitsüberschreitungsprüfung</button>
+          </div>
+        </div>
+      </div>
+      <p class="rs-readout" id="rs-readout" role="status" aria-live="polite">measuring…</p>
+
+      <h3>The elastic row</h3>
+      <p class="bf-muted"><code>.bf-elastic-row</code> wraps and lets its items shrink below their min-content — the trap that otherwise forces the row as wide as its longest label.</p>
+      <div class="bf-elastic-row" id="rs-elastic-row" style="inline-size: 22rem"></div>
+      <p class="bf-row bf-gap-2" style="margin-block-start: var(--bf-space-3)">
+        <button type="button" id="rs-lang-en" data-variant="primary">English labels</button>
+        <button type="button" id="rs-lang-de">German labels (+30%)</button>
+      </p>
+
+      <h3>The elastic card</h3>
+      <div style="inline-size: 12rem">
+        <div class="card bf-elastic" id="rs-elastic-card">
+          <header>Deployment target</header>
+          <p style="word-break: break-all">https://eu-central-1.example.internal/deployments/2026-q3/preprod-blue/gateway</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coexistence -->
+    <section aria-labelledby="rs-coexist-title">
+      <h2 id="rs-coexist-title">Coexistence — the one silent casualty</h2>
+      <p class="bf-muted">Layered styles lose to unlayered ones, so a co-loaded reset that sets <code>outline: none</code> on a broad <code>:focus</code> defeats Barefoot's ring on every element at once. Focus the box and inject the reset — the ring vanishes and Verify names the offender. Layer the same one line and the ring comes back.</p>
+      <div class="rs-stage" tabindex="0" id="rs-focus-box">
+        <p style="margin-block: 0">Focus me, then Tab away and back. The ring is Barefoot's <code>:focus-visible</code>, painted from the <code>base</code> cascade layer.</p>
+      </div>
+      <p class="bf-row bf-gap-2" style="margin-block-start: var(--bf-space-3)">
+        <button type="button" id="rs-inject">Inject a hostile reset</button>
+        <button type="button" id="rs-layer">Layer it instead</button>
+        <button type="button" id="rs-restore">Remove the reset</button>
+      </p>
+      <p class="rs-status" id="rs-verify-status" role="status" aria-live="polite">Verify at rest: no contract violations.</p>
+      <div class="rs-code"><code>@layer reset, tokens, base, components, utilities, user;
+/* ^ imported from components/coexistence.css — `user` is last, so
+   your @layer user { ... } overrides always win, no !important. */</code></div>
+    </section>
+
+    <!-- Print -->
+    <section aria-labelledby="rs-print-title">
+      <h2 id="rs-print-title">Print — full or cut</h2>
+      <p class="bf-muted">A six-column table is wider than the page. <code>data-print="cols-3"</code> cuts it to its first three columns on paper (and only on paper — the full table stays on screen); cells wrap whatever does not fit, so nothing is lost. The bar below is <code>.bf-no-print</code> — it never reaches paper.</p>
+      <div class="bf-no-print" style="border: var(--bf-border-width) solid var(--bf-border); border-radius: var(--bf-radius); padding: var(--bf-space-3); margin-block-end: var(--bf-space-3)">
+        <strong>Screen-only chrome.</strong> Open print preview and this disappears, the table cuts to three columns, and the page gains a 2rem margin from <code>@page</code>.
+      </div>
+      <button type="button" id="rs-print" data-variant="primary">Print this page</button>
+      <table data-print="cols-3" id="rs-print-table">
+        <caption>Deployments — prints its first three columns</caption>
+        <thead><tr>
+          <th>Service</th><th>Environment</th><th>Deploys</th><th>Lead</th><th>Region</th><th>Notes</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>gateway</td><td>production</td><td>12</td><td>Ada</td><td>eu-central-1</td><td>Canary at 20%</td></tr>
+          <tr><td>billing</td><td>staging</td><td>7</td><td>Grace</td><td>us-east-2</td><td>Awaiting review</td></tr>
+          <tr><td>search</td><td>preview</td><td>3</td><td>Linus</td><td>ap-southeast-1</td><td>Expires in 48h</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+    import { runVerify } from "/dist/js/verify.js";
+
+    // ---- Elastic: measure the two cells and report the overflow.
+    const plainCell = document.getElementById("rs-plain-cell");
+    const elasticCell = document.getElementById("rs-elastic-cell");
+    const readout = document.getElementById("rs-readout");
+    const overflow = (el) => el.scrollWidth - el.clientWidth;
+    function measure() {
+      readout.textContent =
+        `plain cell overflows by ${overflow(plainCell)}px · ` +
+        `elastic cell overflows by ${overflow(elasticCell)}px`;
+    }
+    measure();
+
+    // ---- The elastic row: EN vs DE label sets, ~30% longer.
+    const row = document.getElementById("rs-elastic-row");
+    const LABELS = {
+      en: ["Save", "Cancel", "Delete row", "Continue"],
+      de: ["Änderungen speichern", "Abbrechen und zurück", "Zeile endgültig löschen", "Mit dem nächsten Schritt fortfahren"],
+    };
+    let lang = "en";
+    function paintRow() {
+      row.replaceChildren(
+        ...LABELS[lang].map((label, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "bf-elastic";
+          b.textContent = label;
+          if (i === 0) b.dataset.variant = "primary";
+          return b;
+        })
+      );
+    }
+    paintRow();
+    const mark = (next, on, off) => () => {
+      lang = next;
+      document.getElementById(off).dataset.variant = "";
+      document.getElementById(on).dataset.variant = "primary";
+      paintRow();
+    };
+    document.getElementById("rs-lang-en").addEventListener("click", mark("en", "rs-lang-en", "rs-lang-de"));
+    document.getElementById("rs-lang-de").addEventListener("click", mark("de", "rs-lang-de", "rs-lang-en"));
+
+    // ---- Coexistence stage: inject / layer / remove a focus reset.
+    const RESET_ID = "rs-hostile-reset";
+    const status = document.getElementById("rs-verify-status");
+    function report() {
+      const violations = runVerify();
+      if (violations.length === 0) {
+        status.textContent = "Verify at rest: no contract violations.";
+        return;
+      }
+      for (const v of violations) {
+        status.textContent = `verify: ${v.id} — ${v.detail} Fix: ${v.fix}`;
+      }
+    }
+    function setReset(css) {
+      document.getElementById(RESET_ID)?.remove();
+      if (!css) return;
+      const style = document.createElement("style");
+      style.id = RESET_ID;
+      style.textContent = css;
+      document.head.append(style);
+    }
+    document.getElementById("rs-inject").addEventListener("click", () => {
+      setReset("*:focus { outline: none }");
+      report();
+    });
+    document.getElementById("rs-layer").addEventListener("click", () => {
+      setReset("@layer reset { *:focus { outline: none } }");
+      report();
+    });
+    document.getElementById("rs-restore").addEventListener("click", () => {
+      setReset(null);
+      report();
+    });
+
+    document.getElementById("rs-print").addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>

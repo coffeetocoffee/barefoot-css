@@ -19,6 +19,15 @@
    file extends it for opt-in surfaces. Degrade by omission: engines
    without container queries never stacked, so the flatten rules match
    nothing and the rest still applies. */
+/* Page setup — document-level, so it sits outside the component layer:
+   it applies on paper regardless of layer order. Engines without
+   @page margin support ignore it and keep their default margins
+   (degrade by omission). Paper geometry, not a design token: override
+   it with your own `@page { margin: … }`. */
+@page {
+  margin: 2rem;
+}
+
 @layer components {
   @media print {
     /* Ink-first: same print-palette stance as base.css (plain hex,
@@ -137,6 +146,70 @@
     [data-grid] > *,
     .bf-switcher > * {
       break-inside: avoid;
+    }
+
+    /* ---- v8.0: print, full or cut ----
+       A page either prints a whole surface or prints a deliberate
+       subset — never a clipped half. Orphans and widows keep paragraph
+       ends from stranding alone on either page; headings never leave
+       their following content behind. */
+    p,
+    li,
+    dt,
+    dd,
+    figcaption,
+    caption {
+      orphans: 2;
+      widows: 2;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    caption,
+    figcaption,
+    .card > :where(header) {
+      break-after: avoid;
+    }
+
+    /* A form prints its values natively; keep each group and control
+       whole so a label never orphans from its field. */
+    .bf-form-group,
+    fieldset,
+    label,
+    input,
+    select,
+    textarea,
+    button {
+      break-inside: avoid;
+    }
+
+    /* Column selection on a wide table: data-print="cols-N" keeps the
+       first N columns and drops the rest — the "cut" half of the
+       contract. Positional (nth-child), so cells with a colspan shift
+       the count: verify in print preview. To drop an arbitrary column
+       instead, give each of its cells .bf-no-print. */
+    table[data-print="cols-1"] :is(th, td):nth-child(n + 2),
+    table[data-print="cols-2"] :is(th, td):nth-child(n + 3),
+    table[data-print="cols-3"] :is(th, td):nth-child(n + 4),
+    table[data-print="cols-4"] :is(th, td):nth-child(n + 5),
+    table[data-print="cols-5"] :is(th, td):nth-child(n + 6),
+    table[data-print="cols-6"] :is(th, td):nth-child(n + 7) {
+      display: none;
+    }
+
+    /* The "full" half: a table too wide for the page never clips — its
+       cells wrap whatever does not fit, so no value is lost on paper.
+       If the table is still too wide, cut columns above or print the
+       section landscape (docs/paint-paper.md). Cells a page keeps
+       deliberately nowrap stay nowrap; overflow-wrap does not
+       override white-space. */
+    th,
+    td {
+      overflow-wrap: anywhere;
     }
   }
 }

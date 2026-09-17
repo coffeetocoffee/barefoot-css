@@ -29,10 +29,91 @@
    - module  (optional) the arming module path(s), e.g. "js/chips.js".
    - wcag    (optional) the WCAG success criterion at stake.
 
-   Not a behavior module: nothing to init, not listed in barefoot.js.
-   Zero dependencies. Ships as-is like its siblings, so dist/js travels
-   as one directory.
+    Not a behavior module: nothing to init, not listed in barefoot.js.
+    Zero dependencies. Ships as-is like its siblings, so dist/js travels
+    as one directory.
 */
+
+/* Coexistence helper (v8.0, ADR-0022): find the first UNLAYERED rule that
+   kills the focus ring on a broad selector. Cascade layers put every
+   layered style below an unlayered one, so only a reset outside any
+   @layer can defeat the layered `:focus-visible` ring — a rule scoped to
+   a class/attribute is a deliberate per-control choice and stays silent.
+   Cross-origin sheets throw on cssRules access (a CDN-served stylesheet
+   is unreadable from the page); the rule then audits same-origin and
+   inline sheets only — stated in docs/coexistence.md. Pure DOM/CSSOM
+   read, no closures: runs in-page and through the pack unchanged. */
+function isBroadFocusSelector(selectorText) {
+  // Every comma-separated part must mention :focus and be free of any
+  // class, id, or attribute constraint — element-level only.
+  return selectorText
+    .split(",")
+    .every((part) => /:focus/.test(part) && !/[.#[]/.test(part));
+}
+
+function killsFocusRing(style) {
+  // Lengths canonicalize in the CSSOM ("0" often serializes as "0px"),
+  // so parse the number rather than comparing strings.
+  const width = parseFloat(style.outlineWidth);
+  return (
+    style.outlineStyle === "none" ||
+    style.outline === "none" ||
+    style.outline === "0" ||
+    (!Number.isNaN(width) && width === 0)
+  );
+}
+
+function isLayered(rule) {
+  // A layer block is the offender's opposite: its rules sit below ours
+  // by cascade-layer order. `layerName` is the spec interface on
+  // Firefox/Safari; this Chromium's CSSOM omits it, so the constructor
+  // name is the fallback signal. Never descend past one.
+  return "layerName" in rule || rule.constructor.name === "CSSLayerBlockRule";
+}
+
+function findUnlayeredFocusReset(rules) {
+  for (const rule of rules) {
+    if (isLayered(rule)) continue;
+
+    // A style rule is the offender class. Its own .cssRules is the
+    // native-nesting list — empty but TRUTHY in Chromium — so check the
+    // style first, and only descend when nesting is real (length > 0).
+    if (rule.selectorText !== undefined) {
+      if (
+        killsFocusRing(rule.style) &&
+        isBroadFocusSelector(rule.selectorText)
+      ) {
+        return rule.selectorText;
+      }
+      if (rule.cssRules && rule.cssRules.length > 0) {
+        const inner = findUnlayeredFocusReset(rule.cssRules);
+        if (inner) return inner;
+      }
+      continue;
+    }
+
+    // Grouping at-rules (@media / @supports / @container / @keyframes).
+    if (rule.cssRules) {
+      const inner = findUnlayeredFocusReset(rule.cssRules);
+      if (inner) return inner;
+    }
+  }
+  return null;
+}
+
+function firstUnlayeredFocusReset(styleSheets) {
+  for (const sheet of styleSheets) {
+    let rules;
+    try {
+      rules = sheet.cssRules;
+    } catch {
+      continue; // cross-origin stylesheet — unreadable from the page
+    }
+    const found = findUnlayeredFocusReset(rules);
+    if (found) return found;
+  }
+  return null;
+}
 
 export const VERIFY_RULES = [
   {
@@ -535,6 +616,33 @@ export const VERIFY_RULES = [
     docs: "docs/adaptive.md",
     quote: [
       "Adaptive reflow must never reorder the DOM: `order` on an item and a reversed flex direction both paint a reading sequence the markup does not promise (WCAG 1.3.2), so neither appears inside a reflowing container.",
+    ],
+  },
+
+  {
+    id: "coexistence-clean",
+    select: "html",
+    check() {
+      /* The one silent casualty of a side-by-side setup. Barefoot's
+         `:focus-visible` ring lives in the base cascade layer, and
+         layered styles LOSE to unlayered ones — so a co-loaded reset
+         (Tailwind v3 preflight, an older Bootstrap Reboot, a hand-rolled
+         `*:focus { outline: none }`) defeats the ring on every element
+         at once, with no error and no visual left but the bare outline.
+         axe cannot see computed outline; this reads the cascade's own
+         structure. Only an UNLAYERED broad focus reset can do it: a
+         rule scoped to a class (`.btn:focus`) is a deliberate choice,
+         and anything inside an @layer stays below ours by order. */
+      const offender = firstUnlayeredFocusReset(document.styleSheets);
+      if (offender) {
+        return `${offender} sets outline:none on a broad :focus selector and is not inside a @layer — an unlayered reset defeats every layered style, so Barefoot's :focus-visible ring disappears (docs/coexistence.md)`;
+      }
+      return null;
+    },
+    fix: "put the reset inside an @layer (any name) or drop its outline:none — a layered reset keeps the cascade's order and the ring (docs/coexistence.md)",
+    docs: "docs/coexistence.md",
+    quote: [
+      "Only an unlayered rule can defeat Barefoot's layered `:focus-visible` ring: a co-loaded reset that sets `outline: none` on a broad `:focus` selector wins every layered style at once and the ring disappears — layer the reset, or drop the declaration.",
     ],
   },
 ];

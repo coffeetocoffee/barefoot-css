@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, gotoKeyboard, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, gotoKeyboard, gotoResilience, tokenColor } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -291,6 +291,33 @@ test.describe("keyboard & a11y proofs (v7.8)", () => {
       els.map((el) => el.tabIndex)
     );
     expect(stops).toEqual([0, -1, -1]);
+  });
+});
+
+test.describe("resilience & coexistence proofs (v8.0)", () => {
+  test("resilience page has no axe violations", async ({ page }) => {
+    await gotoResilience(page);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("German labels and the wrapped elastic row stay clean", async ({ page }) => {
+    // The reflowed toolbar — longer labels, wrapped buttons — is the
+    // state where cramped controls could break.
+    await gotoResilience(page);
+    await page.getByRole("button", { name: "German labels (+30%)" }).click();
+    await expect(page.locator(DEMOS.resilienceElasticRow).locator("button")).toHaveCount(4);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+
+  test("the coexistence stage with a hostile reset injected stays clean", async ({ page }) => {
+    // The broken state is the feature: an unlayered outline reset on the
+    // page. axe must clear it — the failure is a lost focus ring, which
+    // axe cannot see and Verify's rule exists to name.
+    await gotoResilience(page);
+    await page.getByRole("button", { name: "Inject a hostile reset" }).click();
+    await expect(page.locator(DEMOS.resilienceVerifyStatus)).toContainText("coexistence-clean");
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 });
 

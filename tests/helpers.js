@@ -168,6 +168,17 @@ export const DEMOS = Object.freeze({
     keyboardOuterDialog: "#kb-outer",
     keyboardInnerDialog: "#kb-inner",
     keyboardFocusReport: "#kb-focus-report",
+    // v8.0 — resilience & coexistence (demo/resilience.html).
+    resiliencePlainCell: "#rs-plain-cell",
+    resilienceElasticCell: "#rs-elastic-cell",
+    resilienceElasticRow: "#rs-elastic-row",
+    resilienceElasticCard: "#rs-elastic-card",
+    resilienceFocusBox: "#rs-focus-box",
+    resilienceVerifyStatus: "#rs-verify-status",
+    resiliencePrintTable: "#rs-print-table",
+    resilienceInject: "#rs-inject",
+    resilienceLayer: "#rs-layer",
+    resilienceRestore: "#rs-restore",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -231,6 +242,13 @@ export async function gotoFormArchitecture(page) {
    focus, and the user-preference layers. */
 export async function gotoKeyboard(page) {
   await page.goto("/demo/keyboard.html");
+}
+
+/* Navigate to the resilience & coexistence proofs (v8.0) — elastic
+   boxes under text expansion, the focus ring defeated and restored by
+   a co-loaded reset, and the print full-or-cut proofs. */
+export async function gotoResilience(page) {
+  await page.goto("/demo/resilience.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

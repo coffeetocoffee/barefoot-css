@@ -1,0 +1,19 @@
+/* Barefoot — coexistence (v8.0): the side-by-side contract.
+   Opt-in. Import this when Barefoot shares a document with another
+   framework's reset — Tailwind's preflight, Bootstrap's Reboot, or a
+   legacy stylesheet. It pins the cascade-layer order so you always
+   know who wins, and your overrides never need !important.
+
+   <link rel="stylesheet" href="barefoot-css/components/coexistence.css">
+
+   Import it once, anywhere. Layer order is fixed by first appearance of
+   each layer NAME, so this declaration appends `user` last no matter
+   which other Barefoot files you import or in what order. Then write
+   your overrides inside `@layer user { ... }` and they win over every
+   component rule above.
+
+   The contract, the failure modes, and the per-framework recipes live
+   in docs/coexistence.md. Verify's `coexistence-clean` rule audits the
+   one silent casualty — a co-loaded reset that defeats the layered
+   :focus-visible ring (unlayered styles beat every layered one). */
+@layer reset, tokens, base, components, utilities, user;

@@ -1,7 +1,10 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-16 — v7.8.0 "Keyboard & A11y Beyond Component" built &
-verified (per-pattern keyboard map, sort-header roving, filter Esc-to-clear,
+_Last updated: 2026-09-17 — v8.0.0 "Resilience & Coexistence" built &
+verified (elastic i18n primitives, the side-by-side contract, print
+full-or-cut, the `coexistence-clean` Verify rule, `docs/coexistence.md`,
+ADR-0022); v7.8.0 "Keyboard & A11y Beyond Component" built & verified
+(per-pattern keyboard map, sort-header roving, filter Esc-to-clear,
 nested-dialog proofs, the user-preference layer, two new Verify rules,
 `docs/keyboard.md`, ADR-0021); v7.4.0 "Form Architecture" built & verified
 (async validation contract, wizard + state boundary, field arrays, two
@@ -169,9 +172,37 @@ Verify rules, the composed recipe, `js/table-sort.js` graduates); v7.0.0
   green (34/34) including the keyboard page resting, with an open popover
   menu, with a filtered list, and with the nested inner dialog open plus
   the one-tab-stop structural check. New skips are the documented
-  engine-gated ones (the CDP media-emulation prefs tests and the
-  WebKit dialog focus-return test, each with its reason string).
-- **History:** milestones 0.1 → 7.8.0 shipped.
+   engine-gated ones (the CDP media-emulation prefs tests and the
+   WebKit dialog focus-return test, each with its reason string).
+- **Built & verified:** **v8.0.0 — "Resilience & Coexistence"**
+   (2026-09-17; tag = maintainer action). The fluid-i18n primitive
+   (opt-in `components/elastic.css`: `.bf-elastic` clamps
+   `fit-content` between `--bf-elastic-min` and `min(100%,
+   --bf-elastic-max)`, `overflow-wrap: anywhere` + `text-wrap: balance`;
+   `.bf-elastic-row` wraps and shrinks below min-content); the
+   side-by-side contract (opt-in `components/coexistence.css` appends
+   `user` last; `docs/coexistence.md` states the three setups and the
+   layered-loses-to-unlayered rule); print full-or-cut (`@page` margin,
+   orphans/widows, heading `break-after`, `data-print="cols-1…6"`,
+   wrapping cells); and the `coexistence-clean` Verify rule (read-only
+   CSSOM walk for an unlayered broad focus reset, silent on layered and
+   class-scoped rules). `demo/resilience.html` proves it all on its own
+   page (baselines untouched). The registry budget moves 8192 → 10240
+   bytes gzip (deliberately in review). `npm run check` green; full
+   matrix below.
+- **Verification (2026-09-17, v8.0 matrix):** Chromium 344 passed / 2
+   engine-gated skips · Firefox 292 / 16 · WebKit 298 / 11 — zero failures;
+   visual regression green on all three (win32 baselines untouched — the
+   resilience page ships beside the conformance demo, not inside it); axe
+   green including the resilience page resting, its German reflow, and
+   its hostile-reset state. New skips are the documented engine-gated
+   ones (`interest` invokers, SDA, `popover=hint`, cross-doc VT,
+   base-select, Chromium-gated forced-colors and CDP media emulation,
+   the WebKit dialog focus-return gap, and the Firefox orphans/widows
+   computed-style gap — each with its reason string). One transient:
+   the Firefox visual light-theme capture needed a re-run under parallel
+   load, then green; the conformance demo is untouched by this release.
+- **History:** milestones 0.1 → 7.8.0 shipped; v8.0.0 built & verified.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -295,6 +326,14 @@ and `.bf-*` utilities.
 
 - **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
   action only; `release.yml` takes over on the tag push.
+- **v8.0.0 — "Resilience & Coexistence" (built & verified
+  2026-09-17; tag = maintainer action):** the elastic i18n primitives
+  (`.bf-elastic`, `.bf-elastic-row`, two additive tokens),
+  the side-by-side contract (`components/coexistence.css` + `docs/coexistence.md`),
+  print full-or-cut (`@page`, orphans/widows, `data-print="cols-1…6"`),
+  and the `coexistence-clean` Verify rule. `docs/coexistence.md` +
+  ADR-0022; `demo/resilience.html` proves it on its own page. Tag
+  `v8.0.0` per RELEASE.md; `release.yml` publishes from the tag.
 - **v7.8.0 — "Keyboard & A11y Beyond Component" (built & verified
   2026-09-16; tag = maintainer action):** the per-pattern keyboard map
   (`docs/keyboard.md`), sort-header arrow roving via the shared seam,
@@ -446,15 +485,24 @@ and `.bf-*` utilities.
   `prefers-reduced-data` ships forward-compatible — no engine implements it yet.)
 - Verify: `roving-focus`, `reading-order-after-reflow`. ✅
 
-**v8.0 — "Resilience & Coexistence" (independent, push late)**
+**v8.0 — "Resilience & Coexistence" (independent, push late)** ✅
+(built & verified 2026-09-17; tag = maintainer action)
 
 - **Fluid i18n primitives:** `min/max/fit-content + clamp()` `.bf-elastic` buttons/cards
-  that survive German +30% and user content. Expansion kills more layouts than direction.
+  that survive German +30% and user content. Expansion kills more layouts than direction. ✅
+  (`components/elastic.css`, `--bf-elastic-min/max`, `.bf-elastic-row`;
+  proven on `demo/resilience.html` against a German compound and an
+  EN→DE swap.)
 - **Side-by-side contract:** `@layer` coexistence with Tailwind preflight / Bootstrap
-  reboot / existing `:root`, CDN+npm hybrid, `@import` vs `<link>` tradeoffs.
+  reboot / existing `:root`, CDN+npm hybrid, `@import` vs `<link>` tradeoffs. ✅
+  (`components/coexistence.css` appends `user` last; `docs/coexistence.md`
+  states the three setups and the layered-loses-to-unlayered rule.)
 - **Print — full or cut:** `@page`, break-before/orphans/widows, print-this-table column
-  selection, form-print. No shallow middle.
-- Verify: `coexistence-clean`. Non-goal: no Shadow-DOM injection, no framework adapters yet.
+  selection, form-print. No shallow middle. ✅ (`@page` margin, orphans/
+  widows, heading `break-after`, `data-print="cols-1…6"`, wrapping cells,
+  documented landscape third option; `form-print` lands as groups/controls
+  kept whole plus native value printing.)
+- Verify: `coexistence-clean`. ✅ Non-goal: no Shadow-DOM injection, no framework adapters yet.
 
 **v8.5 — "DX Governance" (polices everything above, ships last)**
 

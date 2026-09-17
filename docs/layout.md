@@ -90,12 +90,46 @@ already work. Contract: [ADR-0016](adr/0016-container-aware-layout.md).
 - The existing `--bf-sidebar-width` token still controls the first
   column's preferred size.
 
+### Elastic (`.bf-elastic`) — v8.0
+
+```html
+<link rel="stylesheet" href="barefoot-css/components/elastic.css">
+
+<div class="bf-elastic-row">
+  <button class="bf-elastic" type="submit">Änderungen speichern</button>
+  <button class="bf-elastic" type="button">Abbrechen</button>
+</div>
+```
+
+- Expansion breaks more layouts than direction: German runs ~30%
+  longer than English and user content is unbounded. `.bf-elastic` is
+  the fluid-i18n primitive — put it on buttons, links, badges, chips,
+  and cards whose text length you don't control.
+- The box hugs its label (`inline-size: fit-content`) between
+  `--bf-elastic-min` (the control floor — a one-word control keeps its
+  shape) and `--bf-elastic-max` (the readable measure, default `60ch`),
+  capped by its own container. That clamp absorbs the +30% with no
+  media query and no JS.
+- Content wraps instead of overflowing: `overflow-wrap: anywhere`
+  breaks long compounds (German nouns, URLs) mid-word when it must, and
+  `text-wrap: balance` keeps the wrapped lines reading as one control.
+- `.bf-elastic-row` is the toolbar half: a wrapping flex row whose
+  items may shrink below their min-content (the trap that otherwise
+  forces the whole row as wide as its longest label).
+- A plain `.card` fills its track; a `.card.bf-elastic` hugs its
+  content up to the measure — useful for callouts and stat tiles.
+
 ## Degradation
 
 Older engines ignore the unknown units, `@container` blocks, and
 `@supports (width: 1cqi)` enhancement. They keep the base vertical
 stack, the wrapping flex row, and the original sidebar heuristic. No
 polyfill, JS, or fallback markup is required.
+
+Elastic degrades by omission to a plain box: without `fit-content` and
+`min()`/`max()` the inline size falls back to the containing block, and
+without `overflow-wrap: anywhere` long strings wrap at break opportunities
+or overflow as before — nothing regresses below the unstyled default.
 
 Stagger degrades by omission: without `view()` timeline support, it uses
 `@starting-style` + transition. Without `@starting-style`, no animation
@@ -107,4 +141,5 @@ Open `demo/playground.html` for flow/switcher/sidebar, and
 `demo/rhythm-motion.html` for rhythm/stagger/combined. Drag a resize
 handle—or use the width slider, which is keyboard-operable with arrow
 keys. The readout reports the box width while the layout reflows around
-it.
+it. `demo/resilience.html` proves the elastic primitives against a
+German label expansion and a long unbreakable URL.

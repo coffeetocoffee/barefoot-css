@@ -27,7 +27,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, mountFixture } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, gotoResilience, mountFixture } from "./helpers.js";
 // The suite consumes the pack, not src/ directly — one registry, two
 // formats, and the pack re-exports the registry it shares with the
 // engine (ADR-0015).
@@ -300,6 +300,22 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ],
       fixed: `<form data-form="adaptive"><div class="bf-row" style="display:flex"><div>A</div><div>B</div></div></form>`,
     },
+    {
+      id: "coexistence-clean",
+      broken: [
+        // An unlayered global focus reset: it beats every layered style,
+        // so Barefoot's base-layer ring disappears.
+        `<style>*:focus { outline: none }</style>`,
+        // The element list looks scoped, but every part is element-level.
+        `<style>a:focus, button:focus { outline: none }</style>`,
+        // Longhand forms of the same defeat, nested in a media query to
+        // prove the walk descends through conditionals.
+        `<style>@media all { :focus { outline-width: 0 } }</style>`,
+      ],
+      // The same reset, layered: cascade order puts it below base, the
+      // ring survives, and the walk never descends into a layer.
+      fixed: `<style>@layer reset { *:focus { outline: none } }</style>`,
+    },
   ];
 
   for (const c of CASES) {
@@ -365,6 +381,28 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
     // tab stop), and no reordering inside any adaptive container.
     await gotoKeyboard(page);
     expect(await runPack(page), JSON.stringify(await runPack(page))).toEqual([]);
+  });
+
+  test("dogfood: the v8.0 resilience page is clean at rest", async ({ page }) => {
+    // The resilience page is coexistence-clean's proof surface: it loads
+    // verify.js itself and the coexistence stage, so its own stylesheets
+    // must hold the contract — the hostile reset is injected only by a
+    // stage button, never shipped on the page.
+    await gotoResilience(page);
+    expect(await runPack(page), JSON.stringify(await runPack(page))).toEqual([]);
+  });
+
+  test("dogfood: the coexistence stage flips and restores under the pack", async ({ page }) => {
+    // The flagship moment, from the pack side: inject the unlayered
+    // reset and the rule names it; layer the same line and it clears.
+    await gotoResilience(page);
+    await page.getByRole("button", { name: "Inject a hostile reset" }).click();
+    const broken = await runPack(page);
+    expect(broken.map((v) => v.id)).toContain("coexistence-clean");
+    expect(broken[0].detail).toContain("outline:none");
+
+    await page.getByRole("button", { name: "Layer it instead" }).click();
+    expect(await runPack(page)).toEqual([]);
   });
 });
 
@@ -715,9 +753,11 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // budget must exist — a refactor renaming files would otherwise
     // leave it policed only by the family default with less headroom.
     // 5120 at v7.0, 6656 at v7.2, 8192 at v7.8 (two more quoted rules)
-    // — bumps are deliberate, in review, and pinned here.
+    // — bumps are deliberate, in review, and pinned here. v8.0's
+    // coexistence-clean (the CSSOM walk plus its quote) moved it past
+    // 8KB: 10240, same rule.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(8192);
+    expect(budgets["js/verify-contracts.js"]).toBe(10240);
     expect(budgets["js/barefoot.js"]).toBe(1024);
   });
 });

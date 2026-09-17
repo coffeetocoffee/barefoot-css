@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, gotoFormArchitecture, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, gotoFormArchitecture, gotoResilience, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -3404,6 +3404,129 @@ test.describe("form architecture (v7.4)", () => {
     const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
     const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
     for (const f of ["forms-async.css", "field-array.css"]) {
+      expect(full, `full.css gained ${f}`).not.toContain(f);
+      expect(index, `index.css gained ${f}`).not.toContain(f);
+    }
+  });
+});
+
+test.describe("resilience & coexistence (v8.0)", () => {
+  const overflow = (page, sel) =>
+    page.locator(sel).evaluate((el) => el.scrollWidth - el.clientWidth);
+
+  test("elastic absorbs text expansion: the plain button overflows, the elastic one does not", async ({ page }) => {
+    await gotoResilience(page);
+    // The two probe cells are identical 10rem boxes with hidden overflow;
+    // the long German compound is wider than both. The plain button's
+    // min-content runs out of the cell; .bf-elastic breaks the word.
+    expect(await overflow(page, DEMOS.resiliencePlainCell)).toBeGreaterThan(0);
+    expect(await overflow(page, DEMOS.resilienceElasticCell)).toBe(0);
+    // The demo's own readout reports the same truth.
+    await expect(page.locator("#rs-readout")).toContainText("elastic cell overflows by 0px");
+  });
+
+  test("the elastic row wraps instead of running wide, and reflows on a language swap", async ({ page }) => {
+    await gotoResilience(page);
+    const row = page.locator(DEMOS.resilienceElasticRow);
+    await expect(row.locator("button")).toHaveCount(4);
+
+    const rows = () =>
+      row.locator("button").evaluateAll((els) => new Set(els.map((e) => e.offsetTop)).size);
+    const setWidth = (w) =>
+      row.evaluate((el, width) => { el.style.inlineSize = width; }, w);
+
+    // English labels fit one line when there is room.
+    await setWidth("32rem");
+    expect(await rows()).toBe(1);
+
+    // ~30% longer German labels no longer fit the same line — the row
+    // wraps instead of running wide…
+    await page.getByRole("button", { name: "German labels (+30%)" }).click();
+    expect(await rows()).toBeGreaterThan(1);
+
+    // …and at a cramped width it keeps wrapping without ever running
+    // past its edge — the contract.
+    await setWidth("8rem");
+    expect(await rows()).toBeGreaterThan(1);
+    expect(await overflow(page, DEMOS.resilienceElasticRow)).toBe(0);
+  });
+
+  test("an elastic card containing an unbreakable URL does not overflow", async ({ page }) => {
+    await gotoResilience(page);
+    expect(await overflow(page, DEMOS.resilienceElasticCard)).toBe(0);
+  });
+
+  test("the elastic tokens resolve at :root", async ({ page }) => {
+    await gotoResilience(page);
+    // tokenValue reads the computed value, so var() aliases resolve:
+    // the floor tracks the control height, the ceiling is the measure.
+    expect(await tokenValue(page, "--bf-elastic-min")).toBe("2.5rem");
+    expect(await tokenValue(page, "--bf-elastic-max")).toBe("60ch");
+  });
+
+  test("print: data-print=cols-3 hides the table's trailing columns on paper only", async ({ page }) => {
+    await gotoResilience(page);
+    const table = page.locator(DEMOS.resiliencePrintTable);
+    const cellDisplay = (n) =>
+      table.locator(`th:nth-child(${n})`).evaluate((el) => getComputedStyle(el).display);
+
+    // On screen all six columns are table cells.
+    for (let n = 1; n <= 6; n++) {
+      expect(await cellDisplay(n)).toBe("table-cell");
+    }
+
+    await page.emulateMedia({ media: "print" });
+    // On paper the first three stay; the cut is positional (nth-child).
+    expect(await cellDisplay(1)).toBe("table-cell");
+    expect(await cellDisplay(3)).toBe("table-cell");
+    expect(await cellDisplay(4)).toBe("none");
+    expect(await cellDisplay(6)).toBe("none");
+
+    await page.emulateMedia({ media: "screen" });
+    expect(await cellDisplay(4)).toBe("table-cell");
+  });
+
+  test("print: orphans and widows apply on paper", async ({ page, browserName }) => {
+    // Engine-gated: Firefox honors orphans/widows in print but does not
+    // expose them via getComputedStyle (returns undefined), so the
+    // computed-style probe can only run where the CSSOM reports them.
+    test.skip(browserName === "firefox", "Firefox omits orphans/widows from computed style");
+    await gotoResilience(page);
+    await page.emulateMedia({ media: "print" });
+    expect(
+      await page.locator("p").first().evaluate((el) => getComputedStyle(el).orphans)
+    ).toBe("2");
+    expect(
+      await page.locator("p").first().evaluate((el) => getComputedStyle(el).widows)
+    ).toBe("2");
+    await page.emulateMedia({ media: "screen" });
+  });
+
+  test("print: a heading never strands its content on the previous page", async ({ page }) => {
+    await gotoResilience(page);
+    await page.emulateMedia({ media: "print" });
+    expect(
+      await page.locator("h2").first().evaluate((el) => getComputedStyle(el).breakAfter)
+    ).toBe("avoid");
+    await page.emulateMedia({ media: "screen" });
+  });
+
+  test("the coexistence escape hatch: a rule in @layer user beats a component-layer rule", async ({ page }) => {
+    await gotoResilience(page);
+    // coexistence.css appends the `user` layer last, so a rule placed in
+    // it wins over the components layer's .card background — no
+    // !important, no specificity war.
+    const card = page.locator(DEMOS.resilienceElasticCard);
+    const before = await card.evaluate((el) => getComputedStyle(el).backgroundColor);
+    await page.addStyleTag({ content: "@layer user { .card { background: #123456 } }" });
+    await expect(card).toHaveCSS("background-color", "rgb(18, 52, 86)");
+    expect(before).not.toBe("rgb(18, 52, 86)");
+  });
+
+  test("v8.0 files stay opt-in: out of full.css and index.css (ADR-0008 / ADR-0022)", () => {
+    const full = fs.readFileSync(path.join(rootDir, "src/full.css"), "utf8");
+    const index = fs.readFileSync(path.join(rootDir, "src/index.css"), "utf8");
+    for (const f of ["elastic.css", "coexistence.css"]) {
       expect(full, `full.css gained ${f}`).not.toContain(f);
       expect(index, `index.css gained ${f}`).not.toContain(f);
     }

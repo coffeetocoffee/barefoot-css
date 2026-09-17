@@ -68,6 +68,7 @@ that quote drifts. Seed rules:
 | `selection-complete` | a multi-select table with a select-all control names the control and states `aria-selected` on every row (WCAG 4.1.2) | 7.2 |
 | `async-live` | an async-pending field carries `aria-busy="true"` and a live region announcing the outcome (WCAG 4.1.2) | 7.4 |
 | `stepper-complete` | a wizard stepper marks exactly one `aria-current="step"`, on an `<li>` of its `<ol>` (WCAG 4.1.2) | 7.4 |
+| `coexistence-clean` | an unlayered reset that sets `outline: none` on a broad `:focus` selector and defeats the layered focus ring | 8.0 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -516,6 +517,25 @@ Adaptive reflow must never reorder the DOM — neither `order` nor a reversed fl
 ```
 
 The rule reads computed style inside every adaptive surface (table, card, form), so a reordering that only applies inside an inactive `@container` state stays silent until the container reaches it — and a static reorder is caught at rest. The reasoning lives in [adaptive.md](adaptive.md).
+
+### `coexistence-clean`
+
+Only an unlayered rule can defeat Barefoot's layered `:focus-visible` ring — a co-loaded reset that sets `outline: none` on a broad `:focus` selector wins every layered style at once and the ring disappears. Verify names the offending rule; the fix is to put the reset inside a `@layer` (any name) so the cascade keeps its order.
+
+```html
+<!-- ✗ broken: unlayered, so it beats every layered style — the ring
+     vanishes on every focusable element with no error -->
+<style>*:focus { outline: none }</style>
+
+<!-- ✗ broken: the element list looks scoped but is still element-level -->
+<style>a:focus, button:focus { outline: none }</style>
+
+<!-- ✓ fixed: the reset is layered, so it lands below Barefoot's base
+     layer and the ring survives -->
+<style>@layer reset { *:focus { outline: none } }</style>
+```
+
+The rule audits only **unlayered** rules whose selector is element-level (every comma-separated part mentions `:focus` and none carries a class, id, or attribute): a `.btn:focus { outline: none }` is a deliberate per-control choice and stays silent. Cross-origin stylesheets throw on `cssRules` access, so a CDN-served page audits its inline and same-origin styles only — the limitation and the recipes are in [coexistence.md](coexistence.md).
 
 ## CI contract-packs
 

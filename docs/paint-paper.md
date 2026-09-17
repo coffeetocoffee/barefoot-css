@@ -84,6 +84,48 @@ bytes of applied style. On paper it:
   hides `.bf-no-print` screen-only chrome, and keeps cards, rows,
   groups, and code from splitting across pages.
 
+### Print, full or cut — v8.0
+
+A page either prints a whole surface or a deliberate subset — never a
+clipped half. The layer extends with the other half of the contract:
+
+- **Page setup.** `@page { margin: 2rem }` (document-level, outside the
+  component layer, so it applies regardless of layer order). Override
+  it with your own `@page` — paper geometry, not a design token.
+- **No stranded lines.** `orphans: 2; widows: 2` on paragraphs, list
+  items, and captions; headings, captions, and card headers get
+  `break-after: avoid` so a title never leaves its content on the
+  previous page. Form groups, fieldsets, labels, and controls stay
+  whole (`break-inside: avoid`) — a printed form prints its values
+  natively.
+- **Cut: column selection.** `data-print="cols-N"` on a `<table>` keeps
+  the first N columns and drops the rest:
+
+  ```html
+  <table data-print="cols-3">
+  ```
+
+  Positional (`:nth-child`), so a `colspan` shifts the count — verify in
+  print preview. To drop an arbitrary column instead of a prefix, give
+  each of its cells `.bf-no-print` (the existing hide primitive works
+  on any element, cells included).
+- **Full: nothing is lost.** Cells get `overflow-wrap: anywhere`, so a
+  table wider than the page wraps its longest values instead of
+  clipping them. If the table is still too wide, cut columns above or
+  print the section landscape:
+
+  ```html
+  <style>
+    @media print {
+      @page { size: landscape }
+    }
+  </style>
+  ```
+
+  (CSS cannot scope page orientation to a single element — `@page` is
+  document-level — which is why the honest options are "cut columns"
+  and "print the section on its own page.")
+
 ## Degradation
 
 Older engines ignore `:has()`, `@starting-style`, `allow-discrete`,
@@ -95,4 +137,6 @@ base print core. No polyfill, JS, or fallback markup is required.
 
 Open `demo/paint-paper.html`: break the email field and watch the group
 tint, scroll the ledger, then open print preview — the grid stacks, the
-link gains its destination, and the badge disappears.
+link gains its destination, and the badge disappears. `demo/resilience.html`
+carries the v8.0 print proofs: a wide table cut to its first three
+columns with `data-print="cols-3"` and the page-margin setup.

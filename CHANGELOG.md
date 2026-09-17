@@ -4,6 +4,56 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.0.0] — 2026-09-17
+
+### Added
+
+- **Fluid i18n primitives — `.bf-elastic`.** Opt-in `components/elastic.css`
+  (0.19KB gzip): a box that hugs its label (`inline-size: fit-content`)
+  between `--bf-elastic-min` (the control floor) and `min(100%,
+  --bf-elastic-max)` (the measure), with `overflow-wrap: anywhere` and
+  `text-wrap: balance` so long compounds and URLs wrap instead of running
+  out of the row. `.bf-elastic-row` is the toolbar half: a wrapping flex
+  row whose items may shrink below min-content. Two additive tokens;
+  `index.css` stays under budget. Proved on `demo/resilience.html` against
+  a German compound and an EN→DE label swap — conformance baselines
+  untouched.
+- **The side-by-side contract.** Opt-in `components/coexistence.css` (one
+  `@layer` name-list, no rules of its own): it appends `user` last no
+  matter which Barefoot files follow, so your `@layer user { ... }`
+  overrides win without `!important`. `docs/coexistence.md` states the
+  three setups (layered-with-layered, layered-with-unlayered, CDN+npm
+  hybrid), the `@import` vs `<link>` layering notes, and the one rule that
+  matters — layered styles lose to unlayered ones. ADR-0022 records the
+  decisions.
+- **One new Verify rule.** `coexistence-clean` audits the silent casualty
+  of a shared document: an unlayered rule setting `outline: none`/`0` on
+  a broad `:focus` selector defeats every layered style at once and the
+  `:focus-visible` ring disappears. The rule walks same-origin `cssRules`
+  (recursing `@media`/`@supports`/`@container`, never descending into an
+  `@layer`, silent on class-scoped resets), quotes its docs sentence, and
+  is pinned by test. Cross-origin sheets are unreadable from the page and
+  are skipped — stated in the docs.
+- **Print — full or cut.** The `print.css` layer extends: `@page { margin:
+  2rem }` (document-level, outside the component layer), `orphans`/`widows:
+  2` with `break-after: avoid` on headings, `break-inside: avoid` on form
+  groups and controls, cell wrapping (`overflow-wrap: anywhere`) so a wide
+  table never clips, and `data-print="cols-1…6"` column selection for the
+  cut case. The landscape recipe is documented as the third honest option
+  (`@page` size cannot be scoped to an element).
+
+### Changed
+
+- `docs/api.md` adds `data-print`; `docs/verify.md` documents the new
+  rule; `docs/layout.md` gains the elastic primitive; `docs/paint-paper.md`
+  gains the full-or-cut layer; `docs/theming.md` regenerates with the two
+  new tokens; `docs/coexistence.md` is new; `docs/adr/0022` is new.
+- The registry budget moves 8192 → 10240 bytes gzip (one more rule plus
+  its CSSOM walk and quoted docs sentence, deliberately in review). The
+  Phase 4 test pins the new number.
+- No new JS modules. `index.css` and `full.css` remain untouched (ADR-0008);
+  `elastic.css` and `coexistence.css` ship opt-in only.
+
 ## [7.8.0] — 2026-09-16
 
 ### Added

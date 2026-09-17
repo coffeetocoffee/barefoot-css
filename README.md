@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
-Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [keyboard & a11y](https://coffeetocoffee.github.io/barefoot-css/demo/keyboard.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [keyboard & a11y](https://coffeetocoffee.github.io/barefoot-css/demo/keyboard.html) · [resilience & coexistence](https://coffeetocoffee.github.io/barefoot-css/demo/resilience.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
@@ -72,6 +72,7 @@ npm install barefoot-css
 | Form architecture | The async validation contract (`data-async-pending` + live region), wizard steppers, field arrays — plus the CSS-vs-JS state boundary. → [docs/forms.md](docs/forms.md) |
 | Keyboard & a11y | Per-pattern keyboard maps (sort-header roving, filter Esc-to-clear, nested dialogs), the roving-tabindex contract, and the opt-in user-preference layer. → [docs/keyboard.md](docs/keyboard.md) |
 | Data story | A density scale (`data-density`, one multiplier for padding and type), server-rendered sort (`data-sort`), and row selection with a zero-JS bulk-actions bar. → [docs/components.md](docs/components.md) |
+| Resilience | `.bf-elastic` boxes that absorb text expansion, a side-by-side `@layer` contract for living next to another reset, and print that is full or cut (`data-print`). → [docs/coexistence.md](docs/coexistence.md) |
 | Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
 | Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
 
@@ -87,9 +88,9 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 56.59KB | **10.59KB** | 9.26KB |
-| `js/verify-contracts.js` | 24.68KB | **7.54KB** | 6.51KB |
-| `index.css` | 11.49KB | **3.05KB** | 2.61KB |
+| `full.css` | 56.65KB | **10.61KB** | 9.24KB |
+| `js/verify-contracts.js` | 29.11KB | **9.12KB** | 7.88KB |
+| `index.css` | 11.55KB | **3.07KB** | 2.63KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
@@ -105,6 +106,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `js/filter-clear.js` | 1.65KB | **0.86KB** | 0.71KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
+| `components/print.css` | 2.38KB | **0.80KB** | 0.66KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
 | `components/states.css` | 2.75KB | **0.76KB** | 0.66KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
@@ -114,7 +116,6 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |
 | `components/buttons.css` | 2.10KB | **0.62KB** | 0.50KB |
-| `components/print.css` | 1.83KB | **0.62KB** | 0.52KB |
 | `components/command.css` | 2.05KB | **0.59KB** | 0.49KB |
 | `components/nav.css` | 1.29KB | **0.50KB** | 0.40KB |
 | `components/segmented.css` | 1.23KB | **0.50KB** | 0.37KB |
@@ -177,11 +178,13 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/menu-items.css` | 0.29KB | **0.20KB** | 0.13KB |
 | `components/tabs-adaptive.css` | 0.38KB | **0.19KB** | 0.16KB |
 | `components/segmented-adaptive.css` | 0.44KB | **0.19KB** | 0.15KB |
+| `components/elastic.css` | 0.30KB | **0.19KB** | 0.15KB |
 | `components/layout-switcher.css` | 0.27KB | **0.19KB** | 0.15KB |
 | `themes/theming-anim.css` | 0.33KB | **0.18KB** | 0.14KB |
 | `components/prose.css` | 0.32KB | **0.17KB** | 0.13KB |
 | `components/script-type.css` | 0.25KB | **0.14KB** | 0.10KB |
 | `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
+| `components/coexistence.css` | 0.05KB | **0.07KB** | 0.04KB |
 <!-- SIZES:END -->
 
 </details>
@@ -200,7 +203,7 @@ Evergreen only — Chrome 135+, Firefox 151+, Safari 26.2+. No transpiling of mo
 
 ```text
 src/        index.css (core), components/, themes/, js/ (opt-in)
-demo/       conformance demo + playground + paint-paper + studio
+demo/       conformance demo + playground + paint-paper + resilience + studio
 docs/       theming, components, layout, adaptive, accessibility, …
 tests/      a11y (axe), JS, CSS behavior, visual regression
 build/      bundler + size budget + preview server
@@ -222,6 +225,7 @@ build/      bundler + size budget + preview server
 | [Paint & paper](docs/paint-paper.md) | Validation, sticky tables, print |
 | [Form architecture](docs/forms.md) | Async validation, wizards, field arrays, the state boundary |
 | [Keyboard](docs/keyboard.md) | Per-pattern keyboard maps, roving focus, nested dialogs, user preferences |
+| [Coexistence](docs/coexistence.md) | Side-by-side `@layer` contract, the focus-ring audit, `@import` vs `<link>` |
 | [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |
 | [Migration](docs/migration-4.md) | v4 · [v5](docs/migration-5.md) · [v3](docs/migration-3.md) |
 | [Status & plan](plan.md) | What's built, what's next |

@@ -222,6 +222,13 @@ the base token and every ramp follows.
 | `--bf-stagger-step` | `50ms` | delay step per stagger item |
 | `--bf-stagger-distance` | `var(--bf-reveal-distance)` | translate distance for stagger |
 
+### Layout (v8.0: elastic, fluid i18n)
+
+| Token | Default | Purpose |
+|---|---|---|
+| `--bf-elastic-min` | `var(--bf-control-height)` | inline-size floor: a one-word control keeps its shape |
+| `--bf-elastic-max` | `60ch` | inline-size ceiling: the readable measure |
+
 ### Layout (v1.8: content & media)
 
 | Token | Default | Purpose |

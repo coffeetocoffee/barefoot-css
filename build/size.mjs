@@ -21,8 +21,9 @@ const JS_BUDGETS = {
   // deliberately in review, not silently. v7.2's aria-sort-wired and
   // selection-complete pushed it past 5KB — same reason, same review.
   // v7.8's roving-focus and reading-order-after-reflow pushed it past
-  // 7KB — same reason, same review.
-  "js/verify-contracts.js": 8192,
+  // 7KB — same reason, same review. v8.0's coexistence-clean adds the
+  // unlayered-reset CSSOM walk plus its quote — past 8KB again.
+  "js/verify-contracts.js": 10240,
   // The barrel is imports only — growth here means something regressed.
   "js/barefoot.js": 1024,
 };
