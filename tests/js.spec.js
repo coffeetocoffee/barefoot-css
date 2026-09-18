@@ -540,7 +540,8 @@ test.describe("opt-in JS barrel completeness", () => {
           // lifecycle/remove-on-click/roving-index/return-focus are
           // internal plumbing (ADR-0002/0004/0006); verify.js +
           // verify-contracts.js are the Verify checker and its registry
-          // (ADR-0015) — opt-in by import, never in the barrel.
+          // (ADR-0015), and deprecations.js is the deprecation registry
+          // (ADR-0023) — opt-in by import, never in the barrel.
           ![
             "lifecycle.js",
             "remove-on-click.js",
@@ -548,6 +549,7 @@ test.describe("opt-in JS barrel completeness", () => {
             "return-focus.js",
             "verify-contracts.js",
             "verify.js",
+            "deprecations.js",
           ].includes(f)
       )
       .sort();

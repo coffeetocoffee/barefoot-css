@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot debug — audit fixture</title>
+  <!-- The audit layer over a real core import. A page always imports the
+       core first; the outlines resolve tokens, so a tokenless fixture
+       would read invalid-at-computed-value-time noise instead of the
+       audit. -->
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/components/debug.css">
+</head>
+<body>
+  <main class="bf-debug">
+    <h1>Audited view</h1>
+    <p>Text content — base layer, dotted.</p>
+    <div class="bf-flow">
+      <div class="card">A card inside a flow — component beats layout.</div>
+    </div>
+    <button type="button" data-variant="primary">Save</button>
+    <section class="bf-state" data-state="empty" role="status">Nothing here.</section>
+    <section data-state="loading">Orphan — nothing paints this data-state.</section>
+  </main>
+  <aside>
+    <p>Outside the audit scope — no outline.</p>
+  </aside>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot recipe — primitive selection</title>
+  <!-- The "Primitive selection" section of docs/recipes.md is guidance,
+       not one markup block, so this fixture assembles its bullets:
+       key/value, stat, timeline, prose, breadcrumbs + pagination, and
+       the native progress/meter pair. Each is the shape the doc names. -->
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/components/data-display.css">
+  <link rel="stylesheet" href="/dist/components/timeline.css">
+  <link rel="stylesheet" href="/dist/components/prose.css">
+  <link rel="stylesheet" href="/dist/components/breadcrumbs.css">
+  <link rel="stylesheet" href="/dist/components/pagination.css">
+  <link rel="stylesheet" href="/dist/components/forms-meter.css">
+</head>
+<body>
+  <main>
+    <h1>Primitives</h1>
+
+    <nav data-breadcrumbs aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li aria-current="page">Gateway</li>
+      </ol>
+    </nav>
+
+    <h2>Key/value</h2>
+    <dl class="bf-key-value">
+      <div>
+        <dt>Service</dt>
+        <dd>gateway</dd>
+      </div>
+      <div>
+        <dt>Owner</dt>
+        <dd>Ada</dd>
+      </div>
+    </dl>
+
+    <h2>Stat</h2>
+    <p class="bf-stat">
+      Deploys this week
+      <span class="bf-stat-value" data-trend="up">12</span>
+    </p>
+
+    <h2>Chronology</h2>
+    <ol data-timeline>
+      <li><time datetime="2026-09-01">Sep 1</time> — deployed v1.0</li>
+      <li><time datetime="2026-09-15">Sep 15</time> — canary at 20%</li>
+    </ol>
+
+    <h2>Progress and range</h2>
+    <p>
+      <label for="prog">Deploy progress</label>
+      <progress id="prog" value="7" max="12">7 of 12</progress>
+    </p>
+    <p>
+      <label for="cap">Capacity</label>
+      <meter id="cap" value="0.4" min="0" max="1" low="0.2" high="0.8">40%</meter>
+    </p>
+
+    <h2>Prose</h2>
+    <div class="bf-prose">
+      <p>Long-form content keeps a readable 65ch measure and heading
+        rhythm; everything else on this page is a primitive.</p>
+    </div>
+
+    <h2>Pages</h2>
+    <nav data-pagination aria-label="Pages">
+      <a href="?page=1" aria-current="page">1</a>
+      <a href="?page=2">2</a>
+    </nav>
+  </main>
+</body>
+</html>

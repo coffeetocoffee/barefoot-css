@@ -31,7 +31,15 @@ import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, got
 // The suite consumes the pack, not src/ directly — one registry, two
 // formats, and the pack re-exports the registry it shares with the
 // engine (ADR-0015).
-import { VERIFY_RULES, ALL_MODULES, runPack, runRule, assertClean } from "../verify/pack.mjs";
+import {
+  VERIFY_RULES,
+  VERIFY_DEPRECATIONS,
+  ALL_MODULES,
+  runPack,
+  runRule,
+  assertClean,
+  runDeprecationPack,
+} from "../verify/pack.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -741,17 +749,19 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     }
   });
 
-  test("verify.js stays in the ~2KB module family", () => {
+  test("verify.js stays near the ~2KB module family (v8.5: two passes)", () => {
     const { sizes } = jsBudgets();
     const v = sizes["js/verify.js"];
     expect(v, "js/verify.js measured by the build").toBeTruthy();
-    expect(v.gzip).toBeLessThanOrEqual(2048);
+    // 1.75KB through v8.0. v8.5 adds the deprecation pass (a second
+    // registry sweep + formatter + warnOnce loop, ADR-0023): 2560, bumped
+    // deliberately in review and pinned here, same rule as the registry.
+    expect(v.gzip).toBeLessThanOrEqual(2560);
   });
 
   test("the budget map cannot silently drop the Verify entries", () => {
-    // verify.js rides the 2KB default, but the registry's explicit
-    // budget must exist — a refactor renaming files would otherwise
-    // leave it policed only by the family default with less headroom.
+    // verify.js rode the 2KB default until v8.5's second pass gave it an
+    // explicit budget; the registry's has been explicit since v7.0.
     // 5120 at v7.0, 6656 at v7.2, 8192 at v7.8 (two more quoted rules)
     // — bumps are deliberate, in review, and pinned here. v8.0's
     // coexistence-clean (the CSSOM walk plus its quote) moved it past
@@ -759,5 +769,229 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     const { budgets } = jsBudgets();
     expect(budgets["js/verify-contracts.js"]).toBe(10240);
     expect(budgets["js/barefoot.js"]).toBe(1024);
+    expect(budgets["js/verify.js"]).toBe(2560);
+  });
+});
+
+test.describe("Verify Phase 5: the deprecation registry and its pass (v8.5, ADR-0023)", () => {
+  /* The machinery is proven with a synthetic entry driven through the
+     engine's own seams — the same path a real entry takes. It must never
+     ship to prove itself: a fabricated deprecation is a self-inflicted
+     false positive, and trust is the entire product. */
+  const SYNTHETIC = [
+    {
+      id: "synthetic-old-token",
+      select: ".uses-old-token",
+      check(el) {
+        return `${el.tagName.toLowerCase()}.uses-old-token paints with --bf-old, removed in the next major`;
+      },
+      fix: "set color: var(--bf-new) instead (docs/api.md, Deprecations)",
+      docs: "docs/api.md",
+      quote: "Every deprecation ships a concrete replacement.",
+      announced: "8.5",
+      replacement: "--bf-new",
+    },
+  ];
+
+  test("the registry's shape is pinned: lifecycle fields a contract never has", () => {
+    const REQUIRED = ["check", "docs", "fix", "id", "quote", "select", "announced", "replacement"];
+    const ALLOWED = [...REQUIRED, "removed"];
+    const seen = new Set();
+    for (const entry of VERIFY_DEPRECATIONS) {
+      const keys = Object.keys(entry);
+      expect(
+        keys.filter((k) => !ALLOWED.includes(k)),
+        `${entry.id || "(unid'd entry)"} has fields outside the pinned shape`
+      ).toEqual([]);
+      for (const field of REQUIRED) {
+        expect(entry[field], `${entry.id} is missing "${field}"`).toBeDefined();
+      }
+      expect(entry.id).toMatch(/^[a-z][a-z0-9-]*$/);
+      expect(seen.has(entry.id), `duplicate deprecation id ${entry.id}`).toBe(false);
+      seen.add(entry.id);
+      expect([].concat(entry.select).length).toBeGreaterThan(0);
+      expect(typeof entry.check).toBe("function");
+      expect(entry.fix.trim()).toBeTruthy();
+      expect(entry.replacement.trim()).toBeTruthy();
+      expect(Array.isArray(entry.quote)).toBe(true);
+      if (entry.removed !== undefined) expect(typeof entry.removed).toBe("string");
+    }
+  });
+
+  test("the registry ships empty — the honest state, not an untested one", () => {
+    // Every surface announced since 3.x was removed in 4.0 (docs/api.md);
+    // the pass is armed, not idle. This pin makes a fabricated entry
+    // shipped "to prove the feature" a test failure instead of a false
+    // positive on every consumer's console.
+    expect(VERIFY_DEPRECATIONS).toEqual([]);
+  });
+
+  test("every shipped entry would be traceable to its announcement (the gate holds for an empty registry too)", () => {
+    for (const entry of VERIFY_DEPRECATIONS) {
+      const file = path.join(rootDir, entry.docs);
+      expect(fs.existsSync(file), `${entry.docs} does not exist`).toBe(true);
+      const docs = fs.readFileSync(file, "utf8").replace(/\s+/g, " ");
+      for (const quote of entry.quote) {
+        expect(
+          docs.includes(quote.replace(/\s+/g, " ")),
+          `${entry.id}: announcement quote not found in ${entry.docs}`
+        ).toBe(true);
+      }
+    }
+  });
+
+  /* The synthetic entry is built IN THE PAGE: its `check` is a function,
+     which cannot cross the Node→browser boundary, so the registry is
+     constructed where it runs. The engine's seams (verify's registry
+     argument, runDeprecations') are the same ones a real entry flows
+     through. */
+  const SYNTHETIC_SELECT = ".uses-old-token";
+  const SYNTHETIC_ID = "synthetic-old-token";
+
+  /* mode: "sweep" (pure read) or "verify" (warn/throw). */
+  async function driveEngine(page, mode, markup) {
+    await mountFixture(page, markup);
+    return page.evaluate((mode) => {
+      const SYNTHETIC = [
+        {
+          id: "synthetic-old-token",
+          select: ".uses-old-token",
+          check(el) {
+            return `${el.tagName.toLowerCase()}.uses-old-token paints with --bf-old, removed in the next major`;
+          },
+          fix: "set color: var(--bf-new) instead (docs/api.md, Deprecations)",
+          docs: "docs/api.md",
+          quote: "Every deprecation ships a concrete replacement.",
+          announced: "8.5",
+          replacement: "--bf-new",
+        },
+      ];
+      return import("/dist/js/verify.js").then(({ verify, runDeprecations }) =>
+        mode === "sweep"
+          ? runDeprecations(document, SYNTHETIC)
+          : verify(document, SYNTHETIC)
+      );
+    }, mode);
+  }
+
+  test("the engine reports a deprecation through the same shape as a contract, plus the migration fields", async ({ page }) => {
+    const found = await driveEngine(
+      page,
+      "sweep",
+      `<p class="uses-old-token">one</p><p class="uses-old-token">two</p>`
+    );
+    expect(found).toHaveLength(2);
+    for (const f of found) {
+      expect(f.id).toBe(SYNTHETIC_ID);
+      expect(f.selector).toBe(SYNTHETIC_SELECT);
+      expect(f.fix).toContain("--bf-new");
+      expect(f.announced).toBe("8.5");
+      expect(f.replacement).toBe("--bf-new");
+    }
+  });
+
+  test("warnOnce volume: a deprecation warns once per page, naming every use and the replacement", async ({ page }) => {
+    const warnings = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "warning" && msg.text().includes("[barefoot-css]")) {
+        warnings.push(msg.text());
+      }
+    });
+    await driveEngine(
+      page,
+      "verify",
+      `<p class="uses-old-token">one</p><p class="uses-old-token">two</p>`
+    );
+    const dep = warnings.filter((t) => t.includes("deprecation:"));
+    expect(dep, "one warning per deprecation per page, not per element").toHaveLength(1);
+    expect(dep[0]).toContain(SYNTHETIC_ID);
+    expect(dep[0]).toContain("2 uses");
+    expect(dep[0]).toContain("--bf-new");
+    expect(dep[0]).toContain("Fix:");
+  });
+
+  test("warn on use, not on import: markup the entry does not match stays silent", async ({ page }) => {
+    const warnings = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "warning" && msg.text().includes("[barefoot-css]")) {
+        warnings.push(msg.text());
+      }
+    });
+    await driveEngine(page, "verify", `<p>no deprecated surface here</p>`);
+    expect(warnings.filter((t) => t.includes("deprecation:"))).toEqual([]);
+  });
+
+  test("strict mode throws for a deprecation, listing the migration", async ({ page }) => {
+    await mountFixture(page, `<p class="uses-old-token">one</p>`);
+    await page.evaluate(() =>
+      document.documentElement.setAttribute("data-bf-verify", "strict")
+    );
+    const error = await page.evaluate(() => {
+      const SYNTHETIC = [
+        {
+          id: "synthetic-old-token",
+          select: ".uses-old-token",
+          check(el) {
+            return `${el.tagName.toLowerCase()}.uses-old-token paints with --bf-old, removed in the next major`;
+          },
+          fix: "set color: var(--bf-new) instead (docs/api.md, Deprecations)",
+          docs: "docs/api.md",
+          quote: "Every deprecation ships a concrete replacement.",
+          announced: "8.5",
+          replacement: "--bf-new",
+        },
+      ];
+      return import("/dist/js/verify.js").then(({ verify }) => {
+        try {
+          verify(document, SYNTHETIC);
+          return null;
+        } catch (e) {
+          return e.message;
+        }
+      });
+    });
+    expect(error).toContain("verify (strict)");
+    expect(error).toContain(`deprecation: ${SYNTHETIC_ID}`);
+    expect(error).toContain("--bf-new");
+  });
+
+  test("the pack and the engine share one deprecation registry (two formats, one source of truth)", async ({ page }) => {
+    await gotoDemo(page);
+    // The shipped registry is empty, so the honest result is empty — the
+    // pack imports the page's own copy of js/deprecations.js, and the
+    // engine reads the same module. An empty pass is a pass, not a no-op.
+    expect(await runDeprecationPack(page)).toEqual([]);
+    const engineSide = await page.evaluate(async () => {
+      const { runDeprecations } = await import("/dist/js/verify.js");
+      return runDeprecations();
+    });
+    expect(engineSide).toEqual([]);
+    // The pack re-exports the registry object the engine imports.
+    expect(VERIFY_DEPRECATIONS).toEqual([]);
+  });
+
+  test("the deprecation sweep reports a bad base with the same fix-it message", async ({ page }) => {
+    await gotoDemo(page);
+    const error = await runDeprecationPack(page, { base: "/nowhere/" }).catch((e) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toContain("/nowhere/");
+    expect(error.message).toContain("deprecation sweep failed");
+  });
+
+  test("deprecations.js is never in the barefoot.js barrel", async () => {
+    const barrel = fs.readFileSync(
+      path.join(rootDir, "src/js/barefoot.js"),
+      "utf8"
+    );
+    expect(barrel).not.toContain("deprecations.js");
+  });
+
+  test("docs/api.md states the policy the pass implements", () => {
+    const api = fs.readFileSync(path.join(rootDir, "docs/api.md"), "utf8");
+    // The three policy promises the machinery enforces: announce in three
+    // places at once, a grace period, and a concrete replacement.
+    expect(api).toContain("no silent breaks");
+    expect(api).toContain("Grace period");
+    expect(api).toContain("concrete replacement");
   });
 });

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot recipe — sidebar + table + filter bar</title>
+  <!-- Exactly the files the recipe names, nothing more: index.css (the
+       mandatory core) plus the recipe's own imports. -->
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/utilities.css">
+  <link rel="stylesheet" href="/dist/components/layout-sidebar.css">
+  <link rel="stylesheet" href="/dist/components/table-sticky.css">
+  <link rel="stylesheet" href="/dist/components/forms-base.css">
+  <link rel="stylesheet" href="/dist/components/buttons.css">
+</head>
+<body>
+  <!-- The region between the markers is verbatim from docs/recipes.md;
+       a test pins it against the doc so the prose cannot drift. -->
+  <!-- recipe:start -->
+  <div class="bf-sidebar">
+    <nav aria-label="Table filters">
+      <form class="bf-stack">
+        <label>Status <select><option>All</option></select></label>
+        <button type="submit">Apply filters</button>
+      </form>
+    </nav>
+    <main>
+      <h1>Deployments</h1>
+      <div class="bf-table-sticky" role="region" aria-label="Deployments" tabindex="0">
+        <table>
+          <caption>Recent deployments</caption>
+          <thead><tr><th scope="col">Service</th><th scope="col">Status</th></tr></thead>
+          <tbody><tr><td>Web</td><td>Healthy</td></tr></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <!-- recipe:end --></body>
+</html>

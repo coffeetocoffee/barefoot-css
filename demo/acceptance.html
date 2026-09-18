@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en" data-bf-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot — Acceptance gate</title>
+  <meta name="description" content="The v8.5 stress page: a 500×15 sortable/selectable/sticky table, a wizard, German and Arabic text expansion, keyboard-only navigation — one page, every surface, no hacks.">
+  <link rel="stylesheet" href="../dist/full.css">
+  <!-- The opt-in surfaces the gate exercises (full.css is frozen at its
+       4.6 import set, so the v6+ layers load beside it). -->
+  <link rel="stylesheet" href="../dist/components/table-sticky.css">
+  <link rel="stylesheet" href="../dist/components/table-select.css">
+  <link rel="stylesheet" href="../dist/components/data-grid.css">
+  <link rel="stylesheet" href="../dist/components/density.css">
+  <link rel="stylesheet" href="../dist/components/states.css">
+  <link rel="stylesheet" href="../dist/components/elastic.css">
+  <link rel="stylesheet" href="../dist/components/print.css">
+  <style>
+    @font-face {
+      font-family: "Inter";
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url("fonts/inter-latin.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      font-style: normal;
+      font-weight: 100 800;
+      font-display: swap;
+      src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+    }
+    :root { --bf-font: "Inter", system-ui, sans-serif; --bf-font-mono: "JetBrains Mono", ui-monospace, monospace; }
+    body { margin: 0; }
+    .ac-head { padding-block: var(--bf-space-8) var(--bf-space-4); }
+    .ac-head p { max-width: 62ch; }
+    section { margin-block-start: var(--bf-space-6); }
+    .ac-readout { font-family: var(--bf-font-mono); font-size: 0.875rem; }
+    .ac-grid-shell { max-block-size: 24rem; }
+    .ac-cell { inline-size: 9rem; overflow: hidden; border: var(--bf-border-width) dashed var(--bf-border); padding: var(--bf-space-2); border-radius: var(--bf-radius); }
+    .ac-cell button { inline-size: 100%; }
+    .ac-wizard-panel { border: var(--bf-border-width) solid var(--bf-border); border-radius: var(--bf-radius); padding: var(--bf-space-4); margin-block-start: var(--bf-space-3); }
+    .ac-wizard-shell .bf-row { margin-block-start: var(--bf-space-3); }
+    [dir="rtl"] { text-align: start; }
+    @media print {
+      .ac-no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="bf-skip-link" href="#main">Skip to content</a>
+
+  <header class="bf-container ac-head">
+    <p class="bf-overline">Barefoot CSS v8.5</p>
+    <h1>Acceptance gate</h1>
+    <p>One page that composes everything at the scale the docs talk about: a <strong>500 row × 15 column</strong> table that is sortable, selectable, sticky, and dense; a wizard mid-flow; German and Arabic text expansion; and keyboard-only navigation across every surface. If any of this needs a hack, it becomes v7.6 scope — the page exists to find that out. Axe and Verify both run on this page; both must stay quiet.</p>
+    <p class="bf-muted">Back to the <a href="index.html">conformance demo</a> · <a href="../docs/recipes.md">recipes</a> · <a href="../docs/performance.md">perf budget</a> · <a href="../docs/api.md">API</a>.</p>
+    <div role="group" aria-label="Theme">
+      <button type="button" data-bf-theme-btn="auto">Auto</button>
+      <button type="button" data-bf-theme-btn="light">Light</button>
+      <button type="button" data-bf-theme-btn="dark">Dark</button>
+      <button type="button" data-bf-theme-btn="forest">Forest</button>
+    </div>
+  </header>
+
+  <main class="bf-container" id="main">
+
+    <!-- The grid -->
+    <section aria-labelledby="ac-grid-title">
+      <h2 id="ac-grid-title">The grid — 500 × 15, compact</h2>
+      <p class="bf-muted ac-no-print">A sortable column claims its order (<code>aria-sort</code> + <code>data-sort</code>), a select-all control names itself and every row states its selection, the header and leading column stick inside a focusable named scroll region, and <code>data-density="compact"</code> scales the whole shell. On paper the table cuts to its first four columns (<code>data-print</code>).</p>
+      <p class="ac-readout" id="ac-grid-status" role="status" aria-live="polite">building the grid…</p>
+      <div class="bf-grid-shell" data-density="compact">
+        <div class="bf-table-sticky" role="region" aria-label="Deployments — 500 rows" tabindex="0" id="ac-table-wrap">
+          <table data-bf-sort data-grid data-print="cols-4" id="ac-table">
+            <caption>Deployments across services — 500 rows × 15 columns</caption>
+            <thead>
+              <tr id="ac-head-row"></tr>
+            </thead>
+            <tbody id="ac-body"></tbody>
+          </table>
+        </div>
+        <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+          <span class="bf-bulk-count" role="status" id="ac-count">0 selected</span>
+          <button type="button" id="ac-restart">Restart selected</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- The wizard -->
+    <section aria-labelledby="ac-wizard-title">
+      <h2 id="ac-wizard-title">The wizard — mid-flow</h2>
+      <p class="bf-muted">A shared nav owns an empty <code>&lt;form&gt;</code> wrapping the panels: the app moves exactly one <code>aria-current="step"</code> and one panel per click, panels are <code>hidden</code> — never removed, so back preserves input — and leaving a step runs native validation. The stepper contract is exactly one current step on an <code>&lt;li&gt;</code>.</p>
+      <div data-stepper id="ac-stepper">
+        <ol>
+          <li data-complete>Account</li>
+          <li aria-current="step">Profile</li>
+          <li>Review</li>
+        </ol>
+      </div>
+      <form id="ac-wizard-form" class="ac-wizard-shell" novalidate aria-labelledby="ac-wizard-title">
+        <div class="ac-wizard-panel" id="ac-step-account" hidden>
+          <h3>Account</h3>
+          <label>Username <input type="text" name="username" required></label>
+        </div>
+        <div class="ac-wizard-panel" id="ac-step-profile">
+          <h3>Profile</h3>
+          <label>Full name <input type="text" name="full-name"></label>
+          <label>Bio <textarea name="bio" rows="2"></textarea></label>
+        </div>
+        <div class="ac-wizard-panel" id="ac-step-review" hidden>
+          <h3>Review</h3>
+          <p>Nothing to review yet — the flow is mid-profile.</p>
+        </div>
+        <p class="bf-row bf-gap-2 ac-no-print">
+          <button type="button" id="ac-back" data-variant="ghost" disabled>Back</button>
+          <button type="button" id="ac-next" data-variant="primary">Next</button>
+        </p>
+      </form>
+    </section>
+
+    <!-- i18n -->
+    <section aria-labelledby="ac-i18n-title">
+      <h2 id="ac-i18n-title">Text expansion — DE and AR</h2>
+      <p class="bf-muted">Expansion breaks more layouts than direction. The elastic row below absorbs ~30% German and full Arabic right-to-left without a media query; the RTL section mirrors for free through logical properties.</p>
+      <div class="ac-cell">
+        <button type="button" class="bf-elastic" id="ac-elastic-btn">Save</button>
+      </div>
+      <div class="bf-elastic-row" id="ac-elastic-row" style="inline-size: 22rem"></div>
+      <p class="bf-row bf-gap-2 ac-no-print" style="margin-block-start: var(--bf-space-3)">
+        <button type="button" id="ac-lang-en" data-variant="primary">English</button>
+        <button type="button" id="ac-lang-de">Deutsch (+30%)</button>
+        <button type="button" id="ac-lang-ar">العربية (RTL)</button>
+      </p>
+      <section dir="rtl" lang="ar" aria-labelledby="ac-ar-title" style="margin-block-start: var(--bf-space-4)">
+        <h3 id="ac-ar-title">قسم من اليمين إلى اليسار</h3>
+        <p>المحتوى العربي يتبع اتجاه الكتابة دون أي قواعد خاصة — الخصائص المنطقية تتولى الأمر.</p>
+        <p class="bf-row bf-gap-2">
+          <button type="button" class="bf-elastic">حفظ التغييرات</button>
+          <button type="button">إلغاء</button>
+        </p>
+      </section>
+    </section>
+
+    <!-- Keyboard -->
+    <section aria-labelledby="ac-keys-title">
+      <h2 id="ac-keys-title">Keyboard — every surface reachable</h2>
+      <p class="bf-muted">A skip link takes the first Tab stop; tabs and the popover menu are armed (<code>js/barefoot.js</code>), so roving focus and arrow-key navigation work; the filter clears on Escape. Try it with the keyboard only.</p>
+      <button type="button" popovertarget="ac-menu">Actions</button>
+      <div popover id="ac-menu" data-kind="menu">
+        <a href="#ac-grid-title">Jump to grid</a>
+        <a href="#ac-wizard-title">Jump to wizard</a>
+        <a href="#ac-i18n-title">Jump to i18n</a>
+      </div>
+      <div class="bf-row" style="margin-block-start: var(--bf-space-3); align-items: end">
+        <div data-bf-tabs id="ac-tabs">
+          <div role="tablist" aria-label="Views">
+            <button type="button" id="ac-tab-1" role="tab" aria-controls="ac-panel-1">Table</button>
+            <button type="button" id="ac-tab-2" role="tab" aria-controls="ac-panel-2">Wizard</button>
+          </div>
+          <div id="ac-panel-1" role="tabpanel" aria-labelledby="ac-tab-1">The grid is above.</div>
+          <div id="ac-panel-2" role="tabpanel" aria-labelledby="ac-tab-2" hidden>The wizard is above.</div>
+        </div>
+        <label>Filter the grid <input type="search" data-bf-filter id="ac-filter"></label>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module">
+    // Rows first, before the modules' onDomReady passes — so the table
+    // the checker and axe see is the real 500-row table.
+    const SERVICES = ["gateway", "billing", "search", "auth", "notify", "media", "audit", "cache", "queue", "render"];
+    const ENVS = ["production", "staging", "preview"];
+    const REGIONS = ["eu-central-1", "us-east-2", "ap-southeast-1"];
+    const LEADS = ["Ada", "Grace", "Linus", "Radia", "Hedy", "Ken"];
+    const HEADERS = [
+      ["Service", true], ["Environment", false], ["Deploys", true], ["Lead", false],
+      ["Region", false], ["Status", false], ["Latency p99", false], ["Errors", false],
+      ["Uptime", false], ["Cost", false], ["Owner", false], ["Team", false],
+      ["Repo", false], ["Created", false], ["Notes", false],
+    ];
+    const ROWS = 500;
+
+    const head = document.getElementById("ac-head-row");
+    // Select-all first, then the sortable columns; the Service column
+    // claims the sort (aria-sort + data-sort, agreeing).
+    head.append(Object.assign(document.createElement("th"), {
+      textContent: "",
+    }));
+    const selectAll = document.createElement("input");
+    selectAll.type = "checkbox";
+    selectAll.className = "bf-select-all";
+    selectAll.id = "ac-select-all";
+    selectAll.setAttribute("aria-label", "Select all 500 rows");
+    head.firstElementChild.append(selectAll);
+    HEADERS.forEach(([label, sortable], i) => {
+      const th = document.createElement("th");
+      th.setAttribute("scope", "col");
+      if (sortable && i === 0) {
+        th.setAttribute("aria-sort", "ascending");
+        th.setAttribute("data-sort", "asc");
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = label;
+        th.append(b);
+      } else {
+        th.textContent = label;
+      }
+      head.append(th);
+    });
+
+    const body = document.getElementById("ac-body");
+    const fragment = document.createDocumentFragment();
+    for (let r = 0; r < ROWS; r++) {
+      const tr = document.createElement("tr");
+      tr.setAttribute("aria-selected", "false");
+      const c0 = document.createElement("td");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.setAttribute("aria-label", `Select row ${r + 1}`);
+      c0.append(cb);
+      tr.append(c0);
+      const svc = SERVICES[r % SERVICES.length];
+      const values = [
+        `${svc}-${r}`, ENVS[r % ENVS.length], String((r * 7) % 99 + 1),
+        LEADS[r % LEADS.length], REGIONS[r % REGIONS.length],
+        r % 9 === 0 ? "degraded" : "healthy",
+        `${(r * 13) % 800 + 40}ms`, String(r % 7), `${(99.5 + (r % 5) * 0.1).toFixed(1)}%`,
+        `$${(r * 37) % 900}`, LEADS[(r + 2) % LEADS.length], `team-${r % 4}`,
+        `repo/${svc}`, `2026-09-${String((r % 28) + 1).padStart(2, "0")}`,
+        r % 5 === 0 ? "canary" : "",
+      ];
+      for (const v of values) {
+        const td = document.createElement("td");
+        td.textContent = v;
+        tr.append(td);
+      }
+      fragment.append(tr);
+    }
+    body.append(fragment);
+
+    // Selection: keep aria-selected and the count truthful (the bulk bar
+    // appears on its own via :has() — zero-JS reveal, JS owns the state).
+    const count = document.getElementById("ac-count");
+    function syncCount() {
+      const n = body.querySelectorAll("tr[aria-selected='true']").length;
+      count.textContent = `${n} selected`;
+    }
+    body.addEventListener("change", (e) => {
+      const cb = e.target;
+      if (cb.type !== "checkbox") return;
+      const tr = cb.closest("tr");
+      if (tr) tr.setAttribute("aria-selected", String(cb.checked));
+      syncCount();
+    });
+    selectAll.addEventListener("change", () => {
+      for (const tr of body.querySelectorAll("tr")) {
+        const cb = tr.querySelector("input[type='checkbox']");
+        cb.checked = selectAll.checked;
+        tr.setAttribute("aria-selected", String(selectAll.checked));
+      }
+      syncCount();
+    });
+    syncCount();
+
+    document.getElementById("ac-grid-status").textContent =
+      `grid ready — ${ROWS} rows × ${HEADERS.length + 1} columns, compact density`;
+
+    // The wizard: one form owns the panels and a shared nav. The app
+    // moves exactly one current step and one panel per click; panels stay
+    // [hidden], never removed, so input survives a round trip; leaving a
+    // step runs native validation. The Back/Next pair is the v7.4
+    // pattern (docs/forms.md, Wizard) proven on form-architecture.
+    const wizard = document.getElementById("ac-wizard-form");
+    const stepper = document.getElementById("ac-stepper");
+    const stepEls = ["ac-step-account", "ac-step-profile", "ac-step-review"]
+      .map((id) => document.getElementById(id));
+    const stepLis = [...stepper.querySelectorAll("li")];
+    const backButton = document.getElementById("ac-back");
+    const nextButton = document.getElementById("ac-next");
+    let step = 1;
+
+    function paintStep() {
+      stepLis.forEach((li, i) => {
+        if (i === step) li.setAttribute("aria-current", "step");
+        else li.removeAttribute("aria-current");
+        li.toggleAttribute("data-complete", i < step);
+      });
+      stepEls.forEach((el, i) => { el.hidden = i !== step; });
+      backButton.disabled = step === 0;
+      nextButton.hidden = step === stepEls.length - 1;
+    }
+
+    function firstInvalidIn(panel) {
+      for (const el of wizard.elements) {
+        if (panel.contains(el) && typeof el.checkValidity === "function" && !el.checkValidity()) {
+          return el;
+        }
+      }
+      return null;
+    }
+
+    nextButton.addEventListener("click", () => {
+      const bad = firstInvalidIn(stepEls[step]);
+      if (bad) {
+        wizard.reportValidity(); // native bubble, then focus lands on the field
+        return;
+      }
+      step = Math.min(stepEls.length - 1, step + 1);
+      paintStep();
+    });
+
+    backButton.addEventListener("click", () => {
+      step = Math.max(0, step - 1);
+      paintStep();
+    });
+    paintStep();
+
+    // i18n: EN / DE (+~30%) / AR label sets on the elastic row, and the
+    // standalone elastic button growing with the longest compound.
+    const row = document.getElementById("ac-elastic-row");
+    const LABELS = {
+      en: ["Save", "Cancel", "Delete row", "Continue"],
+      de: ["Änderungen speichern", "Abbrechen und zurück", "Zeile endgültig löschen", "Mit dem nächsten Schritt fortfahren"],
+      ar: ["حفظ التغييرات", "إلغاء الأمر", "حذف الصف", "المتابعة إلى الخطوة التالية"],
+    };
+    const elasticBtn = document.getElementById("ac-elastic-btn");
+    const BTN = { en: "Save", de: "Geschwindigkeitsüberschreitungsprüfung", ar: "المتابعة إلى الخطوة التالية" };
+    function paintRow(lang) {
+      row.replaceChildren(
+        ...LABELS[lang].map((label, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "bf-elastic";
+          b.textContent = label;
+          if (i === 0) b.dataset.variant = "primary";
+          return b;
+        })
+      );
+      row.dir = lang === "ar" ? "rtl" : "ltr";
+      row.lang = lang;
+      elasticBtn.textContent = BTN[lang];
+    }
+    paintRow("en");
+    const mark = (lang, on, off) => () => {
+      paintRow(lang);
+      document.getElementById(off).dataset.variant = "";
+      document.getElementById(on).dataset.variant = "primary";
+    };
+    document.getElementById("ac-lang-en").addEventListener("click", mark("en", "ac-lang-en", "ac-lang-de"));
+    document.getElementById("ac-lang-de").addEventListener("click", mark("de", "ac-lang-de", "ac-lang-en"));
+    document.getElementById("ac-lang-ar").addEventListener("click", mark("ar", "ac-lang-ar", "ac-lang-de"));
+
+    // Full keyboard surface: tabs + popover menu + filter-clear are armed
+    // by the barrel. verify.js auto-scans at DOMContentLoaded; re-run it
+    // there to write the finding count into the status line (its own pass
+    // and this one agree, and warnOnce keeps the console to one warning).
+    import "/dist/js/barefoot.js";
+    import { verify } from "/dist/js/verify.js";
+    document.addEventListener("DOMContentLoaded", () => {
+      const v = verify();
+      const status = document.getElementById("ac-grid-status");
+      status.textContent = v.length === 0
+        ? status.textContent + " · Verify: clean"
+        : status.textContent + ` · Verify: ${v.length} finding(s) — see console`;
+    });
+  </script>
+</body>
+</html>

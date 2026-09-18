@@ -1,17 +1,21 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-17 — v8.0.0 "Resilience & Coexistence" built &
-verified (elastic i18n primitives, the side-by-side contract, print
-full-or-cut, the `coexistence-clean` Verify rule, `docs/coexistence.md`,
-ADR-0022); v7.8.0 "Keyboard & A11y Beyond Component" built & verified
-(per-pattern keyboard map, sort-header roving, filter Esc-to-clear,
-nested-dialog proofs, the user-preference layer, two new Verify rules,
-`docs/keyboard.md`, ADR-0021); v7.4.0 "Form Architecture" built & verified
-(async validation contract, wizard + state boundary, field arrays, two
-new Verify rules, `docs/forms.md`, ADR-0020); v7.2.0 "Data Story" built &
-verified (density scale, server-rendered sort, row selection, two new
-Verify rules, the composed recipe, `js/table-sort.js` graduates); v7.0.0
-"State Machine & Events" built & verified_
+_Last updated: 2026-09-18 — v8.5.0 "DX Governance" built & verified
+(`.bf-debug` audit overlay, the deprecation split in Verify, the
+`perf-budget.mjs` selector gate, recipe fixtures pinned to their docs,
+the acceptance gate at 500×15, ADR-0023); v8.0.0 "Resilience &
+Coexistence" built & verified (elastic i18n primitives, the side-by-side
+contract, print full-or-cut, the `coexistence-clean` Verify rule,
+`docs/coexistence.md`, ADR-0022); v7.8.0 "Keyboard & A11y Beyond
+Component" built & verified (per-pattern keyboard map, sort-header
+roving, filter Esc-to-clear, nested-dialog proofs, the user-preference
+layer, two new Verify rules, `docs/keyboard.md`, ADR-0021); v7.4.0 "Form
+Architecture" built & verified (async validation contract, wizard + state
+boundary, field arrays, two new Verify rules, `docs/forms.md`, ADR-0020);
+v7.2.0 "Data Story" built & verified (density scale, server-rendered
+sort, row selection, two new Verify rules, the composed recipe,
+`js/table-sort.js` graduates); v7.0.0 "State Machine & Events" built &
+verified_
 
 ## Snapshot
 
@@ -202,7 +206,51 @@ Verify rules, the composed recipe, `js/table-sort.js` graduates); v7.0.0
    computed-style gap — each with its reason string). One transient:
    the Firefox visual light-theme capture needed a re-run under parallel
    load, then green; the conformance demo is untouched by this release.
-- **History:** milestones 0.1 → 7.8.0 shipped; v8.0.0 built & verified.
+- **Built & verified:** **v8.5.0 — "DX Governance"** (2026-09-18; tag =
+  maintainer action). The audit overlay `components/debug.css` (`.bf-debug`
+  on any subtree: base/layout/component outlines by role with precedence
+  by rule order — never `!important`; orphan `data-state` (no `.bf-state`
+  or `<form>` hook) flagged red with a label; a legend; what CSS can't see
+  stated plainly — deep `:has()` is `npm run perf`'s job, an unlayered
+  focus reset is `coexistence-clean`'s; unlayered-but-scoped so it paints
+  over every layer without leaking). The deprecation split (ADR-0023): the
+  `js/deprecations.js` registry with lifecycle fields (`announced` /
+  `replacement` / `removed`) and the same quote gate as contracts; the
+  checker's two passes share one sweep — contracts warn "broken",
+  deprecations warn "leaving — here's the replacement" — once per page,
+  strict mode includes both; the pack gains `runDeprecationPack`. The
+  registry ships EMPTY, honestly (everything announced since 3.x died in
+  4.0); the machinery is proven by a synthetic entry through the same
+  seams, never a fabricated one. The selector budget `build/perf-budget.mjs`
+  (`npm run perf`, wired into `npm run check`): `:has()` occurrences /
+  chains / DEEP (zero budget — superlinear), `@container` blocks and
+  contexts, `view()`/`scroll()` timelines, masks, longest compound chain
+  — static, because measuring timing on a CI machine would be the shallow
+  middle. Recipe fixtures pin every `docs/recipes.md` markup block verbatim
+  (whitespace-normalized), rendering, axe-clean, Verify-clean. The
+  acceptance gate `demo/acceptance.html`: 500×15 sortable/selectable/
+  sticky/compact table, wizard mid-flow (native validation on leave), DE/AR
+  expansion live, keyboard-only nav — axe-clean and Verify-clean beside the
+  conformance demo, baselines untouched. `js/verify.js` budget moves to an
+  explicit 2560 bytes gzip (deliberately in review; the second pass is
+  real code). `npm run check` green; full matrix below.
+- **Verification (2026-09-18, v8.5 matrix):** Chromium **401 passed /
+  2 skipped**, Firefox **304 passed / 16 skipped**, WebKit **309 passed /
+  11 skipped** — zero failures. (The one mid-run failure was a
+  barrel-completeness gap — `deprecations.js` joined the non-barrel
+  allowlist in `js.spec.js`, then green everywhere.) The v8.5 suites
+  (`debug`, `recipes`, `perf`, `acceptance`) run on the chromium
+  project; the behavior + visual suites stay green cross-engine with the
+  existing documented skips (interest invokers, SDA, `popover=hint`,
+  cross-doc VT, base-select, Chromium-gated forced-colors and CDP media
+  emulation, the WebKit dialog focus-return gap, and the Firefox
+  orphans/widows computed-style gap). Visual regression green on all
+  three (win32 baselines untouched — the acceptance page ships beside the
+  conformance demo, not inside it). One deliberate revisit: axe on the
+  500-row page disables `color-contrast` (the slowest rule at 15k nodes)
+  because contrast is the framework's own AA token gate, not this page's
+  claim.
+- **History:** milestones 0.1 → 8.0.0 shipped; v8.5.0 built & verified.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -326,6 +374,17 @@ and `.bf-*` utilities.
 
 - **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
   action only; `release.yml` takes over on the tag push.
+- **v8.5.0 — "DX Governance" (built & verified 2026-09-18; tag =
+  maintainer action):** the `.bf-debug` audit overlay
+  (`components/debug.css`, holdover-unlayered so it paints over every
+  layer; layer boundaries + orphan `data-state` flags; sealed by
+  `docs/debug.md`), the deprecation split in the checker (`js/deprecations.js`
+  + the two-pass sweep, `runDeprecationPack`, the empty-but-armed
+  registry, ADR-0023), `npm run perf` selector budgets
+  (deep-`:has()` at zero, `@container`/timelines/masks bounded), the
+  recipe fixtures pinning `docs/recipes.md` verbatim, and the acceptance
+  gate (`demo/acceptance.html`, 500×15 + wizard + DE/AR + keyboard).
+  Tag `v8.5.0` per RELEASE.md; `release.yml` publishes from the tag.
 - **v8.0.0 — "Resilience & Coexistence" (built & verified
   2026-09-17; tag = maintainer action):** the elastic i18n primitives
   (`.bf-elastic`, `.bf-elastic-row`, two additive tokens),
@@ -504,18 +563,29 @@ and `.bf-*` utilities.
   kept whole plus native value printing.)
 - Verify: `coexistence-clean`. ✅ Non-goal: no Shadow-DOM injection, no framework adapters yet.
 
-**v8.5 — "DX Governance" (polices everything above, ships last)**
+**v8.5 — "DX Governance" (polices everything above, ships last)** ✅
+(built & verified 2026-09-18; tag = maintainer action)
 
 - **`.bf-debug` audit mode:** outline layer boundaries, flag deep `:has()` in red (perf),
-  flag orphan `data-state` without hook. Makes architecture visible.
+  flag orphan `data-state` without hook. Makes architecture visible. ✅
+  (`components/debug.css` + `docs/debug.md`: layer boundaries are the
+  overlay's; deep-`:has()` is `npm run perf`'s, said plainly; unlayered
+  to paint over every layer, scoped to the subtree so it cannot leak.)
 - **CSS `warnOnce`:** dev-only audit for deprecated class/token/attr
-  ("uses `--bf-old`, aliased since 4.2, dies in 7.0"). Split Verify: contracts vs deprecations.
+  ("uses `--bf-old`, aliased since 4.2, dies in 7.0"). Split Verify: contracts vs deprecations. ✅
+  (`js/deprecations.js` — empty-but-armed, the honest state — plus the
+  two-pass sweep and `runDeprecationPack`, ADR-0023.)
 - **`perf-budget.mjs`:** parse/eval, `:has()` recalc, container-query, `view()` timeline,
-  sticky mask paint — not just gzip bytes.
+  sticky mask paint — not just gzip bytes. ✅ (`npm run perf`, in
+  `npm run check`; deep-`:has()` budget zero; static, and says why.)
 - **Recipe fixtures:** every `recipes.md` pattern gets `tests/fixtures/*.html`,
-  matrix-tested + visually baselined so prose can't drift.
+  matrix-tested + visually baselined so prose can't drift. ✅ (five
+  fixtures; each pins the doc's block verbatim, renders, axe-clean,
+  Verify-clean.)
 - **Acceptance gate:** one monstrous dashboard — 500 rows × 15 cols, wizard form,
-  DE/AR translations, keyboard-only navigable. Whatever needs a hack = v7.6 scope.
+  DE/AR translations, keyboard-only navigable. Whatever needs a hack = v7.6 scope. ✅
+  (`demo/acceptance.html`: no hack found — the page is axe-clean (minus
+  the framework's own contrast gate) and Verify-clean at rest.)
 
 ### Roadmap guardrails (v7, every release)
 

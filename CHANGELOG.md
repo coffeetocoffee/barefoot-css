@@ -4,6 +4,71 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.5.0] — 2026-09-18
+
+### Added
+
+- **`.bf-debug` audit overlay.** Opt-in `components/debug.css` (1.06KB
+  gzip), unlayered by design so it paints over every cascade layer but
+  scoped to a `.bf-debug` subtree so a page that does not opt in is
+  untouched. It outlines the framework's own surfaces by role
+  (base dotted / layout dashed / component solid, precedence by rule
+  order at equal specificity — never `!important`), flags orphan
+  `data-state` attributes (an option whose hook — `.bf-state` or `<form>`
+  — does not exist) in red with a label, opens with a legend, and says
+  plainly what CSS cannot see: deep `:has()` is `npm run perf`'s job, an
+  unlayered focus reset is `coexistence-clean`'s. Shape, not color,
+  carries every distinction under forced colors. `docs/debug.md`
+  documents it; a test pins its contract-attribute list to `docs/api.md`
+  in both directions. Never in `full.css` (ADR-0008).
+- **The deprecation split in Verify (ADR-0023).** `js/deprecations.js` is
+  the machine-readable twin of the contract registry — surfaces the
+  framework has announced but not yet removed, with lifecycle fields a
+  contract never has (`announced`, `replacement`, optional `removed`),
+  traceable to api.md by the same quote gate. The checker now runs two
+  passes over one shared sweep: contracts warn *"this is broken"*,
+  deprecations warn *"this is leaving — here is the replacement"*, once
+  per page, included in strict mode. The pack gains `runDeprecationPack`.
+  The registry ships **empty** — the honest state, since everything
+  announced since 3.x was removed in 4.0 — and the suite proves the
+  machinery with a synthetic entry through the same seams a real one
+  takes, never a fabricated one.
+- **`npm run perf` — selector budgets.** `build/perf-budget.mjs` static-
+  analyzes the shipped CSS and bounds what bytes *do*: `:has()` occurrences,
+  chains, and — at a budget of zero — deep/nested `:has()` (superlinear
+  recalc); plus `@container` blocks and contexts, `view()`/`scroll()`
+  timelines, `mask` declarations, and the longest compound chain. Budgets
+  are measured with headroom; a breach exits non-zero. Runs in
+  `npm run check`. Documented in `docs/performance.md`. static by design —
+  runtime timing stays bring-your-own, because pretending to measure
+  milliseconds on a CI machine is the shallow middle.
+- **Recipe fixtures.** Every markup recipe in `docs/recipes.md` is now
+  pinned by a fixture (`tests/fixtures/recipe-*.html`) whose marked region
+  must equal the doc's code block verbatim (whitespace-normalized), render,
+  be axe-clean, and honor every Verify contract — so prose cannot drift
+  from behavior.
+- **The acceptance gate.** `demo/acceptance.html`, the monstrous dashboard
+  the roadmap promised: 500 rows × 15 columns of a sortable, selectable
+  (`aria-selected` on every row), sticky, compact table; a wizard mid-flow
+  (one `aria-current="step"`, panels `hidden`-preserved, native validation
+  on leave); EN/DE/AR text expansion proven live; keyboard-only nav across
+  every surface. Axe-clean and Verify-clean at rest, on its own page —
+  conformance baselines untouched.
+
+### Changed
+
+- `js/verify.js` grows a second pass: its size budget moves to an explicit
+  **2560 bytes gzip** (was the 2KB family default, now measured 2.37KB),
+  bumped deliberately in review and pinned by the Phase 4 test. Same rule
+  the registry has followed since v7.0.
+- `docs/api.md` (policy names the registry), `docs/verify.md` (the
+  Deprecation notices section + `runDeprecations`), `docs/javascript.md`
+  (the checker's two passes), `docs/performance.md` (the selector
+  budgets), `README.md` (DX governance row + acceptance demo) all update.
+- No new `data-*` attributes; `index.css` and `full.css` remain untouched
+  (ADR-0008); no new tokens. `npm run check` now runs build + size + **perf**
+  + docs + lint.
+
 ## [8.0.0] — 2026-09-17
 
 ### Added

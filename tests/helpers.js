@@ -179,6 +179,29 @@ export const DEMOS = Object.freeze({
     resilienceInject: "#rs-inject",
     resilienceLayer: "#rs-layer",
     resilienceRestore: "#rs-restore",
+    // v8.5 — the acceptance gate (demo/acceptance.html).
+    acceptanceGridStatus: "#ac-grid-status",
+    acceptanceTable: "#ac-table",
+    acceptanceHead: "#ac-head-row",
+    acceptanceBody: "#ac-body",
+    acceptanceTableWrap: "#ac-table-wrap",
+    acceptanceCount: "#ac-count",
+    acceptanceSelectAll: "#ac-select-all",
+    acceptanceRestart: "#ac-restart",
+    acceptanceStepper: "#ac-stepper",
+    acceptanceWizardForm: "#ac-wizard-form",
+    acceptanceBack: "#ac-back",
+    acceptanceStepProfile: "#ac-step-profile",
+    acceptanceStepAccount: "#ac-step-account",
+    acceptanceStepReview: "#ac-step-review",
+    acceptanceElasticRow: "#ac-elastic-row",
+    acceptanceElasticBtn: "#ac-elastic-btn",
+    acceptanceLangEn: "#ac-lang-en",
+    acceptanceLangDe: "#ac-lang-de",
+    acceptanceLangAr: "#ac-lang-ar",
+    acceptanceTabs: "#ac-tabs",
+    acceptanceMenu: "#ac-menu",
+    acceptanceFilter: "#ac-filter",
 });
 
 /* Navigate to the demo page. Every suite starts here; nothing else
@@ -249,6 +272,14 @@ export async function gotoKeyboard(page) {
    a co-loaded reset, and the print full-or-cut proofs. */
 export async function gotoResilience(page) {
   await page.goto("/demo/resilience.html");
+}
+
+/* Navigate to the acceptance gate (v8.5) — the monstrous dashboard: a
+   500×15 sortable/selectable/sticky table, a wizard mid-flow, German and
+   Arabic text expansion, and keyboard-only navigation across every
+   surface. "Whatever needs a hack = v7.6 scope." */
+export async function gotoAcceptance(page) {
+  await page.goto("/demo/acceptance.html");
 }
 
 /* Relative luminance of a computed color string. Handles the two

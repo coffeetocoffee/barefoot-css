@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot recipe — filter bar + table + empty state + pagination</title>
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/utilities.css">
+  <link rel="stylesheet" href="/dist/components/table-sticky.css">
+  <link rel="stylesheet" href="/dist/components/table-select.css">
+  <link rel="stylesheet" href="/dist/components/data-grid.css">
+  <link rel="stylesheet" href="/dist/components/states.css">
+  <link rel="stylesheet" href="/dist/components/pagination.css">
+  <link rel="stylesheet" href="/dist/components/forms-base.css">
+  <link rel="stylesheet" href="/dist/components/buttons.css">
+</head>
+<body>
+  <main>
+    <h1>Deployments</h1>
+  <!-- The region between the markers is verbatim from docs/recipes.md;
+       a test pins it against the doc so the prose cannot drift. -->
+  <!-- recipe:start -->
+  <div class="bf-grid-shell">
+    <nav aria-label="Filter deployments">
+      <label>Search <input type="search"></label>
+      <label>Status <select><option>All</option><option>Healthy</option></select></label>
+    </nav>
+
+    <div class="bf-table-sticky" role="region" aria-label="Deployments" tabindex="0">
+      <table data-bf-sort data-grid >
+        <caption>Recent deployments</caption>
+        <thead><tr>
+          <th><input type="checkbox" class="bf-select-all" aria-label="Select all"></th>
+          <th><button type="button">Service</button></th>
+          <th><button type="button">Deploys</button></th>
+        </tr></thead>
+        <tbody>
+          <tr aria-selected="false">
+            <td><input type="checkbox" aria-label="Select api"></td>
+            <td>api</td><td>12</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bf-empty-state" role="status" hidden>
+      <span aria-hidden="true">◌</span>
+      <h3>No deployments match</h3>
+      <p>Widen the search to see them again.</p>
+    </div>
+
+    <div class="bf-bulk-bar" role="group" aria-label="Bulk actions">
+      <span class="bf-bulk-count" role="status">0 selected</span>
+      <button type="button">Restart selected</button>
+    </div>
+
+    <nav data-pagination aria-label="Pages">
+      <a href="?page=1" aria-current="page">1</a>
+      <a href="?page=2">2</a>
+    </nav>
+  </div>
+  <!-- recipe:end -->
+  </main>
+</body>
+</html>

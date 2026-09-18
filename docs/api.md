@@ -50,8 +50,10 @@ Barefoot promises **no silent breaks.**
    in the CHANGELOG with the replacement and the version it will be
    removed. Announcements land in three places at once: a CHANGELOG
    entry, a row in the [deprecation table](#deprecations), and a
-   once-per-page `console.warn` from any opt-in module that arms
-   against the deprecated markup.
+   machine-readable entry in `js/deprecations.js` that fires a
+   once-per-page `console.warn` from `js/verify.js` when the deprecated
+   markup is present (v8.5 — warn on use, not on import; the registry is
+   the source of truth, same pattern as the Verify contract rules).
 2. **Grace period.** Deprecated items remain functional for at least
    one minor version after the announcement (e.g. deprecated in 2.1,
    removed in 2.3 minimum). In practice majors are the only removal

@@ -84,15 +84,51 @@ on the page is (truthfully) a dead control and will be reported as one.
 ## For dynamic content
 
 ```js
-import { verify, runVerify } from "barefoot-css/js/verify.js";
+import { verify, runVerify, runDeprecations } from "barefoot-css/js/verify.js";
 
 // Re-scan after injecting markup:
-verify();            // warns/throws per config, returns violations
-runVerify();         // pure read: returns violations, prints nothing
+verify();            // warns/throws per config, returns contract violations
+runVerify();         // pure read: contract violations, prints nothing
+runDeprecations();   // pure read: uses of announced-but-not-removed surfaces
 ```
 
-`runVerify()` returns `[{ id, selector, detail, fix }]` — the same shape
-the CI contract-packs build on.
+`runVerify()` and `runDeprecations()` return
+`[{ id, selector, detail, fix }]` — the same shape the CI contract-packs
+build on. A deprecation result additionally carries `announced` and
+`replacement`, because it names a migration to schedule, not a bug to fix.
+
+## Deprecation notices (v8.5)
+
+The same pass that audits contracts warns once per page about any surface
+the framework has **announced as deprecated but not yet removed** — the
+console half of the [deprecation policy](api.md#deprecation-policy). The
+announcements live in a second registry, `js/deprecations.js`, split from
+the contract registry on purpose (ADR-0023):
+
+- a contract quotes a sentence that must stay true; a deprecation quotes
+  an announcement that will be deleted the day the surface is removed;
+- a deprecation carries lifecycle fields a contract never has — the
+  version that announced it, the concrete replacement, and the version
+  that removed it;
+- the audiences differ: a contract violation is a bug to fix now, a
+  deprecation is a migration to schedule, so strict mode fails on one and
+  warns about the other (both are listed if you asked for red builds).
+
+```
+[barefoot-css] deprecation: old-button-variant — 3 uses of a surface deprecated in 8.5
+  · <button data-variant="brand">Brand</button> paints with a token removed in the next major
+  · <button data-variant="brand">Another</button> paints with a token removed in the next major
+  Replace with: --bf-primary (Fix: use data-variant="primary" (docs/api.md, Deprecations))
+```
+
+The registry ships **empty**, and that is the honest state: every surface
+announced since 3.x was removed in 4.0. The pass is armed, not idle — the
+day a token, class, or attribute is announced, it gains an entry and every
+page that uses it warns once. A registry that shipped a fabricated
+deprecation to prove its own machinery would be a self-inflicted false
+positive on every consumer's console; trust is the entire product. The
+machinery is proven by the suite, which drives a synthetic entry through
+the same seams a real one takes.
 
 ## The rules in detail
 

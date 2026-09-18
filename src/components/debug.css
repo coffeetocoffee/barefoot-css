@@ -1,0 +1,154 @@
+/* Barefoot — debug audit mode (v8.5, "DX Governance").
+   Opt-in dev overlay that makes the framework's own architecture visible
+   on the page you're already looking at. Put `.bf-debug` on any element;
+   its subtree is audited. Nothing about it ships in `full.css` and no
+   demo page loads it — conformance baselines stay untouched.
+
+   What it shows:
+   - **Layer boundaries.** Every element Barefoot paints is outlined by the
+     layer that paints it: base (the core's native-element styling — dotted),
+     layout (container-aware primitives and utilities — dashed), component
+     (opt-in surfaces: classes and contract attributes — solid). An element
+     in several categories shows the most specific one: a `.bf-state` inside
+     a `.bf-flow` reads as a component, because that is the contract that
+     matters. Precedence comes from rule order at equal specificity
+     (`:where()` keeps every rule at one class), not from `!important`.
+   - **Orphan `data-state`.** `data-state` is a framework attribute: it only
+     paints on `.bf-state` (states.css) or on a `<form>` (forms-state.css).
+     An element carrying it elsewhere is a promise to a hook that does not
+     exist — outlined red and labelled, because silent no-ops are the exact
+     failure mode this layer exists to surface.
+
+   What it deliberately cannot show (CSS cannot inspect its own selectors):
+   - **Deep `:has()` chains** (a recalc-cost risk). Those are reported by
+     `npm run perf` (build/perf-budget.mjs), which parses the shipped CSS
+     and flags any selector nesting `:has()` inside `:has()`. debug.css
+     points at it rather than guessing.
+   - **Unlayered author styles** that defeat the framework (the
+     coexistence failure). That is Verify's `coexistence-clean` rule —
+     it reads the CSSOM, which a stylesheet cannot do for itself.
+
+   The rules are UNLAYERED on purpose. An audit overlay that loses to the
+   page's own cascade is useless: outlines must paint over every layer,
+   including `@layer user`. Unlayered author styles win over all layered
+   ones (the premise of docs/coexistence.md), and every selector here is
+   scoped to a `.bf-debug` subtree, so a page that does not opt in is
+   untouched — the overlay cannot leak. Only `outline` and the flag label
+   are ever set: no layout property, no color or background on real
+   content, so turning `.bf-debug` off is removing a class.
+
+   Outlines carry shape, not just color (dotted / dashed / solid / red +
+   label), so forced-colors users keep the distinctions; nothing animates,
+   so reduced-motion is honored without a rule. */
+
+/* The legend, at the top of the audited scope. Inline (not position:
+   fixed) so the scope is obvious and the page's own layout is the
+   reference frame. */
+.bf-debug::before {
+  display: block;
+  padding: var(--bf-space-2) var(--bf-space-3);
+  border: var(--bf-border-width) solid var(--bf-border);
+  border-radius: var(--bf-radius);
+  background: var(--bf-surface);
+  color: var(--bf-text);
+  font-family: var(--bf-font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  white-space: pre;
+  content: "bf-debug audit\A· base — dotted (native elements the core styles)\A· layout — dashed (container primitives + utilities)\A· component — solid (opt-in surfaces + contract attributes)\A· red label — data-state with no .bf-state / <form> hook";
+}
+
+/* Base layer: what `index.css` paints for plain HTML with no opt-in.
+   Quiet on purpose — it is the background the other boundaries read
+   against. The list mirrors the element selectors in src/base.css. */
+.bf-debug :where(a, address, blockquote, dd, del, dt, figcaption, figure,
+                 h1, h2, h3, h4, h5, h6, hr, img, ins, kbd, li, mark, ol,
+                 p, pre, tr, ul, video) {
+  outline: 1px dotted var(--bf-muted);
+}
+
+/* Layout layer: container-aware primitives and utilities. `.bf-sidebar`
+   lives in the utilities layer; the primitives beside it are declared in
+   components files but are layout-only, so they read as one family. The
+   spacing utilities (.bf-gap-*, .bf-mt-*, .bf-p*-, .bf-px-*, .bf-py-*)
+   are matched by their prefix, not enumerated — a new one is still
+   visible. */
+.bf-debug :where(.bf-container, .bf-contain, .bf-center, .bf-stack,
+                 .bf-row, .bf-grid, [data-grid], .bf-sidebar, .bf-flow,
+                 .bf-switcher, .bf-elastic, .bf-elastic-row, .bf-rhythm,
+                 .bf-stagger, .bf-visually-hidden, .bf-muted, .bf-overline,
+                 .bf-sticky, [class^="bf-gap-"], [class^="bf-mt-"],
+                 [class^="bf-mb-"], [class^="bf-p-"], [class^="bf-px-"],
+                 [class^="bf-py-"]) {
+  outline: 1px dashed var(--bf-info);
+}
+
+/* Component layer: opt-in surfaces. `.card`, `.badge` and `.empty-state`
+   carry no `bf-` prefix because no native element exists for them, so they
+   are named out of the family. The catch-all matches any other `bf-` class
+   (a new component is visible without an update here) minus the layout
+   family above — an element carrying a layout class reads as layout, which
+   is its dominant role. `:where(:not(...))` keeps the whole rule at one
+   class of specificity, so rule order — not `!important` — sets the
+   precedence. */
+.bf-debug :where(.card, .badge, .empty-state, .skeleton,
+                 [class*="bf-"]:where(:not(
+                   .bf-container, .bf-contain, .bf-center, .bf-stack,
+                   .bf-row, .bf-grid, .bf-sidebar, .bf-flow, .bf-switcher,
+                   .bf-elastic, .bf-elastic-row, .bf-rhythm, .bf-stagger,
+                   .bf-visually-hidden, .bf-muted, .bf-overline, .bf-sticky,
+                   [class^="bf-gap-"], [class^="bf-mt-"], [class^="bf-mb-"],
+                   [class^="bf-p-"], [class^="bf-px-"], [class^="bf-py-"]
+                 ))) {
+  outline: 2px solid var(--bf-primary);
+}
+
+/* Component layer: the contract attributes — every `data-*` the api.md
+   table documents. The list is pinned against that table in both
+   directions by tests/css.spec.js, so a new attribute is visible here the
+   moment it ships. */
+.bf-debug :where([data-variant], [data-size], [data-gap], [data-table],
+                 [data-nav], [data-switch], [data-accordion],
+                 [data-autogrow], [data-stepper], [data-orientation],
+                 [data-input-group], [data-alert], [data-alert-dismiss],
+                 [data-kind], [data-tooltip], [data-media], [data-ratio],
+                 [data-spinner], [data-divider], [data-chip],
+                 [data-chip-remove], [data-bf-tabs], [data-carousel],
+                 [data-autoplay], [data-carousel-prev],
+                 [data-carousel-next], [data-progress], [data-reveal],
+                 [data-reveal-group], [data-breadcrumbs],
+                 [data-pagination], [data-striped], [data-bf-sort],
+                 [data-segmented], [data-timeline], [data-density],
+                 [data-layout], [data-area], [data-collapse],
+                 [data-collapsed], [data-shape], [data-parallax],
+                 [data-duration], [data-toast-progress], [data-step],
+                 [data-step-circle], [data-step-label], [data-complete],
+                 [data-width], [data-lifted], [data-bf-theme-btn],
+                 [data-icon], [data-command], [data-command-list],
+                 [data-command-item], [data-command-hint],
+                 [data-selected], [data-adaptive], [data-card],
+                 [data-card-media], [data-form], [data-form-summary],
+                 [data-label], [data-bf-stagger], [data-trend],
+                 [data-sort], [data-async-pending], [data-bf-filter],
+                 [data-print], [data-bf-theme], [data-bf-verify]) {
+  outline: 2px solid var(--bf-primary);
+}
+
+/* The flag, declared last so it wins at equal specificity: an attribute
+   that promises a paint nothing delivers. `.bf-state` and `<form>` are
+   the two hooks states.css / forms-state.css actually read; anything
+   else carrying data-state is dead weight the app maintains and the
+   user never sees. The label names the fix; the outline is red. */
+.bf-debug :where([data-state]:not(.bf-state):not(form)) {
+  outline: 2px solid var(--bf-danger);
+}
+.bf-debug :where([data-state]:not(.bf-state):not(form))::after {
+  margin-inline-start: 0.25rem;
+  padding: 0 0.25rem;
+  border-radius: var(--bf-radius-sm, 0.25rem);
+  background: var(--bf-danger);
+  color: var(--bf-danger-fg);
+  font-family: var(--bf-font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  content: "data-state: no hook (needs .bf-state or a <form>)";
+}
+

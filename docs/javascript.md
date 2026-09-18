@@ -18,11 +18,12 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | `js/filter-clear.js` | Escape clears `input[data-bf-filter]` and reports `bf:filterclear` |
 | `js/theme.js` | Theme toggle + persistence for `[data-bf-theme-btn]` buttons |
 | `js/barefoot.js` | All eleven in one import |
-| `js/verify.js` | Dev-only contract checker: warns when Barefoot markup is subtly broken ([verify.md](verify.md)) |
+| `js/verify.js` | Dev-only checker: warns when Barefoot markup breaks a contract, and when it uses an announced-but-not-removed surface ([verify.md](verify.md)) |
 
-Deprecated surfaces keep working through 3.x and warn once per page
-when their markup is present; the full table with replacements lives
-in [api.md → Deprecations](api.md#deprecations).
+Deprecated surfaces keep working through their grace period and warn once
+per page when their markup is present — the checker's deprecation pass
+(`js/deprecations.js`, the warn-on-use half of the policy); the full table
+with replacements lives in [api.md → Deprecations](api.md#deprecations).
 
 Sizes live in the README table (regenerated from every build) — never
 here, so this page can't drift from the bytes.
@@ -511,9 +512,18 @@ One scan on load; one console warning per broken contract (not per
 element), naming every offender and the fix. `data-bf-verify="strict"`
 on `<html>` throws one aggregate error instead — the CI form. The rules
 live in `js/verify-contracts.js` (ADR-0015: one registry, two formats —
-CI contract-packs will consume the same registry in a later phase).
+the CI contract-packs consume the same registry, `verify/pack.mjs`).
 `js/barefoot.js` never imports it, and it only ever warns: a page that
 honors the contracts hears nothing.
+
+The same pass warns about **deprecations** (v8.5): surfaces the framework
+has announced but not yet removed are listed in `js/deprecations.js`, and
+a page that still uses one gets a single warning naming the replacement
+and the version that announced it — the console half of the
+[deprecation policy](api.md#deprecation-policy). `runDeprecations()` is
+the pure-read seam, the deprecation twin of `runVerify()`. The registry
+is empty today (everything announced since 3.x was removed in 4.0); it
+exists so the day a surface is announced, the warning is already wired.
 
 ## Why no bundle
 

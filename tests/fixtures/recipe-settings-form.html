@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot recipe — settings form + save state</title>
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/utilities.css">
+  <link rel="stylesheet" href="/dist/components/forms-base.css">
+  <link rel="stylesheet" href="/dist/components/buttons.css">
+  <link rel="stylesheet" href="/dist/components/states.css">
+</head>
+<body>
+  <main>
+  <!-- The region between the markers is verbatim from docs/recipes.md;
+       a test pins it against the doc so the prose cannot drift. -->
+  <!-- recipe:start -->
+  <form class="bf-stack" aria-labelledby="settings-title">
+    <h1 id="settings-title">Settings</h1>
+    <label>Display name <input name="display-name" required></label>
+    <button type="submit">Save changes</button>
+    <p class="bf-state" data-state="loading" role="status" aria-busy="true" hidden>
+      Saving…
+    </p>
+    <p class="bf-state" data-state="error" role="alert" hidden>
+      We could not save your changes.
+    </p>
+  </form>
+  <!-- recipe:end -->
+  </main>
+</body>
+</html>

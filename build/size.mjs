@@ -26,6 +26,12 @@ const JS_BUDGETS = {
   "js/verify-contracts.js": 10240,
   // The barrel is imports only — growth here means something regressed.
   "js/barefoot.js": 1024,
+  // v8.5 splits the checker into two passes (contracts + deprecations,
+  // ADR-0023): runDeprecations shares one sweep with runVerify, but the
+  // second registry, its formatter, and its warnOnce loop are real code.
+  // Bumped from the 2KB family default deliberately, in review — same
+  // rule as the registry bumps above.
+  "js/verify.js": 2560,
 };
 
 let report;

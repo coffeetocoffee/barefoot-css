@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot recipe — empty dashboard</title>
+  <link rel="stylesheet" href="/dist/index.css">
+  <link rel="stylesheet" href="/dist/components/empty-state.css">
+  <link rel="stylesheet" href="/dist/components/buttons.css">
+</head>
+<body>
+  <main>
+    <h1>Projects</h1>
+  <!-- The region between the markers is verbatim from docs/recipes.md;
+       a test pins it against the doc so the prose cannot drift. -->
+  <!-- recipe:start -->
+  <section class="empty-state" aria-labelledby="empty-title">
+    <span aria-hidden="true">◌</span>
+    <h2 id="empty-title">No projects yet</h2>
+    <p>Create your first project to get started.</p>
+    <a href="/projects/new">Create a project</a>
+  </section>
+  <!-- recipe:end -->
+  </main>
+</body>
+</html>

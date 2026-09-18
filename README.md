@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/coffeetocoffee/barefoot-css/ci.yml)](https://github.com/coffeetocoffee/barefoot-css/actions)
 [![MIT license](https://img.shields.io/npm/l/barefoot-css)](LICENSE)
 
-Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [keyboard & a11y](https://coffeetocoffee.github.io/barefoot-css/demo/keyboard.html) · [resilience & coexistence](https://coffeetocoffee.github.io/barefoot-css/demo/resilience.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
+Live demos: [conformance demo](https://coffeetocoffee.github.io/barefoot-css/demo/) · [layout playground](https://coffeetocoffee.github.io/barefoot-css/demo/playground.html) · [paint & paper](https://coffeetocoffee.github.io/barefoot-css/demo/paint-paper.html) · [data story](https://coffeetocoffee.github.io/barefoot-css/demo/data-story.html) · [form architecture](https://coffeetocoffee.github.io/barefoot-css/demo/form-architecture.html) · [keyboard & a11y](https://coffeetocoffee.github.io/barefoot-css/demo/keyboard.html) · [resilience & coexistence](https://coffeetocoffee.github.io/barefoot-css/demo/resilience.html) · [acceptance gate](https://coffeetocoffee.github.io/barefoot-css/demo/acceptance.html) · [theme studio](https://coffeetocoffee.github.io/barefoot-css/demo/studio.html)
 
 ---
 
@@ -75,6 +75,7 @@ npm install barefoot-css
 | Resilience | `.bf-elastic` boxes that absorb text expansion, a side-by-side `@layer` contract for living next to another reset, and print that is full or cut (`data-print`). → [docs/coexistence.md](docs/coexistence.md) |
 | Print | Opt-in `print.css` flattens layouts, re-tabulates adaptive tables, prints link URLs. Zero cost on screen. |
 | Verify | Opt-in dev checker audits Barefoot markup contracts in your console — what axe can't know. → [docs/verify.md](docs/verify.md) |
+| DX governance | `.bf-debug` audit overlay (layer boundaries + orphan flags), the deprecation split in the checker, `npm run perf` selector budgets, recipe fixtures pinned to their docs, and the acceptance gate at literal 500×15 scale. → [docs/debug.md](docs/debug.md) · [docs/performance.md](docs/performance.md) · [docs/verify.md](docs/verify.md#deprecation-notices-v85) |
 
 ---
 
@@ -91,17 +92,19 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `full.css` | 56.65KB | **10.61KB** | 9.24KB |
 | `js/verify-contracts.js` | 29.11KB | **9.12KB** | 7.88KB |
 | `index.css` | 11.55KB | **3.07KB** | 2.63KB |
+| `js/verify.js` | 6.13KB | **2.46KB** | 2.09KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
-| `js/verify.js` | 3.80KB | **1.75KB** | 1.50KB |
 | `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/lifecycle.js` | 2.95KB | **1.38KB** | 1.15KB |
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
 | `js/tabs.js` | 2.90KB | **1.29KB** | 1.09KB |
+| `js/deprecations.js` | 2.45KB | **1.23KB** | 1.01KB |
 | `js/popover-menu.js` | 2.49KB | **1.21KB** | 1.01KB |
 | `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
+| `components/debug.css` | 3.00KB | **1.06KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
 | `js/filter-clear.js` | 1.65KB | **0.86KB** | 0.71KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
@@ -226,7 +229,8 @@ build/      bundler + size budget + preview server
 | [Form architecture](docs/forms.md) | Async validation, wizards, field arrays, the state boundary |
 | [Keyboard](docs/keyboard.md) | Per-pattern keyboard maps, roving focus, nested dialogs, user preferences |
 | [Coexistence](docs/coexistence.md) | Side-by-side `@layer` contract, the focus-ring audit, `@import` vs `<link>` |
-| [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance, budgets |
+| [Debug](docs/debug.md) | `.bf-debug` audit overlay: layer boundaries, orphan `data-state` flags, what CSS can't see |
+| [Accessibility](docs/accessibility.md) / [Performance](docs/performance.md) | Conformance; byte *and* selector budgets (`npm run perf`) |
 | [Migration](docs/migration-4.md) | v4 · [v5](docs/migration-5.md) · [v3](docs/migration-3.md) |
 | [Status & plan](plan.md) | What's built, what's next |
 

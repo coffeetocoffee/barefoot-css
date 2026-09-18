@@ -36,10 +36,13 @@
 */
 
 import { VERIFY_RULES } from "../src/js/verify-contracts.js";
+import { VERIFY_DEPRECATIONS } from "../src/js/deprecations.js";
 
-/* The registry itself, re-exported: docs, checker, and packs share one
-   source of truth (pinned by tests/verify.spec.js). */
-export { VERIFY_RULES };
+/* The registries themselves, re-exported: docs, checker, and packs share
+   one source of truth (pinned by tests/verify.spec.js). Contracts are the
+   permanent truth; deprecations are the announced-but-not-removed
+   surfaces, with lifecycle fields a contract never has (ADR-0023). */
+export { VERIFY_RULES, VERIFY_DEPRECATIONS };
 
 /* Module stems, mirroring src/js/ file names. The browser modules arm
    themselves with these exact stems (lifecycle.js arm()); pass a
@@ -138,4 +141,54 @@ export async function assertClean(page, opts = {}) {
   throw new Error(
     `[barefoot-css] verify pack: ${violations.length} contract violation(s)\n\n${report}`
   );
+}
+
+/* Deprecations, CI-side: the same announced-but-not-removed surfaces the
+   browser checker warns about, as data for a consumer's own migration
+   tracking (a scheduled job that fails when a deprecated surface ships,
+   for instance). Same in-page sweep, same registry, same result shape as
+   contracts plus `announced` and `replacement`. Contracts stay the
+   assertClean gate; deprecations are reported, because a deprecation is a
+   migration to schedule, not a contract to fix (ADR-0023). The registry
+   ships empty while no surface is announced — an empty result is the
+   honest pass, not a no-op. */
+export function runDeprecationPack(page, opts = {}) {
+  const base = opts.base ?? DEFAULT_BASE;
+  return page
+    .evaluate(async (arg) => {
+      const url = new URL(
+        arg.base + "js/deprecations.js",
+        document.baseURI
+      ).href;
+      const { VERIFY_DEPRECATIONS } = await import(url);
+      const found = [];
+      for (const entry of VERIFY_DEPRECATIONS) {
+        for (const selector of [].concat(entry.select)) {
+          for (const el of document.querySelectorAll(selector)) {
+            const detail = entry.check(el, {
+              byId: (id) => document.getElementById(id),
+              armed: () => true,
+            });
+            if (detail) {
+              found.push({
+                id: entry.id,
+                selector,
+                detail,
+                fix: entry.fix,
+                announced: entry.announced,
+                replacement: entry.replacement,
+              });
+            }
+          }
+        }
+      }
+      return found;
+    }, { base })
+    .catch((e) => {
+      throw new Error(
+        `[barefoot-css] verify pack: the deprecation sweep failed — ${e.message}\n` +
+          `  Is ${base} reachable on the page's origin? Pass base: "/your/dist/path/" ` +
+          `(or a full CDN URL) pointing at the framework's dist/ files.`
+      );
+    });
 }

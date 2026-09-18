@@ -10,6 +10,7 @@ for the framework itself and for your app.
 | Artifact | Budget | Enforced by |
 |---|---|---|
 | `dist/index.css` (core) | ≤ 10KB gzipped | `npm run build` / `npm run size` — exits non-zero on breach |
+| Selector behavior | recalc/composite costs | `npm run perf` — exits non-zero on breach (v8.5) |
 | Everything else | reported, not capped | `dist/sizes.json` + the README table |
 
 The 10KB line is a **floor that behaves like a ceiling**: it can be
@@ -112,3 +113,35 @@ compressed bytes once and nothing per element; an ungated equivalent
 (or a JS polyfill) costs layout work on every engine whether or not it
 can honor it. Bytes are the budget; this section is why runtime never
 becomes one.
+
+## Selector budgets — `npm run perf` (v8.5)
+
+Compressed selectors cost nothing to ship and anything to match. The
+performance budget parses the shipped CSS and enforces the behaviors
+that scale with the DOM rather than the file size:
+
+| Metric | What it costs | Budget |
+|---|---|---|
+| `:has()` occurrences | a DOM mutation recalculates the relative subtree | 80 |
+| `:has()` chains (2+ in one selector) | the recalc multiplies per `:has()` | 16 |
+| `:has()` **deep** (nested) | superlinear recalc — the one shape to avoid | **0** |
+| `@container` blocks | a containment context layout must maintain | 40 |
+| `container-type` / `container-name` | each establishes a context | 40 |
+| `view()` / `scroll()` timelines | a scroll-driven animation stays alive | 16 |
+| `mask` / `mask-image` | a composited layer; on a sticky element it repaints per scroll frame | 16 |
+| longest compound chain | match cost — more combinators, more backtracking | 8 |
+
+Every metric is measured from `src/**` and printed with its budget;
+`npm run check` runs the gate so a breach is a red build, not a
+regression note. The deep-`:has()` budget is **zero on purpose**: a
+nested `:has()` is the one selector shape whose recalc cost is
+superlinear, so the budget makes adding one a deliberate, reviewed
+event. (The shipped CSS has none. The suite proves the detector works by
+feeding it synthetic CSS — a gate that has never seen a violation is an
+assumption.)
+
+This is a static gate, and says so: runtime profiling — the actual
+milliseconds of a recalc on your DOM — stays bring-your-own. Measuring
+timing on a CI machine would be the shallow middle the rest of the
+framework avoids. The budgets bound the shapes that cost, your profiler
+tells you whether they matter at your scale.
