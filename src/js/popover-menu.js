@@ -1,9 +1,14 @@
 /* Barefoot — opt-in: keyboard support for popover menus.
-   Arrow keys (and Home/End) move focus among menu items; focus moves
-   into the menu when it opens; Esc or Tab closes it and focus returns
-   to the trigger. Works on any [popover][data-kind="menu"]. This is
-   roving focus, not a modal trap — popovers stay non-modal by design.
-   Zero dependencies, <1KB.
+   Arrow keys (and Home/End) move focus among menu items; Esc or Tab
+   closes the menu and focus returns to the trigger. Works on any
+   [popover][data-kind="menu"]. This is roving focus, not a modal trap
+   — popovers stay non-modal by design. Zero dependencies, <1KB.
+
+   The platform moved (ADR-0024): autofocus inside a popover is honored
+   on show, Tab walks the items, and Esc returns focus to the invoker —
+   all native, all engines. So the module builds on that floor instead
+   of duplicating it: on open it focuses the first item only when the
+   platform didn't already move focus in.
 
     import "barefoot/js/popover-menu.js"
 */
@@ -42,7 +47,11 @@ export function initPopoverMenus(root = document) {
 
     menu.addEventListener("toggle", (e) => {
       if (e.newState === "open") {
-        items()[0]?.focus();
+        // The platform honors autofocus inside a popover on show — when
+        // it moved focus in (an autofocused item, a command-palette
+        // input), the module adds nothing. Its first-item default stays
+        // for markup without the attribute (ADR-0024).
+        if (!menu.contains(document.activeElement)) items()[0]?.focus();
       } else {
         // Esc/item-activation/light-dismiss close — hand focus back to
         // the opener (only if focus never left the menu). A Tab-close

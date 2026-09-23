@@ -491,7 +491,7 @@ A stepper with no `aria-current="step"` is not a violation — it is a tracker o
 
 ### `roving-focus` (WCAG 2.1.1)
 
-A roving-tabindex surface keeps exactly one Tab stop, and a popover menu needs its module to answer the keyboard at all.
+A roving-tabindex surface keeps exactly one Tab stop, and a popover menu with neither its module nor `autofocus` is pointer-only.
 
 ```html
 <!-- ✗ broken: every tab is removed from the Tab order — the list can't be entered -->
@@ -506,7 +506,7 @@ A roving-tabindex surface keeps exactly one Tab stop, and a popover menu needs i
   <button role="tab" tabindex="0">Two</button>
 </div>
 
-<!-- ✗ broken: the menu opens natively, but no module moves focus in or answers the arrows -->
+<!-- ✗ broken: opens natively, but no autofocus for the platform's floor and no module for the arrows -->
 <button type="button" popovertarget="menu">Actions</button>
 <div popover id="menu" data-kind="menu">…</div>
 <!-- (no import of js/popover-menu.js) -->
@@ -520,7 +520,7 @@ A roving-tabindex surface keeps exactly one Tab stop, and a popover menu needs i
 <div popover id="menu" data-kind="menu">…</div>
 ```
 
-The tablist half is silent when the tabs module isn't loaded and every tab is a plain Tab stop — that is the valid no-JS default (each tab reachable, click to switch); the rule only speaks up when the module owns the pattern and the stops have drifted. See [keyboard.md](keyboard.md) for the full map.
+The tablist half is silent when the tabs module isn't loaded and every tab is a plain Tab stop — that is the valid no-JS default (each tab reachable, click to switch); the rule only speaks up when the module owns the pattern and the stops have drifted. The menu half is silent when the module is armed, and also when the markup carries `autofocus` without it: the platform honors the attribute on show (focus lands on that item, Tab walks the items in DOM order, Esc closes and returns focus), so the menu answers the keyboard even though the arrow keys stay module-only. See [keyboard.md](keyboard.md) for the full map.
 
 ### `reading-order-after-reflow` (WCAG 1.3.2)
 

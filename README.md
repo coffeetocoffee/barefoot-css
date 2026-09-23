@@ -90,19 +90,19 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.65KB | **10.61KB** | 9.24KB |
-| `js/verify-contracts.js` | 29.11KB | **9.12KB** | 7.88KB |
+| `js/verify-contracts.js` | 29.55KB | **9.27KB** | 8.02KB |
 | `index.css` | 11.55KB | **3.07KB** | 2.63KB |
 | `js/verify.js` | 6.13KB | **2.46KB** | 2.09KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
+| `js/popover-menu.js` | 3.08KB | **1.45KB** | 1.22KB |
 | `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
 | `js/lifecycle.js` | 2.95KB | **1.38KB** | 1.15KB |
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
 | `js/tabs.js` | 2.90KB | **1.29KB** | 1.09KB |
 | `js/deprecations.js` | 2.45KB | **1.23KB** | 1.01KB |
-| `js/popover-menu.js` | 2.49KB | **1.21KB** | 1.01KB |
 | `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
 | `components/debug.css` | 3.00KB | **1.06KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |

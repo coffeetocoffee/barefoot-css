@@ -4,6 +4,27 @@ All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.6.0] — 2026-09-23
+
+### Changed
+
+- **The popover menu's no-JS keyboard floor (ADR-0024).** The platform
+  moved under the v7.8 honest line: all three engines now honor
+  `autofocus` inside a shown popover, walk its items with Tab in DOM
+  order, and return focus to the invoker on Esc — verified by probe,
+  2026-09-23. The demos put `autofocus` on every menu popover's first
+  item, so the no-JS floor is keyboard-real and shown; `js/popover-menu.js`
+  now defers to it (it focuses the first item only when the platform
+  didn't already move focus in, so an author's autofocus pick — a
+  command-palette input — wins), keeping arrows/Home/End and close-on-Tab
+  as its native-primitive-less remainder. Verify's `roving-focus` rule
+  warns only when a menu has neither the module nor `autofocus` — the
+  pointer-only state — and stays silent on a valid floor, the same
+  precedent as the no-JS tablist. Docs restated: the keyboard map's
+  native column, the per-pattern section (including the residual gap —
+  a Tab-out leaves the menu open behind you without the module),
+  accessibility.md, verify.md, javascript.md.
+
 ## [8.5.0] — 2026-09-18
 
 ### Added

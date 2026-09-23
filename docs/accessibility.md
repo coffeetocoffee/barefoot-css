@@ -88,11 +88,15 @@ Esc handler, and `aria-expanded` to every widget" — the Bootstrap way.
 - **Popover menus** are non-modal by design (roving focus, not a modal
   trap) — correct for menus, wrong for blocking actions; use dialog for
   those. The opt-in `js/popover-menu.js` adds arrow-key nav + focus
-  restore. **Without it the menu is pointer-only:** the Popover API opens
-  it, but no native primitive moves focus in or answers the arrow keys.
-  Verify's `roving-focus` rule says so in your console instead of
-  letting "accessible by default" go unsaid. The full per-pattern map —
-  native vs. opt-in, keys per surface — is [keyboard.md](keyboard.md).
+  restore. **Without it the menu has a keyboard floor, but no arrows:**
+  `autofocus` on the first item lets the platform move focus in on open,
+  Tab walks the items, and Esc closes with focus back on the trigger —
+  all native. What the module alone answers is the APG pattern (arrow
+  keys, Home/End) and close-on-Tab. Verify's `roving-focus` rule warns
+  when a menu has neither the module nor `autofocus` — pointer-only —
+  instead of letting "accessible by default" go unsaid. The full
+  per-pattern map — native vs. opt-in, keys per surface — is
+  [keyboard.md](keyboard.md).
 
 ## User preferences (v7.8)
 

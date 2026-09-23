@@ -15,7 +15,7 @@ in one page, with an event log).
 
 | Pattern | Native keyboard | Opt-in module adds |
 |---|---|---|
-| Popover menu | Tab reaches the trigger; Enter/Space opens it | `js/popover-menu.js` — arrows + Home/End between items, focus moves in on open, Esc/Tab closes and returns focus |
+| Popover menu | Tab reaches the trigger; Enter/Space opens it, `autofocus` on the first item moves focus in, Tab walks the items, Esc closes and returns focus | `js/popover-menu.js` — arrows + Home/End between items, and close on Tab (without it the menu stays open behind a Tab-out) |
 | Tabs | Tab through every tab; Enter/click switches the panel | `js/tabs.js` — roving tabindex (one Tab stop), arrows + Home/End |
 | Sortable table | Tab through the header buttons; Enter/Space sorts | `js/table-sort.js` — arrows move focus between the sort buttons |
 | Filter / search input | Plain text editing | `js/filter-clear.js` — Escape clears and reports `bf:filterclear` |
@@ -38,11 +38,16 @@ makes every tab one. `js/tabs.js` owns this — it lifts the active tab to
 `tabindex="0"` and sinks the rest — and Verify's `roving-focus` rule audits it
 (warns when the contract drifts, with the fix in the message).
 
-The same rule audits the honest gap. The Popover API opens a menu just fine
-(`popovertarget` is declarative), but opening is not focus management. A popover
-menu without `js/popover-menu.js` is pointer-only — no native primitive moves
-focus into it on open or answers the arrow keys. Verify says so in your console
-instead of the docs waving at "accessible by default."
+The same rule audits the honest gap. The Popover API opens a menu just
+fine (`popovertarget` is declarative), and the platform now supplies the
+focus management the v7.8 map lacked: `autofocus` on an item inside a
+popover is honored on show — focus moves in on open, Tab walks the items
+in DOM order, Esc closes and returns focus to the trigger, on all three
+engines. A popover menu with neither `autofocus` nor `js/popover-menu.js`
+is pointer-only; one carrying `autofocus` is a valid no-JS keyboard
+floor, and what remains module-only is the APG nicety — the arrow keys.
+Verify warns on the pointer-only case instead of the docs waving at
+"accessible by default."
 
 ## Per-pattern notes
 
@@ -51,16 +56,22 @@ instead of the docs waving at "accessible by default."
 ```html
 <button type="button" popovertarget="menu">Actions</button>
 <div popover id="menu" data-kind="menu" aria-label="Actions">
-  <button type="button">Rename</button>
+  <button type="button" autofocus>Rename</button>
   <button type="button">Duplicate</button>
 </div>
 ```
 
-Open with Enter/Space or click; ↓/↑ move between items (wrapping), Home/End
-jump. Esc closes and focus returns to the trigger; Tab closes too — Tab always
-means "done with this menu," even when the roster is empty (ADR-0006). This is
-roving focus, not a modal trap: popovers are non-modal by design, and light
-dismiss still works.
+Open with Enter/Space or click; the platform honors the first item's
+`autofocus` and moves focus in on open. With the module, ↓/↑ move between
+items (wrapping), Home/End jump, and Tab closes — Tab always means "done
+with this menu," even when the roster is empty (ADR-0006). Without the
+module the same menu is still keyboard-real: Tab walks the items in DOM
+order and Esc closes with focus back on the trigger — but Tab-out leaves
+the menu open behind you, and the arrow keys do nothing. Esc-close and
+focus return are native on all engines; the module's own refocus is a
+fallback for engine edge cases (a light-dismiss that strands focus), not
+a duplication. This is roving focus, not a modal trap: popovers are
+non-modal by design, and light dismiss still works.
 
 ### Tabs
 

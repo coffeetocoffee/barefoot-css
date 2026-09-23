@@ -7,7 +7,7 @@ ES module, **zero dependencies**, and ships readable in `dist/js/`.
 | Module | Adds |
 |---|---|
 | `js/tabs.js` | WAI-ARIA tabs: roving tabindex, arrow-key nav |
-| `js/popover-menu.js` | Arrow-key nav + focus restore for popover menus |
+| `js/popover-menu.js` | Arrow-key nav + close-on-Tab for popover menus (the `autofocus` focus floor is native) |
 | `js/carousel.js` | Carousel autoplay + prev/next controls |
 | `js/alert-dismiss.js` | Dismisses `[data-alert]` notices on click |
 | `js/chips.js` | Removes `[data-chip]` tags on × click |
@@ -178,9 +178,16 @@ engine.
 
 For `[popover][data-kind="menu"]`, the APG menu-button behaviors:
 
-- Focus moves to the first item when the menu opens.
+- Focus moves in when the menu opens — the platform's own `autofocus`
+  primitive is honored when the markup carries it (a command-palette
+  input, for instance), else the module focuses the first item.
 - `↓`/`↑`/`Home`/`End` navigate the items.
 - `Esc` (native) or `Tab` closes it; focus returns to the trigger.
+
+Without the module the menu keeps a no-JS keyboard floor (ADR-0024):
+`autofocus` moves focus in on open, Tab walks the items, Esc closes and
+returns focus — but the arrows do nothing and a Tab-out leaves the menu
+open behind you.
 
 This is **roving focus, not a modal trap** — popovers stay non-modal by
 design. Use a `<dialog>` for blocking actions.

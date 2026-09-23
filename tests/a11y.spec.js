@@ -7,7 +7,7 @@
    npm run test:a11y */
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, gotoKeyboard, gotoResilience, tokenColor } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoPlayground, gotoPaintPaper, gotoStates, gotoDataStory, gotoFormArchitecture, gotoKeyboard, gotoResilience, tokenColor, mountFixture } from "./helpers.js";
 
 test.describe("accessibility conformance (axe-core)", () => {
   test("resting page has no violations", async ({ page }) => {
@@ -401,5 +401,39 @@ test.describe("visible focus + keyboard contract", () => {
     await expect(number).toHaveAttribute("type", "number");
     const date = page.locator(DEMOS.polishDate);
     await expect(date).toHaveAttribute("type", "date");
+  });
+
+  test("popover menu: the no-JS keyboard floor — autofocus in, Tab walks, Esc returns (ADR-0024)", async ({ page }) => {
+    // mountFixture leaves the demo's barrel loaded but unbound to this
+    // markup (its onDomReady ran before setContent), so no framework JS
+    // touches this menu: everything asserted here is the platform's.
+    await mountFixture(
+      page,
+      `<button popovertarget="floor-menu">Actions</button>
+       <div popover id="floor-menu" data-kind="menu" aria-label="Actions">
+         <button type="button" autofocus>Rename</button>
+         <button type="button">Duplicate</button>
+         <button type="button">Archive</button>
+       </div>
+       <a href="#">after the menu</a>`
+    );
+    const pop = page.locator("#floor-menu");
+    const items = pop.locator("button");
+    const trigger = page.getByRole("button", { name: "Actions" });
+
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(pop).toBeVisible();
+    await expect(items.nth(0)).toBeFocused();
+
+    // Tab walks the items in DOM order; the menu stays open (non-modal).
+    await page.keyboard.press("Tab");
+    await expect(items.nth(1)).toBeFocused();
+    await expect(pop).toBeVisible();
+
+    // Esc closes and focus returns to the invoker — native on all engines.
+    await page.keyboard.press("Escape");
+    await expect(pop).toBeHidden();
+    await expect(trigger).toBeFocused();
   });
 });

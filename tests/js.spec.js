@@ -162,6 +162,34 @@ test.describe("opt-in JS: popover menu keyboard support", () => {
     await expect(pop).toBeHidden();
     await expect(trigger).toBeFocused();
   });
+
+  test("the platform's autofocus pick wins over the first-item default (ADR-0024)", async ({ page }) => {
+    // The command-palette shape: a filter input inside the menu carries
+    // autofocus, so the platform moves focus to it on show. The module
+    // must not yank focus to the first roster item over that pick.
+    await mountFixture(
+      page,
+      `<button popovertarget="af-pop">Menu</button>
+       <div popover data-kind="menu" id="af-pop" aria-label="Actions">
+         <input aria-label="Filter actions" autofocus>
+         <button type="button">Rename</button>
+         <button type="button">Duplicate</button>
+       </div>`
+    );
+    await page.evaluate(async () => {
+      const { initPopoverMenus } = await import("/dist/js/popover-menu.js");
+      initPopoverMenus();
+    });
+    const pop = page.locator("#af-pop");
+
+    await page.getByRole("button", { name: "Menu" }).click();
+    await expect(pop).toBeVisible();
+    await expect(pop.locator("input")).toBeFocused();
+
+    // The module still owns the arrows from the platform's landing spot.
+    await page.keyboard.press("ArrowDown");
+    await expect(pop.locator("button").nth(0)).toBeFocused();
+  });
 });
 
 test.describe("opt-in JS: carousel controls + autoplay", () => {

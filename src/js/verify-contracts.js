@@ -552,14 +552,19 @@ export const VERIFY_RULES = [
     wcag: "2.1.1",
     check(el, ctx) {
       // A popover menu opens natively — popovertarget is a platform
-      // primitive — but nothing in the platform moves focus into it on
-      // open, and no native element answers the arrow keys. That is the
-      // module's entire justification, and a page running the surface
-      // without it is pointer-only. "Accessible by default" would be a
-      // lie, so the rule names the gap instead of waving at it.
+      // primitive — and the platform supplies the focus management too
+      // (ADR-0024): autofocus inside a popover is honored on show, Tab
+      // walks the items in DOM order, Esc closes and returns focus to
+      // the invoker. Markup carrying autofocus is a valid no-JS
+      // keyboard floor, so the rule stays silent there — the same
+      // precedent as the no-JS tablist below. What remains module-only
+      // is the APG nicety (arrows/Home/End roving, close-on-Tab), so a
+      // menu with neither the module nor autofocus is the one state
+      // that answers no keyboard at all: pointer-only.
       if (el.matches('[popover][data-kind="menu"]')) {
-        if (!ctx.armed("popover-menu")) {
-          return 'this popover menu is pointer-only — js/popover-menu.js is not loaded, so focus never enters it and the arrow keys do nothing';
+        if (ctx.armed("popover-menu")) return null;
+        if (!el.querySelector("[autofocus]")) {
+          return "this popover menu opens pointer-only — put autofocus on its first item so the platform moves focus in on open, or load js/popover-menu.js for the arrow-key roving and close-on-Tab";
         }
         return null;
       }
@@ -579,11 +584,11 @@ export const VERIFY_RULES = [
       }
       return null;
     },
-    fix: 'keep one tab stop in a tablist (tabindex="0" on the active tab, "-1" on the rest) and load js/popover-menu.js so a popover menu answers the keyboard (docs/keyboard.md)',
+    fix: 'keep one tab stop in a tablist (tabindex="0" on the active tab, "-1" on the rest); give a popover menu autofocus on its first item or load js/popover-menu.js (docs/keyboard.md)',
     docs: "docs/keyboard.md",
     quote: [
       "A roving-tabindex surface keeps exactly one Tab stop: a tablist whose tabs are all `tabindex=\"-1\"` can never be entered, and one where several are tab stops makes every tab one.",
-      "A popover menu without `js/popover-menu.js` is pointer-only — no native primitive moves focus into it on open or answers the arrow keys.",
+      "A popover menu with neither `autofocus` nor `js/popover-menu.js` is pointer-only; one carrying `autofocus` is a valid no-JS keyboard floor, and what remains module-only is the APG nicety — the arrow keys.",
     ],
   },
 

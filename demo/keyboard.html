@@ -71,7 +71,7 @@
           <th>Opt-in JS adds</th>
         </tr></thead>
         <tbody>
-          <tr><td>Popover menu</td><td>Tab reaches the trigger; Enter opens it</td><td><code>js/popover-menu.js</code> — arrows, Home/End, focus moves in, Esc/Tab closes and returns focus</td></tr>
+          <tr><td>Popover menu</td><td>Tab reaches the trigger; Enter opens it, <code>autofocus</code> moves focus in, Tab walks the items, Esc closes and returns focus</td><td><code>js/popover-menu.js</code> — arrows + Home/End, and close on Tab</td></tr>
           <tr><td>Tabs</td><td>Tab through every tab; Enter/click switches</td><td><code>js/tabs.js</code> — roving tabindex, arrows, Home/End</td></tr>
           <tr><td>Sortable table</td><td>Tab through the header buttons; Enter sorts</td><td><code>js/table-sort.js</code> — arrows move between the sort buttons</td></tr>
           <tr><td>Filter input</td><td>Plain text editing</td><td><code>js/filter-clear.js</code> — Escape clears and reports <code>bf:filterclear</code></td></tr>
@@ -87,11 +87,11 @@
         <!-- Popover menu -->
         <section aria-labelledby="kb-menu-title">
           <h2 id="kb-menu-title">Popover menu</h2>
-          <p class="bf-muted">Open it, then press <kbd>↓</kbd>/<kbd>↑</kbd> (and <kbd>Home</kbd>/<kbd>End</kbd>) to move between items, <kbd>Esc</kbd> or <kbd>Tab</kbd> to close — focus lands back on the trigger. Without <code>js/popover-menu.js</code> the same menu opens but is pointer-only; Verify's <code>roving-focus</code> rule says so in your console.</p>
+          <p class="bf-muted">Open it — the first item carries <code>autofocus</code>, so focus moves in on open — then press <kbd>↓</kbd>/<kbd>↑</kbd> (and <kbd>Home</kbd>/<kbd>End</kbd>) to move between items, <kbd>Esc</kbd> or <kbd>Tab</kbd> to close; focus lands back on the trigger. Without <code>js/popover-menu.js</code> the same menu keeps a keyboard floor (Tab walks the items, Esc returns focus) but no arrows; Verify's <code>roving-focus</code> rule warns only when a menu has neither the module nor <code>autofocus</code>.</p>
           <p>
             <button type="button" popovertarget="kb-menu" data-variant="primary">Actions</button>
             <div popover id="kb-menu" data-kind="menu" aria-label="Actions">
-              <button type="button">Rename</button>
+              <button type="button" autofocus>Rename</button>
               <button type="button">Duplicate</button>
               <button type="button">Archive</button>
               <a href="#kb-map-title">Jump to the map</a>

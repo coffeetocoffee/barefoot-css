@@ -288,14 +288,15 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
         // The tabs module is armed but every tab is still a stop —
         // drift from the roving contract the module owns.
         `<div role="tablist"><button role="tab" tabindex="0">A</button><button role="tab" tabindex="0">B</button></div>`,
-        // A popover menu whose keyboard module is not loaded: it opens
-        // natively, but nothing moves focus in or answers the arrows.
+        // A popover menu with neither its module nor autofocus: it opens
+        // natively, but no autofocus gives the platform its floor and
+        // no module answers the arrows — pointer-only (ADR-0024).
         `<button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#">Edit</a></div>`,
       ],
       // The tablist cases need tabs armed (or not — the zero-stop case
       // fires either way); the menu case needs popover-menu unloaded.
       brokenArmed: ["tabs"],
-      fixed: `<div role="tablist"><button role="tab" tabindex="0">A</button><button role="tab" tabindex="-1">B</button></div><button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#">Edit</a></div>`,
+      fixed: `<div role="tablist"><button role="tab" tabindex="0">A</button><button role="tab" tabindex="-1">B</button></div><button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#" autofocus>Edit</a></div>`,
     },
     {
       id: "reading-order-after-reflow",
@@ -346,6 +347,22 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       ).toEqual([]);
     });
   }
+
+  test("roving-focus: a menu carrying autofocus without its module is the valid no-JS floor (ADR-0024)", async ({ page }) => {
+    await mountFixture(
+      page,
+      `<button type="button" popovertarget="m">Menu</button><div popover id="m" data-kind="menu"><a href="#" autofocus>Edit</a></div>`
+    );
+    // popover-menu deliberately not armed: the platform's autofocus
+    // floor answers the keyboard (Enter opens, focus lands on the item,
+    // Tab walks the items, Esc returns focus), so the rule stays silent
+    // — the same precedent as the no-JS tablist. The arrows stay
+    // module-only, which is guidance in the map, not a violation.
+    const violations = (await runPack(page, { armed: ["tabs"] })).filter(
+      (v) => v.id === "roving-focus"
+    );
+    expect(violations).toEqual([]);
+  });
 
   test("dogfood: demo/index.html produces zero violations with every module armed", async ({ page }) => {
     await gotoDemo(page);
