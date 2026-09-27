@@ -33,10 +33,11 @@ No build step. CDN first, npm second:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Barefoot test drive</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/index.css">
+  <!-- import the major you installed: @^8 on npm, or pin the major below -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@8/dist/index.css">
   <!-- opt-in: one <link> per component / theme -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/components/dialog.css"> -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/themes/sunset.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@8/dist/components/dialog.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/barefoot-css@8/dist/themes/sunset.css"> -->
 </head>
 <body>
   <button>Save</button>

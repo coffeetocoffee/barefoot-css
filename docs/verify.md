@@ -599,7 +599,7 @@ Two options, both honest-scoped:
 - **`base`** (default `"/dist/"`) — where the framework's ESM files live
   on the page's origin. Self-hosting npm users keep the default; CDN
   users pass their jsDelivr base, e.g.
-  `"https://cdn.jsdelivr.net/npm/barefoot-css@6/dist/"`.
+  `"https://cdn.jsdelivr.net/npm/barefoot-css@8/dist/"`.
 - **`armed`** (default: every module) — which behavior modules the page
   under test loads. The *browser* checker detects loaded modules itself;
   CI cannot reach into the page's module registry, so here you declare

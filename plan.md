@@ -1,6 +1,10 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-18 — v8.5.0 "DX Governance" built & verified
+_Last updated: 2026-09-23 — v8.6.0 "The Native Keyboard Floor" built &
+verified (the popover menu's no-JS keyboard floor, ADR-0024 — the
+platform caught up to the v7.8 honest line: `autofocus` inside a shown
+popover, Tab in DOM order, focus return on Esc, all three engines);
+v8.5.0 "DX Governance" built & verified
 (`.bf-debug` audit overlay, the deprecation split in Verify, the
 `perf-budget.mjs` selector gate, recipe fixtures pinned to their docs,
 the acceptance gate at 500×15, ADR-0023); v8.0.0 "Resilience &
@@ -19,7 +23,8 @@ verified_
 
 ## Snapshot
 
-- **Shipped:** `barefoot-css@6.0.0` (2026-09-03) — v6 "Prove it, then let
+- **Shipped:** releases through `barefoot-css@8.6.0` (2026-09-23).
+  The v6 "Prove it, then let
   people in" (verification debt, CDN quick-start, icon recipe), preceded by
   v5.0 "the component is the breakpoint" (container-adaptive components, the
   zero-JS floor raise, generative theming 2.0) and v5.1 (base-select
@@ -43,7 +48,7 @@ verified_
   intermittently misses the focus return on win32 — it fails on a clean
   tree too. Specs touch the demo only through `tests/helpers.js`;
   ubuntu/macos jobs stay behavior-only.
-- **Build:** `index.css` 2.88KB gzip (budget ≤ 10KB, enforced by
+- **Build:** `index.css` 3.07KB gzip (budget ≤ 10KB, enforced by
   `npm run size`) · the JS table is now policed too (~2KB module family,
   explicit registry/barrel budgets) · `full.css` frozen at its 4.5 import
   set (ADR-0008). Gzip (level 9) and brotli are measured by the build —
@@ -250,7 +255,24 @@ verified_
   500-row page disables `color-contrast` (the slowest rule at 15k nodes)
   because contrast is the framework's own AA token gate, not this page's
   claim.
-- **History:** milestones 0.1 → 8.0.0 shipped; v8.5.0 built & verified.
+- **Built & verified:** **v8.6.0 — "The Native Keyboard Floor"**
+  (2026-09-23; tag pushed). The platform moved under v7.8's honest line:
+  all three engines now honor `autofocus` inside a shown popover, walk
+  its items with Tab in DOM order, and return focus to the invoker on
+  Esc (verified by probe, 2026-09-23). The demos put `autofocus` on
+  every menu popover's first item so the no-JS floor is keyboard-real
+  and shown; `js/popover-menu.js` now defers to it — it focuses the
+  first item only when the platform didn't already move focus in, so an
+  author's `autofocus` pick (a command-palette input) wins — keeping
+  arrows/Home/End and close-on-Tab as its native-primitive-less
+  remainder. Verify's `roving-focus` rule warns only when a menu has
+  neither the module nor `autofocus` (the pointer-only state), the same
+  precedent as the no-JS tablist. The residual gap is stated in docs: a
+  Tab-out leaves the menu open behind you without the module. Docs
+  restated: the keyboard map's native column, the per-pattern section,
+  `accessibility.md`, `verify.md`, `javascript.md`. No new tokens, no
+  new components, `index.css` budget untouched. `npm run check` green.
+- **History:** milestones 0.1 → 8.6.0 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color
@@ -258,7 +280,8 @@ verified_
   colors + DTCG export + measured sizes (4.8), theme persistence as the
   smallest honest opt-in JS (4.9), adaptive + generative (5.0–5.3),
   verification + front door (v6), Barefoot Verify (v6.1), container-aware
-  layout + playground (v6.2).
+  layout + playground (v6.2), the v7 state/forms/keyboard arc, and the
+  v8 resilience, governance, and native-keyboard-floor arc.
 
 ## Vision
 

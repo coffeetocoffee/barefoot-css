@@ -7,9 +7,11 @@ die at the `npm whoami` preflight).
 
 1. Bump `version` in `package.json`.
 2. Add the `CHANGELOG.md` entry (Keep a Changelog format); regenerate
-   the README size table (`npm run docs:size`); roll `plan.md` (Snapshot
-   + the touched milestone sections) and `plan.md` (mark the candidates
-   shipped).
+   the README size table (`npm run docs:size`); roll `plan.md` (header
+   date, Snapshot entry for this release, the touched milestone sections,
+   and the build sizes); mark the shipped candidate in the roadmap. The
+   CDN version in the README quick-start is pinned by `tests/docs.spec.js`
+   — `npm run check` fails if it drifts from `package.json`.
 3. `npm run check` + the full matrix green — `npm test` (Chromium), then
    `npm run test:ff` and `npm run test:webkit` (run suites one at a time;
    they collide on the `localhost:4173` preview port). The matrix now
