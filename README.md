@@ -91,9 +91,9 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.65KB | **10.61KB** | 9.24KB |
-| `js/verify-contracts.js` | 29.55KB | **9.27KB** | 8.02KB |
+| `js/verify-contracts.js` | 26.31KB | **8.36KB** | 7.24KB |
 | `index.css` | 11.55KB | **3.07KB** | 2.63KB |
-| `js/verify.js` | 6.13KB | **2.46KB** | 2.09KB |
+| `js/verify.js` | 6.59KB | **2.53KB** | 2.15KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
@@ -113,6 +113,7 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/print.css` | 2.38KB | **0.80KB** | 0.66KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
 | `components/states.css` | 2.75KB | **0.76KB** | 0.66KB |
+| `js/verify-domain.js` | 1.54KB | **0.71KB** | 0.60KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/table.css` | 2.13KB | **0.69KB** | 0.58KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
@@ -188,6 +189,10 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `components/prose.css` | 0.32KB | **0.17KB** | 0.13KB |
 | `components/script-type.css` | 0.25KB | **0.14KB** | 0.10KB |
 | `components/layout-sidebar.css` | 0.16KB | **0.13KB** | 0.11KB |
+| `js/verify-forms.js` | 0.14KB | **0.12KB** | 0.10KB |
+| `js/verify-tables.js` | 0.14KB | **0.12KB** | 0.09KB |
+| `js/verify-core.js` | 0.13KB | **0.12KB** | 0.10KB |
+| `js/verify-all.js` | 0.13KB | **0.12KB** | 0.10KB |
 | `components/coexistence.css` | 0.05KB | **0.07KB** | 0.04KB |
 <!-- SIZES:END -->
 

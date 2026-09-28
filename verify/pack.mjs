@@ -35,14 +35,14 @@
    Zero dependencies. Runs on any Playwright Page.
 */
 
-import { VERIFY_RULES } from "../src/js/verify-contracts.js";
+import { VERIFY_RULES, VERIFY_DOMAINS, rulesForDomain } from "../src/js/verify-contracts.js";
 import { VERIFY_DEPRECATIONS } from "../src/js/deprecations.js";
 
 /* The registries themselves, re-exported: docs, checker, and packs share
    one source of truth (pinned by tests/verify.spec.js). Contracts are the
    permanent truth; deprecations are the announced-but-not-removed
    surfaces, with lifecycle fields a contract never has (ADR-0023). */
-export { VERIFY_RULES, VERIFY_DEPRECATIONS };
+export { VERIFY_RULES, VERIFY_DEPRECATIONS, VERIFY_DOMAINS, rulesForDomain };
 
 /* Module stems, mirroring src/js/ file names. The browser modules arm
    themselves with these exact stems (lifecycle.js arm()); pass a
@@ -70,6 +70,10 @@ const DEFAULT_BASE = "/dist/";
 function sweep(page, opts, ruleId) {
   const base = opts.base ?? DEFAULT_BASE;
   const armed = opts.armed ?? ALL_MODULES;
+  const domain = opts.domain ?? "all";
+  if (domain !== "all" && !VERIFY_DOMAINS.includes(domain)) {
+    throw new Error(`[barefoot-css] verify pack: unknown domain "${domain}". Valid domains: all, ${VERIFY_DOMAINS.join(", ")}`);
+  }
   return page
     .evaluate(async (arg) => {
       const url = new URL(
@@ -84,6 +88,7 @@ function sweep(page, opts, ruleId) {
       };
       const violations = [];
       for (const rule of VERIFY_RULES) {
+        if (arg.domain !== "all" && rule.domain !== arg.domain) continue;
         if (arg.ruleId && rule.id !== arg.ruleId) continue;
         for (const selector of [].concat(rule.select)) {
           for (const el of document.querySelectorAll(selector)) {
@@ -93,7 +98,7 @@ function sweep(page, opts, ruleId) {
         }
       }
       return violations;
-    }, { base, armed: [...armed], ruleId })
+    }, { base, armed: [...armed], ruleId, domain })
     .catch((e) => {
       throw new Error(
         `[barefoot-css] verify pack: the sweep failed — ${e.message}\n` +
@@ -111,7 +116,8 @@ export function runPack(page, opts = {}) {
 /* One rule by id. Unknown ids throw with the valid list — a renamed
    rule should fail loudly, not silently audit nothing. */
 export function runRule(page, ruleId, opts = {}) {
-  if (!VERIFY_RULES.some((r) => r.id === ruleId)) {
+  const domain = opts.domain ?? "all";
+  if (!VERIFY_RULES.some((r) => r.id === ruleId && (domain === "all" || r.domain === domain))) {
     throw new Error(
       `[barefoot-css] verify pack: unknown rule "${ruleId}". ` +
         `Valid rules: ${VERIFY_RULES.map((r) => r.id).join(", ")}`

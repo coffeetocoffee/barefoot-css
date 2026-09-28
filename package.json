@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "8.6.0",
+  "version": "8.7.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",
@@ -15,7 +15,11 @@
     "./themes/*": "./dist/themes/*",
     "./js/*": "./dist/js/*",
     "./verify/pack.mjs": "./verify/pack.mjs",
-    "./src/*": "./src/*"
+    "./src/*": "./src/*",
+    "./verify": "./dist/js/verify-core.js",
+    "./verify/forms": "./dist/js/verify-forms.js",
+    "./verify/tables": "./dist/js/verify-tables.js",
+    "./verify/all": "./dist/js/verify-all.js"
   },
   "files": [
     "dist",
@@ -39,7 +43,7 @@
     "lint:css": "stylelint \"src/**/*.css\"",
     "preview": "node build/serve.mjs",
     "check": "npm run build && npm run size && npm run perf && npm run docs:size && npm run docs:tokens && npm run lint:css",
-    "test": "playwright test --project=chromium",
+    "test": "npm run test:contracts",
     "test:a11y": "playwright test --project=chromium tests/a11y.spec.js",
     "test:js": "playwright test --project=chromium tests/js.spec.js",
     "test:css": "playwright test --project=chromium tests/css.spec.js",
@@ -49,7 +53,18 @@
     "test:ff": "playwright test --project=firefox tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/visual.spec.js",
     "test:webkit": "playwright test --project=webkit tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/visual.spec.js",
     "prepack": "npm run check",
-    "prepublishOnly": "npm run check"
+    "prepublishOnly": "npm run check",
+    "test:contracts": "playwright test --project=chromium tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/debug.spec.js tests/docs.spec.js tests/perf.spec.js tests/recipes.spec.js tests/size.spec.js",
+    "test:e2e": "npm run test:contracts",
+    "test:e2e:visual": "npm run test:visual",
+    "test:acceptance": "playwright test --project=chromium tests/acceptance.spec.js",
+    "test:chromium": "playwright test --project=chromium",
+    "test:all": "npm run check && npm run test:chromium && npm run test:ff && npm run test:webkit",
+    "test:debug": "playwright test --project=chromium tests/debug.spec.js",
+    "test:docs": "playwright test --project=chromium tests/docs.spec.js",
+    "test:perf": "playwright test --project=chromium tests/perf.spec.js",
+    "test:recipes": "playwright test --project=chromium tests/recipes.spec.js",
+    "test:size": "playwright test --project=chromium tests/size.spec.js"
   },
   "publishConfig": {
     "access": "public"

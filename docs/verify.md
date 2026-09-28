@@ -33,6 +33,29 @@ element and the fix:
   Fix: point popovertarget at the id of a live [popover] element (docs/components.md, Popover)
 ```
 
+## Domain-scoped entry points
+
+Verify stays in the single `barefoot-css` package, but its contract registry is
+available by surface. These imports run only the selected contracts and do not
+load unrelated behavior modules:
+
+```js
+import "barefoot-css/verify";        // core: popovers, dialogs, buttons
+import "barefoot-css/verify/forms";  // form and state contracts
+import "barefoot-css/verify/tables"; // table contracts
+import "barefoot-css/verify/all";    // every contract
+```
+
+The historical `barefoot-css/js/verify.js` import remains the compatibility
+entry point and continues to run every contract plus deprecations. The Node
+pack accepts the same selection: `runPack(page, { domain: "forms" })`; its
+default is `all`.
+
+The source registry keeps full documentation quotes for traceability tests.
+Published browser metadata is generated with compact rule hints and a
+`verify-manifest.json` containing prose hashes, so runtime diagnostics stay
+actionable without shipping duplicate documentation prose.
+
 ## Strict mode (CI)
 
 Set `data-bf-verify="strict"` on `<html>` and violations **throw** instead

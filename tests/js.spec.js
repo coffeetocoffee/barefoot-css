@@ -578,6 +578,11 @@ test.describe("opt-in JS barrel completeness", () => {
             "verify-contracts.js",
             "verify.js",
             "deprecations.js",
+            "verify-domain.js",
+            "verify-core.js",
+            "verify-forms.js",
+            "verify-tables.js",
+            "verify-all.js",
           ].includes(f)
       )
       .sort();

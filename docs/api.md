@@ -1,11 +1,11 @@
-# Barefoot — API Reference (v4.7)
+# Barefoot — API Reference (v8.6)
 
-As of v4.0.0, Barefoot's public API is frozen. This document defines
-what is stable, what may change, and the deprecation policy.
+Barefoot's public API is intentionally single-package and subpath-oriented.
+This document defines what is stable, what may change, and the deprecation policy.
 
 ## Stability tiers
 
-### Stable — will not break in 4.x
+### Stable — will not break in 8.x
 
 These are the contracts consumers build on:
 
@@ -15,12 +15,14 @@ These are the contracts consumers build on:
 - **`data-*` component attributes.** The attribute names and their
   enumerated values (e.g. `[data-variant]`, `[data-grid]`,
   `[data-bf-theme]`, `[data-switch]`, `[data-menu]`) are frozen.
-- **CSS export map.** The entry points in `package.json` `exports` are
+- **CSS and Verify export map.** The entry points in `package.json` `exports` are
   stable: `barefoot-css` (core), `barefoot-css/full.css`,
   `barefoot-css/utilities.css`, `barefoot-css/components/*`,
-  `barefoot-css/themes/*`, `barefoot-css/js/*`.
+  `barefoot-css/themes/*`, `barefoot-css/js/*`, `barefoot-css/verify`,
+  `barefoot-css/verify/forms`, `barefoot-css/verify/tables`, and
+  `barefoot-css/verify/all`.
 - **JS module API.** Each `js/*.js` module exports an `init*` function
-  for dynamic content. The function signatures will not change in 4.x.
+  for dynamic content. The function signatures will not change in 8.x.
 - **Cascade layer order.** `@layer reset, tokens, base, components,
   utilities` is the declared and frozen order.
 

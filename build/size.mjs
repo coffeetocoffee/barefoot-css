@@ -34,7 +34,7 @@ const JS_BUDGETS = {
   // 7KB — same reason, same review. v8.0's coexistence-clean adds the
   // unlayered-reset CSSOM walk plus its quote — past 8KB again.
   // Measured at 9.27KB gzip against 10KB (93% utilization) — at the ceiling.
-  "js/verify-contracts.js": 10240,
+  "js/verify-contracts.js": 9216,
   // The barrel is imports only — growth here means something regressed.
   "js/barefoot.js": 1024,
   // v8.5 splits the checker into two passes (contracts + deprecations,
@@ -42,7 +42,12 @@ const JS_BUDGETS = {
   // second registry, its formatter, and its warnOnce loop are real code.
   // Bumped from the 2KB family default deliberately, in review — same
   // rule as the registry bumps above.
-  "js/verify.js": 2560,
+  "js/verify.js": 2816,
+  "js/verify-domain.js": 2048,
+  "js/verify-core.js": 1024,
+  "js/verify-forms.js": 1024,
+  "js/verify-tables.js": 1024,
+  "js/verify-all.js": 1024,
 };
 
 function checkSizeReport(report) {

@@ -47,6 +47,10 @@ jobs:
             "barefoot-css/themes/dashboard.css",
             "barefoot-css/utilities.css",
             "barefoot-css/js/barefoot.js",
+            "barefoot-css/verify",
+            "barefoot-css/verify/forms",
+            "barefoot-css/verify/tables",
+            "barefoot-css/verify/all",
             "barefoot-css/verify/pack.mjs",
             "barefoot-css/src/index.css",
           ];
@@ -89,7 +93,7 @@ jobs:
         # dist/ is gitignored, so the demo page is unstyled until it's
         # built — the test jobs must build before running Playwright.
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --project=chromium tests/js.spec.js tests/css.spec.js tests/verify.spec.js
+      - run: npm run test:contracts
 
   firefox:
     name: Behavior (JS + CSS, Firefox)

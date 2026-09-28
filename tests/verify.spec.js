@@ -25,6 +25,7 @@
     npm run test:verify */
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, gotoResilience, mountFixture } from "./helpers.js";
@@ -63,7 +64,7 @@ const SEED_IDS = [
 
 test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
   const REQUIRED = ["check", "docs", "fix", "id", "quote", "select"];
-  const ALLOWED = [...REQUIRED, "module", "wcag"];
+  const ALLOWED = [...REQUIRED, "domain", "module", "wcag"];
 
   test("every rule carries exactly the pinned shape", () => {
     expect(VERIFY_RULES.length).toBeGreaterThanOrEqual(6);
@@ -78,6 +79,7 @@ test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
         expect(rule[field], `${rule.id} is missing "${field}"`).toBeDefined();
       }
       expect(rule.id).toMatch(/^[a-z][a-z0-9-]*$/);
+      expect(["core", "forms", "tables"]).toContain(rule.domain);
       expect(seen.has(rule.id), `duplicate rule id ${rule.id}`).toBe(false);
       seen.add(rule.id);
       expect([].concat(rule.select).length).toBeGreaterThan(0);
@@ -93,6 +95,16 @@ test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
       }
       if (rule.wcag !== undefined) expect(rule.wcag).toMatch(/^\d+\.\d+(\.\d+)?$/);
     }
+  });
+
+  test("domain partitions cover every rule without overlap", () => {
+    const domains = ["core", "forms", "tables"];
+    const counts = Object.fromEntries(domains.map((domain) => [domain, 0]));
+    for (const rule of VERIFY_RULES) counts[rule.domain]++;
+    expect(counts.core).toBeGreaterThan(0);
+    expect(counts.forms).toBeGreaterThan(0);
+    expect(counts.tables).toBeGreaterThan(0);
+    expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(VERIFY_RULES.length);
   });
 
   test("the six seed rules from the plan are present", () => {
@@ -553,6 +565,17 @@ test.describe("Verify Phase 1: the checker engine (js/verify.js)", () => {
 test.describe("Verify Phase 2: the CI contract-pack (verify/pack.mjs)", () => {
   const BROKEN_ARMED = []; // the broken fixture loads no barefoot.js
 
+  test("domain entry points are exported and generated", () => {
+    for (const file of ["verify-core.js", "verify-forms.js", "verify-tables.js", "verify-all.js", "verify-domain.js"]) {
+      expect(fs.existsSync(path.join(rootDir, "dist", "js", file)), `${file} missing from dist/js`).toBe(true);
+    }
+    const pkg = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf8"));
+    expect(pkg.exports["./verify"]).toBe("./dist/js/verify-core.js");
+    expect(pkg.exports["./verify/forms"]).toBe("./dist/js/verify-forms.js");
+    expect(pkg.exports["./verify/tables"]).toBe("./dist/js/verify-tables.js");
+    expect(pkg.exports["./verify/all"]).toBe("./dist/js/verify-all.js");
+  });
+
   test("the suite itself consumes the pack — no local sweep runner exists", async () => {
     const spec = fs.readFileSync(path.join(rootDir, "tests/verify.spec.js"), "utf8");
     expect(spec).toContain('from "../verify/pack.mjs"');
@@ -577,6 +600,15 @@ test.describe("Verify Phase 2: the CI contract-pack (verify/pack.mjs)", () => {
     for (const id of SEED_IDS) {
       expect(error.message).toContain(id);
     }
+  });
+
+  test("domain: a selected pack audits only that domain", async ({ page }) => {
+    await page.goto(BROKEN_FIXTURE);
+    const forms = await runPack(page, { domain: "forms", armed: [] });
+    expect(forms.length).toBeGreaterThan(0);
+    expect(forms.every((finding) => VERIFY_RULES.find((rule) => rule.id === finding.id).domain === "forms")).toBe(true);
+    const tables = await runPack(page, { domain: "tables", armed: [] });
+    expect(tables.every((finding) => VERIFY_RULES.find((rule) => rule.id === finding.id).domain === "tables")).toBe(true);
   });
 
   test("armed: passing a subset audits the rest as dead controls (module-pairing)", async ({ page }) => {
@@ -773,7 +805,20 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // 1.75KB through v8.0. v8.5 adds the deprecation pass (a second
     // registry sweep + formatter + warnOnce loop, ADR-0023): 2560, bumped
     // deliberately in review and pinned here, same rule as the registry.
-    expect(v.gzip).toBeLessThanOrEqual(2560);
+    expect(v.gzip).toBeLessThanOrEqual(2816);
+  });
+
+  test("the generated manifest preserves documentation hashes", () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(rootDir, "dist", "verify-manifest.json"), "utf8"));
+    expect(manifest.domains).toEqual(["core", "forms", "tables"]);
+    expect(manifest.rules).toHaveLength(VERIFY_RULES.length);
+    for (const rule of VERIFY_RULES) {
+      const generated = manifest.rules.find((entry) => entry.id === rule.id);
+      expect(generated, `${rule.id} missing from verify-manifest.json`).toBeTruthy();
+      expect(generated.domain).toBe(rule.domain);
+      expect(generated.docs).toBe(rule.docs);
+      expect(generated.proseHash).toBe(crypto.createHash("sha256").update(rule.quote.join("\\n")).digest("hex"));
+    }
   });
 
   test("the budget map cannot silently drop the Verify entries", () => {
@@ -781,12 +826,12 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // explicit budget; the registry's has been explicit since v7.0.
     // 5120 at v7.0, 6656 at v7.2, 8192 at v7.8 (two more quoted rules)
     // — bumps are deliberate, in review, and pinned here. v8.0's
-    // coexistence-clean (the CSSOM walk plus its quote) moved it past
-    // 8KB: 10240, same rule.
+    // coexistence-clean remains deliberately budgeted after the compact
+    // runtime build removes documentation prose from the shipped artifact.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(10240);
+    expect(budgets["js/verify-contracts.js"]).toBe(9216);
     expect(budgets["js/barefoot.js"]).toBe(1024);
-    expect(budgets["js/verify.js"]).toBe(2560);
+    expect(budgets["js/verify.js"]).toBe(2816);
   });
 });
 

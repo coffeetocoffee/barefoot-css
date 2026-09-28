@@ -21,8 +21,10 @@ import {
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import zlib from "node:zlib";
+import crypto from "node:crypto";
 import { checkContrast } from "./contrast.mjs";
 import { buildDTCG } from "./tokens-dtcg.mjs";
+import { VERIFY_RULES } from "../src/js/verify-contracts.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(root, "src");
@@ -101,6 +103,41 @@ export function fmt(bytes) {
   return `${(bytes / 1024).toFixed(2)}KB`;
 }
 
+function stripRuntimeMetadata(source) {
+  let out = source;
+  const marker = "    quote: [";
+  let start = out.indexOf(marker);
+  while (start !== -1) {
+    let i = start + marker.length;
+    let depth = 1;
+    let quote = null;
+    let escaped = false;
+    for (; i < out.length && depth > 0; i++) {
+      const ch = out[i];
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (ch === "\\") escaped = true;
+        else if (ch === quote) quote = null;
+      } else if (ch === "\"" || ch === "'") quote = ch;
+      else if (ch === "[") depth++;
+      else if (ch === "]") depth--;
+    }
+    if (depth !== 0) break;
+    if (out[i] === ",") i++;
+    out = out.slice(0, start) + out.slice(i);
+    start = out.indexOf(marker);
+  }
+  return out.replace(/^    docs: "[^"\n]+",\r?\n/gm, "");
+}
+
+function buildVerifyManifest() {
+  const rules = VERIFY_RULES.map(({ id, domain, docs, quote, fix }) => ({
+    id, domain, docs, hint: fix,
+    proseHash: crypto.createHash("sha256").update(quote.join("\\n")).digest("hex"),
+  }));
+  return { version: 1, domains: ["core", "forms", "tables"], rules };
+}
+
 function buildAll() {
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(DIST, { recursive: true });
@@ -127,8 +164,9 @@ function buildAll() {
   const jsDir = join(SRC, "js");
   mkdirSync(join(DIST, "js"), { recursive: true });
   for (const file of readdirSync(jsDir).filter((f) => f.endsWith(".js"))) {
-    const code = readFileSync(join(jsDir, file));
-    copyFileSync(join(jsDir, file), join(DIST, "js", file));
+    const source = readFileSync(join(jsDir, file), "utf8");
+    const code = file === "verify-contracts.js" ? Buffer.from(stripRuntimeMetadata(source)) : Buffer.from(source);
+    writeFileSync(join(DIST, "js", file), code);
     report[`js/${file}`] = sizes(code);
   }
 
@@ -182,5 +220,6 @@ writeFileSync(
 // --bf-* tokens as light/dark/core groups for Figma/iOS/Android sync.
 const dtcg = buildDTCG();
 writeFileSync(join(DIST, "tokens.json"), JSON.stringify(dtcg, null, 2));
+writeFileSync(join(DIST, "verify-manifest.json"), JSON.stringify(buildVerifyManifest(), null, 2));
 
 console.log("\nBuilt to dist/ — sizes.json + tokens.json written.");

@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.7.0] — 2026-09-28
+
+### Added
+
+- **Domain-scoped Verify entry points.** The single `barefoot-css` package now exposes `barefoot-css/verify`, `barefoot-css/verify/forms`, `barefoot-css/verify/tables`, and `barefoot-css/verify/all`; the existing `barefoot-css/js/verify.js` compatibility path remains unchanged.
+- **Compact Verify runtime metadata.** Full documentation quotes remain in the source registry and tests, while the build emits compact browser contracts plus `dist/verify-manifest.json` with prose hashes for drift detection.
+- **Explicit test tiers.** Chromium contract, acceptance, visual, accessibility, cross-browser, and full-matrix commands are now discoverable through package scripts and CI.
+
+### Changed
+
+- Verify contract rules are classified into `core`, `forms`, and `tables` domains. The Playwright pack accepts `domain` selection and defaults to `all`.
+- The package lockfile, API documentation, and Verify documentation now reflect the 8.x single-package export surface.
+
 All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

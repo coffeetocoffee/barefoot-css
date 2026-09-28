@@ -118,6 +118,7 @@ function firstUnlayeredFocusReset(styleSheets) {
 export const VERIFY_RULES = [
   {
     id: "popover-target-exists",
+    domain: "core",
     select: "[popovertarget]",
     check(el, ctx) {
       const id = el.getAttribute("popovertarget");
@@ -139,6 +140,7 @@ export const VERIFY_RULES = [
 
   {
     id: "sticky-scroll-focusable",
+    domain: "core",
     select: ['[data-table~="sticky-head"]', '[data-table~="sticky-col"]'],
     wcag: "2.1.1",
     check(el, ctx) {
@@ -176,6 +178,7 @@ export const VERIFY_RULES = [
 
   {
     id: "skip-link-first",
+    domain: "core",
     select: "a.bf-skip-link",
     check(el, ctx) {
       // Elements that render nothing don't take the first Tab stop, so
@@ -203,6 +206,7 @@ export const VERIFY_RULES = [
 
   {
     id: "describedby-wired",
+    domain: "forms",
     select: ".bf-field-error",
     check(el) {
       const id = el.id;
@@ -224,6 +228,7 @@ export const VERIFY_RULES = [
 
   {
     id: "module-pairing",
+    domain: "core",
     select: [
       "[data-alert-dismiss]",
       "[data-chip-remove]",
@@ -250,6 +255,7 @@ export const VERIFY_RULES = [
 
   {
     id: "nav-complete-contract",
+    domain: "core",
     select: ".bf-nav-toggle",
     check(el, ctx) {
       const nav = el.closest('[data-nav="header"], [data-nav="drawer"]');
@@ -278,6 +284,7 @@ export const VERIFY_RULES = [
 
   {
     id: "state-live-contract",
+    domain: "forms",
     select: ".bf-state[data-state]",
     check(el) {
       const state = el.getAttribute("data-state");
@@ -303,6 +310,7 @@ export const VERIFY_RULES = [
 
   {
     id: "validation-summary-contract",
+    domain: "forms",
     select: ".bf-error-summary",
     check(el, ctx) {
       const role = el.getAttribute("role");
@@ -329,6 +337,7 @@ export const VERIFY_RULES = [
 
   {
     id: "native-button-contract",
+    domain: "core",
     select: 'div[role="button"], span[role="button"]',
     wcag: "4.1.2",
     check() {
@@ -344,6 +353,7 @@ export const VERIFY_RULES = [
 
   {
     id: "page-structure-contract",
+    domain: "core",
     select: "main:has(h1)",
     check() {
       const mains = document.querySelectorAll("main").length;
@@ -359,6 +369,7 @@ export const VERIFY_RULES = [
 
   {
     id: "state-conflict",
+    domain: "forms",
     select: ".bf-state[data-state]",
     check(el) {
       const VALID = new Set([
@@ -383,6 +394,7 @@ export const VERIFY_RULES = [
 
   {
     id: "event-contract",
+    domain: "core",
     select: '[data-bf-tabs] [role="tab"][aria-controls]',
     check(el, ctx) {
       const id = el.getAttribute("aria-controls");
@@ -400,6 +412,7 @@ export const VERIFY_RULES = [
 
   {
     id: "aria-sort-wired",
+    domain: "tables",
     select: "table[data-bf-sort]",
     wcag: "4.1.2",
     check(el) {
@@ -445,6 +458,7 @@ export const VERIFY_RULES = [
 
   {
     id: "async-live",
+    domain: "forms",
     select: "[data-async-pending]",
     wcag: "4.1.2",
     check(el) {
@@ -471,6 +485,7 @@ export const VERIFY_RULES = [
 
   {
     id: "stepper-complete",
+    domain: "forms",
     select: "[data-stepper]",
     wcag: "4.1.2",
     check(el) {
@@ -503,6 +518,7 @@ export const VERIFY_RULES = [
 
   {
     id: "selection-complete",
+    domain: "tables",
     select: "table:has(tbody tr[aria-selected])",
     wcag: "4.1.2",
     check(el, ctx) {
@@ -548,6 +564,7 @@ export const VERIFY_RULES = [
 
   {
     id: "roving-focus",
+    domain: "core",
     select: ['[role="tablist"]', '[popover][data-kind="menu"]'],
     wcag: "2.1.1",
     check(el, ctx) {
@@ -594,6 +611,7 @@ export const VERIFY_RULES = [
 
   {
     id: "reading-order-after-reflow",
+    domain: "forms",
     select: ['[data-table~="adaptive"]', '[data-card="adaptive"]', '[data-form="adaptive"]'],
     wcag: "1.3.2",
     check(el) {
@@ -626,6 +644,7 @@ export const VERIFY_RULES = [
 
   {
     id: "coexistence-clean",
+    domain: "core",
     select: "html",
     check() {
       /* The one silent casualty of a side-by-side setup. Barefoot's
@@ -651,3 +670,14 @@ export const VERIFY_RULES = [
     ],
   },
 ];
+
+
+export const VERIFY_DOMAINS = Object.freeze(["core", "forms", "tables"]);
+
+export function rulesForDomain(domain = "all") {
+  if (domain === "all") return VERIFY_RULES;
+  if (!VERIFY_DOMAINS.includes(domain)) {
+    throw new Error(`Unknown Verify domain "${domain}". Valid domains: all, ${VERIFY_DOMAINS.join(", ")}`);
+  }
+  return VERIFY_RULES.filter((rule) => rule.domain === domain);
+}

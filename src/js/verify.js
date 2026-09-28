@@ -53,8 +53,8 @@ function sweep(root, registry, ctx, extra) {
 
 /* Contract rules: { id, selector, detail, fix }. Pure read — no warnings
    here, no DOM mutation anywhere. */
-export function runVerify(root = document, ctx = defaultCtx()) {
-  return sweep(root, VERIFY_RULES, ctx, () => ({}));
+export function runVerify(root = document, ctx = defaultCtx(), registry = VERIFY_RULES) {
+  return sweep(root, registry, ctx, () => ({}));
 }
 
 /* Deprecation entries: the same shape plus `announced`/`replacement`, so
@@ -106,8 +106,8 @@ function formatDeprecation(finding, list) {
    contract violations so callers (tests, packs) can assert; deprecations
    are reported alongside and counted in the strict throw — a CI that
    asked for red builds wants both. */
-export function verify(root = document, registry = VERIFY_DEPRECATIONS) {
-  const violations = runVerify(root);
+export function verify(root = document, registry = VERIFY_DEPRECATIONS, contractRegistry = VERIFY_RULES) {
+  const violations = runVerify(root, defaultCtx(), contractRegistry);
   const deprecated = runDeprecations(root, registry);
 
   const strict =
@@ -144,6 +144,13 @@ export function verify(root = document, registry = VERIFY_DEPRECATIONS) {
     );
   }
   return violations;
+}
+
+
+export function createDomainVerifier(contractRegistry) {
+  return function verifyDomain(root = document, deprecationRegistry = VERIFY_DEPRECATIONS) {
+    return verify(root, deprecationRegistry, contractRegistry);
+  };
 }
 
 onDomReady(() => verify());
