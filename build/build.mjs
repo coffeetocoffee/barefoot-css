@@ -165,7 +165,12 @@ function buildAll() {
   mkdirSync(join(DIST, "js"), { recursive: true });
   for (const file of readdirSync(jsDir).filter((f) => f.endsWith(".js"))) {
     const source = readFileSync(join(jsDir, file), "utf8");
-    const code = file === "verify-contracts.js" ? Buffer.from(stripRuntimeMetadata(source)) : Buffer.from(source);
+    // The registry slices carry `quote:`/`docs:` for the docs-traceability
+    // test and the manifest hashes; neither is needed at runtime, and the
+    // shipped copy drops them. The slices are matched by prefix because the
+    // registry split into core/forms/tables files (v8.7).
+    const isRegistry = file.startsWith("verify-contracts");
+    const code = isRegistry ? Buffer.from(stripRuntimeMetadata(source)) : Buffer.from(source);
     writeFileSync(join(DIST, "js", file), code);
     report[`js/${file}`] = sizes(code);
   }

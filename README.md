@@ -91,12 +91,15 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
 | `full.css` | 56.65KB | **10.61KB** | 9.24KB |
-| `js/verify-contracts.js` | 26.31KB | **8.36KB** | 7.24KB |
+| `js/verify-contracts-core.js` | 13.10KB | **4.69KB** | 4.02KB |
 | `index.css` | 11.55KB | **3.07KB** | 2.63KB |
+| `js/verify-contracts-forms.js` | 8.12KB | **2.74KB** | 2.32KB |
 | `js/verify.js` | 6.59KB | **2.53KB** | 2.15KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
+| `js/verify-contracts.js` | 3.74KB | **1.80KB** | 1.48KB |
+| `js/verify-contracts-tables.js` | 4.53KB | **1.80KB** | 1.52KB |
 | `js/popover-menu.js` | 3.08KB | **1.45KB** | 1.22KB |
 | `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
@@ -107,13 +110,13 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
 | `components/debug.css` | 3.00KB | **1.06KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
+| `js/verify-domain.js` | 2.21KB | **1.01KB** | 0.86KB |
 | `js/filter-clear.js` | 1.65KB | **0.86KB** | 0.71KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
 | `components/print.css` | 2.38KB | **0.80KB** | 0.66KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
 | `components/states.css` | 2.75KB | **0.76KB** | 0.66KB |
-| `js/verify-domain.js` | 1.54KB | **0.71KB** | 0.60KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/table.css` | 2.13KB | **0.69KB** | 0.58KB |
 | `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |

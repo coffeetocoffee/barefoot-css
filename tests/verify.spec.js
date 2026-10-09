@@ -107,6 +107,84 @@ test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
     expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(VERIFY_RULES.length);
   });
 
+  /* The registry split into per-domain slices (v8.7), and the slice a rule
+     lives in is now load-bearing: rulesForDomain reads a static map
+     instead of filtering by the `domain` field, so a rule whose field
+     disagreed with its file would silently vanish from its domain's
+     sweep. This pins the file layout to the declared domains, and pins
+     the aggregator's map to verify-domain.js's private copy of it — the
+     two are deliberately duplicated so the scoped entry points don't
+     drag the whole registry in, and duplication needs a test. */
+  test("every rule's domain matches the slice file it lives in", async () => {
+    const slices = {
+      core: (await import("../src/js/verify-contracts-core.js")).CORE_RULES,
+      forms: (await import("../src/js/verify-contracts-forms.js")).FORMS_RULES,
+      tables: (await import("../src/js/verify-contracts-tables.js")).TABLES_RULES,
+    };
+    for (const [domain, rules] of Object.entries(slices)) {
+      expect(rules.length, `${domain} slice is empty`).toBeGreaterThan(0);
+      for (const rule of rules) {
+        expect(
+          rule.domain,
+          `${rule.id} declares domain "${rule.domain}" but lives in the ${domain} slice`
+        ).toBe(domain);
+        expect(
+          VERIFY_RULES.some((r) => r.id === rule.id),
+          `${rule.id} is in the ${domain} slice but missing from VERIFY_RULES`
+        ).toBe(true);
+      }
+    }
+    // The concatenation is the whole registry — no rule orphaned by the split.
+    const sliceTotal = Object.values(slices).reduce((n, rules) => n + rules.length, 0);
+    expect(sliceTotal).toBe(VERIFY_RULES.length);
+  });
+
+  test("the domain entries and verify-domain.js's map stay in step", async () => {
+    /* createDomainEntry() picks its registry from a BY_DOMAIN map that
+       cannot import the aggregator's without dragging all three slices
+       into every scoped consumer. That duplication is the point — it is
+       what makes `barefoot-css/verify/tables` lighter than `verify/all`
+       — so it needs a test, and it has to be a static one: importing a
+       domain entry runs createDomainEntry → onDomReady, which needs a
+       document. The slices themselves are pure data and import fine. */
+    const CONSTANT = { core: "CORE_RULES", forms: "FORMS_RULES", tables: "TABLES_RULES" };
+    const factory = fs.readFileSync(
+      path.join(rootDir, "src/js/verify-domain.js"),
+      "utf8"
+    );
+    const aggregator = fs.readFileSync(
+      path.join(rootDir, "src/js/verify-contracts.js"),
+      "utf8"
+    );
+    const { VERIFY_DOMAINS, rulesForDomain } = await import(
+      "../src/js/verify-contracts.js"
+    );
+    expect(VERIFY_DOMAINS).toEqual(["core", "forms", "tables"]);
+
+    for (const domain of VERIFY_DOMAINS) {
+      const rules = (await import(`../src/js/verify-contracts-${domain}.js`))[
+        CONSTANT[domain]
+      ];
+      // Both maps must resolve the domain to the same slice constant.
+      expect(factory, `verify-domain.js does not map "${domain}" to ${CONSTANT[domain]}`).toContain(
+        `${domain}: ${CONSTANT[domain]}`
+      );
+      expect(aggregator, `the aggregator does not map "${domain}" to ${CONSTANT[domain]}`).toContain(
+        `${domain}: ${CONSTANT[domain]}`
+      );
+      // And the aggregator must actually hand that slice back.
+      expect(
+        rulesForDomain(domain).map((r) => r.id).sort(),
+        `rulesForDomain("${domain}") serves a different rule set than the ${domain} slice`
+      ).toEqual(rules.map((r) => r.id).sort());
+      // The entry point passes its own domain name through.
+      expect(
+        fs.readFileSync(path.join(rootDir, `src/js/verify-${domain}.js`), "utf8"),
+        `verify-${domain}.js must request its own domain`
+      ).toContain(`createDomainEntry("${domain}")`);
+    }
+  });
+
   test("the six seed rules from the plan are present", () => {
     const ids = new Set(VERIFY_RULES.map((r) => r.id));
     for (const seed of [
@@ -823,15 +901,26 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
 
   test("the budget map cannot silently drop the Verify entries", () => {
     // verify.js rode the 2KB default until v8.5's second pass gave it an
-    // explicit budget; the registry's has been explicit since v7.0.
-    // 5120 at v7.0, 6656 at v7.2, 8192 at v7.8 (two more quoted rules)
-    // — bumps are deliberate, in review, and pinned here. v8.0's
-    // coexistence-clean remains deliberately budgeted after the compact
-    // runtime build removes documentation prose from the shipped artifact.
+    // explicit budget. The registry was ONE explicit budget from v7.0
+    // through v8.6 — 5120, 6656 at v7.2, 8192 at v7.8 (two more quoted
+    // rules) — each bump deliberate, in review, and pinned here. v8.7
+    // ends that line: the registry split into three domain slices, each
+    // with its own budget, and these pins are the reviewed decision.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts.js"]).toBe(9216);
+    expect(budgets["js/verify-contracts-core.js"]).toBe(5120);
+    expect(budgets["js/verify-contracts-forms.js"]).toBe(3072);
+    expect(budgets["js/verify-contracts-tables.js"]).toBe(2048);
+    expect(budgets["js/verify-contracts.js"]).toBe(2048);
     expect(budgets["js/barefoot.js"]).toBe(1024);
     expect(budgets["js/verify.js"]).toBe(2816);
+    // carousel.js and table-sort.js are pinned at the family default
+    // deliberately: both are near their ceilings (96%, 92%), both are
+    // behavior-complete, and the decision was to keep the ceiling
+    // rather than raise it. lifecycle.js is pinned ahead of its notice
+    // (69%) because it is the widest-blast-radius file in js/.
+    expect(budgets["js/carousel.js"]).toBe(2048);
+    expect(budgets["js/table-sort.js"]).toBe(2048);
+    expect(budgets["js/lifecycle.js"]).toBe(2048);
   });
 });
 

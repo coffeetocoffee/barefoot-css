@@ -9,7 +9,7 @@
 
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TOKENS = join(root, "src", "tokens.css");
@@ -133,9 +133,18 @@ export function checkContrast({ strict = false } = {}) {
   return { failures, warnings, ok: failures.length === 0 && warnings.length === 0 };
 }
 
-if (import.meta.main) {
+/* import.meta.main only exists on Node >= 20.11, but package.json declares
+   "engines": { "node": ">=18" }. On 18 / 20.0-20.10 the property is undefined,
+   the block never runs, and `node build/contrast.mjs --strict` exits 0 having
+   checked nothing. Compare against argv the way build/size.mjs does — correct
+   on every supported version. */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const strict = process.argv.includes("--strict");
   const { failures, warnings } = checkContrast({ strict });
-  const totalFails = strict ? failures.length : warnings.length;
-  if (totalFails > 0 && strict) process.exit(1);
+  if (strict) {
+    if (failures.length > 0) process.exit(1);
+    console.log("contrast: AA 4.5:1 → PASS");
+  } else if (warnings.length === 0) {
+    console.log("contrast: AA 4.5:1 → PASS");
+  }
 }

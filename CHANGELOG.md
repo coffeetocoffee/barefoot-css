@@ -13,6 +13,18 @@
 - Verify contract rules are classified into `core`, `forms`, and `tables` domains. The Playwright pack accepts `domain` selection and defaults to `all`.
 - The package lockfile, API documentation, and Verify documentation now reflect the 8.x single-package export surface.
 
+## [8.7.5] — 2026-10-09
+
+### Changed
+
+- **The Verify contract registry is split by domain.** Rules now live in `js/verify-contracts-core.js`, `-forms.js`, and `-tables.js`, with `js/verify-contracts.js` concatenating them into the same `VERIFY_RULES` export — every existing import path (`barefoot-css/js/verify.js`, the domain entries, `verify/pack.mjs`) is unchanged. The registry had ridden a single budget ceiling across seven releases (4 → 5 → 6.6 → 8 → 10 → 9KB), so every added rule pushed the same number and the ceiling stopped discriminating; per-domain budgets restore that. An aggregate `REGISTRY_FAMILY_BUDGET` deliberately sits *below* the sum of the slice budgets so the pre-split question — "has the registry as a whole grown?" — survives the split. ADR-0015 is amended. Importing a domain entry now pulls only that domain's rules.
+- **`js/carousel.js`, `js/table-sort.js`, and `js/lifecycle.js` carry explicit budgets.** The first two are pinned at the 2KB family default deliberately: both sit near their ceilings (96%, 92%), both are behavior-complete, and the reviewed decision was to keep the ceiling rather than raise it. `lifecycle.js` is pinned ahead of its notice because it is the widest-blast-radius file in `js/` and every module imports it.
+
+### Fixed
+
+- **The default-theme palette is now pinned as literal painted values.** `--bf-primary`, `--bf-primary-fg`, the four status accents, and `--bf-muted` are asserted in both schemes, alongside the existing theme pins, and the primary-button assertions prove the button consumes the token rather than a hardcoded color. The visual regression gate could not cover this: `maxDiffPixelRatio: 0.02` over a full-page capture carries far more pixel slack than the glyph area of every primary button on the demo, so an accent that moved while staying AA-compliant passed. No clip-region baseline was added for this — see the reasoning in the release notes.
+- **`build/contrast.mjs` no longer no-ops on Node 18 / 20.0–20.10.** The entry guard used `import.meta.main`, which landed in Node 20.11, while `package.json` declares `"engines": { "node": ">=18" }`. On an older supported runtime `node build/contrast.mjs --strict` exited 0 having checked nothing. The guard now compares against `process.argv[1]` the way `build/size.mjs` does, which is correct on every supported version, and prints a PASS line instead of exiting silently.
+
 All notable changes to Barefoot CSS are documented here. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
    this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

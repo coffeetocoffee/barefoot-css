@@ -38,6 +38,19 @@ Two forces shape the delivery mechanism:
 
 ### The registry — `src/js/verify-contracts.js`
 
+> **Amended (v8.7): the registry is split by domain.** The rules now live
+> in `verify-contracts-core.js`, `-forms.js`, and `-tables.js`, with
+> `verify-contracts.js` concatenating them into the same `VERIFY_RULES`
+> export. "One registry" still holds in the sense that matters here — one
+> source of truth, no rule logic restated anywhere — but the *file* is now
+> three. The reason was budget shape: a single registry carried one
+> ratchet ceiling for seven releases of steady rule additions (4 → 5 →
+> 6.6 → 8 → 10 → 9KB), so every new rule pushed the same number and the
+> ceiling stopped discriminating. Per-domain budgets restore that. The
+> decision lives in `build/size.mjs` (`REGISTRY_FAMILY` +
+> `REGISTRY_FAMILY_BUDGET`), which keeps an aggregate ceiling over the
+> slices so the split cannot quietly grow the family.
+
 Every implicit contract in `docs/components.md` becomes a rule object:
 `id`, `select` (selector(s) finding the surface), `check` (a pure DOM
 assertion), `fix` (the console fix hint), `docs` + `quote` (the verbatim

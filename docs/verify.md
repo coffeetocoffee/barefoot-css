@@ -73,7 +73,19 @@ A clean page never throws, strict or not.
 The registry (`src/js/verify-contracts.js`) is the single source of truth —
 docs, checker, and CI packs all read it (ADR-0015). Every rule quotes the
 exact sentence in `docs/` that states its contract, and a test fails if
-that quote drifts. Seed rules:
+that quote drifts.
+
+The rules are split across three files by domain —
+`verify-contracts-core.js`, `-forms.js`, `-tables.js` — and
+`verify-contracts.js` concatenates them into the one `VERIFY_RULES` array
+every consumer imports. The split is a size-budget decision, not an API
+one: the domain concept already existed (`VERIFY_DOMAINS`, the per-domain
+entry points), and one registry file was a single ceiling that every new
+rule pushed toward. Importing `barefoot-css/verify/tables` still pulls only
+the tables rules — the domain entry points import their slice directly
+rather than going through the concatenation.
+
+Seed rules:
 
 | Rule | Audits | Since |
 |---|---|---|

@@ -1,6 +1,13 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-09-23 — v8.6.0 "The Native Keyboard Floor" built &
+_Last updated: 2026-10-09 — v8.7.5 "Held Ceilings" built &
+verified (the Verify registry split by domain with per-slice budgets and
+an aggregate family ratchet, the default-theme palette pinned as literal
+painted values in both schemes, the `contrast.mjs` entry guard that
+silently no-opped below Node 20.11, explicit budgets for carousel /
+table-sort / lifecycle); v8.7.0 "Domain-Scoped Verify" built &
+verified (the `barefoot-css/verify` export surface and domain selection,
+the compact runtime build with manifest prose hashes); v8.6.0 "The Native Keyboard Floor" built &
 verified (the popover menu's no-JS keyboard floor, ADR-0024 — the
 platform caught up to the v7.8 honest line: `autofocus` inside a shown
 popover, Tab in DOM order, focus return on Esc, all three engines);
@@ -23,7 +30,7 @@ verified_
 
 ## Snapshot
 
-- **Shipped:** releases through `barefoot-css@8.6.0` (2026-09-23).
+- **Shipped:** releases through `barefoot-css@8.7.5` (2026-10-09).
   The v6 "Prove it, then let
   people in" (verification debt, CDN quick-start, icon recipe), preceded by
   v5.0 "the component is the breakpoint" (container-adaptive components, the
@@ -255,6 +262,36 @@ verified_
   500-row page disables `color-contrast` (the slowest rule at 15k nodes)
   because contrast is the framework's own AA token gate, not this page's
   claim.
+- **Built & verified:** **v8.7.5 — "Held Ceilings"** (2026-10-09; tag
+  pushed). A maintenance release, and the theme is the budget gate losing
+  its ability to discriminate. The Verify registry had ridden one
+  ratchet across seven releases — 4 → 5 → 6.6 → 8 → 10 → 9KB, history in
+  `CHANGELOG.md` — so every new rule pushed the same number and the
+  near-ceiling notice had stopped being news. v8.7 split the registry
+  into `verify-contracts-{core,forms,tables}.js`; the aggregator still
+  exports the same `VERIFY_RULES`, so no import path moved. The split
+  alone would have been a way to *hide* growth (three files at 60% read
+  calmer than one at 90%), so the family keeps an aggregate ceiling
+  pinned deliberately below the sum of the slice budgets — it fires
+  before the per-file checks can, which is the question the single
+  ratchet was actually asking. Correction vs the release notes that
+  prompted it: the prose was never the cost. `build.mjs` already strips
+  `quote:`/`docs:` at ship time, and the quotes measure 1,145 bytes gzip
+  of a 9,706-byte source (12%). What the slices hold is 19 rules' `fix:`
+  strings plus the coexistence CSSOM walk — shipped code. Also here:
+  `carousel.js` and `table-sort.js` pinned at the 2KB default (96%, 92%
+  — the decision was to keep the ceiling, not raise it), `lifecycle.js`
+  pinned ahead of its notice as the widest-blast-radius file in `js/`,
+  the default palette pinned as literal painted values in both schemes
+  (the visual gate's 2% full-page slack is far wider than the glyph area
+  of every primary button on the demo, so a moved accent passed — a
+  clip-region baseline was considered and declined: six Windows-only
+  baselines, and zero slack over text means every runner-image
+  rasterizer difference is a red build), and the `contrast.mjs` entry
+  guard, which used `import.meta.main` (Node 20.11+) under an
+  `engines: >=18` declaration and so exited 0 having checked nothing on
+  an older supported runtime. No new tokens, no new components,
+  `index.css` untouched at 3.07KB. `npm run check` green.
 - **Built & verified:** **v8.6.0 — "The Native Keyboard Floor"**
   (2026-09-23; tag pushed). The platform moved under v7.8's honest line:
   all three engines now honor `autofocus` inside a shown popover, walk
@@ -272,7 +309,7 @@ verified_
   restated: the keyboard map's native column, the per-pattern section,
   `accessibility.md`, `verify.md`, `javascript.md`. No new tokens, no
   new components, `index.css` budget untouched. `npm run check` green.
-- **History:** milestones 0.1 → 8.6.0 shipped.
+- **History:** milestones 0.1 → 8.7.5 shipped.
   Arc shape: components & theming depth (0.x–2.x), namespace cleanup +
   deprecation policy (3.x), platform catch-up + layout + motion + selects/
   sticky tables (4.x), nav transitions + bundle freeze (4.6), one-color

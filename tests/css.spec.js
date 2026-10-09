@@ -819,6 +819,52 @@ test.describe("themes & OS accessibility settings", () => {
     expect(await tokenColor(page, "--bf-primary")).toBe("rgb(154, 52, 18)");
   });
 
+  /* The default palette is the one every consumer gets, and the visual
+     gate can't cover it: maxDiffPixelRatio: 0.02 over a full-page capture
+     is orders of magnitude more slack than the glyph area of every primary
+     button on the demo. So the default accents are pinned here as literal
+     painted values, in both schemes, alongside the theme pins above. A
+     token edit that keeps AA but moves the hue fails here. */
+  test("default theme: primary button paints the declared accent, light and dark", async ({ page }) => {
+    await gotoDemo(page);
+    const btn = page.locator('[data-variant="primary"]').first();
+    for (const scheme of ["light", "dark"]) {
+      await page.emulateMedia({ colorScheme: scheme });
+      const primary = await tokenColor(page, "--bf-primary");
+      const primaryFg = await tokenColor(page, "--bf-primary-fg");
+      // --bf-primary: light-dark(#1a1a1a, #ececec)
+      expect(primary, `--bf-primary (${scheme})`).toBe(
+        scheme === "light" ? "rgb(26, 26, 26)" : "rgb(236, 236, 236)"
+      );
+      // --bf-primary-fg: light-dark(#ffffff, #141414)
+      expect(primaryFg, `--bf-primary-fg (${scheme})`).toBe(
+        scheme === "light" ? "rgb(255, 255, 255)" : "rgb(20, 20, 20)"
+      );
+      // The button must consume the token, not a hardcoded near-black.
+      await expect(btn).toHaveCSS("background-color", primary);
+      await expect(btn).toHaveCSS("color", primaryFg);
+    }
+  });
+
+  test("default theme: status accents are pinned in both schemes", async ({ page }) => {
+    await gotoDemo(page);
+    const expected = {
+      "--bf-danger": { light: "rgb(179, 38, 30)", dark: "rgb(242, 184, 181)" },
+      "--bf-success": { light: "rgb(26, 127, 55)", dark: "rgb(126, 226, 168)" },
+      "--bf-info": { light: "rgb(9, 105, 218)", dark: "rgb(138, 199, 255)" },
+      "--bf-warning": { light: "rgb(154, 103, 0)", dark: "rgb(227, 179, 65)" },
+      "--bf-muted": { light: "rgb(90, 90, 90)", dark: "rgb(160, 160, 160)" },
+    };
+    for (const scheme of ["light", "dark"]) {
+      await page.emulateMedia({ colorScheme: scheme });
+      for (const [token, byScheme] of Object.entries(expected)) {
+        expect(await tokenColor(page, token), `${token} (${scheme})`).toBe(
+          byScheme[scheme]
+        );
+      }
+    }
+  });
+
   test("prefers-contrast: more forces black-on-white tokens", async ({ page }) => {
     await page.emulateMedia({ contrast: "more" });
     await gotoDemo(page);
