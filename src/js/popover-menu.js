@@ -13,7 +13,7 @@
     import "barefoot/js/popover-menu.js"
 */
 
-import { onDomReady, bindOnce, arm } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm, queryFirst } from "./lifecycle.js";
 import { createRover } from "./roving-index.js";
 import { refocusOpener } from "./return-focus.js";
 
@@ -29,7 +29,11 @@ export function initPopoverMenus(root = document) {
       );
 
     const trigger = menu.id
-      ? document.querySelector(`[popovertarget="${menu.id}"]`)
+      ? queryFirst(
+          `[popovertarget="${menu.id}"]`,
+          "popover-menu trigger",
+          menu.ownerDocument
+        )
       : null;
     if (!trigger) {
       // Focus-return on close is dead without an opener to return to —

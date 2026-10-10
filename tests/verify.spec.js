@@ -284,6 +284,26 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
       fixed: `<button type="button" popovertarget="menu">Menu</button><div popover id="menu"><a href="#">Edit</a></div>`,
     },
     {
+      id: "carousel-control-target",
+      broken: [
+        // A typo'd id — the control is a no-op button.
+        `<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-prev="#slids">←</button>`,
+        // Present but empty.
+        `<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-next data-carousel-prev="#slides">→</button>`,
+        // Resolves — but to something that is not a scroller.
+        `<div id="notcarousel">plain</div><button type="button" data-carousel-next="#notcarousel">→</button>`,
+        // A non-`#` selector the browser cannot parse (a stray `:` reads
+        // as a pseudo-class). This is the value that used to raise
+        // SyntaxError and take the whole js/barefoot.js import graph
+        // down with it.
+        `<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-next="slides:1">→</button>`,
+      ],
+      // The `#id` form is an ID lookup, not a selector parse: a leading
+      // digit — invalid as a CSS ident, common as a templated slide id —
+      // resolves and the control works. That is the fix, asserted.
+      fixed: `<div data-carousel id="1slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-prev="#1slides">←</button><button type="button" data-carousel-next="#1slides">→</button>`,
+    },
+    {
       id: "sticky-scroll-focusable",
       broken: [
         `<div style="overflow: auto; height: 6rem"><table data-table="sticky-head"><thead><tr><th>A</th></tr></thead><tbody><tr><td>1</td></tr></tbody></table></div>`,
@@ -956,7 +976,7 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // ends that line: the registry split into three domain slices, each
     // with its own budget, and these pins are the reviewed decision.
     const { budgets } = jsBudgets();
-    expect(budgets["js/verify-contracts-core.js"]).toBe(5120);
+    expect(budgets["js/verify-contracts-core.js"]).toBe(5632);
     expect(budgets["js/verify-contracts-forms.js"]).toBe(3072);
     expect(budgets["js/verify-contracts-tables.js"]).toBe(2048);
     expect(budgets["js/verify-contracts.js"]).toBe(2048);
@@ -965,8 +985,11 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     // carousel.js and table-sort.js are pinned at the family default
     // deliberately: both are near their ceilings (96%, 92%), both are
     // behavior-complete, and the decision was to keep the ceiling
-    // rather than raise it. lifecycle.js is pinned ahead of its notice
-    // (69%) because it is the widest-blast-radius file in js/.
+    // rather than raise it. lifecycle.js is the widest-blast-radius
+    // file in js/ — v8.8 moved queryFirst() there (a malformed
+    // author-written selector used to raise SyntaxError mid-evaluation
+    // and abort the whole barrel), taking it from 69% to 89% of the
+    // same pinned 2048. The pin holds; the headroom did not.
     expect(budgets["js/carousel.js"]).toBe(2048);
     expect(budgets["js/table-sort.js"]).toBe(2048);
     expect(budgets["js/lifecycle.js"]).toBe(2048);

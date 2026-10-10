@@ -281,6 +281,59 @@ test.describe("opt-in JS: carousel controls + autoplay", () => {
   });
 });
 
+test.describe("one unresolvable control must not kill the barrel", () => {
+  /* The bug this pins: carousel.js and popover-menu.js each fed an
+     author-written selector straight to querySelector, and a
+     SyntaxError raised DURING module evaluation aborts the whole ES
+     module graph — every import after the thrower in js/barefoot.js
+     silently never evaluated. popover-menu is the 2nd import and
+     carousel the 3rd, so between them one typo took down ten modules
+     and the page went quiet instead of loud.
+
+     The witness is [data-nav-js]: nav.js is the 6th import and only
+     sets that attribute once it has run, so its presence proves the
+     graph evaluated to the end. */
+  const FIXTURE = "/tests/fixtures/js-unresolvable-control.html";
+
+  test("the barrel survives a malformed carousel selector and a quoted popover id", async ({ page }) => {
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    await page.goto(FIXTURE);
+    // nav.js is last in the chain this fixture can observe.
+    await expect(page.locator("[data-nav-js]")).toHaveCount(1);
+    // No uncaught error escaped module evaluation.
+    expect(errors, `uncaught: ${errors.join(" | ")}`).toEqual([]);
+  });
+
+  test("the failure is loud: one warning per unresolvable selector, naming it", async ({ page }) => {
+    const warnings = [];
+    page.on("console", (m) => {
+      if (m.type() === "warning") warnings.push(m.text());
+    });
+
+    await page.goto(FIXTURE);
+    await expect(page.locator("[data-nav-js]")).toHaveCount(1);
+
+    // Both bad values are reported, each exactly once — warnOnce keys on
+    // (label, selector), so a page with fifty copies still says it once.
+    const queryWarnings = warnings.filter((w) => w.includes("not a valid selector"));
+    expect(queryWarnings.some((w) => w.includes("slides:1"))).toBe(true);
+    expect(queryWarnings.some((w) => w.includes('we"ird'))).toBe(true);
+    expect(queryWarnings).toHaveLength(2);
+  });
+
+  test("the #id form is an id lookup, not a selector parse — a leading digit still works", async ({ page }) => {
+    await page.goto(FIXTURE);
+    const left = () => page.locator("[data-carousel]").evaluate((el) => el.scrollLeft);
+    await expect.poll(left).toBe(0);
+    // #slides resolves through getElementById; no throw path exists, so
+    // this control is wired and clicking it scrolls the scroller.
+    await page.locator("[data-carousel-prev]").click();
+    await expect.poll(left).toBeGreaterThan(0);
+  });
+});
+
 test.describe("opt-in JS: removable chips", () => {
   test("clicking the remove button removes its chip", async ({ page }) => {
     await gotoDemo(page);

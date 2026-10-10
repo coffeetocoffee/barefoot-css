@@ -111,6 +111,7 @@ Seed rules:
 | `async-live` | an async-pending field carries `aria-busy="true"` and a live region announcing the outcome (WCAG 4.1.2) | 7.4 |
 | `stepper-complete` | a wizard stepper marks exactly one `aria-current="step"`, on an `<li>` of its `<ol>` (WCAG 4.1.2) | 7.4 |
 | `coexistence-clean` | an unlayered reset that sets `outline: none` on a broad `:focus` selector and defeats the layered focus ring | 8.0 |
+| `carousel-control-target` | a `data-carousel-prev` / `data-carousel-next` value that is empty, unparseable, matches nothing, or names something that isn't a scroller | 8.8 |
 
 New rules land with a docs sentence first (or in the same change) — the
 traceability gate rejects a rule without one.
@@ -272,6 +273,29 @@ stays silent.
   <p>Failed.</p>
   <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
 </div>
+```
+
+### `carousel-control-target`
+
+A prev/next control must name a live `[data-carousel]` scroller. The
+module resolves the value exactly as this rule does — `getElementById`
+for the `#id` form, a guarded `querySelector` otherwise — so a value
+this rule calls dead is the same value `js/carousel.js` skipped. It
+fires on an empty attribute, a selector the browser cannot parse, a
+selector that matches nothing, and one that resolves to something which
+isn't a scroller.
+
+```html
+<!-- ✗ broken: a typo'd id, an unparseable selector, and a target that isn't a scroller -->
+<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div>
+<button type="button" data-carousel-prev="#slids">←</button>
+<button type="button" data-carousel-next="#1slides">→</button>
+<button type="button" data-carousel-next="#main">↻</button>
+
+<!-- ✓ fixed -->
+<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div>
+<button type="button" data-carousel-prev="#slides">←</button>
+<button type="button" data-carousel-next="#slides">→</button>
 ```
 
 ### `nav-complete-contract`

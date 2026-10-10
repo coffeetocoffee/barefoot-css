@@ -5,10 +5,11 @@
    slices; nothing imports a slice directly except the aggregator.
 
    This slice holds the document- and navigation-shaped contracts: page
-   landmarks, the skip link, popover wiring, native-button semantics, the
-   opt-in module pairing rule, tab and menu keyboard floors, and the
-   coexistence audit. Rule shape is documented on the aggregator; each
-   rule's docs/quote prose is in verify/prose.mjs (v8.7.8).
+   landmarks, the skip link, popover wiring, carousel control targets,
+   native-button semantics, the opt-in module pairing rule, tab and menu
+   keyboard floors, and the coexistence audit. Rule shape is documented
+   on the aggregator; each rule's docs/quote prose is in
+   verify/prose.mjs (v8.7.8).
 
    Not a behavior module: nothing to init, not listed in barefoot.js.
    Ships as-is like its siblings, so dist/js travels as one directory. */
@@ -111,6 +112,43 @@ export const CORE_RULES = [
       return null;
     },
     fix: "point popovertarget at the id of a live [popover] element (docs/components.md, Popover)",
+  },
+
+  {
+    id: "carousel-control-target",
+    domain: "core",
+    select: ["[data-carousel-prev]", "[data-carousel-next]"],
+    // Resolved exactly as js/lifecycle.js queryFirst does — getElementById
+    // for the `#id` form, a guarded querySelector otherwise — so a value
+    // this rule calls dead is the value the module skipped. It reports, it
+    // never throws (a bad selector would take the sweep down too), and
+    // every attribute present is audited.
+    check(el) {
+      const doc = el.ownerDocument;
+      for (const attr of ["data-carousel-prev", "data-carousel-next"]) {
+        if (!el.hasAttribute(attr)) continue;
+        const sel = (el.getAttribute(attr) || "").trim();
+        if (!sel) return `${attr} is empty — point it at the scroller, e.g. "#slides"`;
+        let target = null;
+        if (sel.charCodeAt(0) === 35) {
+          // `#id` is an ID lookup, not a selector parse: an id CSS would
+          // reject (a leading digit) still resolves and works.
+          target = doc.getElementById(sel.slice(1));
+        } else {
+          try {
+            target = doc.querySelector(sel);
+          } catch {
+            return `${attr}="${sel}" is not a valid selector, so the control is a no-op`;
+          }
+        }
+        if (!target) return `${attr}="${sel}" matches nothing, so the control is a no-op`;
+        if (!target.hasAttribute("data-carousel")) {
+          return `${attr}="${sel}" resolves to a non-[data-carousel] element`;
+        }
+      }
+      return null;
+    },
+    fix: 'point data-carousel-prev / data-carousel-next at the scroller\'s id selector, e.g. "#slides" (docs/components.md, Carousel)',
   },
 
   {

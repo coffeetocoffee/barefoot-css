@@ -8,10 +8,16 @@
      initX() call after auto-load (or any double import) never binds
      the same listeners twice. WeakMap-backed: no DOM attributes, gone
      on reload.
-   - warnOnce(key, message): once-per-page deprecation notice. A module
-     calls it when it arms against markup that uses a deprecated
-     surface; pages that never touch it stay silent. Set-backed per
-     module instance — one page load = at most one warning per key.
+   - warnOnce(key, message): once-per-page notice. A module calls it when
+     it arms against markup using a deprecated surface, or when it has to
+     skip a control it cannot resolve. Set-backed per module instance — one
+     page load = at most one warning per key.
+   - queryFirst(selector, label, doc): resolve a selector the AUTHOR
+     wrote, never throwing. `#id` goes through getElementById (no throw
+     path, and it resolves ids CSS would reject); anything else is parsed
+     under a guard that warns once and returns null. A bare querySelector
+     on a bad value raises SyntaxError mid-evaluation and aborts the
+     import graph — every module after the thrower silently never arms.
     - arm(name) / isArmed(name): the arming registry Verify reads. A
       behavior module records itself at import ("imported = armed"), so
       js/verify.js can tell a dead-looking control whose module never
@@ -55,6 +61,21 @@ export function warnOnce(key, message) {
   if (warned.has(key)) return;
   warned.add(key);
   console.warn(`[barefoot-css] ${message}`);
+}
+
+/* Resolve an author-written selector without throwing. Shared rather than
+   per-module: the failure it prevents takes down the whole barrel. */
+export function queryFirst(selector, label, doc = document) {
+  if (selector.charCodeAt(0) === 35) return doc.getElementById(selector.slice(1));
+  try {
+    return doc.querySelector(selector);
+  } catch {
+    warnOnce(
+      `query:${label}:${selector}`,
+      `${label}: "${selector}" is not a valid selector — control skipped`
+    );
+    return null;
+  }
 }
 
 export function arm(name) {

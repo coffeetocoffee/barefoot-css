@@ -428,6 +428,14 @@ support, carousel controls + autoplay) and their markup.
   prev/next buttons (`data-carousel-prev` / `data-carousel-next` pointing
   at the scroller's id) and autoplay (`data-autoplay="3000"`). Without it
   nothing changes.
+- **The control's target is a contract.** `data-carousel-prev` /
+  `data-carousel-next` must name a live `[data-carousel]` scroller — a
+  value that matches nothing, or a selector the browser cannot parse (a
+  stray `:` reads as a pseudo-class), is reported by Verify and skipped
+  by the module rather than thrown, because one unresolvable control must
+  not take the rest of the opt-in JS down with it. The `#id` form is
+  looked up as an id rather than parsed as a selector, so an id CSS would
+  reject — a leading digit, say — still resolves and works.
 - **A11y:** keep the `tabindex` and `aria-label`; that's what makes it
   keyboard reachable.
 - **Scroll progress bar (opt-in, pure CSS):** add `data-progress` to

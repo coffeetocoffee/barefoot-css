@@ -56,6 +56,13 @@ export const VERIFY_PROSE = Object.freeze({
       "Load `js/toast.js` to enable.",
     ],
   },
+  "carousel-control-target": {
+    docs: "docs/components.md",
+    quote: [
+      "`data-carousel-prev` / `data-carousel-next` must name a live `[data-carousel]` scroller",
+      "one unresolvable control must not take the rest of the opt-in JS down with it.",
+    ],
+  },
   "nav-complete-contract": {
     docs: "docs/components.md",
     quote: [

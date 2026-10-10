@@ -23,7 +23,7 @@
     import "barefoot/js/carousel.js"
 */
 
-import { onDomReady, bindOnce } from "./lifecycle.js";
+import { onDomReady, bindOnce, queryFirst } from "./lifecycle.js";
 
 const timers = new WeakMap();
 
@@ -118,7 +118,7 @@ function initControls() {
     for (const btn of document.querySelectorAll(`[${attr}]`)) {
       const sel = btn.getAttribute(attr);
       if (!sel) continue;
-      const carousel = document.querySelector(sel);
+      const carousel = queryFirst(sel, `carousel ${attr}`);
       if (!carousel) continue;
       // Contract first, guard last — a control pointing nowhere can be
       // re-inited once its target exists.

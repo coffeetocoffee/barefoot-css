@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barefoot JS — unresolvable control fixture</title>
+  <!-- Two author-written selectors a browser cannot resolve, one per
+       unguarded call site:
+         - data-carousel-next="slides:1"  a stray ":" parses as a
+           pseudo-class, so querySelector raises SyntaxError (carousel.js)
+         - a popover menu whose id carries a quote, so the
+           [popovertarget="…"] lookup raises SyntaxError (popover-menu.js)
+
+       Both used to throw during module evaluation, and a throw there
+       aborts the whole ES module graph: every import after the thrower
+       in js/barefoot.js silently never evaluated. popover-menu is the
+       2nd import and carousel the 3rd, so between them these two values
+       killed ten modules — including nav, whose header nav only gets
+       [data-nav-js] once nav.js has run.
+
+       The nav below is the witness. [data-nav-js] appearing on it at all
+       proves the barrel survived to the end. -->
+</head>
+<body>
+  <main id="main">
+    <h1>Unresolvable control fixture</h1>
+
+    <!-- Inline scroller styles, as the carousel tests use: this fixture is
+         about module wiring, and without an overflow box there is nothing
+         to scroll and a working control would look broken. -->
+    <div data-carousel id="slides" tabindex="0" aria-label="Slides"
+         style="display:flex;overflow-x:auto;width:600px">
+      <div style="flex:0 0 60%;height:2rem">One</div>
+      <div style="flex:0 0 60%;height:2rem">Two</div>
+    </div>
+    <!-- ✗ unparseable: a stray ":" reads as a pseudo-class -->
+    <button type="button" data-carousel-next="slides:1">→</button>
+    <!-- ✓ a leading digit is fine: the #id form is an id lookup, not a
+         selector parse, so this control actually works -->
+    <button type="button" data-carousel-prev="#slides">←</button>
+
+    <!-- ✗ the quote in the id breaks the [popovertarget="…"] lookup -->
+    <button type="button" popovertarget='we"ird'>Menu</button>
+    <div popover id='we"ird' data-kind="menu">
+      <a href="#">Edit</a>
+    </div>
+
+    <nav data-nav="header" aria-label="Primary">
+      <button type="button" class="bf-nav-toggle" aria-expanded="false" aria-controls="witness-menu">Menu</button>
+      <ul id="witness-menu"><li><a href="#">Home</a></li></ul>
+    </nav>
+  </main>
+
+  <script type="module">
+    import "/dist/js/barefoot.js";
+  </script>
+</body>
+</html>

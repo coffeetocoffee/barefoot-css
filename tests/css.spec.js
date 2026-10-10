@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, gotoFormArchitecture, gotoResilience, tokenColor, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
+import { DEMOS, gotoDemo, gotoGallery, gotoVtPair, gotoStudio, gotoPlayground, gotoPaintPaper, gotoRhythmMotion, gotoStates, gotoDataStory, gotoFormArchitecture, gotoResilience, tokenColor, tokenColorIn, setContainerWidth, gridColumnCount, tokenValue, wcagContrast, luminance } from "./helpers.js";
 import { buildDTCG } from "../build/tokens-dtcg.mjs";
 
 const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -1866,6 +1866,94 @@ test.describe("theme gallery (live preview cards)", () => {
       "sunset",
     ]);
   });
+
+  /* The gap this closes (v8.8). build/contrast.mjs checks nine pairs, but
+     only against :root in src/tokens.css — it never opens src/themes/, so
+     every starter theme shipped unmeasured. The axe's gallery scan caught
+     the LIGHT half by accident (v2.7.0: "four starter themes shipped
+     sub-AA light-scheme pairs"); the DARK half has never been rendered by
+     any test, because the gallery loads under color-scheme: light and
+     nothing emulates otherwise.
+
+     Measured rather than parsed, deliberately. The source guard skips any
+     token containing oklch (contrast.mjs:91), so it only ever checks the
+     hex fallback — the value an engine without relative color paints,
+     which no current engine does. tokenColor() + wcagContrast() read what
+     the browser actually resolved, which is the lesson helpers.js records
+     from the v5.0 gate that "passed vacuously" on Chromium.
+
+     Five pairs, because five is what the themes actually re-declare:
+     primary, primary-fg, surface, surface-alt, text, muted. The status
+     palette (danger/success/info/warning) is untouched by every starter
+     theme, so it inherits :root and the existing guard already holds it. */
+  test("every theme holds AA in BOTH schemes — the dark half was never measured", async ({ page }) => {
+    test.setTimeout(120_000);
+    const AA_PAIRS = [
+      ["--bf-text", "--bf-surface"],
+      ["--bf-text", "--bf-surface-alt"],
+      ["--bf-muted", "--bf-surface"],
+      ["--bf-muted", "--bf-surface-alt"],
+      ["--bf-primary-fg", "--bf-primary"],
+    ];
+    // The accent against the page is a graphical object, not body text —
+    // the same split the seed-space gate (below) already draws.
+    const FLOOR_PAIRS = [["--bf-primary", "--bf-surface"]];
+
+    await gotoGallery(page);
+    const cards = await page
+      .locator(".gallery-card")
+      .evaluateAll((els) => els.map((el) => el.id));
+
+    for (const scheme of ["light", "dark"]) {
+      await page.emulateMedia({ colorScheme: scheme });
+      for (const id of cards) {
+        const sel = `#${id}`;
+        for (const [fgTok, bgTok] of AA_PAIRS) {
+          const ratio = wcagContrast(
+            await tokenColorIn(page, sel, fgTok),
+            await tokenColorIn(page, sel, bgTok)
+          );
+          expect(
+            ratio,
+            `${id} (${scheme}): ${fgTok} on ${bgTok} must hold AA 4.5:1`
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+        for (const [fgTok, bgTok] of FLOOR_PAIRS) {
+          const ratio = wcagContrast(
+            await tokenColorIn(page, sel, fgTok),
+            await tokenColorIn(page, sel, bgTok)
+          );
+          expect(
+            ratio,
+            `${id} (${scheme}): ${fgTok} on ${bgTok} must clear the 3:1 graphical floor`
+          ).toBeGreaterThanOrEqual(3);
+        }
+      }
+    }
+  });
+
+  test("the gate is not vacuous: a regressed theme value is caught in its own scheme", async ({ page }) => {
+    // A gate that passes because it measured nothing is worse than no
+    // gate. Break one theme's DARK accent-fg — the exact shape the
+    // light-only gallery scan missed — and prove the sweep above sees it.
+    await page.emulateMedia({ colorScheme: "dark" });
+    await gotoGallery(page);
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/coastal.css"),
+      "utf8"
+    );
+    await page.addStyleTag({
+      content: css.replace(
+        "--bf-primary-fg: light-dark(#ffffff, #0c4a6e);",
+        "--bf-primary-fg: light-dark(#ffffff, #bfe4f7);"
+      ),
+    });
+    const ratio = wcagContrast(
+      await tokenColorIn(page, "#gallery-coastal", "--bf-primary-fg"),
+      await tokenColorIn(page, "#gallery-coastal", "--bf-primary")
+    );
+    expect(ratio).toBeLessThan(4.5);
+  });
 });
 
 test.describe("v3.3 growth batch", () => {
@@ -3273,6 +3361,53 @@ test.describe("generative system + container-scoped theming (v5.2 → v5.3)", ()
     expect(probeSurface, "scoped panel must differ from the light page").not.toBe(pageSurface);
     // dark scope resolves --bf-surface to #161616.
     expect(probeSurface.replace(/\s/g, ""), "scoped surface must be the dark value").toContain("22,22,22");
+  });
+
+  test("theming-scope: the contrast scope's own palette holds AA in both schemes", async ({ page }) => {
+    /* themes/theming-scope.css re-declares sixteen tokens under
+       [data-bf-scope="contrast"] — duplicated again inside the
+       @container style() block, because the scope is inherited and
+       re-affirmed on descendants. build/contrast.mjs never opens
+       src/themes/, and no test rendered this surface, so both copies
+       shipped unmeasured. Pure black/white today, which is exactly why
+       a gate belongs here rather than a one-off fix. */
+    await gotoDemo(page);
+    const css = fs.readFileSync(
+      path.join(rootDir, "src/themes/theming-scope.css"),
+      "utf8"
+    );
+    await page.addStyleTag({ content: css });
+    await page.evaluate(() => {
+      const panel = document.createElement("section");
+      panel.setAttribute("data-bf-scope", "contrast");
+      panel.id = "contrast-panel";
+      panel.innerHTML = '<span id="contrast-probe">x</span>';
+      document.body.append(panel);
+    });
+    const PAIRS = [
+      ["--bf-text", "--bf-surface"],
+      ["--bf-text", "--bf-surface-alt"],
+      ["--bf-muted", "--bf-surface"],
+      ["--bf-muted", "--bf-surface-alt"],
+      ["--bf-primary-fg", "--bf-primary"],
+      ["--bf-danger-fg", "--bf-danger"],
+      ["--bf-success-fg", "--bf-success"],
+      ["--bf-info-fg", "--bf-info"],
+      ["--bf-warning-fg", "--bf-warning"],
+    ];
+    for (const scheme of ["light", "dark"]) {
+      await page.emulateMedia({ colorScheme: scheme });
+      for (const [fgTok, bgTok] of PAIRS) {
+        const ratio = wcagContrast(
+          await tokenColorIn(page, "#contrast-panel", fgTok),
+          await tokenColorIn(page, "#contrast-panel", bgTok)
+        );
+        expect(
+          ratio,
+          `data-bf-scope=contrast (${scheme}): ${fgTok} on ${bgTok} must hold AA 4.5:1`
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   });
 });
 

@@ -1,6 +1,12 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-10-12 — v8.7.8 "Countdown & File Boundary" built &
+_Last updated: 2026-10-10 — v8.8.0 "Dead Controls & Dark Slots" built &
+verified (a malformed author-written selector no longer aborts the whole
+`barefoot.js` module graph — `queryFirst()` in `lifecycle.js`, plus the
+`carousel-control-target` Verify contract so the surviving dead control is
+reported rather than merely survived — and every starter theme's contrast
+is measured in the browser in both schemes, closing the dark half no test
+had ever rendered); v8.7.8 "Countdown & File Boundary" built &
 verified (the toast `data-toast-progress` bar actually wired and painted,
 with three bugs fixed in the same pass — the pause math that snapped back
 to 100%, the reduced-motion guard that bound listeners before it bailed,
@@ -269,6 +275,38 @@ verified_
   500-row page disables `color-contrast` (the slowest rule at 15k nodes)
   because contrast is the framework's own AA token gate, not this page's
   claim.
+- **Built & verified:** **v8.8.0 — "Dead Controls & Dark Slots"** (2026-10-10;
+  tag pushed). Two gates that did not gate, found by audit and closed by
+  measurement. (1) `carousel.js` and `popover-menu.js` each fed an
+  author-written selector straight to `querySelector`, from a top-level
+  `onDomReady` callback that `lifecycle.js` runs *synchronously* for a
+  deferred `<script type="module">`. A `SyntaxError` there is raised
+  during module evaluation, which aborts the entire import graph — and
+  because those two files are the 2nd and 3rd imports in `barefoot.js`,
+  one typo in one attribute silently killed the ten modules after them.
+  `lifecycle.js` grows `queryFirst()`: `#id` through `getElementById` (no
+  throw path, and it *fixes* the numeric-id case a selector parse would
+  reject), anything else parsed under a guard that `warnOnce`s per
+  `(label, selector)`. The regression pins `[data-nav-js]` — `nav.js` is
+  the 6th import, so its presence proves the graph ran to the end — and
+  was confirmed to fail (count 0) against the pre-fix code. The
+  `carousel-control-target` Verify rule closes the legibility half: it
+  resolves targets exactly as `queryFirst()` does, so it cannot disagree
+  with the module, and reports rather than throws. (2) `build/contrast.mjs`
+  never opens `src/themes/`, and skips `oklch` tokens besides, so all seven
+  starter themes shipped unmeasured and only the light half was ever
+  rendered — the axe's gallery scan caught 2.7.0's four sub-AA light pairs
+  by accident and nothing had emulated dark since. The gate is now
+  measured, not parsed: every gallery card × `{light, dark}` through
+  `tokenColorIn()` + `wcagContrast()`, five pairs (the status palette is
+  untouched by every starter theme), accent at the 3:1 floor, with a
+  companion test that breaks a dark value to prove the sweep is not
+  vacuous. `[data-bf-scope="contrast"]`'s sixteen re-declared tokens are
+  gated too. Two reviewed budget bumps (core slice 5120 → 5632, family
+  11776 → 12480, both still under the slice sum so the aggregate keeps its
+  teeth); `lifecycle.js` 69% → 89% of its unchanged pin. No new tokens, no
+  new components, no new `data-*`, `index.css` untouched at 3.07KB.
+  Chromium 382 → 389, Firefox and WebKit green, axe green.
 - **Built & verified:** **v8.7.8 — "Countdown & File Boundary"** (2026-10-12;
   tag pushed). Two documented features that had shipped inert, closed by
   wiring them. (1) `data-toast-progress` had been in `docs/api.md` and the
@@ -467,6 +505,21 @@ and `.bf-*` utilities.
 
 ## Next
 
+- **v8.8.0 — "Dead Controls & Dark Slots" (built & verified 2026-10-10; tag
+  = maintainer action):** the barrel-killing author selector is contained
+  (`lifecycle.js` `queryFirst()`, with the `carousel-control-target`
+  contract making the surviving dead control loud), and starter-theme
+  contrast is measured in the browser in both schemes rather than skipped
+  by the source guard. Reviewed budget bumps on the registry core slice and
+  family, both documented in `build/size.mjs` and pinned in
+  `tests/verify.spec.js`. Tag `v8.8.0` per RELEASE.md; `release.yml`
+  publishes from the tag.
+- **Extend `arm()` / `module-pairing` to the carousel** (follow-up, not
+  shipped): `carousel.js` still never calls `arm()`, so `module-pairing`
+  cannot distinguish "carousel module not loaded" from "control points at
+  nothing" the way it does for dismiss/chips/toast. The new
+  `carousel-control-target` rule covers the *target*; the *arming* half is
+  still open and would put more pressure on the core slice budget.
 - **v8.7.8 — "Countdown & File Boundary" (built & verified 2026-10-12; tag
   = maintainer action):** the `data-toast-progress` countdown wired and
   painted (with the pause-math, reduced-motion, and focusout fixes), and the

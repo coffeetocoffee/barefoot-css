@@ -373,6 +373,30 @@ export async function tokenColor(page, name) {
   }, name);
 }
 
+/* tokenColor, scoped to a subtree. tokenColor probes document.body, which
+   is the right seam for the page palette but the wrong one for a surface
+   that re-declares the token layer under itself — the theme gallery's
+   cards, a [data-bf-scope] panel. Probing inside the container is the
+   only way to read the value that container actually paints; measuring
+   the root instead would quietly re-assert the default palette under
+   every theme name. Appends to the container, not :root, so light-dark()
+   resolves against the container's own color-scheme. */
+export async function tokenColorIn(page, container, name) {
+  return page.evaluate(
+    ([sel, token]) => {
+      const host = document.querySelector(sel);
+      if (!host) throw new Error(`tokenColorIn: no container matches ${sel}`);
+      const probe = document.createElement("span");
+      host.append(probe);
+      probe.style.color = `var(${token})`;
+      const resolved = getComputedStyle(probe).color;
+      probe.remove();
+      return resolved;
+    },
+    [container, name]
+  );
+}
+
 /* Drive a component's container query by pinning the container's inline
     size. Barefoot adapts to the *container*, not the viewport — so tests
     assert behavior by resizing the container, never the window (ADR-0009 /

@@ -43,8 +43,14 @@ const JS_BUDGETS = {
      under src/js/ imports and the build never copies. That is byte-neutral
      here (the old build stripped those fields from the shipped copy with a
      text transform, so the budget never saw them) — it deletes the
-     transform, not the bytes. See build.mjs assertRegistrySplit(). */
-  "js/verify-contracts-core.js": 5120, // 4.68KB — 10 rules + the coexistence CSSOM walk
+     transform, not the bytes. See build.mjs assertRegistrySplit().
+
+     v8.8 added carousel-control-target (the 11th rule) and took the core
+     slice 5120 -> 5632: 5.23KB measured, 95% utilized. The same reviewed
+     decision every earlier rule bump was - a rule is authored content, and
+     the alternative is dropping the contract that keeps a dead carousel
+     control from shipping silently. Pinned in tests/verify.spec.js. */
+  "js/verify-contracts-core.js": 5632, // 5.23KB — 11 rules + the coexistence CSSOM walk
   "js/verify-contracts-forms.js": 3072, // 2.74KB — 7 rules, the densest slice
   "js/verify-contracts-tables.js": 2048, // 1.79KB — 2 rules
   // The aggregator: three imports, one frozen concatenation, the domain
@@ -102,12 +108,18 @@ const REGISTRY_FAMILY = Object.freeze([
   "js/verify-contracts-tables.js",
   "js/verify-contracts.js",
 ]);
-/* Deliberately BELOW the sum of the four slice budgets (12.288KB): if it
-   equalled that sum it could never fire before the per-file checks did,
-   which would make it a notice with no teeth. At 11.5KB against 11.03KB
-   measured it bites first — that is the point of keeping it after the
-   split. Bump it in review, never to make a new rule's addition quiet. */
-const REGISTRY_FAMILY_BUDGET = 11776;
+/* Deliberately BELOW the sum of the four slice budgets (12.5KB after the
+   v8.8 core bump): if it equalled that sum it could never fire before the
+   per-file checks did, which would make it a notice with no teeth. It bites
+   first — that is the point of keeping it after the split. Bump it in
+   review, never to make a new rule's addition quiet.
+
+   v8.8 took it 11776 -> 12480 alongside the core slice's 5120 -> 5632,
+   for carousel-control-target: 11.84KB measured at the bump (97%
+   utilized). Both numbers moved because both ceilings describe the same
+   added rule, and both are still below the sum of the slice budgets
+   (12.8KB), so the family gate keeps its teeth. */
+const REGISTRY_FAMILY_BUDGET = 12480;
 
 function checkSizeReport(report) {
   const failures = [];
