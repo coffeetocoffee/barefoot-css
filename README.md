@@ -90,16 +90,17 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 <!-- SIZES:START -->
 | Artifact | Raw | Gzip | Brotli |
 |---|---|---|---|
-| `full.css` | 56.65KB | **10.61KB** | 9.24KB |
-| `js/verify-contracts-core.js` | 13.10KB | **4.69KB** | 4.02KB |
+| `full.css` | 57.18KB | **10.70KB** | 9.33KB |
+| `js/verify-contracts-core.js` | 13.15KB | **4.72KB** | 4.05KB |
 | `index.css` | 11.55KB | **3.07KB** | 2.63KB |
-| `js/verify-contracts-forms.js` | 8.12KB | **2.74KB** | 2.32KB |
+| `js/verify-contracts-forms.js` | 8.18KB | **2.78KB** | 2.36KB |
 | `js/verify.js` | 6.59KB | **2.53KB** | 2.15KB |
 | `components/forms.css` | 10.79KB | **2.25KB** | 1.92KB |
+| `js/verify-contracts.js` | 4.11KB | **2.00KB** | 1.64KB |
+| `js/toast.js` | 4.79KB | **1.98KB** | 1.64KB |
 | `js/carousel.js` | 4.66KB | **1.92KB** | 1.63KB |
 | `js/table-sort.js` | 4.01KB | **1.84KB** | 1.55KB |
-| `js/verify-contracts.js` | 3.74KB | **1.80KB** | 1.48KB |
-| `js/verify-contracts-tables.js` | 4.53KB | **1.80KB** | 1.52KB |
+| `js/verify-contracts-tables.js` | 4.59KB | **1.83KB** | 1.54KB |
 | `js/popover-menu.js` | 3.08KB | **1.45KB** | 1.22KB |
 | `js/theme.js` | 3.07KB | **1.42KB** | 1.15KB |
 | `components/forms-base.css` | 5.49KB | **1.41KB** | 1.17KB |
@@ -107,19 +108,18 @@ Measured from the current build, not estimated. Core stays **under 10KB gzipped*
 | `js/nav.js` | 2.95KB | **1.37KB** | 1.14KB |
 | `js/tabs.js` | 2.90KB | **1.29KB** | 1.09KB |
 | `js/deprecations.js` | 2.45KB | **1.23KB** | 1.01KB |
-| `js/toast.js` | 2.96KB | **1.11KB** | 0.91KB |
 | `components/debug.css` | 3.00KB | **1.06KB** | 0.91KB |
 | `js/roving-index.js` | 2.10KB | **1.04KB** | 0.89KB |
 | `js/verify-domain.js` | 2.21KB | **1.01KB** | 0.86KB |
 | `js/filter-clear.js` | 1.65KB | **0.86KB** | 0.71KB |
 | `utilities.css` | 3.18KB | **0.86KB** | 0.65KB |
+| `components/popover.css` | 3.26KB | **0.81KB** | 0.68KB |
 | `components/icons.css` | 3.69KB | **0.80KB** | 0.65KB |
 | `components/print.css` | 2.38KB | **0.80KB** | 0.66KB |
 | `js/tooltip.js` | 1.86KB | **0.78KB** | 0.64KB |
 | `components/states.css` | 2.75KB | **0.76KB** | 0.66KB |
 | `components/stepper.css` | 2.67KB | **0.70KB** | 0.56KB |
 | `components/table.css` | 2.13KB | **0.69KB** | 0.58KB |
-| `components/popover.css` | 2.74KB | **0.67KB** | 0.58KB |
 | `js/remove-on-click.js` | 1.25KB | **0.66KB** | 0.54KB |
 | `components/forms-select.css` | 1.66KB | **0.63KB** | 0.54KB |
 | `components/reveal.css` | 2.11KB | **0.63KB** | 0.55KB |

@@ -7,7 +7,8 @@
    This slice holds the document- and navigation-shaped contracts: page
    landmarks, the skip link, popover wiring, native-button semantics, the
    opt-in module pairing rule, tab and menu keyboard floors, and the
-   coexistence audit. Rule shape is documented on the aggregator.
+   coexistence audit. Rule shape is documented on the aggregator; each
+   rule's docs/quote prose is in verify/prose.mjs (v8.7.8).
 
    Not a behavior module: nothing to init, not listed in barefoot.js.
    Ships as-is like its siblings, so dist/js travels as one directory. */
@@ -110,10 +111,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: "point popovertarget at the id of a live [popover] element (docs/components.md, Popover)",
-    docs: "docs/components.md",
-    quote: [
-      "`popovertarget` must name the `id` of a live `[popover]` element — a typo'd or missing id leaves the trigger a silent no-op.",
-    ],
   },
 
   {
@@ -148,10 +145,6 @@ export const CORE_RULES = [
       return "the scroll wrapper of a sticky table has no accessible name — give it aria-label or aria-labelledby";
     },
     fix: 'give the sticky table\'s scroll wrapper tabindex="0" and an accessible name (docs/components.md, Table)',
-    docs: "docs/components.md",
-    quote: [
-      'Give the wrapper `tabindex="0"` and an accessible name: tables hold no focusable content, so without it keyboard users can\'t scroll (WCAG 2.1.1; axe\'s `scrollable-region-focusable` flags it).',
-    ],
   },
 
   {
@@ -176,10 +169,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: "put the skip link as the first element in <body> and point it at your main landmark (docs/components.md, Navigation)",
-    docs: "docs/components.md",
-    quote: [
-      "Pair it with `.bf-skip-link` as the first element in `<body>` so the first Tab stop skips past the nav to `<main>`.",
-    ],
   },
 
   {
@@ -201,12 +190,6 @@ export const CORE_RULES = [
       return `this control is a no-op — the opt-in js/${module}.js module is not loaded`;
     },
     fix: "load barefoot-css/js/barefoot.js (or the single module) or drop the dead control (docs/components.md, Alert / Chip / Toast)",
-    docs: "docs/components.md",
-    quote: [
-      "Without the module the button is a no-op visual affordance.",
-      "No-JS first: without the module nothing hides, the × just does nothing.",
-      "Load `js/toast.js` to enable.",
-    ],
   },
 
   {
@@ -232,10 +215,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: "complete the hamburger contract: a toggle with aria-controls pointing at an id'd direct <ul> of the nav (docs/components.md, Hamburger)",
-    docs: "docs/components.md",
-    quote: [
-      "A header nav without a complete contract (toggle + id'd list) is never armed for collapse.",
-    ],
   },
 
   {
@@ -247,11 +226,6 @@ export const CORE_RULES = [
       return "a role=\"button\" on a div or span cannot provide native keyboard and form behavior";
     },
     fix: "use a native <button type=\"button\"> instead of a non-button element with role=\"button\" (docs/architecture.md)",
-    docs: "docs/architecture.md",
-    quote: [
-      "Verify audits only framework-owned semantic shape, not generic HTML.",
-      "It warns when a `div[role=\"button\"]` is used instead of a native button or when a page has more than one `main` landmark.",
-    ],
   },
 
   {
@@ -264,10 +238,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: "keep one <main> landmark per page (docs/architecture.md)",
-    docs: "docs/architecture.md",
-    quote: [
-      "It warns when a `div[role=\"button\"]` is used instead of a native button or when a page has more than one `main` landmark.",
-    ],
   },
 
   {
@@ -282,10 +252,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: "point aria-controls at the existing panel id so the bf:tabactivate payload is truthful (docs/javascript.md, Events)",
-    docs: "docs/javascript.md",
-    quote: [
-      "The `bf:tabactivate` payload names the active tab and panel by id — a tab whose `aria-controls` points at nothing dispatches an event a listener cannot act on.",
-    ],
   },
 
   {
@@ -328,11 +294,6 @@ export const CORE_RULES = [
       return null;
     },
     fix: 'keep one tab stop in a tablist (tabindex="0" on the active tab, "-1" on the rest); give a popover menu autofocus on its first item or load js/popover-menu.js (docs/keyboard.md)',
-    docs: "docs/keyboard.md",
-    quote: [
-      "A roving-tabindex surface keeps exactly one Tab stop: a tablist whose tabs are all `tabindex=\"-1\"` can never be entered, and one where several are tab stops makes every tab one.",
-      "A popover menu with neither `autofocus` nor `js/popover-menu.js` is pointer-only; one carrying `autofocus` is a valid no-JS keyboard floor, and what remains module-only is the APG nicety — the arrow keys.",
-    ],
   },
 
   {
@@ -357,9 +318,5 @@ export const CORE_RULES = [
       return null;
     },
     fix: "put the reset inside an @layer (any name) or drop its outline:none — a layered reset keeps the cascade's order and the ring (docs/coexistence.md)",
-    docs: "docs/coexistence.md",
-    quote: [
-      "Only an unlayered rule can defeat Barefoot's layered `:focus-visible` ring: a co-loaded reset that sets `outline: none` on a broad `:focus` selector wins every layered style at once and the ring disappears — layer the reset, or drop the declaration.",
-    ],
   },
 ];

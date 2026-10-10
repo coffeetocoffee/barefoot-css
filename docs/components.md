@@ -698,6 +698,12 @@ support, carousel controls + autoplay) and their markup.
   keyboard focus. Respects `prefers-reduced-motion` — under reduced
   motion the toast stays open until manually closed. Load
   `js/toast.js` to enable.
+- **`data-toast-progress`** — an empty `<div>` inside a timed toast
+  draws the countdown hairline along its bottom edge, so the notice
+  says how long it has left instead of vanishing mid-sentence. The
+  module writes the fill; without it the bar sits at full, which is
+  also the correct no-JS reading (nothing is counting down). Drop the
+  div and the timer is unaffected.
 - **JS:** none.
 - **A11y:** role/`aria-live` come from your markup.
 

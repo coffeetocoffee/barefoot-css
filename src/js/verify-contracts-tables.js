@@ -6,7 +6,8 @@
 
    This slice holds the table-shaped contracts: the single-column
    aria-sort rule with its declarative data-sort mirror, and select-all
-   grid completeness. Rule shape is documented on the aggregator.
+   grid completeness. Rule shape is documented on the aggregator; each
+   rule's docs/quote prose is in verify/prose.mjs (v8.7.8).
 
    Not a behavior module: nothing to init, not listed in barefoot.js.
    Ships as-is like its siblings, so dist/js travels as one directory. */
@@ -51,11 +52,6 @@ export const TABLES_RULES = [
       return null;
     },
     fix: 'keep aria-sort on one sortable column at a time, with a real sort button in its th, using only "ascending"/"descending"; match data-sort to it (docs/components.md, Table)',
-    docs: "docs/components.md",
-    quote: [
-      "Sorting is single-column: `aria-sort` lives on one `<th>` at a time, its only valid values are `ascending` and `descending`, and a sorted column carries the sort button — an arrow without the control is decoration.",
-      "a page that sorted on the server declares the same state with `data-sort=\"asc\"` or `data-sort=\"desc\"` and gets the identical arrow; the two attributes must agree when both are present",
-    ],
   },
 
   {
@@ -98,9 +94,5 @@ export const TABLES_RULES = [
       return null;
     },
     fix: "name the select-all control and state aria-selected on every row of a selectable table (docs/components.md, Table)",
-    docs: "docs/components.md",
-    quote: [
-      "A multi-select table with a select-all control must state `aria-selected` on every row and name the select-all control — a nameless checkbox and a half-marked grid are invisible to assistive technology.",
-    ],
   },
 ];

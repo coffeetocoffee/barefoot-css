@@ -32,12 +32,18 @@
              reports whether an opt-in module (file stem, e.g. "chips")
              initialized on the page; the engine owns the detection.
    - fix     the console fix hint.
-   - docs    the docs file that states the contract.
-   - quote   verbatim sentence(s) from that file. Every rule is
-             traceable to a sentence in docs/, pinned by test — the
-             API-audit pattern turned outward.
    - module  (optional) the arming module path(s), e.g. "js/chips.js".
    - wcag    (optional) the WCAG success criterion at stake.
+
+   docs + quote — the docs file that states the contract and the verbatim
+   sentence(s) it rests on — are NOT here (v8.7.8). They live in
+   verify/prose.mjs, keyed by rule id, because only the traceability test
+   and the published manifest read them. Nothing under src/js/ may import
+   that module: the shipped slices are byte-for-byte the source, which is
+   what replaced the build's old text transform (a rule whose fix string
+   quoted the registry's own format deleted 13KB of real rule code while
+   the size gate called it an improvement). Add a rule here AND its prose
+   entry there, or the suite fails.
 
     Not a behavior module: nothing to init, not listed in barefoot.js.
     Zero dependencies. Ships as-is like its siblings, so dist/js travels

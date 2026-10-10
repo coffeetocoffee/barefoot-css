@@ -71,6 +71,7 @@ export const DEMOS = Object.freeze({
   demoStickyTable: "#demo-sticky-table",
   demoTimeline: "#demo-timeline",
   demoToast: "#demo-toast",
+  demoToastAuto: "#demo-toast-auto",
   demoToastError: "#demo-toast-error",
   demoToastStack: "#demo-toast-stack",
   demoToastUpload: "#demo-toast-upload",

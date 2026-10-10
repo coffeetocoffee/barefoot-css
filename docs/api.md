@@ -161,7 +161,7 @@ All component attributes and their valid values:
 | `data-progress` | scroll container | `top`, `bottom` (boolean = bottom) | 4.4 |
 | `data-parallax` | decorative element | (boolean) | 4.4 |
 | `data-duration` | `[popover][data-kind="toast"]` | `ms` value (default 3000) | 4.2 |
-| `data-toast-progress` | child of `[data-toast]` | (boolean) | 4.2 |
+| `data-toast-progress` | child of `[popover][data-kind="toast"]` | (boolean) | 4.2 |
 | `data-step` | `<li>` in `[data-stepper]` | (boolean) | 1.9 |
 | `data-step-circle` | child of `[data-step]` | (boolean) | 1.9 |
 | `data-step-label` | child of `[data-step]` | (boolean) | 1.9 |

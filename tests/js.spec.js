@@ -740,9 +740,98 @@ test.describe("opt-in JS: theme persistence", () => {
   });
 });
 
+/* The countdown bar (v8.7.8). data-toast-progress shipped documented but
+   inert: the module wrote --bf-toast-progress with no interval and no CSS
+   rule read it, so the bar measured 0x0 forever. The docs.spec/api.md
+   audits check that an attribute EXISTS, never that it paints — these
+   tests are the missing half. */
+test.describe("opt-in JS: toast countdown bar", () => {
+  const read = (page) =>
+    page.evaluate(
+      (sel) =>
+        document
+          .querySelector(sel)
+          .style.getPropertyValue("--bf-toast-progress")
+          .trim(),
+      `${DEMOS.demoToastAuto} [data-toast-progress]`
+    );
+
+  test("the bar paints and its fill advances while the toast is open", async ({ page }) => {
+    await gotoDemo(page);
+    await page.locator(DEMOS.toastAutoTrigger).click();
+
+    const bar = page.locator(`${DEMOS.demoToastAuto} [data-toast-progress]`);
+    // The demo toast carries the documented markup, so the bar has real
+    // geometry the moment it opens — the whole bug was a 0x0 no-op.
+    await expect(bar).toBeVisible();
+    const box = await bar.boundingBox();
+    expect(box.height, "countdown hairline has height").toBeGreaterThan(0);
+    expect(box.width, "countdown hairline spans the toast").toBeGreaterThan(100);
+
+    const first = parseFloat(await read(page));
+    expect(first).toBeGreaterThan(0);
+    expect(first).toBeLessThanOrEqual(100);
+
+    // 3s duration: a 600ms wait must show real drain, not a static 100%.
+    await page.waitForTimeout(600);
+    const second = parseFloat(await read(page));
+    expect(second, "the fill drains as the timer runs").toBeLessThan(first);
+  });
+
+  test("hover freezes the bar, and leaving resumes from the banked time", async ({ page }) => {
+    await gotoDemo(page);
+    await page.locator(DEMOS.toastAutoTrigger).click();
+    await page.locator(DEMOS.demoToastAuto).hover();
+    await page.waitForTimeout(150);
+
+    const atPause = await read(page);
+    // Well inside the 3s duration, so a bar that kept running would move.
+    await page.waitForTimeout(800);
+    expect(await read(page), "the bar freezes with the timer").toBe(atPause);
+
+    await page.mouse.move(5, 5);
+    await page.waitForTimeout(250);
+    const resumed = parseFloat(await read(page));
+    /* The bug this pins: dividing by `remaining` instead of `duration`
+       snapped the bar back to 100% on resume. Resuming may only ever
+       continue downward from where it stopped. */
+    expect(resumed, "resume continues the countdown, never restarts it").toBeLessThan(
+      parseFloat(atPause)
+    );
+  });
+
+  test("a toast without the div still auto-dismisses", async ({ page }) => {
+    await mountFixture(
+      page,
+      `<div popover="manual" id="bare-toast" data-kind="toast" data-duration="400" role="status">
+         <p>No bar here.</p>
+       </div>`
+    );
+    await page.evaluate(() => {
+      const t = document.getElementById("bare-toast");
+      t.showPopover();
+      return import("/dist/js/toast.js").then((m) => m.initToasts?.());
+    });
+    await expect(page.locator("#bare-toast")).toBeHidden({ timeout: 3000 });
+  });
+
+  test("reduced motion drops data-duration and never starts a timer", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await gotoDemo(page);
+    const toast = page.locator(DEMOS.demoToastAuto);
+    // The module removes the attribute that opts a toast into timing.
+    await expect(toast).not.toHaveAttribute("data-duration");
+    await page.locator(DEMOS.toastAutoTrigger).click();
+    await expect(toast).toBeVisible();
+    // Outlast the demo's 3s duration: binding first and bailing after
+    // would still dismiss a toast the preference says to leave open.
+    await page.waitForTimeout(3600);
+    await expect(toast).toBeVisible();
+  });
+});
+
 test.describe("opt-in JS: the bf:* event contract (v7.0)", () => {
   const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-
   test("bf:themechange reports the new theme and the one it replaced", async ({ page }) => {
     await gotoDemo(page);
     await armEvents(page, ["bf:themechange"]);

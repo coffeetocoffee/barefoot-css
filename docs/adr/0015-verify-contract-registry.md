@@ -57,6 +57,32 @@ assertion), `fix` (the console fix hint), `docs` + `quote` (the verbatim
 docs sentence(s) the rule restates), optional `module` (the arming
 opt-in module) and `wcag` (the success criterion at stake).
 
+> **Amended (v8.7.8): `docs` + `quote` moved to `verify/prose.mjs`.** The
+> rule objects keep only what the checker executes — `id`, `domain`,
+> `select`, `check`, `fix`, optional `module`/`wcag` — and the prose lives
+> in a sibling module keyed by rule id, joined by `withProse()`.
+>
+> The reason is that the prose was never needed in the browser, so it used
+> to be cut out of the shipped copy by a text transform in `build.mjs` that
+> scanned for the literal marker `    quote: [`. That scanner had no notion
+> of JS syntax: a rule whose `fix` string documented the registry's own
+> format matched the marker, and the scanner walked forward to the next
+> balanced `]`, deleting 13KB of real rule code. The size gate — which
+> knows bytes, not meaning — reported the corruption as an improvement
+> (`PASS`, half the size). A test caught it, but as a test failure, not a
+> build error, and nothing pinned the transform's output.
+>
+> A file boundary does the same job without the failure mode: nothing under
+> `src/js/` may import the prose module, so the shipped slices are
+> byte-for-byte the source. `build.mjs`'s `assertRegistrySplit()` enforces
+> both halves at build time (no `src/js/` importer, no prose in `dist/`),
+> and `tests/verify.spec.js` pins the join in both directions.
+>
+> This is byte-neutral — the transform already kept the prose out of the
+> budgets — so it was done for correctness, not size. It does NOT change
+> the "one registry" claim: one source of truth, no rule logic restated,
+> delivered as two files instead of one.
+
 `check` is deliberately pure — `(el, ctx) => detail | null` with
 `ctx = { byId, armed }` — no closures over module state, so the same
 function runs unchanged in-page (`page.evaluate`) and serializes into

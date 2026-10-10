@@ -8,7 +8,8 @@
    live-region contracts for loading/error/async states, the single-value
    data-state rule, error-summary focus placement, wizard stepper
    completeness, and reading order under container reflow. Rule shape is
-   documented on the aggregator.
+   documented on the aggregator; each rule's docs/quote prose is in
+   verify/prose.mjs (v8.7.8).
 
    Not a behavior module: nothing to init, not listed in barefoot.js.
    Ships as-is like its siblings, so dist/js travels as one directory. */
@@ -30,10 +31,6 @@ export const FORMS_RULES = [
       return `no control lists "${id}" in its aria-describedby, so the error is never announced with its field`;
     },
     fix: 'wire the field error to its control with aria-describedby="<error-id>" (docs/components.md, Forms)',
-    docs: "docs/components.md",
-    quote: [
-      "Pair each field with `.bf-field-error` or `.bf-error-text` wired up via `aria-describedby`.",
-    ],
   },
 
   {
@@ -56,10 +53,6 @@ export const FORMS_RULES = [
       return null;
     },
     fix: 'give the state an appropriate live-region contract: loading/empty use role="status" and error uses role="alert" (docs/states.md)',
-    docs: "docs/states.md",
-    quote: [
-      "Loading and empty states use `role=\"status\"`; error states use `role=\"alert\"`.",
-    ],
   },
 
   {
@@ -83,10 +76,6 @@ export const FORMS_RULES = [
       return null;
     },
     fix: 'place the summary inside its form with role="alert" and tabindex="-1" (docs/states.md)',
-    docs: "docs/states.md",
-    quote: [
-      "An error summary uses `role=\"alert\"` and `tabindex=\"-1\"` so focus can land on it before the first invalid field.",
-    ],
   },
 
   {
@@ -108,10 +97,6 @@ export const FORMS_RULES = [
       return null;
     },
     fix: "write one documented data-state value; when several conditions hold, the precedence is loading > error > empty > partial > full (docs/states.md)",
-    docs: "docs/states.md",
-    quote: [
-      "`data-state` stays single-valued; when several conditions hold at once the precedence is loading > error > empty > partial > full, with freshness (`stale` → `refreshing` → `fresh`) and an optimistic mutation cycle (`optimistic` → `confirmed` → `rolled-back`) as the other two axes.",
-    ],
   },
 
   {
@@ -135,10 +120,6 @@ export const FORMS_RULES = [
       return null;
     },
     fix: 'give the pending field aria-busy="true" and a role="status" region that announces the check (docs/forms.md, Async validation)',
-    docs: "docs/forms.md",
-    quote: [
-      "An async-pending field carries `aria-busy=\"true\"` and a `role=\"status\"` region that announces the outcome — a decorative spinner alone announces nothing.",
-    ],
   },
 
   {
@@ -168,10 +149,6 @@ export const FORMS_RULES = [
       return null;
     },
     fix: 'mark exactly one step aria-current="step", on an <li> of the stepper\'s <ol> (docs/forms.md, Wizard)',
-    docs: "docs/forms.md",
-    quote: [
-      "A wizard stepper marks exactly one step with `aria-current=\"step\"`, on an `<li>` of its `<ol>` — a current marker on markup the stepper does not track is a step the user is not on.",
-    ],
   },
 
   {
@@ -201,9 +178,5 @@ export const FORMS_RULES = [
       return null;
     },
     fix: "remove order and reversed flex direction from inside an adaptive container; reflow may relayout, never reorder (docs/adaptive.md)",
-    docs: "docs/adaptive.md",
-    quote: [
-      "Adaptive reflow must never reorder the DOM: `order` on an item and a reversed flex direction both paint a reading sequence the markup does not promise (WCAG 1.3.2), so neither appears inside a reflowing container.",
-    ],
   },
 ];

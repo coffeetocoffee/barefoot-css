@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.7.8] — 2026-10-12
+
+### Fixed
+
+- **`data-toast-progress` now actually paints.** The attribute shipped in 4.2, was registered in `docs/api.md`, shipped in the documented markup, and rendered nothing: `js/toast.js` wrote `--bf-toast-progress` with no interval ever created (the `progressInterval` function had zero call sites), and no CSS rule read the property. Three more defects fell out of the same wiring: the bar divided elapsed time by `duration` instead of the banked `remaining`, so a hover-resume snapped it back to 100%; the `prefers-reduced-motion` guard ran *after* the listeners were bound, so the timer started anyway and the preference did nothing; and `focusout` resumed the countdown when focus merely moved *between* children of the toast. The module now runs one 100ms repaint, holds the timer per pause reason (hover and focus hold it together), and `components/popover.css` paints the hairline with the repo's existing `background-size` + `background-position: inline-start` idiom, so it mirrors under RTL with no `@property`. `initToasts` is now exported, matching the `docs/api.md` contract every other `js/` module already honored. Four new tests in `tests/js.spec.js` sample the property twice and assert the bar drains — the gate whose absence let a documented attribute render a 0×0 ghost.
+- **The Verify registry no longer relies on a text transform to ship.** `build/build.mjs` stripped `docs`/`quote` from the shipped registry with a scanner keyed on the literal marker `"    quote: ["`, which had no notion of JS syntax. A rule whose `fix` string documented the registry's own format matched the marker and the scanner walked forward to the next balanced `]`, deleting 13KB of real rule code — while the size gate, which only measures bytes, reported the corruption as an improvement (`PASS`, half the size). The failure surfaced only as a test failure, not a build error. The prose now lives in `verify/prose.mjs`, keyed by rule id; nothing under `src/js/` imports it, so the shipped slices are byte-for-byte the source and there is nothing left to strip or corrupt. A second fragility disappears with it: the marker was four-space sensitive, so reformatting the slices to 2-space indent would have silently turned the strip into a no-op. `build.mjs`'s new `assertRegistrySplit()` fails the build if anything under `src/js/` imports the prose module or if `dist/` carries prose, and `tests/verify.spec.js` pins the join in both directions (a rule without prose fails, and prose without a rule fails).
+
+### Changed
+
+- **`js/toast.js` carries an explicit budget (2048 → 2304 bytes gzip).** The countdown is real behavior, not a squeeze: the module rode the 2KB family default at 1.11KB and could not be made to work in the default's headroom. Bumped deliberately, in review, and pinned in `tests/verify.spec.js` alongside the other reviewed budget decisions.
+- **ADR-0015 is amended** with the registry's runtime/prose split and why a file boundary replaced a transform. The registry family budget is unchanged: the split is byte-neutral (the transform already kept the prose out of the shipped copy — 11,287 vs 11,294 bytes gzip across the four files), so it was done for correctness, not size.
+
 ## [8.7.0] — 2026-09-28
 
 ### Added

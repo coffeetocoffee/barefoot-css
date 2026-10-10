@@ -1,6 +1,13 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-10-09 — v8.7.5 "Held Ceilings" built &
+_Last updated: 2026-10-12 — v8.7.8 "Countdown & File Boundary" built &
+verified (the toast `data-toast-progress` bar actually wired and painted,
+with three bugs fixed in the same pass — the pause math that snapped back
+to 100%, the reduced-motion guard that bound listeners before it bailed,
+and the focusout that resumed on intra-toast focus moves — and the Verify
+registry's docs/quote prose split into `verify/prose.mjs` so the shipped
+slices are byte-for-byte the source and the build's marker-keyed text
+transform is gone); v8.7.5 "Held Ceilings" built &
 verified (the Verify registry split by domain with per-slice budgets and
 an aggregate family ratchet, the default-theme palette pinned as literal
 painted values in both schemes, the `contrast.mjs` entry guard that
@@ -30,7 +37,7 @@ verified_
 
 ## Snapshot
 
-- **Shipped:** releases through `barefoot-css@8.7.5` (2026-10-09).
+- **Shipped:** releases through `barefoot-css@8.7.8` (2026-10-12).
   The v6 "Prove it, then let
   people in" (verification debt, CDN quick-start, icon recipe), preceded by
   v5.0 "the component is the breakpoint" (container-adaptive components, the
@@ -262,6 +269,34 @@ verified_
   500-row page disables `color-contrast` (the slowest rule at 15k nodes)
   because contrast is the framework's own AA token gate, not this page's
   claim.
+- **Built & verified:** **v8.7.8 — "Countdown & File Boundary"** (2026-10-12;
+  tag pushed). Two documented features that had shipped inert, closed by
+  wiring them. (1) `data-toast-progress` had been in `docs/api.md` and the
+  documented markup since 4.2 while rendering a 0×0 ghost: `toast.js` wrote
+  `--bf-toast-progress` with no interval ever created, and no CSS rule read
+  it. Wiring it exposed three more defects in the same function — the bar
+  divided by `duration` instead of banked `remaining` (hover-resume snapped
+  to 100%), the `prefers-reduced-motion` guard ran *after* binding, so the
+  timer started regardless, and `focusout` resumed on intra-toast focus
+  moves. Pause is now per-reason (hover and focus hold the timer together),
+  `initToasts` is exported like every sibling module, and the paint reuses
+  the repo's `background-size` + `background-position: inline-start` idiom
+  (RTL-correct, no `@property`). `toast.js` takes an explicit 2304-byte
+  budget — a feature does not squeeze under the 2KB default. (2) The build
+  stripped `docs`/`quote` from the shipped registry with a scanner keyed on
+  the literal `"    quote: ["`, which had no notion of JS syntax: a rule
+  whose `fix` documented the registry's own format matched the marker and
+  the scanner walked to the next balanced `]`, deleting 13KB of real rule
+  code while the size gate called the corruption an improvement. A file
+  boundary replaces it — prose lives in `verify/prose.mjs`, nothing under
+  `src/js/` imports it, and the shipped slices are byte-identical to source.
+  The four-space marker had a second failure the report missed: reformat the
+  slices to 2-space indent and the strip silently no-ops. `assertRegistrySplit()`
+  fails the build on either regression; the join is pinned both directions in
+  tests. **Byte-neutral on purpose** (11,287 vs 11,294 family gzip) — the
+  old transform already kept prose out of the shipped copy, so this is a
+  correctness release, not a size one. No new tokens, no new components,
+  `index.css` untouched at 3.07KB. `npm run check` green.
 - **Built & verified:** **v8.7.5 — "Held Ceilings"** (2026-10-09; tag
   pushed). A maintenance release, and the theme is the budget gate losing
   its ability to discriminate. The Verify registry had ridden one
@@ -432,6 +467,15 @@ and `.bf-*` utilities.
 
 ## Next
 
+- **v8.7.8 — "Countdown & File Boundary" (built & verified 2026-10-12; tag
+  = maintainer action):** the `data-toast-progress` countdown wired and
+  painted (with the pause-math, reduced-motion, and focusout fixes), and the
+  Verify registry's docs/quote prose split into `verify/prose.mjs` so the
+  shipped slices are byte-identical to source — the build's marker-keyed
+  text transform is gone, replaced by `assertRegistrySplit()`. Byte-neutral
+  by design; `toast.js` takes an explicit 2304-byte budget. ADR-0015
+  amended. Tag `v8.7.8` per RELEASE.md; `release.yml` publishes from the
+  tag.
 - **Tag & publish v5.2.0 / v5.3.0** (and the v6 release) — maintainer
   action only; `release.yml` takes over on the tag push.
 - **v8.5.0 — "DX Governance" (built & verified 2026-09-18; tag =

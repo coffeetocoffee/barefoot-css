@@ -25,6 +25,7 @@ import crypto from "node:crypto";
 import { checkContrast } from "./contrast.mjs";
 import { buildDTCG } from "./tokens-dtcg.mjs";
 import { VERIFY_RULES } from "../src/js/verify-contracts.js";
+import { withProse } from "../verify/prose.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(root, "src");
@@ -103,35 +104,12 @@ export function fmt(bytes) {
   return `${(bytes / 1024).toFixed(2)}KB`;
 }
 
-function stripRuntimeMetadata(source) {
-  let out = source;
-  const marker = "    quote: [";
-  let start = out.indexOf(marker);
-  while (start !== -1) {
-    let i = start + marker.length;
-    let depth = 1;
-    let quote = null;
-    let escaped = false;
-    for (; i < out.length && depth > 0; i++) {
-      const ch = out[i];
-      if (quote) {
-        if (escaped) escaped = false;
-        else if (ch === "\\") escaped = true;
-        else if (ch === quote) quote = null;
-      } else if (ch === "\"" || ch === "'") quote = ch;
-      else if (ch === "[") depth++;
-      else if (ch === "]") depth--;
-    }
-    if (depth !== 0) break;
-    if (out[i] === ",") i++;
-    out = out.slice(0, start) + out.slice(i);
-    start = out.indexOf(marker);
-  }
-  return out.replace(/^    docs: "[^"\n]+",\r?\n/gm, "");
-}
-
 function buildVerifyManifest() {
-  const rules = VERIFY_RULES.map(({ id, domain, docs, quote, fix }) => ({
+  /* withProse joins each runtime rule to its docs/quote entry in
+     verify/prose.mjs. The registry carries no prose at runtime, so there
+     is nothing to strip out of the shipped copy — the slices simply never
+     import the prose module (v8.7.8). */
+  const rules = withProse(VERIFY_RULES).map(({ id, domain, docs, quote, fix }) => ({
     id, domain, docs, hint: fix,
     proseHash: crypto.createHash("sha256").update(quote.join("\\n")).digest("hex"),
   }));
@@ -161,21 +139,64 @@ function buildAll() {
 
   // Opt-in JS modules are shipped as-is (readable, commented, tiny).
   // No bundler, no transform — modern browsers only, same as the CSS.
+  //
+  // The registry slices ship byte-for-byte. Their docs/quote prose lives
+  // in verify/prose.mjs, which nothing under src/js/ imports, so it is
+  // never copied here — a file boundary does what a text transform used
+  // to (v8.7.8). See buildVerifyManifest above.
   const jsDir = join(SRC, "js");
   mkdirSync(join(DIST, "js"), { recursive: true });
   for (const file of readdirSync(jsDir).filter((f) => f.endsWith(".js"))) {
-    const source = readFileSync(join(jsDir, file), "utf8");
-    // The registry slices carry `quote:`/`docs:` for the docs-traceability
-    // test and the manifest hashes; neither is needed at runtime, and the
-    // shipped copy drops them. The slices are matched by prefix because the
-    // registry split into core/forms/tables files (v8.7).
-    const isRegistry = file.startsWith("verify-contracts");
-    const code = isRegistry ? Buffer.from(stripRuntimeMetadata(source)) : Buffer.from(source);
+    const code = readFileSync(join(jsDir, file));
     writeFileSync(join(DIST, "js", file), code);
     report[`js/${file}`] = sizes(code);
   }
 
+  assertRegistrySplit();
+
   return report;
+}
+
+/* The registry's prose must never reach dist/ (v8.7.8). Before the split
+   this held because a text transform cut `quote:`/`docs:` out of the
+   shipped copy; that transform had no notion of JS syntax, and a rule
+   whose fix string quoted the registry's own format silently deleted 13KB
+   of real rule code — while the size gate, which only knows bytes,
+   reported the corruption as an improvement.
+
+   Now the guarantee is a file boundary: nothing under src/js/ may import
+   verify/prose.mjs, and the shipped slices must carry no prose. Both are
+   asserted here, at build time, so a reintroduced import fails the build
+   instead of quietly shipping (and growing) the registry. The
+   complementary half — every rule HAS prose — is enforced by withProse()
+   and pinned by tests/verify.spec.js. */
+function assertRegistrySplit() {
+  const offenders = [];
+  for (const file of readdirSync(join(SRC, "js")).filter((f) => f.endsWith(".js"))) {
+    const source = readFileSync(join(SRC, "js", file), "utf8");
+    if (/from\s+["'][^"']*prose\.mjs["']/.test(source)) offenders.push(`src/js/${file}`);
+  }
+  if (offenders.length > 0) {
+    throw new Error(
+      `The registry prose module is imported by ${offenders.join(", ")} — ` +
+        `it would ship in dist/js and defeat the split (ADR-0015). ` +
+        `Import verify/prose.mjs from build/, verify/pack.mjs, or tests/ instead.`
+    );
+  }
+
+  for (const file of readdirSync(join(DIST, "js"))) {
+    if (!file.startsWith("verify-contracts")) continue;
+    const shipped = readFileSync(join(DIST, "js", file), "utf8");
+    // Match the property, not the word: rule `fix`/`check` strings may
+    // legitimately mention the field by name (that is exactly the text
+    // the old scanner tripped over).
+    if (/(^|[\s{,])(docs|quote):\s/.test(shipped)) {
+      throw new Error(
+        `dist/js/${file} carries docs/quote prose — the shipped registry ` +
+          `must hold runtime fields only (ADR-0015, v8.7.8).`
+      );
+    }
+  }
 }
 
 function printReport(report) {

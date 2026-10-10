@@ -27,20 +27,26 @@ const DEFAULT_JS_BUDGET = 2048;
 const HEADROOM_WARN_THRESHOLD = 0.85;
 
 const JS_BUDGETS = {
-  /* The registry is data-heavy by design: every rule quotes the docs
-     sentence that states its contract (ADR-0015), so growth here is real
-     authored content, not accidental bulk. It was one 9216-byte ratchet
-     through v8.6 — history 4 → 5 → 6.6 → 8 → 10 → 9KB, seven releases,
-     every new rule pushing the same ceiling — and v8.7 split it into
-     three domain slices so each carries its own headroom. The three
-     budgets below are the reviewed decision that split produced; the
-     ~2.4KB of combined gzip growth over the old single file is the
-     duplicated file scaffolding (three headers, three import/export
-     pairs), paid back by the domain entry points no longer dragging the
-     whole registry in (verify-domain.js imports slices directly). */
-  "js/verify-contracts-core.js": 5120, // 4.69KB — 10 rules + the coexistence CSSOM walk
+  /* The registry is data-heavy by design: every rule carries the `check`
+     that audits a surface (ADR-0015), so growth here is real authored
+     content, not accidental bulk. It was one 9216-byte ratchet through
+     v8.6 — history 4 → 5 → 6.6 → 8 → 10 → 9KB, seven releases, every new
+     rule pushing the same ceiling — and v8.7 split it into three domain
+     slices so each carries its own headroom. The three budgets below are
+     the reviewed decision that split produced; the ~2.4KB of combined
+     gzip growth over the old single file is the duplicated file
+     scaffolding (three headers, three import/export pairs), paid back by
+     the domain entry points no longer dragging the whole registry in
+     (verify-domain.js imports slices directly).
+
+     v8.7.8 moved the docs/quote prose to verify/prose.mjs, which nothing
+     under src/js/ imports and the build never copies. That is byte-neutral
+     here (the old build stripped those fields from the shipped copy with a
+     text transform, so the budget never saw them) — it deletes the
+     transform, not the bytes. See build.mjs assertRegistrySplit(). */
+  "js/verify-contracts-core.js": 5120, // 4.68KB — 10 rules + the coexistence CSSOM walk
   "js/verify-contracts-forms.js": 3072, // 2.74KB — 7 rules, the densest slice
-  "js/verify-contracts-tables.js": 2048, // 1.80KB — 2 rules
+  "js/verify-contracts-tables.js": 2048, // 1.79KB — 2 rules
   // The aggregator: three imports, one frozen concatenation, the domain
   // map, and the documented rule shape. Imports + comments only —
   // growth here means a rule was added outside a slice.
@@ -53,6 +59,14 @@ const JS_BUDGETS = {
   // Bumped from the 2KB family default deliberately, in review — same
   // rule as the registry bumps above.
   "js/verify.js": 2816, // 2.53KB — 92%
+  /* toast.js gains the countdown bar (v8.7.8): the pause/resume clock
+     that banks elapsed time, the 10fps repaint, and the reason-set that
+     lets hover and focus hold the timer together. It rode the 2KB family
+     default at 1.11KB before the bar was wired; the feature is the
+     documented `data-toast-progress` attribute, which shipped inert
+     since 4.2 and could not be made to work in the default's headroom.
+     Bumped deliberately, in review — same rule as the registry bumps. */
+  "js/toast.js": 2304, // 1.98KB — 88%
   /* carousel.js and table-sort.js sit at 96% and 92% of the 2KB family
      default. Reviewed as ceilings to keep, not to raise: both are
      behavior-complete surfaces whose remaining work is bugfixing, and

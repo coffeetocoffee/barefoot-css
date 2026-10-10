@@ -360,13 +360,20 @@ configurable duration, pause-on-hover, and visible progress indicator.
 ```html
 <div popover="manual" id="toast" data-kind="toast" data-duration="3000" role="status">
   <p>Saved successfully.</p>
+  <div data-toast-progress></div>
   <button type="button" popovertarget="toast">Close</button>
 </div>
 ```
 
 - `data-duration="ms"` (default 3000ms) sets the auto-dismiss timer.
 - Pauses on hover and keyboard focus; resumes when the pointer leaves or
-  focus moves away.
+  focus moves away. The countdown resumes from where it stopped rather
+  than restarting, and a hover plus a focused control hold the timer
+  together — ending either one alone does not resume it.
+- `data-toast-progress` (any empty child element) draws the countdown
+  hairline on the toast's bottom edge; the module writes
+  `--bf-toast-progress` and `components/popover.css` paints it. Optional:
+  a toast without one dismisses exactly the same.
 - Respects `prefers-reduced-motion` — under reduced motion, the toast
   stays open until manually closed.
 - **No-JS first:** without the module toasts stay open until manually

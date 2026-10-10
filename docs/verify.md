@@ -51,10 +51,14 @@ entry point and continues to run every contract plus deprecations. The Node
 pack accepts the same selection: `runPack(page, { domain: "forms" })`; its
 default is `all`.
 
-The source registry keeps full documentation quotes for traceability tests.
-Published browser metadata is generated with compact rule hints and a
-`verify-manifest.json` containing prose hashes, so runtime diagnostics stay
-actionable without shipping duplicate documentation prose.
+The registry's documentation prose — the `docs` file and verbatim
+`quote` sentence(s) each rule rests on — lives in `verify/prose.mjs`,
+keyed by rule id (v8.7.8). Only the traceability test, the manifest
+builder, and the CI pack read it; nothing under `src/js/` imports it, so
+it never ships. The browser registry is exactly the source file. Published
+browser metadata is generated with compact rule hints and a
+`verify-manifest.json` containing prose hashes, so runtime diagnostics
+stay actionable without shipping duplicate documentation prose.
 
 ## Strict mode (CI)
 
@@ -73,7 +77,10 @@ A clean page never throws, strict or not.
 The registry (`src/js/verify-contracts.js`) is the single source of truth —
 docs, checker, and CI packs all read it (ADR-0015). Every rule quotes the
 exact sentence in `docs/` that states its contract, and a test fails if
-that quote drifts.
+that quote drifts. The rule objects carry what the checker runs
+(`id`/`select`/`check`/`fix`, plus optional `module`/`wcag`); the quotes
+live alongside them in `verify/prose.mjs`, joined by id. Both halves are
+pinned: a rule without prose fails, and prose without a rule fails.
 
 The rules are split across three files by domain —
 `verify-contracts-core.js`, `-forms.js`, `-tables.js` — and

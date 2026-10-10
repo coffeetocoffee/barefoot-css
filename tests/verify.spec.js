@@ -35,6 +35,8 @@ import { DEMOS, gotoDemo, gotoDataStory, gotoFormArchitecture, gotoKeyboard, got
 import {
   VERIFY_RULES,
   VERIFY_DEPRECATIONS,
+  VERIFY_PROSE,
+  withProse,
   ALL_MODULES,
   runPack,
   runRule,
@@ -63,10 +65,17 @@ const SEED_IDS = [
 ];
 
 test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
-  const REQUIRED = ["check", "docs", "fix", "id", "quote", "select"];
+  /* The registry is two files since v8.7.8: the runtime rule objects in
+     src/js/verify-contracts-*.js (id/select/check/fix/module/wcag) and
+     their prose in verify/prose.mjs (docs/quote), joined by id. Runtime
+     consumers see the same rule objects they always did; the shipped
+     slices simply never import the prose, which is what replaced the
+     build's old text transform. */
+  const REQUIRED = ["check", "fix", "id", "select"];
   const ALLOWED = [...REQUIRED, "domain", "module", "wcag"];
+  const PROSE_REQUIRED = ["docs", "quote"];
 
-  test("every rule carries exactly the pinned shape", () => {
+  test("every rule carries exactly the pinned runtime shape", () => {
     expect(VERIFY_RULES.length).toBeGreaterThanOrEqual(6);
     const seen = new Set();
     for (const rule of VERIFY_RULES) {
@@ -85,16 +94,56 @@ test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
       expect([].concat(rule.select).length).toBeGreaterThan(0);
       expect(typeof rule.check).toBe("function");
       expect(rule.fix.trim()).toBeTruthy();
-      expect(rule.docs).toMatch(/^docs\/[\w-]+\.md$/);
-      expect(Array.isArray(rule.quote)).toBe(true);
-      expect(rule.quote.length).toBeGreaterThan(0);
-      for (const q of rule.quote) expect(q.trim()).toBeTruthy();
       if (rule.module !== undefined) {
         expect(Array.isArray(rule.module)).toBe(true);
         for (const m of rule.module) expect(m).toMatch(/^js\/[\w-]+\.js$/);
       }
       if (rule.wcag !== undefined) expect(rule.wcag).toMatch(/^\d+\.\d+(\.\d+)?$/);
     }
+  });
+
+  test("the runtime registry ships no prose — the split's whole point", () => {
+    /* The old build cut docs/quote out of the shipped copy with a text
+       scanner keyed on the literal "    quote: ["; a rule whose fix
+       string quoted that format deleted 13KB of real rule code. Now the
+       fields are simply absent from the runtime objects, so there is
+       nothing to strip. */
+    for (const rule of VERIFY_RULES) {
+      expect("quote" in rule, `${rule.id} still carries quote at runtime`).toBe(false);
+      expect("docs" in rule, `${rule.id} still carries docs at runtime`).toBe(false);
+    }
+  });
+
+  test("every rule has prose, and every prose entry names a live rule", () => {
+    const ids = new Set(VERIFY_RULES.map((r) => r.id));
+    for (const rule of VERIFY_RULES) {
+      const entry = VERIFY_PROSE[rule.id];
+      expect(entry, `${rule.id} has no entry in verify/prose.mjs`).toBeTruthy();
+      for (const field of PROSE_REQUIRED) {
+        expect(entry[field], `${rule.id} prose is missing "${field}"`).toBeDefined();
+      }
+      expect(entry.docs).toMatch(/^docs\/[\w-]+\.md$/);
+      expect(Array.isArray(entry.quote)).toBe(true);
+      expect(entry.quote.length).toBeGreaterThan(0);
+      for (const q of entry.quote) expect(q.trim()).toBeTruthy();
+    }
+    // The reverse direction: prose orphaned by a renamed or deleted rule
+    // would otherwise sit there forever, quoting docs nothing audits.
+    for (const id of Object.keys(VERIFY_PROSE)) {
+      expect(ids.has(id), `verify/prose.mjs has "${id}", which is not a rule`).toBe(true);
+    }
+    expect(Object.keys(VERIFY_PROSE)).toHaveLength(VERIFY_RULES.length);
+  });
+
+  test("withProse re-joins the two halves into the documented shape", () => {
+    const joined = withProse(VERIFY_RULES);
+    expect(joined).toHaveLength(VERIFY_RULES.length);
+    for (const rule of joined) {
+      const runtime = VERIFY_RULES.find((r) => r.id === rule.id);
+      expect(rule).toEqual({ ...runtime, ...VERIFY_PROSE[rule.id] });
+    }
+    // A rule with no prose must throw, not silently lose its traceability.
+    expect(() => withProse([{ id: "not-a-real-rule" }])).toThrow(/no entry/);
   });
 
   test("domain partitions cover every rule without overlap", () => {
@@ -200,7 +249,7 @@ test.describe("Verify Phase 0: registry format is pinned (ADR-0015)", () => {
   });
 
   test("every rule is traceable to a sentence in docs/", () => {
-    for (const rule of VERIFY_RULES) {
+    for (const rule of withProse(VERIFY_RULES)) {
       const file = path.join(rootDir, rule.docs);
       expect(fs.existsSync(file), `${rule.docs} does not exist`).toBe(true);
       const docs = fs.readFileSync(file, "utf8").replace(/\s+/g, " ");
@@ -890,7 +939,7 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     const manifest = JSON.parse(fs.readFileSync(path.join(rootDir, "dist", "verify-manifest.json"), "utf8"));
     expect(manifest.domains).toEqual(["core", "forms", "tables"]);
     expect(manifest.rules).toHaveLength(VERIFY_RULES.length);
-    for (const rule of VERIFY_RULES) {
+    for (const rule of withProse(VERIFY_RULES)) {
       const generated = manifest.rules.find((entry) => entry.id === rule.id);
       expect(generated, `${rule.id} missing from verify-manifest.json`).toBeTruthy();
       expect(generated.domain).toBe(rule.domain);
@@ -921,6 +970,10 @@ test.describe("Verify Phase 4: hardening (the size table is policed)", () => {
     expect(budgets["js/carousel.js"]).toBe(2048);
     expect(budgets["js/table-sort.js"]).toBe(2048);
     expect(budgets["js/lifecycle.js"]).toBe(2048);
+    // toast.js left the family default in v8.7.8: wiring the countdown
+    // bar (a documented attribute that shipped inert) is a feature, and
+    // features get a deliberate budget, not a squeeze under the default.
+    expect(budgets["js/toast.js"]).toBe(2304);
   });
 });
 

@@ -37,12 +37,20 @@
 
 import { VERIFY_RULES, VERIFY_DOMAINS, rulesForDomain } from "../src/js/verify-contracts.js";
 import { VERIFY_DEPRECATIONS } from "../src/js/deprecations.js";
+import { VERIFY_PROSE, withProse } from "./prose.mjs";
 
 /* The registries themselves, re-exported: docs, checker, and packs share
    one source of truth (pinned by tests/verify.spec.js). Contracts are the
    permanent truth; deprecations are the announced-but-not-removed
-   surfaces, with lifecycle fields a contract never has (ADR-0023). */
-export { VERIFY_RULES, VERIFY_DEPRECATIONS, VERIFY_DOMAINS, rulesForDomain };
+   surfaces, with lifecycle fields a contract never has (ADR-0023).
+
+   The registry is delivered in two pieces (v8.7.8): the runtime rules
+   (id/select/check/fix/module/wcag) live in src/js/ and ship to dist/;
+   their docs/quote prose lives in verify/prose.mjs, which only build- and
+   CI-side code imports. `VERIFY_RULES` is the runtime shape every consumer
+   of this pack already had; `VERIFY_PROSE` and `withProse` expose the
+   documented shape for tools that need the quotes. */
+export { VERIFY_RULES, VERIFY_DEPRECATIONS, VERIFY_DOMAINS, rulesForDomain, VERIFY_PROSE, withProse };
 
 /* Module stems, mirroring src/js/ file names. The browser modules arm
    themselves with these exact stems (lifecycle.js arm()); pass a

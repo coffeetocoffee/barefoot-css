@@ -108,6 +108,51 @@
     transform: none;
   }
 
+  /* ---- Toast countdown bar (opt-in JS) ----
+     An empty <div data-toast-progress> inside a timed toast becomes the
+     hairline countdown: js/toast.js writes --bf-toast-progress (time
+     left as a share of the original duration) and this rule paints it.
+     A child element rather than the toast's own ::after because the
+     toast's single free pseudo slot would collide with the stacking
+     and motion work above — and because the affordance then lives in
+     the HTML where an author can see it.
+
+     Absolutely positioned on the bottom edge, so DOM order inside the
+     toast is free: the markup docs have shown since 4.2 puts the div
+     between the message and the Close button, and it must keep working
+     there. The bar rides the toast's own padding, so it never overlaps
+     content or changes the toast's height when it appears.
+
+     background-size (not transform) so the fill follows [dir="rtl"]
+     for free via background-position — same idiom as the scroll
+     progress bars in reveal.css/carousel.css, and it needs no
+     @property registration (ADR-0005). The default 100% is the
+     no-JS/first-paint state: a bar that starts empty and only fills
+     once JS ticks would flash. No transition — the module repaints at
+     10fps, already smooth for a hairline, and a transition would fight
+     the pause. */
+  [popover][data-kind="toast"] [data-toast-progress] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    block-size: var(--bf-progress-height);
+    border-radius: var(--bf-radius-full);
+    background-color: var(--bf-border);
+    background-image: linear-gradient(var(--bf-progress-color), var(--bf-progress-color));
+    background-repeat: no-repeat;
+    background-position: inline-start;
+    background-size: var(--bf-toast-progress, 100%) 100%;
+  }
+
+  /* Forced colors maps the toast's background to Canvas, so the track
+     disappears on its own and only the fill needs naming: ButtonText
+     keeps the countdown readable without leaning on a brand color. */
+  @media (forced-colors: active) {
+    [popover][data-kind="toast"] [data-toast-progress] {
+      background-image: linear-gradient(ButtonText, ButtonText);
+    }
+  }
+
   [popover][data-kind="toast"][data-variant="success"] {
     border-inline-start-color: var(--bf-success);
   }
