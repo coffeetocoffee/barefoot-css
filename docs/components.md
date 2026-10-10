@@ -427,7 +427,9 @@ support, carousel controls + autoplay) and their markup.
 - **JS:** none for the base scroller. Opt-in `js/carousel.js` adds
   prev/next buttons (`data-carousel-prev` / `data-carousel-next` pointing
   at the scroller's id) and autoplay (`data-autoplay="3000"`). Without it
-  nothing changes.
+  nothing changes — the scroller still scrolls, and the prev/next buttons
+  are dead controls, so Verify's `module-pairing` reports them unless
+  `js/carousel.js` (or the barrel) is loaded.
 - **The control's target is a contract.** `data-carousel-prev` /
   `data-carousel-next` must name a live `[data-carousel]` scroller — a
   value that matches nothing, or a selector the browser cannot parse (a

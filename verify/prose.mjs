@@ -54,6 +54,7 @@ export const VERIFY_PROSE = Object.freeze({
       "Without the module the button is a no-op visual affordance.",
       "No-JS first: without the module nothing hides, the × just does nothing.",
       "Load `js/toast.js` to enable.",
+      "the prev/next buttons are dead controls, so Verify's `module-pairing` reports them unless `js/carousel.js` (or the barrel) is loaded.",
     ],
   },
   "carousel-control-target": {

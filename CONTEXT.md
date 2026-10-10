@@ -54,7 +54,7 @@ ADRs live in `docs/adr/`.
   the quote drifts or the docs sentence disappears. A new rule without
   a docs sentence cannot land. See ADR-0015.
 - **Arming** — `arm(name)` at import time in behavior modules that a
-  Verify rule audits (today: chips, alert-dismiss, toast). Module-
+  Verify rule audits (today: chips, alert-dismiss, toast, carousel). Module-
   instance state, not DOM attributes; `isArmed(name)` answers the
   registry's `ctx.armed()` query. A module not imported is (truthfully)
   not armed — `module-pairing` reports its controls as dead. See ADR-0015.

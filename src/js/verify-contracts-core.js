@@ -216,14 +216,18 @@ export const CORE_RULES = [
       "[data-alert-dismiss]",
       "[data-chip-remove]",
       '[popover][data-kind="toast"][data-duration]',
+      "[data-carousel-prev]",
+      "[data-carousel-next]",
     ],
-    module: ["js/alert-dismiss.js", "js/chips.js", "js/toast.js"],
+    module: ["js/alert-dismiss.js", "js/chips.js", "js/toast.js", "js/carousel.js"],
     check(el, ctx) {
       const module = el.hasAttribute("data-alert-dismiss")
         ? "alert-dismiss"
         : el.hasAttribute("data-chip-remove")
           ? "chips"
-          : "toast";
+          : el.hasAttribute("data-carousel-prev") || el.hasAttribute("data-carousel-next")
+            ? "carousel"
+            : "toast";
       if (ctx.armed(module)) return null;
       return `this control is a no-op — the opt-in js/${module}.js module is not loaded`;
     },

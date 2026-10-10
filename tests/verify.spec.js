@@ -335,8 +335,11 @@ test.describe("Verify Phase 0: registry assertions fire", () => {
         `<div data-alert="danger" role="alert"><p>Failed.</p><button type="button" data-alert-dismiss aria-label="Dismiss">×</button></div>`,
         `<span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span>`,
         `<div popover="manual" id="t" data-kind="toast" data-duration="3000" role="status"><p>Saved.</p></div>`,
+        // The carousel scroller still works without the module — only its
+        // prev/next are dead, which is what this rule is for.
+        `<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-next="#slides">→</button>`,
       ],
-      fixed: `<div data-alert="danger" role="alert"><p>Failed.</p><button type="button" data-alert-dismiss aria-label="Dismiss">×</button></div><span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span><div popover="manual" id="t" data-kind="toast" data-duration="3000" role="status"><p>Saved.</p></div>`,
+      fixed: `<div data-alert="danger" role="alert"><p>Failed.</p><button type="button" data-alert-dismiss aria-label="Dismiss">×</button></div><span data-chip>css<button type="button" data-chip-remove aria-label="Remove css">×</button></span><div popover="manual" id="t" data-kind="toast" data-duration="3000" role="status"><p>Saved.</p></div><div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div><button type="button" data-carousel-next="#slides">→</button>`,
     },
     {
       id: "nav-complete-contract",

@@ -100,7 +100,7 @@ Seed rules:
 | `sticky-scroll-focusable` | sticky-table scroll wrapper has `tabindex="0"` + an accessible name (WCAG 2.1.1) | 6.1 |
 | `skip-link-first` | `.bf-skip-link` is the first element in `<body>` and its `href` resolves | 6.1 |
 | `describedby-wired` | every `.bf-field-error` or `.bf-error-text` is referenced by some control's `aria-describedby` | 6.1 |
-| `module-pairing` | dismiss/chips/toast controls whose opt-in JS module isn't loaded | 6.1 |
+| `module-pairing` | dismiss/chips/toast/carousel controls whose opt-in JS module isn't loaded | 6.1 |
 | `nav-complete-contract` | hamburger toggle points at an id'd direct `<ul>` of its nav | 6.1 |
 | `state-live-contract` | loading/empty/error state has live-region semantics and loading has `aria-busy` | 6.5 |
 | `validation-summary-contract` | error summary is assertive, focusable, and owned by a form | 6.5 |
@@ -121,8 +121,14 @@ traceability gate rejects a rule without one.
 Behavior modules record themselves with `arm()` from `js/lifecycle.js` at
 import time — `armed()` reports module-instance state, not DOM attributes.
 If you import `js/barefoot.js`, every module arms and the pairing rules go
-quiet. If you import only `js/verify.js`, any dismissal/chips/toast control
-on the page is (truthfully) a dead control and will be reported as one.
+quiet. If you import only `js/verify.js`, any dismissal/chips/toast/carousel
+control on the page is (truthfully) a dead control and will be reported as
+one.
+
+Arming answers "did the module load", not "did this control get wired" —
+a page that imports `js/carousel.js` and then injects a
+`data-carousel-next` button after `DOMContentLoaded` without calling
+`initCarousels()` passes this rule and is still dead.
 
 ## For dynamic content
 
@@ -255,8 +261,8 @@ Every `.bf-field-error` or `.bf-error-text` must be referenced by some control's
 
 ### `module-pairing`
 
-Dismiss/chips/toast controls whose opt-in JS module isn't loaded are
-dead buttons. The rule fires only when the surface exists and the
+Dismiss/chips/toast/carousel controls whose opt-in JS module isn't loaded
+are dead buttons. The rule fires only when the surface exists and the
 module doesn't — load `js/barefoot.js` (or the single module) and it
 stays silent.
 
@@ -266,6 +272,10 @@ stays silent.
   <p>Failed.</p>
   <button type="button" data-alert-dismiss aria-label="Dismiss">×</button>
 </div>
+
+<!-- ✗ broken: the scroller works, but its prev/next do nothing -->
+<div data-carousel id="slides" tabindex="0" aria-label="Slides"><div>One</div></div>
+<button type="button" data-carousel-next="#slides">→</button>
 
 <!-- ✓ fixed: the module is loaded, the button works, Verify says nothing -->
 <script type="module">import "barefoot-css/js/barefoot.js";</script>

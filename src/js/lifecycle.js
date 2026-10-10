@@ -24,7 +24,8 @@
       loaded from one whose module did. Module-instance state, not DOM
       attributes — it needs no page surface and survives fixture
       document swaps. Only modules a registry rule audits arm today
-      (chips, alert-dismiss, toast); others join if rules need them.
+      (chips, alert-dismiss, toast, carousel); others join if rules need
+      them.
     - emit(target, type, detail): the bf:* event contract (v7.0). Every
       behavior module dispatches a namespaced CustomEvent when it acts,
       with a documented payload, so a page can extend a module instead

@@ -23,9 +23,11 @@
     import "barefoot/js/carousel.js"
 */
 
-import { onDomReady, bindOnce, queryFirst } from "./lifecycle.js";
+import { onDomReady, bindOnce, arm, queryFirst } from "./lifecycle.js";
 
 const timers = new WeakMap();
+
+arm("carousel");
 
 function step(el, delta, behavior) {
   const slides = [...el.children];
