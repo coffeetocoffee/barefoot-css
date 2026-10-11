@@ -1,5 +1,21 @@
 # Changelog
 
+## [8.9.0] — 2026-10-11
+
+### Fixed
+
+- **A typo'd token name no longer ships silently.** `var(--bf-typo)` does not fail. It resolves to the guaranteed-invalid value, the whole declaration computes to `unset` at computed-value time, and the property inherits — no error, no console line, no build step. Nothing in the build crossed a use site against a definition: `build/contrast.mjs` checks nine token *pairs*, and `build/token-docs.mjs` / `build/tokens-dtcg.mjs` only ever read `src/tokens.css` to emit docs and the DTCG export, so a `var()` in a component was never resolved against anything. This is the "floating promises" hazard `AGENTS.md` has recorded since `form-adaptive.css` shipped one; it now has a gate. The visual regression suite structurally cannot cover it: breaking `--bf-primary-fg` at all three call sites in `src/components/buttons.css` (lines 38, 56, 70) repaints **44,241 of 31,328,000 pixels** on the conformance demo — 0.14% against a 2% `maxDiffPixelRatio`, **14× under the tolerance**, with size, contrast, perf, lint, all 199 CSS specs, 38 axe specs, and 3 visual specs green. A total color failure on the framework's primary button passed every gate in the repo. For a dark-mode user the failure is not even visible until the OS scheme flips. `build/tokens.mjs` (`npm run tokens`, wired into `npm run check`) now fails with the file, the line, and the token it probably meant.
+- **The rule is narrower than "every `var(--bf-*)` must exist," and that narrowness is the point.** A `var()` *with a fallback* resolves unconditionally whatever the name, so only a bare `var(--bf-x)` is a hazard. This removes the need for the allowlist the original review proposed for JS-set properties — and building it proved why that allowlist would have been wrong. `--bf-reveal-index` (`reveal.css:130`), `--bf-toast-progress` (`popover.css:144`), and `--bf-stagger-index` (`layout-stagger.css:32,56`) — **three** properties, not one — all already carry fallbacks (`0`, `100%`, `0`), because degrade-by-omission requires the no-JS render to be correct on its own. An allowlist would have been a hand-kept list with nothing verifying it: the same shape of failure that let `form-adaptive.css` ship in the first place, re-entering through the fix. Dropping it also means a *future* JS-set property consumed without a fallback gets caught, which is the case that actually breaks and the one an allowlist would have waved through. `AGENTS.md` records the no-allowlist decision so it is not re-litigated.
+
+### Changed
+
+- `package.json` gains `npm run tokens`, sequenced into `npm run check` after `size` and before `perf`. Both it and `perf` read `src/` statically and need no build output. Pinned from the test side: `tests/tokens.spec.js` asserts the script appears in `check`, so the gate cannot be quietly dropped from the chain.
+
+### Tests
+
+- **Non-vacuity is proven, not assumed** — `tests/tokens.spec.js` (13 tests), following the `tests/size.spec.js` pattern of pinning a build gate from the outside. It runs the **exact** reproduction end-to-end over the real `src/**`: `--bf-primary-fg` broken at all three `buttons.css` sites yields precisely `buttons.css:38`, `:56`, `:70` and nothing else. Four false-positive guards, because a gate that cries wolf gets deleted: a `var()` with a fallback is never flagged, a token defined in one file resolves from another, `--bf-*`-outside names are none of this gate's business, and a token name inside a comment is prose (comments are blanked to spaces rather than deleted, so reported line numbers stay where the author wrote them). Two shapes are asserted that an allowlist version would have failed: a JS-set property consumed *without* a fallback is caught, and `src/` is asserted clean today (146 `--bf-*` defined, 0 dangling).
+- Chromium **389 → 402** (+13), 2 engine-gated skips. Firefox and WebKit green on their own suites. No CSS, token, component, or `data-*` change — `index.css` untouched at **3.07KB** gzip, `full.css` still frozen at its 4.5 import set (ADR-0008), and no budget moved. This is a governance-only release.
+
 ## [8.8.0] — 2026-10-10
 
 ### Fixed

@@ -1,6 +1,13 @@
 # Barefoot — Status & plan
 
-_Last updated: 2026-10-10 — v8.8.0 "Dead Controls & Dark Slots" built &
+_Last updated: 2026-10-11 — v8.9.0 "Dangling Promises" built &
+verified (a typo'd `var(--bf-*)` no longer ships silently: it resolved to
+`unset` and inherited with every gate green, and the visual suite structurally
+could not see it — a total color failure on the primary button repainted
+0.14% of the demo against a 2% tolerance — so `build/tokens.mjs` now crosses
+every use site against every definition in `npm run check`, with the rule kept
+narrow enough to need no JS-set allowlist, and pinned from the test side);
+v8.8.0 "Dead Controls & Dark Slots" built &
 verified (a malformed author-written selector no longer aborts the whole
 `barefoot.js` module graph — `queryFirst()` in `lifecycle.js`, plus the
 `carousel-control-target` Verify contract so the surviving dead control is
@@ -275,6 +282,41 @@ verified_
   500-row page disables `color-contrast` (the slowest rule at 15k nodes)
   because contrast is the framework's own AA token gate, not this page's
   claim.
+- **Built & verified:** **v8.9.0 — "Dangling Promises"** (2026-10-11;
+  tag = maintainer action). The last ungated hazard in the "floating promises"
+  line `AGENTS.md` has carried since `form-adaptive.css`. A `var(--bf-typo)`
+  with no fallback resolves to the guaranteed-invalid value, computes to
+  `unset` at computed-value time, and inherits — silently. No gate crossed a
+  use site against a definition: `contrast.mjs` checks token *pairs*, and
+  `token-docs.mjs` / `tokens-dtcg.mjs` only read `src/tokens.css` to emit docs
+  and the DTCG export. Worse, the visual gate provably could not catch it —
+  breaking `--bf-primary-fg` at all three `buttons.css` sites (38, 56, 70)
+  repaints **44,241 of 31,328,000 px = 0.14%** against a 2%
+  `maxDiffPixelRatio`, 14× under tolerance, with size/contrast/perf/lint, 199
+  CSS specs, 38 axe specs, and 3 visual specs all green. `build/tokens.mjs`
+  (`npm run tokens`, in `npm run check`) fails with file, line, and the token
+  it probably meant. The rule is deliberately narrower than "every `var(--bf-*)`
+  must exist": a `var()` *with a fallback* always resolves, so only a bare
+  `var(--bf-x)` is a hazard — which is why there is **no allowlist**.
+  Building it disproved the allowlist the original review proposed:
+  `--bf-reveal-index`, `--bf-toast-progress`, and `--bf-stagger-index` (three
+  properties, not one) all already carry fallbacks per degrade-by-omission, so
+  zero were hazardous, and an allowlist would have re-entered the exact
+  unverified-hand-maintained-list failure it replaced — while waving through
+  the one real case, a JS-set property consumed *without* a fallback.
+  `tests/tokens.spec.js` (13) runs the exact `buttons.css` break end-to-end
+  over real `src/**` and gets precisely `:38`, `:56`, `:70`, plus four
+  false-positive guards and a `did-you-mean` suggestion; a gate that has never
+  failed is an assumption, and this one is proven against the review that
+  motivated it. Governance-only: `index.css` untouched at 3.07KB, no new tokens,
+  no budget moved. **Verification (2026-10-11, v8.9 matrix):** Chromium **402
+  passed / 2 skipped**, Firefox **328 passed / 16 skipped**, WebKit **333 passed
+  / 11 skipped** — zero failures; visual regression green on all three (win32
+  baselines untouched — no demo page was added). One transient: WebKit's
+  `reduced motion navigates plainly` cross-document view-transition test lost
+  its instrumentation under parallel load on the first pass; 3/3 in isolation
+  and 333 green on a clean re-run, the documented cross-doc VT flake, and
+  unrelated here since no shipped CSS or JS changed.
 - **Built & verified:** **v8.8.0 — "Dead Controls & Dark Slots"** (2026-10-10;
   tag pushed). Two gates that did not gate, found by audit and closed by
   measurement. (1) `carousel.js` and `popover-menu.js` each fed an
@@ -505,6 +547,24 @@ and `.bf-*` utilities.
 
 ## Next
 
+- **v8.9.0 — "Dangling Promises" (built & verified 2026-10-11; tag =
+  maintainer action):** the "floating promises" hazard `AGENTS.md` has carried
+  since `form-adaptive.css` finally has a gate. `build/tokens.mjs` crosses every
+  `var(--bf-*)` use site against every `--bf-*` definition across `src/**` and
+  fails the build with file, line, and a near-miss suggestion. The visual suite
+  could not be the answer — a total color failure on the primary button is
+  0.14% of the demo against a 2% tolerance. The rule stops at bare `var(--bf-x)`
+  so no JS-set allowlist is needed, and `tests/tokens.spec.js` proves the
+  detector fires on the exact break that started this. No runtime change:
+  `index.css` untouched at 3.07KB. Tag `v8.9.0` per RELEASE.md; `release.yml`
+  publishes from the tag.
+- **Consider tightening `maxDiffPixelRatio` (deliberately NOT done here):**
+  `tests/visual.spec.js` allows 2% on a 1280×24475 capture. Tightening it would
+  *not* catch the token case above — 0.14% would need a ~0.001 threshold, under
+  the cross-engine antialiasing floor for a page that tall — while costing real
+  flake on six Windows-only baselines. It is a separate decision about a
+  separate smell, and bundling it would have trained people to re-baseline.
+  Left open.
 - **v8.8.0 — "Dead Controls & Dark Slots" (built & verified 2026-10-10; tag
   = maintainer action):** the barrel-killing author selector is contained
   (`lifecycle.js` `queryFirst()`, with the `carousel-control-target`

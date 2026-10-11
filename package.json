@@ -1,6 +1,6 @@
 {
   "name": "barefoot-css",
-  "version": "8.8.0",
+  "version": "8.9.0",
   "description": "A bare-bones, themeable, JS-free CSS framework. No boots, no baggage.",
   "type": "module",
   "license": "MIT",
@@ -35,6 +35,7 @@
   "scripts": {
     "build": "node build/build.mjs",
     "size": "node build/size.mjs",
+    "tokens": "node build/tokens.mjs",
     "perf": "node build/perf-budget.mjs",
     "docs:size": "node build/readme-size.mjs",
     "docs:tokens": "node build/token-docs.mjs",
@@ -42,7 +43,7 @@
     "migrate:v4": "node build/codemod-4.mjs",
     "lint:css": "stylelint \"src/**/*.css\"",
     "preview": "node build/serve.mjs",
-    "check": "npm run build && npm run size && npm run perf && npm run docs:size && npm run docs:tokens && npm run lint:css",
+    "check": "npm run build && npm run size && npm run tokens && npm run perf && npm run docs:size && npm run docs:tokens && npm run lint:css",
     "test": "npm run test:contracts",
     "test:a11y": "playwright test --project=chromium tests/a11y.spec.js",
     "test:js": "playwright test --project=chromium tests/js.spec.js",
@@ -54,7 +55,7 @@
     "test:webkit": "playwright test --project=webkit tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/visual.spec.js",
     "prepack": "npm run check",
     "prepublishOnly": "npm run check",
-    "test:contracts": "playwright test --project=chromium tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/debug.spec.js tests/docs.spec.js tests/perf.spec.js tests/recipes.spec.js tests/size.spec.js",
+    "test:contracts": "playwright test --project=chromium tests/css.spec.js tests/js.spec.js tests/verify.spec.js tests/debug.spec.js tests/docs.spec.js tests/perf.spec.js tests/recipes.spec.js tests/size.spec.js tests/tokens.spec.js",
     "test:e2e": "npm run test:contracts",
     "test:e2e:visual": "npm run test:visual",
     "test:acceptance": "playwright test --project=chromium tests/acceptance.spec.js",
@@ -64,7 +65,8 @@
     "test:docs": "playwright test --project=chromium tests/docs.spec.js",
     "test:perf": "playwright test --project=chromium tests/perf.spec.js",
     "test:recipes": "playwright test --project=chromium tests/recipes.spec.js",
-    "test:size": "playwright test --project=chromium tests/size.spec.js"
+    "test:size": "playwright test --project=chromium tests/size.spec.js",
+    "test:tokens": "playwright test --project=chromium tests/tokens.spec.js"
   },
   "publishConfig": {
     "access": "public"
